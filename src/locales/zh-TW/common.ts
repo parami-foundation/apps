@@ -1,0 +1,15 @@
+export default {
+    'common.copyright.produced': 'Parami Foundation 版權所有',
+    'common.confirm': '確認',
+    'common.cancel': '取消',
+    'common.copy': '複製',
+    'common.copied': '已複製',
+    'common.close': '關閉',
+    'common.continue': '繼續',
+    'common.back': '返回',
+    'common.submit': '提交',
+    'common.goHome': '返回首頁',
+    'common.dashboard': '控制面板',
+    'common.wallet': '錢包',
+    'common.logout': '登出',
+};

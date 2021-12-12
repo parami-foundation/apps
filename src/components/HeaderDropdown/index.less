@@ -1,0 +1,21 @@
+@import '~antd/es/style/themes/default.less';
+
+.container {
+  border-radius: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  color: rgb(74, 79, 84);
+}
+
+.container > * {
+  background-color: @popover-bg;
+}
+
+@media screen and (max-width: @screen-xs) {
+  .container {
+    width: 100% !important;
+  }
+  .container > * {
+    border-radius: 0 !important;
+  }
+}

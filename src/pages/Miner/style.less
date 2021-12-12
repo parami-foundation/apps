@@ -1,0 +1,432 @@
+.mining {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    padding: 35px;
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 20px;
+
+        .title {
+            font-weight: 800;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+
+            >Button {
+                margin-left: 15px;
+            }
+        }
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 20px;
+
+        .label {
+            color: rgb(36, 39, 42);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .input {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        .inputAndButton {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+
+            >*:not(:first-child) {
+                margin-left: 10px;
+            }
+        }
+
+        .select {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            border-radius: 8px;
+        }
+
+        .selectAssets {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: rgb(250, 250, 250);
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 500ms ease 0s;
+
+            .title {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+
+                .icon {
+                    font-size: 16px;
+                    height: 32px;
+                    width: 32px;
+                    margin-right: 10px;
+                    border-radius: 100%;
+                }
+
+                .name {
+                    color: rgb(39, 39, 41);
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-right: 15px;
+                }
+            }
+
+            .token {
+                color: rgb(39, 39, 41);
+                font-weight: 900;
+                margin: 0;
+            }
+
+            &:hover {
+                background: rgb(230, 230, 230);
+            }
+        }
+
+        .listBtn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+
+            .field {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 15px;
+                background-color: rgba(243, 243, 243, 1);
+                border-radius: 8px;
+                transition: all 500ms ease 0s;
+                margin-bottom: 10px;
+                margin-top: 0;
+
+                .title {
+                    color: #272729;
+                    font-weight: 900;
+                    margin: 0;
+                }
+
+                .value {
+                    color: #272729;
+                    font-weight: 600;
+                    font-size: 16px;
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    .noAssets {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(243, 243, 243, 1);
+        width: 100%;
+        padding: 80px 20px;
+        border-radius: 8px;
+
+        .topImage {
+            width: 120px;
+        }
+
+        span {
+            color: #272729;
+            font-weight: 900;
+            margin-top: 20px;
+        }
+    }
+
+    .assetsList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        .field {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(243, 243, 243, 1);
+            border-radius: 8px;
+            transition: all 500ms ease 0s;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 500ms ease 0s;
+            margin-bottom: 10px;
+
+            .title {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                margin: 0;
+
+                .icons {
+                    position: relative;
+
+                    .leftIcon,
+                    .rightIcon {
+                        font-size: 16px;
+                        height: 32px;
+                        margin-right: 10px;
+                    }
+
+                    .rightIcon {
+                        position: absolute;
+                        left: 20px;
+                        z-index: 2;
+                    }
+                }
+
+                .name {
+                    color: rgb(39, 39, 41);
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-right: 15px;
+                    margin-left: 20px;
+                }
+            }
+
+            .value {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                align-items: center;
+                color: #272729;
+                font-weight: 600;
+                font-size: 16px;
+                text-align: right;
+                width: 100%;
+            }
+
+            &:hover {
+                background: rgb(230, 230, 230);
+                ;
+            }
+        }
+    }
+
+    .actionButtons {
+        width: 100%;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .button {
+            width: 100%;
+            height: auto;
+            text-transform: none;
+            padding: 12px 6px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    }
+}
+
+.selectAssets {
+    .searchBar {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+
+        .searchInput {
+            width: 100%;
+        }
+    }
+
+    .assetsList {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: rgb(114, 114, 122);
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(243, 243, 243, 1);
+            border-radius: 8px;
+            transition: all 500ms ease 0s;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 500ms ease 0s;
+            margin-bottom: 10px;
+
+            .title {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                width: 100%;
+                margin: 0;
+
+                .icon {
+                    font-size: 16px;
+                    height: 32px;
+                    width: 32px;
+                    margin-right: 10px;
+                    border-radius: 100%;
+                }
+
+                .name {
+                    color: rgb(39, 39, 41);
+                    font-weight: 600;
+                    font-size: 16px;
+                    margin-right: 15px;
+                }
+            }
+
+            .value {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+                align-items: center;
+                color: #272729;
+                font-weight: 600;
+                font-size: 16px;
+                text-align: right;
+                width: 100%;
+            }
+
+            &:hover {
+                background: rgb(230, 230, 230);
+                ;
+            }
+        }
+    }
+}
+
+.inputModal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    .field {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 15px;
+        background-color: rgba(243, 243, 243, 1);
+        border-radius: 8px;
+        transition: all 500ms ease 0s;
+        margin-bottom: 10px;
+        transition: all 500ms ease 0s;
+        margin-bottom: 10px;
+
+        .title {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            margin: 0;
+
+            .icons {
+                position: relative;
+
+                .leftIcon,
+                .rightIcon {
+                    font-size: 16px;
+                    height: 32px;
+                    margin-right: 10px;
+                }
+
+                .rightIcon {
+                    position: absolute;
+                    left: 20px;
+                    z-index: 2;
+                }
+            }
+
+            .name {
+                color: rgb(39, 39, 41);
+                font-weight: 600;
+                font-size: 16px;
+                margin-right: 15px;
+                margin-left: 20px;
+            }
+        }
+
+        .value {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+            color: #272729;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: right;
+            width: 100%;
+        }
+    }
+
+    .input {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}

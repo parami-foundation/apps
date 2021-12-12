@@ -1,0 +1,43 @@
+.selectAccount {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .field {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 15px;
+        background-color: #fafafa;
+        border-radius: 8px;
+        transition: all 500ms ease 0s;
+        cursor: pointer;
+
+        .title {
+            margin: 0;
+            color: #272729;
+            font-weight: 900;
+        }
+
+        .value {
+            color: #272729;
+            font-weight: 600;
+            font-size: 16px;
+            text-align: right;
+            width: 200px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            justify-content: flex-start;
+        }
+
+        &:hover {
+            background: rgb(230, 230, 230);
+        }
+    }
+}

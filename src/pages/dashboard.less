@@ -1,0 +1,275 @@
+.mainContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    width: 100%;
+    box-shadow: 0 -24px 48px rgba(31,47,70,.04);
+}
+
+.mainBgContainer {
+    min-height: 85vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 -24px 48px rgba(31,47,70,.04);
+    background-image: url('/images/background.svg');
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+}
+
+.mainTopContainer {
+    min-height: 85vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    box-shadow: 0 -24px 48px rgba(31,47,70,.04);
+}
+
+.contentContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    width: 100%;
+
+    .badge {
+        padding: 10px 20px;
+        height: auto;
+        border-radius: 0 100px 100px 0;
+
+        a {
+            color: #fff;
+        }
+    }
+
+    .dashboardCard {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid rgba(244,245,246,1);
+        width: 100%;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    }
+
+    .windowCard {
+        overflow: hidden;
+        border: 2px solid rgba(244,245,246,1);
+        width: 100%;
+        padding: 10px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+
+        .windowCardBody {
+            padding: 0 34px 34px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            width: 100%;
+            margin-top: 50px;
+            margin-bottom: 50px;
+
+            .title {
+                margin-bottom: 10px;
+                font-weight: 900;
+                font-size: 15px;
+            }
+
+            .value {
+                width: 100%;
+            }
+        }
+
+        .rowField {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: rgb(250, 250, 250);
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 500ms ease 0s;
+            margin-bottom: 20px;
+
+            .title {
+                color: rgb(39, 39, 41);
+                font-weight: 900;
+                margin: 0;
+                text-align: left;
+            }
+
+            .value {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                color: rgb(39, 39, 41);
+                font-weight: 600;
+                font-size: 16px;
+                margin-right: 15px;
+            }
+        
+            &:hover {
+                background: rgb(230, 230, 230);
+            }
+        }
+
+        .switchButton {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 50px auto;
+            font-size: 30px;
+        }
+    }
+
+    .statistic {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 50px;
+    }
+}
+
+.modalBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    width: 100%;
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        >span:first-child {
+            width: 100%;
+        }
+
+        .title {
+            margin-bottom: 10px;
+            font-weight: 900;
+            font-size: 15px;
+        }
+
+        .value {
+            width: 100%;
+        }
+    }
+}
+
+.dividerTitle {
+    font-size: 18px !important;
+}
+
+.table {
+    width: 100%;
+    overflow-x: auto;
+}
+
+:global(.ant-input-number-group-addon) {
+    border-top-right-radius: 8px !important;
+    border-bottom-right-radius: 8px !important;
+}
+
+.withAfterInput {
+    width: 100% !important;
+
+    :global(.ant-input-number) {
+        border-top-left-radius: 8px !important;
+        border-bottom-left-radius: 8px !important;
+        border-top-right-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+}
+
+.tabSelector {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    .tabItem {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25px 0;
+        border-bottom: 1px solid transparent;
+        color: #ff5b00;
+        font-weight: 600;
+        font-size: 16px;
+
+        &.inactive {
+            background-color: #FAFAFA;
+            border-bottom: 1px solid #F0F0F1;
+            cursor: pointer;
+            color: rgba(143,151,163,1);
+            transition: color 100ms;
+
+            &:hover {
+                color: #ff5b00;
+            }
+        }
+    }
+}
+
+.noAssets {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+    width: 100%;
+    padding: 80px 20px;
+    border-radius: 8px;
+
+    .topImage {
+        width: 120px;
+    }
+
+    span {
+        color: #272729;
+        font-weight: 900;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 921px) {
+    .mainContainer {
+        .contentContainer {
+            padding: 10px;
+
+            .dashboardCard {
+                width: 100%;
+            }
+
+            .windowCard {
+                width: 100%;
+            }
+        }
+    }
+}

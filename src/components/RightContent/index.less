@@ -1,0 +1,161 @@
+@import '~antd/es/style/themes/default.less';
+
+@pro-header-hover-bg: rgba(0, 0, 0, 0.025);
+
+.menu {
+  :global(.anticon) {
+    margin-right: 8px;
+  }
+
+  :global(.ant-dropdown-menu-item) {
+    min-width: 160px;
+  }
+}
+
+.right {
+  display: flex;
+  float: right;
+  height: 70px;
+  margin-left: auto;
+  overflow: hidden;
+
+  .action {
+    display: flex;
+    align-items: center;
+    height: 70px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+
+    >span {
+      vertical-align: middle;
+    }
+
+    &:hover {
+      background: @pro-header-hover-bg;
+    }
+
+    &:global(.opened) {
+      background: @pro-header-hover-bg;
+    }
+  }
+
+  .search {
+    padding: 0 12px;
+
+    &:hover {
+      background: transparent;
+    }
+  }
+
+  .account {
+    cursor: pointer;
+
+    .name {
+      font-weight: 600;
+      font-size: 12px;
+      white-space: nowrap;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: rgb(114, 114, 122) !important;
+      line-height: 2;
+    }
+  }
+}
+
+.dark {
+  .action {
+    &:hover {
+      background: #252a3d;
+    }
+
+    &:global(.opened) {
+      background: #252a3d;
+    }
+  }
+}
+
+.menuContainer {
+  padding: 16px;
+  min-width: 320px;
+
+  .account {
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    color: rgb(114, 114, 122);
+    margin: 8px 0px;
+    background: #fff7e6;
+    border: 1px solid #ffd591;
+
+    .nickname {
+      font-weight: 600;
+      line-height: 170%;
+      color: rgb(0, 23, 41);
+      margin-bottom: 10px;
+    }
+
+    .did {
+      color: rgb(255, 91, 0);
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: 900;
+    }
+  }
+
+  .buttons {
+    margin-top: 30px;
+
+    .button {
+      height: 56px;
+    }
+  }
+
+  .logout {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    cursor: pointer;
+  }
+}
+
+@media only screen and (max-width: @screen-md) {
+  :global(.ant-divider-vertical) {
+    vertical-align: unset;
+  }
+
+  .name {
+    width: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .right {
+    position: absolute;
+    top: 0;
+    right: 12px;
+
+    .account {
+      .avatar {
+        margin-right: 0;
+      }
+    }
+
+    .search {
+      display: none;
+    }
+
+    .switchButton {
+      display: none;
+    }
+  }
+}

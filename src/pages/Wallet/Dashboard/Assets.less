@@ -1,0 +1,111 @@
+.assetsList {
+    width: 100%;
+    padding: 20px;
+
+    .noAssets {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(243, 243, 243, 1);
+        width: 100%;
+        padding: 80px 20px;
+        border-radius: 8px;
+
+        .topImage {
+            width: 120px;
+        }
+
+        span {
+            color: #272729;
+            font-weight: 900;
+            margin-top: 20px;
+        }
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        background-color: rgba(243, 243, 243, 1);
+        border-radius: 8px;
+        width: 100%;
+        cursor: pointer;
+        transition: all 500ms ease 0s;
+        margin-bottom: 20px;
+
+        .title {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            color: #1a1a1f;
+            font-weight: 900;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+
+            .name {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+            }
+
+            .price {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-end;
+
+                small {
+                    color: #999999;
+                    font-size: 12px;
+                }
+            }
+
+            .icon {
+                font-size: 16px;
+                height: 32px;
+                width: 32px;
+                margin-right: 10px;
+                border-radius: 100%;
+            }
+        }
+
+        .value {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding-left: 42px;
+
+            .available,
+            .reserved {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+
+                .title {
+                    color: #999999;
+                    font-size: 12px;
+                    margin-bottom: 0;
+                }
+            }
+
+            .reserved {
+                align-items: flex-end;
+            }
+        }
+    }
+}
+
+:global(.ant-badge) {
+    width: 100%;
+}
