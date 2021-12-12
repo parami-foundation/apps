@@ -27,7 +27,7 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   apiWs?: ApiPromise;
 }> {
-  const api = await getOrInit();
+  // const api = await getOrInit();
   window.apiWs = api;
 
   return {

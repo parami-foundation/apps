@@ -63,7 +63,7 @@ export const pairsData = [
             1: '0xc778417e063141139fce010982780140aa0cd5ab',
             4: '0xc778417e063141139fce010982780140aa0cd5ab',
         },
-        startTime: 1639127179,
+        startTime: 1639200025,
         endTime: 1640850151,
         totalReward: 10000,
         minPrice: '0.001',

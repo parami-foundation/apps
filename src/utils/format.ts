@@ -63,8 +63,11 @@ export function BigIntToFloatString(value: string | bigint, decimals: number): s
     }
     const intPart = value.substring(0, value.length - decimals);
     let floatPart = value.substring(value.length - decimals);
-    const zeroIndex = floatPart.search(/([1-9])([0]+)$/);
-    floatPart = floatPart.substring(0, zeroIndex + 1);
+    console.log(intPart, floatPart)
+    const zeroIndex = floatPart.search(/([0]+)$/);
+    if (zeroIndex > -1) {
+        floatPart = floatPart.substring(0, zeroIndex);
+    }
     if (floatPart.length === 0) {
         return intPart;
     }

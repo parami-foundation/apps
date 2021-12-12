@@ -82,7 +82,7 @@ const Stake: React.FC = () => {
         {
             title: 'Assets',
             dataIndex: 'name',
-            key: 'lp',
+            key: 'lpAddress',
             render: (_: string, record: any) => (
                 <>
                     <div className={style.tokenPair}>
@@ -103,7 +103,7 @@ const Stake: React.FC = () => {
         {
             title: 'APY',
             dataIndex: 'apy',
-            key: 'apy',
+            key: 'lpAddress',
             render: (text: string, record: any) => (
                 <strong>{record.apy}</strong>
             )
@@ -111,7 +111,7 @@ const Stake: React.FC = () => {
         {
             title: 'Liquidity',
             dataIndex: 'actions',
-            key: 'liquidity',
+            key: 'lpAddress',
             render: (text: string, record: any) => (
                 <Tooltip title={
                     <>
@@ -223,7 +223,7 @@ const Stake: React.FC = () => {
                                                     defaultMessage: 'AD3 Current Price',
                                                 })}
                                                 prefix={'$'}
-                                                value={0.000000000000308402}
+                                                value={0.67764}
                                             />
                                         </Col>
                                     </Row>
