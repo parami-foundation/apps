@@ -62,7 +62,7 @@ export function tryParseTick(
     tick = priceToClosestTick(price)
   }
 
-  return nearestUsableTick(tick, TICK_SPACINGS[feeAmount])
+  return -nearestUsableTick(tick, TICK_SPACINGS[feeAmount])
 }
 export function getIncentiveId(incentiveKey) {
   return ethers.utils.solidityKeccak256(['address', 'address', 'uint256', 'uint256'], [incentiveKey.rewardToken, incentiveKey.pool, incentiveKey.startTime, incentiveKey.endTime])

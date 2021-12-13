@@ -1,7 +1,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { FeeAmount } from '@uniswap/v3-sdk';
 import type BigNumber from 'bignumber.js';
-import { Button, Table, Image, PageHeader, Space, Spin } from 'antd';
+import { Button, Table, PageHeader, Space, Spin } from 'antd';
 import { Token } from '@uniswap/sdk-core';
 import { useModel, useIntl } from 'umi';
 import { ethers } from 'ethers';
@@ -24,9 +24,7 @@ const Rows = ({ row }: { row: any; }) => {
     const [pendingStake, setPendingStake] = useState<(true | false)[]>([])
     const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([])
     const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([])
-    const [claimList, setClaimList] = useState<{ tokenId: string; amount: string; }[]>([])
-    const [minTick, setMinTick] = useState(0)
-    const [maxTick, setMaxTick] = useState(0)
+    const [ticks, setTicks] = useState<any[]>([]);
     const [token, setToken] = useState<Token>();
     const [coin, setCoin] = useState<Token>();
     const [liquidities, setLiquidities] = useState<any[]>([])
@@ -37,9 +35,10 @@ const Rows = ({ row }: { row: any; }) => {
 
     useEffect(() => {
         console.log(account)
+
     }, [account]);
 
-    const { coinAddress, tokenAddress, startTime, endTime, poolAddress, totalReward, minPrice, maxPrice } = row;
+    const { coinAddress, tokenAddress, incentives, poolAddress } = row;
 
     const getToken = async (address: string) => {
         if (!chainId || !provider || !signer) return undefined
@@ -105,21 +104,50 @@ const Rows = ({ row }: { row: any; }) => {
 
     useEffect(() => {
         if (token && coin) {
-            console.log(token, coin, minPrice, maxPrice);
-            const newMinTick = tryParseTick(token, coin, FeeAmount.MEDIUM, minPrice) //|| 0
-            const newMaxTick = tryParseTick(token, coin, FeeAmount.MEDIUM, maxPrice)// || 0
-            // console.log(minTick, maxTick);
-            setMinTick(newMinTick === undefined ? 0 : newMinTick);
-            setMaxTick(newMaxTick === undefined ? 0 : newMaxTick);
+
+            // FIXIT:aaa
+            const tmpTicks = [
+                {
+                    tickLower: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[0].maxPrice) || 0,
+                    tickUpper: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[0].minPrice) || 0
+                },
+                {
+                    tickLower: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[1].maxPrice) || 0,
+                    tickUpper: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[1].minPrice) || 0
+                },
+                {
+                    tickLower: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[2].maxPrice) || 0,
+                    tickUpper: tryParseTick(token, coin, FeeAmount.MEDIUM, incentives[2].minPrice) || 0
+                }
+            ]
+            //FIXIT:111
+            console.log(token, coin);
+            console.log('tmpTicks', tmpTicks);
+            setTicks(tmpTicks);
         }
     }, [token, coin])
 
-    const incentiveKey = {
-        rewardToken: tokenAddress,
-        pool: poolAddress,
-        startTime,
-        endTime,
-    };
+    const incentiveKeys = [
+        {
+            rewardToken: tokenAddress,
+            pool: poolAddress,
+            startTime: incentives[0].startTime,
+            endTime: incentives[0].endTime,
+        },
+        {
+            rewardToken: tokenAddress,
+            pool: poolAddress,
+            startTime: incentives[1].startTime,
+            endTime: incentives[1].endTime,
+        },
+        {
+            rewardToken: tokenAddress,
+            pool: poolAddress,
+            startTime: incentives[2].startTime,
+            endTime: incentives[2].endTime,
+        },
+    ];
+
 
     const getStakeStatus = async () => {
         const balanceKinds: BigNumber = await LPContract?.balanceOf(account);
@@ -144,29 +172,41 @@ const Rows = ({ row }: { row: any; }) => {
         }
         console.log('positions', positions);
         const array = [coinAddress.toLowerCase(), tokenAddress.toLowerCase()];
+        console.log('array', array);
         const liquid: any[] = [];
         for (let i = 0; i < positions.length; i++) {
             if (positions[i].fee === FeeAmount.MEDIUM && positions[i].liquidity.toString() !== '0' && array.includes(positions[i].token0.toLowerCase()) && array.includes(positions[i].token1.toLowerCase())) {
-                // const stakes = await stakeContract?.stakes(getIncentiveId(incentiveKey), positions[i].tokenId);
-                // console.log(stakes);
-                // if (stakes.owner==='0x0000000000000000000000000000000000000000') {
-                //     liquid.push({ tokenId: positions[i].tokenId, status: 'unstaked' });
-                // } else {
-                //     liquid.push({ tokenId: positions[i].tokenId, status: 'staked' });
-                // }
-                liquid.push({ tokenId: positions[i].tokenId.toNumber(), status: 'unstaked', minTick: 0, maxTick: 0 });
+                for (let j = 0; j < incentiveKeys.length; j++) {
+                    if (ticks[j].tickLower <= positions[i].tickLower && positions[i].tickUpper <= ticks[j].tickUpper) {
+                        liquid.push({
+                            tokenId: positions[i].tokenId.toNumber(),
+                            status: 'unstaked',
+                            tickLower: positions[i].tickLower,
+                            tickUpper: positions[i].tickUpper,
+                            incentiveIndex: j
+                        });
+                    }
+                }
             }
         }
         console.log('liquid', liquid);
         const tokenCountFromStakeManager = await stakeContract?.getUserTokenIdCount(account);
         console.log('tokenCountFromStakeManager', tokenCountFromStakeManager);
         for (let i = 0; i < tokenCountFromStakeManager; i++) {
+            if (!stakeContract) {
+                console.log('stakeContract is null');
+                return;
+            }
             const tokenId = await stakeContract['getTokenId(address,uint256)'](account, i);
             console.log('tokenId', tokenId);
             if (tokenId) {
                 const stake = await stakeContract?.deposits(tokenId);
-                console.log('stake', stake);
-                liquid.push({ tokenId: tokenId.toNumber(), status: 'staked', minTick: stake.tickLower, maxTick: stake.tickUpper });
+                console.log('staked', stake);
+                for (let j = 0; j < incentiveKeys.length; j++) {
+                    if (ticks[j].tickLower <= stake.tickLower && stake.tickUpper <= ticks[j].tickUpper) {
+                        liquid.push({ tokenId: tokenId.toNumber(), status: 'staked', tickLower: stake.tickLower, tickUpper: stake.tickUpper, incentiveIndex: j });
+                    }
+                }
             }
         }
         console.log('liquid2', liquid);
@@ -174,10 +214,18 @@ const Rows = ({ row }: { row: any; }) => {
             if (liquid[i].status === 'unstaked') {
                 liquid[i] = { ...liquid[i], reward: '0' }
             } else {
-                console.log('incentiveId', (incentiveKey));
+                console.log('incentiveId', (incentiveKeys));
                 console.log('tokenId', liquid[i].tokenId);
-                const { reward } = await stakeContract?.getAccruedRewardInfo(incentiveKey, liquid[i].tokenId);
-                console.log('reward', reward);
+                console.log('incentiveKey', incentiveKeys[liquid[i].incentiveIndex]);
+                let reward = 0;
+                try {
+                    const res = await stakeContract?.getAccruedRewardInfo(incentiveKeys[liquid[i].incentiveIndex], liquid[i].tokenId);
+                    reward = res.reward;
+                } catch {
+                    reward = 0;
+                }
+
+                console.log('reward', reward.toString());
                 liquid[i] = { ...liquid[i], reward: BigIntToFloatString(reward.toString(), 18) };
             }
         }
@@ -187,11 +235,11 @@ const Rows = ({ row }: { row: any; }) => {
     };
 
     useEffect(() => {
-        if (!LPContract || account === '') {
+        if (!LPContract || account === '' || ticks.length < 3) {
             return;
         }
         getStakeStatus();
-    }, [LPContract, account, blockNumber]);
+    }, [LPContract, account, blockNumber, ticks]);
     // approve NFT
     const handleApprove = useCallback(async () => {
         try {
@@ -208,12 +256,12 @@ const Rows = ({ row }: { row: any; }) => {
         }
     }, [stakeContract, LPContract, account]);
 
-    const handleStake = useCallback(async (tokenId) => {
+    const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);
-        console.log(incentiveKey, tokenId);
+        console.log(incentiveKeys[incentiveIndex], tokenId);
         try {
-            const tx = await stakeContract?.depositToken(incentiveKey, tokenId)
+            const tx = await stakeContract?.depositToken(incentiveKeys[incentiveIndex], tokenId)
             await tx.wait();
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
@@ -222,16 +270,16 @@ const Rows = ({ row }: { row: any; }) => {
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
         }
-    }, [stakeContract, incentiveKey, account]);
+    }, [stakeContract, incentiveKeys, account]);
 
     const handleUnstake = useCallback(
-        async (tokenId) => {
+        async (tokenId, incentiveIndex) => {
             pendingUnstake[tokenId] = true
             setPendingUnstake(pendingUnstake)
 
             try {
                 //unstake
-                await stakeContract?.unstakeToken(incentiveKey, tokenId, account)
+                await stakeContract?.unstakeToken(incentiveKeys[incentiveIndex], tokenId, account)
                 pendingUnstake[tokenId] = false
                 setPendingUnstake(pendingUnstake)
             } catch (e) {
@@ -240,14 +288,14 @@ const Rows = ({ row }: { row: any; }) => {
                 setPendingUnstake(pendingUnstake)
             }
         },
-        [stakeContract, incentiveKey, account]
+        [stakeContract, incentiveKeys, account]
     )
 
-    const handleClaim = useCallback(async (tokenId, amount) => {
+    const handleClaim = useCallback(async (tokenId, amount, incentiveIndex) => {
         pendingClaim[tokenId] = true
         setPendingClaim(pendingClaim)
         try {
-            await stakeContract?.claimReward(incentiveKey, tokenId, account, FloatStringToBigInt(amount, 18).toString());
+            await stakeContract?.claimReward(incentiveKeys[incentiveIndex], tokenId, account, FloatStringToBigInt(amount, 18).toString());
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         } catch (e) {
@@ -255,25 +303,28 @@ const Rows = ({ row }: { row: any; }) => {
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         }
-    }, [stakeContract, incentiveKey, account]);
+    }, [stakeContract, incentiveKeys, account]);
 
-    const handleCreateIncentive = useCallback(async () => {
+    const handleCreateIncentives = useCallback(async () => {
         try {
-            const total = FloatStringToBigInt(String(totalReward), 18);
-            console.log(total, totalReward)
-            console.log(total.toString())
-            console.log(minTick)
-            console.log(maxTick)
-            const res = await stakeContract?.createIncentive(incentiveKey, total.toString(), minTick, maxTick);
-            console.log(res);
+            //todo: total Reward
+            //incentives[i].totalReward
+            const total = FloatStringToBigInt(String(1000), 18);
+            console.log('Create Incentives', total.toString())
+
+            const res = await stakeContract?.createIncentive(incentiveKeys[0], total.toString(), ticks[0].tickLower, ticks[0].tickUpper);
+            const res1 = await stakeContract?.createIncentive(incentiveKeys[1], total.toString(), ticks[1].tickLower, ticks[1].tickUpper);
+            const res2 = await stakeContract?.createIncentive(incentiveKeys[2], total.toString(), ticks[2].tickLower, ticks[2].tickUpper);
+            console.log(res, res1, res2);
         } catch (e) {
             console.error(e)
         }
-    }, [incentiveKey, minTick, maxTick, stakeContract, totalReward]);
+    }, [incentiveKeys, stakeContract]);
 
     const handleCancelIncentive = useCallback(async () => {
-        await stakeContract?.cancelIncentive(incentiveKey)
-    }, [incentiveKey]);
+        alert('TODO: cancel incentive')
+        //await stakeContract?.cancelIncentive(incentiveKey)
+    }, [incentiveKeys]);
 
 
     const columns = [
@@ -298,7 +349,7 @@ const Rows = ({ row }: { row: any; }) => {
                             type='primary'
                             shape='round'
                             size='large'
-                            onClick={item.status === 'staked' ? () => handleUnstake(item.tokenId) : () => handleStake(item.tokenId)}
+                            onClick={item.status === 'staked' ? () => handleUnstake(item.tokenId, item.incentiveIndex) : () => handleStake(item.tokenId, item.incentiveIndex)}
                         >
                             {item.status === 'staked' ? 'Unstake' : 'Stake'}
                         </Button>
@@ -307,7 +358,7 @@ const Rows = ({ row }: { row: any; }) => {
                             shape='round'
                             size='large'
                             disabled={item.reward === '0'}
-                            onClick={() => handleClaim(item.tokenId, item.reward)}
+                            onClick={() => handleClaim(item.tokenId, item.reward, item.incentiveIndex)}
                         >
                             Claim
                         </Button>
@@ -332,7 +383,7 @@ const Rows = ({ row }: { row: any; }) => {
                             size='large'
                             shape='round'
                             type='primary'
-                            onClick={handleCreateIncentive}
+                            onClick={handleCreateIncentives}
                         >
                             {intl.formatMessage({
                                 id: 'dashboard.stake.createIncentive',
@@ -382,7 +433,6 @@ const Rows = ({ row }: { row: any; }) => {
                     pagination={false}
                 />)
             }
-
         </>
     )
 }
