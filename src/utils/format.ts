@@ -1,5 +1,6 @@
 import BN from "bn.js";
 import { formatBalance as _formatBalance } from '@polkadot/util';
+import { BigNumber } from "@ethersproject/bignumber";
 
 export const formatBalance = (value = 0, showUnit = true): string => {
     const { unit, decimals } = _formatBalance.getDefaults();
@@ -35,20 +36,18 @@ export const formatHex = (value = '') => {
     return `0x${value}`;
 };
 
-export function BigIntToFloatString(value: string | bigint, decimals: number): string {
+export function BigIntToFloatString(value: string | bigint | BigNumber, decimals: number): string {
     if (!value) {
         return '0';
     };
-    if (typeof (value) === 'bigint') {
-        if (value === BigInt(0)) {
-            return '0';
-        }
+
+    if (typeof (value) !== 'string') {
         value = value.toString();
     }
-    if (typeof (value) !== 'string') {
+
+    if (value === '0') {
         return '0';
     }
-
     if (value.length <= decimals) {
         let floatPart = value.padStart(decimals, '0');
         const zeroIndex = floatPart.search(/([1-9])([0]+)$/);
@@ -63,7 +62,6 @@ export function BigIntToFloatString(value: string | bigint, decimals: number): s
     }
     const intPart = value.substring(0, value.length - decimals);
     let floatPart = value.substring(value.length - decimals);
-    console.log(intPart, floatPart)
     const zeroIndex = floatPart.search(/([0]+)$/);
     if (zeroIndex > -1) {
         floatPart = floatPart.substring(0, zeroIndex);
