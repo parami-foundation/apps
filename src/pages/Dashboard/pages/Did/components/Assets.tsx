@@ -2,10 +2,13 @@ import React from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import { Divider, Table } from 'antd';
+import { useModel } from 'umi';
+import Token from '@/components/Token/Token';
+import AD3 from '@/components/Token/AD3';
 
-const Assets: React.FC<{
-    assetsBalance: any[],
-}> = ({ assetsBalance }) => {
+const Assets: React.FC = () => {
+    const assets = useModel('dashboard.assets');
+
     const intl = useIntl();
 
     const columns = [
@@ -22,13 +25,19 @@ const Assets: React.FC<{
             }),
             dataIndex: 'balance',
             key: 'balance',
+            render: (text, row, index) => (
+                <Token value={row.balance} symbol={row.symbol} />
+            ),
         },
         {
             title: intl.formatMessage({
                 id: 'dashboard.assets.value',
             }),
-            dataIndex: 'value',
-            key: 'value',
+            dataIndex: 'ad3',
+            key: 'ad3',
+            render: (record) => (
+                <AD3 value={record} />
+            ),
         },
     ];
 
@@ -44,7 +53,7 @@ const Assets: React.FC<{
             </Divider>
             <Table
                 className={styles.table}
-                dataSource={assetsBalance}
+                dataSource={[...assets?.values()]}
                 columns={columns}
             />
         </>

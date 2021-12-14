@@ -1,9 +1,14 @@
-import { Alert, Button, Input } from 'antd';
+import { Alert, Button, Input, message } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
+import { AD3ToETH } from '@/services/parami/bridge';
+import { isETHAddress } from '@/utils/checkAddress';
+import { GetUserBalance, GetStableAccount } from '@/services/parami/wallet';
+import { useEffect } from 'react';
+import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 
 const Message: React.FC<{
     content: string;
@@ -23,10 +28,51 @@ const Parami: React.FC<{
 }> = ({ setLoading }) => {
     const { chainName } = useModel('metaMask');
     const [errorState, setErrorState] = useState<API.Error>({});
+    const [FreeBalance, setFreeBalance] = useState<any>(null);
+
+    const [amount, setAmount] = useState<string>('');
+    const [destinationAddress, setDestinationAddress] = useState<string>();
 
     const intl = useIntl();
 
     const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        if (!isETHAddress(destinationAddress)) {
+            message.error('Please input ETH Address!');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            await AD3ToETH(JSON.parse(currentAccount), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+            setLoading(false);
+        } catch (e: any) {
+            setErrorState({
+                Type: 'chain error',
+                Message: e,
+            });
+            setLoading(false);
+        }
+    }
+
+    const getBalance = async () => {
+        try {
+            const { stashAccount }: any = await GetStableAccount(JSON.parse(currentAccount).address);
+            const { freeBalance }: any = await GetUserBalance(stashAccount);
+            setFreeBalance(`${freeBalance}`);
+        } catch (e: any) {
+            setErrorState({
+                Type: 'chain error',
+                Message: e.message,
+            });
+        }
+    }
+
+    useEffect(() => {
+        getBalance();
+    }, [])
 
     return (
         <>
@@ -92,12 +138,20 @@ const Parami: React.FC<{
                             className={'after'}
                             bordered={true}
                             size='large'
+                            onChange={(e) => {
+                                setAmount(e.target.value);
+                            }}
+                            value={amount}
+                            type='number'
                             addonAfter={
                                 <Button
                                     block
                                     shape='round'
                                     size='large'
                                     type='primary'
+                                    onClick={() => {
+                                        setAmount(BigIntToFloatString(FreeBalance, 18));
+                                    }}
                                 >
                                     {intl.formatMessage({
                                         id: 'dashboard.bridge.all',
@@ -120,6 +174,9 @@ const Parami: React.FC<{
                             className={'after'}
                             bordered={true}
                             size='large'
+                            onChange={(e) => {
+                                setDestinationAddress(e.target.value);
+                            }}
                         />
                     </div>
                 </div>
@@ -131,7 +188,7 @@ const Parami: React.FC<{
                         })}
                     </div>
                     <div className={styles.value}>
-                        <AD3 value={'123'} />
+                        <AD3 value={FreeBalance} />
                     </div>
                 </div>
                 <div className={styles.rowField}>
@@ -142,7 +199,7 @@ const Parami: React.FC<{
                         })}
                     </div>
                     <div className={styles.value}>
-                        <Token value={'123'} symbol='ETH' />
+                        <Token value={'0'} symbol='ETH' />
                     </div>
                 </div>
                 <div className={styles.field}>
@@ -151,6 +208,10 @@ const Parami: React.FC<{
                         type='primary'
                         size='large'
                         shape='round'
+                        onClick={() => {
+                            handleSubmit();
+                        }}
+                        disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(FreeBalance)}
                     >
                         {intl.formatMessage({
                             id: 'common.submit',

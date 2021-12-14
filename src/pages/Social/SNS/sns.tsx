@@ -1,13 +1,13 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import config from '@/config/config';
-import { GetUserInfo } from '@/services/parami/nft';
-import { Alert, Button, Input, message, Spin } from 'antd';
+import { Alert, Button, Input, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl } from 'umi';
-import { GetLinkedInfo, LinkSociality } from '@/services/parami/linker';
+import { LinkSociality } from '@/services/parami/linker';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LoadingOutlined } from '@ant-design/icons';
+import MyAvatar from '@/components/Avatar/MyAvatar';
+import { useModel } from 'umi';
 
 const did = localStorage.getItem('did') as string;
 
@@ -27,11 +27,9 @@ const Message: React.FC<{
 const BindModal: React.FC<{
 	platform: string;
 	setBindModal: React.Dispatch<React.SetStateAction<boolean>>;
-	getStatus: () => Promise<void>;
-}> = ({ platform, setBindModal, getStatus }) => {
+}> = ({ platform, setBindModal }) => {
 	const [errorState, setErrorState] = useState<API.Error>({});
 	const [profileURL, setProfileURL] = useState<string>('');
-	const [avatar, setAvatar] = useState<any>();
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [Password, setPassword] = useState<string>('');
 	const [loading, setLoading] = useState<boolean>(false);
@@ -40,29 +38,12 @@ const BindModal: React.FC<{
 
 	const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
-	const getUserInfo = async () => {
-		try {
-			const res = await GetUserInfo(did);
-			const info = res.toHuman();
-			if (!info) {
-				return;
-			}
-
-			if (info['avatar'].indexOf('ipfs://') > -1) {
-				const hash = info['avatar'].substring(7);
-				setAvatar(config.ipfs.endpoint + hash)
-			}
-		} catch (e: any) {
-			message.error(e.message);
-		}
-	};
-
 	const handleSubmit = async () => {
 		setLoading(true);
 		try {
 			await LinkSociality(did, platform, profileURL, Password, controllerKeystore);
-			await getStatus();
 			setLoading(false);
+			setBindModal(false);
 		} catch (e: any) {
 			setErrorState({
 				Type: 'chain error',
@@ -73,7 +54,6 @@ const BindModal: React.FC<{
 			setLoading(false);
 			return;
 		}
-		setBindModal(false);
 	};
 
 	useEffect(() => {
@@ -81,10 +61,6 @@ const BindModal: React.FC<{
 			handleSubmit();
 		}
 	}, [Password, profileURL]);
-
-	useEffect(() => {
-		getUserInfo();
-	}, []);
 
 	return (
 		<>
@@ -96,11 +72,10 @@ const BindModal: React.FC<{
 			>
 				<div className={styles.bindModal}>
 					{errorState.Message && <Message content={errorState.Message} />}
-					<div
-						className={styles.avatar}
-					>
-						<img src={avatar || '/images/logo-square-core.svg'} />
-					</div>
+					<MyAvatar
+						width={200}
+						height={200}
+					/>
 					<span
 						className={styles.avatarSaveDesc}
 					>
@@ -197,24 +172,9 @@ const BindModal: React.FC<{
 const SNS: React.FC = () => {
 	const [bindModal, setBindModal] = useState<boolean>(false);
 	const [platform, setPlatform] = useState<string>('');
-	const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
+	const linkedInfo = useModel('sns');
 
 	const intl = useIntl();
-
-	const platforms = ['Telegram', 'Twitter'];
-
-	const init = async () => {
-		const data = {};
-		for (let i = 0; i < platforms.length; i++) {
-			const res = await GetLinkedInfo(did, platforms[i]);
-			data[platforms[i]] = res;
-		}
-		setLinkedInfo(data);
-	};
-
-	useEffect(() => {
-		init();
-	}, []);
 
 	return (
 		<>
@@ -422,7 +382,6 @@ const SNS: React.FC = () => {
 					<BindModal
 						platform={platform}
 						setBindModal={setBindModal}
-						getStatus={init}
 					/>}
 				close={() => { setBindModal(false) }}
 				footer={

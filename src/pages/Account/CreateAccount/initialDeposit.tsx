@@ -119,7 +119,7 @@ const InitialDeposit: React.FC<{
           await api.query.system.account(controllerUserAddress, (info) => {
             const data: any = info.data;
             if (free && free !== `${data.free}`) {
-              notification.info({
+              notification.success({
                 message: 'Changes in Gas Balance',
                 description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
               })
@@ -164,7 +164,7 @@ const InitialDeposit: React.FC<{
         password,
         controllerKeystore,
       );
-      const did = events['did']['Assigned'][0];
+      const did = events['did']['Assigned'][0][0];
       localStorage.setItem('did', did);
       if (minimal) {
         await minimalSubmit(airdropData, did);

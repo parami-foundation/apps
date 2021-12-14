@@ -7,7 +7,7 @@ export default () => {
     const [nickname, setNickname] = useState<string>('Nickname');
     const [avatar, setAvatar] = useState<string>();
 
-    const did = localStorage.getItem('did') as string;
+    const did = localStorage.getItem('dashboardDid') as string;
 
     const getUserInfo = async () => {
         const api = await getOrInit();

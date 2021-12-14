@@ -4,15 +4,16 @@ import { Button, Input, Slider, Typography, Image } from 'antd';
 import style from './Modal.less';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
-const AddModal: React.FC<{ pools: any[], setVisiable: React.Dispatch<React.SetStateAction<boolean>> }> = ({ pools, setVisiable }) => {
+const AddModal: React.FC = () => {
     const intl = useIntl();
-    const [APYIndex, setAPYIndex] = React.useState(1);
+
     const { Title } = Typography;
 
     const marks = {
-        0: '100%',
-        1: '150%',
-        2: '200%',
+        0.1: '0.1',
+        1: '1',
+        1.5: '1.5',
+        2: '2',
     };
 
     return (
@@ -22,18 +23,18 @@ const AddModal: React.FC<{ pools: any[], setVisiable: React.Dispatch<React.SetSt
                     level={5}
                     className={style.title}
                 >
-                    Select APY
+                    {intl.formatMessage({
+                        id: 'dashboard.stake.setPriceRange',
+                        defaultMessage: 'Set Price Range',
+                    })}
                 </Title>
                 <Slider
-                    min={0}
+                    min={0.1}
                     max={2}
                     marks={marks}
                     step={null}
-                    defaultValue={1}
+                    defaultValue={37}
                     className={style.slider}
-                    onChange={(value) => {
-                        setAPYIndex(value);
-                    }}
                 />
                 <div className={style.rangeBlocks}>
                     <div className={style.block}>
@@ -57,7 +58,7 @@ const AddModal: React.FC<{ pools: any[], setVisiable: React.Dispatch<React.SetSt
                                     placeholder='0.0'
                                     className={style.input}
                                     bordered={false}
-                                    value={pools[0].incentives[APYIndex].minPrice}
+                                    value={0.1}
                                 />
                                 <Button
                                     disabled
@@ -99,7 +100,7 @@ const AddModal: React.FC<{ pools: any[], setVisiable: React.Dispatch<React.SetSt
                                     placeholder='0.0'
                                     className={style.input}
                                     bordered={false}
-                                    value={pools[0].incentives[APYIndex].maxPrice}
+                                    value={2}
                                 />
                                 <Button
                                     disabled
@@ -150,14 +151,6 @@ const AddModal: React.FC<{ pools: any[], setVisiable: React.Dispatch<React.SetSt
                                 }}
                             />
                         }
-                        onClick={() => {
-                            //setVisiable(false);
-                            window.open(
-                                `https://app.uniswap.org/#/add/${pools[0].coin === 'ETH'
-                                    ? 'ETH'
-                                    : pools[0].coinAddress}/${pools[0].tokenAddress}/3000`
-                            )
-                        }}
                     >
                         {intl.formatMessage({
                             id: 'dashboard.stake.gotoUniswap',

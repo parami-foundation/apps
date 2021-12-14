@@ -18,4 +18,6 @@ export default {
     'error.broswer.notSupport': 'Your current browser or software is not supported. Please use it in the system browser.',
     'error.share.failed': 'You must save your MagicLink first!',
     'error.linker.Exists': 'Binded by other accounts',
+    'error.balances.ExistentialDeposit': 'Sorry, your credit is running low',
+    'error.unAccessible.subTitle': 'You can use MagicLink to restore your account, or try to create one quickly?',
 };

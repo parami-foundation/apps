@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
-import { Alert, Button, Card, InputNumber, Typography } from 'antd';
+import { Alert, Button, Card, Input, Typography } from 'antd';
 import { BecomeAdvertiser } from '@/services/parami/dashboard';
 import { parseAmount } from '@/utils/common';
 
@@ -26,13 +26,13 @@ const Become: React.FC<{
     setAdvertisers: React.Dispatch<React.SetStateAction<boolean>>
 }> = ({ setAdvertisers }) => {
     const [errorState, setErrorState] = useState<API.Error>({});
-    const [number, setNumber] = useState<number>(0);
+    const [number, setNumber] = useState<string>('');
 
     const intl = useIntl();
 
     const becomeAdvertiser = async () => {
         try {
-            await BecomeAdvertiser(parseAmount(number.toString()), JSON.parse(currentAccount));
+            await BecomeAdvertiser(parseAmount(number), JSON.parse(currentAccount));
             setAdvertisers(true);
         } catch (e: any) {
             setErrorState({
@@ -65,16 +65,15 @@ const Become: React.FC<{
                                 {intl.formatMessage({
                                     id: 'dashboard.ads.deposit',
                                 })}
+                                <small>(The minimum is 1000)</small>
                             </div>
                             <div className={styles.value}>
-                                <InputNumber
+                                <Input
                                     className={styles.withAfterInput}
                                     placeholder="0.00"
                                     size='large'
                                     type='number'
-                                    maxLength={18}
-                                    min={1000}
-                                    onChange={(e) => setNumber(e)}
+                                    onChange={(e) => setNumber(e.target.value)}
                                 />
                             </div>
                         </div>
@@ -84,7 +83,7 @@ const Become: React.FC<{
                                 shape='round'
                                 size='large'
                                 type='primary'
-                                disabled={!number}
+                                disabled={!number || BigInt(number) < BigInt(1000)}
                                 onClick={() => { becomeAdvertiser() }}
                             >
                                 {intl.formatMessage({

@@ -8,6 +8,7 @@ import Loading from './components/Loading/Loading';
 import { notification } from 'antd';
 import { getOrInit } from './services/parami/init';
 import type { Mutex } from 'async-mutex';
+import UnAccessible from './pages/403';
 declare global {
   interface Window {
     apiWs: ApiPromise;
@@ -27,7 +28,7 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   apiWs?: ApiPromise;
 }> {
-  // const api = await getOrInit();
+  const api = await getOrInit();
   window.apiWs = api;
 
   return {
@@ -105,7 +106,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     headerTheme: "light",
     headerHeight: 70,
     // 自定义 403 页面
-    // unAccessible: <div>unAccessible</div>,
+    unAccessible: <UnAccessible />,
     ...initialState?.settings,
   };
 };

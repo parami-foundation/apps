@@ -191,6 +191,44 @@ ol {
   margin: 0 !important;
 }
 
+.ant-notification-notice-success {
+  border-left: 8px solid #52c41a;
+
+  .ant-notification-notice-message {
+    color: #52c41a;
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.ant-notification-notice-error {
+  border-left: 8px solid #ff4d4f;
+
+  .ant-notification-notice-message {
+    color: #ff4d4f;
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.ant-notification-notice-info {
+  border-left: 8px solid #1890ff;
+
+  .anticon.ant-notification-notice-icon-info {
+    color: #1890ff;
+  }
+
+  .ant-notification-notice-message {
+    color: #1890ff;
+    font-weight: 900;
+    font-size: 18px;
+  }
+}
+
+.ant-alert {
+  border-radius: 100px !important;
+}
+
 @media (max-width: @screen-xs) {
   .ant-table {
     width: 100%;
@@ -215,6 +253,7 @@ ol {
   }
 
   .ant-menu-item {
+    width: auto !important;
     margin: 10px;
     padding: 5px 20px !important;
     border-radius: 100px;

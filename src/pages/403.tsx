@@ -2,15 +2,17 @@ import { Button, Result } from 'antd';
 import React from 'react';
 import { useIntl, history } from 'umi';
 
-const NoFoundPage: React.FC = () => {
+const UnAccessible: React.FC = () => {
   const intl = useIntl();
 
   return (
     <Result
-      status="404"
-      title="404"
+      status="403"
+      title={intl.formatMessage({
+        id: 'error.account.notUser',
+      })}
       subTitle={intl.formatMessage({
-        id: 'error.notfound.title',
+        id: 'error.unAccessible.subTitle',
       })}
       extra={
         <Button
@@ -28,4 +30,4 @@ const NoFoundPage: React.FC = () => {
   )
 };
 
-export default NoFoundPage;
+export default UnAccessible;

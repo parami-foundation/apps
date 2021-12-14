@@ -11,7 +11,7 @@ export default () => {
     const [first, setFirst] = useState((new Date()).getTime());
     const [assets, setAssets] = useState<Map<string, any>>(new Map());
 
-    const currentAccount = localStorage.getItem('stashUserAddress');
+    const currentAccount = localStorage.getItem('dashboardStashUserAddress');
 
     const getAssets = async () => {
         const api = await getOrInit();
@@ -56,7 +56,7 @@ export default () => {
                 // TODO: time events(first)
                 if (((new Date()).getTime() - first >= 30000) && changes) {
                     notification.success({
-                        message: `Changes in ${tmpAssets[assetId].name}`,
+                        message: `Dashboard: Changes in ${tmpAssets[assetId].name}`,
                         description: formatBalance(changes, { withUnit: tmpAssets[assetId].symbol }, 18),
                     });
                 }

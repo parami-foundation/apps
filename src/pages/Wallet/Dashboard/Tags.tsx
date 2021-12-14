@@ -28,7 +28,7 @@ const Tags: React.FC = () => {
                     })}
                 </Title>
                 <div className={style.tagContainer}>
-                    {tags?.map((tag) => (
+                    {[...tags?.values()].map((tag) => (
                         <Tag
                             color={tag.color}
                             className={style.tagItem}

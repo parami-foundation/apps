@@ -28,8 +28,6 @@ const Stake: React.FC = () => {
     const [apys, setApys] = useState<any[]>([]);
     const [selectModal, setSelectModal] = useState<boolean>(false);
     const [addModal, setAddModal] = useState<boolean>(false);
-    const [ad3Approved, setAd3Approved] = useState<boolean>(false);
-    const [ad3ApprovedLoading, setAd3ApprovedLoading] = useState<boolean>(false);
     const {
         account,
         ad3Contract,
@@ -40,10 +38,7 @@ const Stake: React.FC = () => {
     const intl = useIntl();
 
     const handleApproveAd3 = async () => {
-        const tx = await ad3Contract?.approve(stakeContract?.address, ethers.constants.MaxUint256)
-        setAd3ApprovedLoading(true);
-        await tx.wait();
-        setAd3Approved(true);
+        await ad3Contract?.approve(stakeContract?.address, ethers.constants.MaxUint256)
     };
 
     const fetchIncentive = useCallback(async () => {
@@ -54,8 +49,8 @@ const Stake: React.FC = () => {
                 const incentiveKey = {
                     rewardToken: pool.tokenAddresses[chainId],
                     pool: pool.poolAddresses[chainId],
-                    startTime: pool.incentives[2].startTime,
-                    endTime: pool.incentives[2].endTime,
+                    startTime: pool.startTime,
+                    endTime: pool.endTime,
                 }
                 console.log(incentiveKey);
                 const incentiveId = getIncentiveId(incentiveKey);
@@ -64,9 +59,9 @@ const Stake: React.FC = () => {
                 console.log('incentive', incentive);
                 console.log('pool', pool);
                 // console.log(new BigNumber(incentive.totalRewardUnclaimed).dividedBy(new BigNumber(10).pow(15)).toNumber())
-                const time = ((Date.now() / 1000) | 0) - pool.incentives[2].startTime;
+                const time = ((Date.now() / 1000) | 0) - pool.startTime;
                 // console.log(time)
-                const apy = (pool.incentives[2].totalReward - Number(BigIntToFloatString(incentive.totalRewardUnclaimed, 18))) / time * 365 * 24 * 60 * 60 / pool.incentives[2].totalReward * 100;
+                const apy = (pool.totalReward - Number(BigIntToFloatString(incentive.totalRewardUnclaimed, 18))) / time * 365 * 24 * 60 * 60 / pool.totalReward * 100;
                 // console.log(apy)
 
                 return `${apy > 0 ? apy.toFixed(2) : '0.00'}%`
@@ -82,14 +77,12 @@ const Stake: React.FC = () => {
         console.log(account)
         fetchIncentive();
     }, [stakeContract]);
-    useEffect(() => {
 
-    }, [stakeContract]);
     const columns = [
         {
             title: 'Assets',
             dataIndex: 'name',
-            key: 'lpAddress',
+            key: 'lp',
             render: (_: string, record: any) => (
                 <>
                     <div className={style.tokenPair}>
@@ -101,7 +94,7 @@ const Stake: React.FC = () => {
                         </div>
                         <div className={style.info}>
                             <span className={style.pair}>Uniswap V3: {record.name}</span>
-                            <span className={style.range}>Reward Range: $ {record.incentives[0].minPrice}-$ {record.incentives[2].maxPrice}</span>
+                            <span className={style.range}>Reward Range: $ {record.minPrice}-$ {record.maxPrice}</span>
                         </div>
                     </div>
                 </>
@@ -110,7 +103,7 @@ const Stake: React.FC = () => {
         {
             title: 'APY',
             dataIndex: 'apy',
-            key: 'lpAddress',
+            key: 'apy',
             render: (text: string, record: any) => (
                 <strong>{record.apy}</strong>
             )
@@ -118,7 +111,7 @@ const Stake: React.FC = () => {
         {
             title: 'Liquidity',
             dataIndex: 'actions',
-            key: 'lpAddress',
+            key: 'liquidity',
             render: (text: string, record: any) => (
                 <Tooltip title={
                     <>
@@ -143,7 +136,11 @@ const Stake: React.FC = () => {
                         shape='round'
                         type='primary'
                         onClick={() => {
-                            setAddModal(true);
+                            window.open(
+                                `https://app.uniswap.org/#/add/${record.coin === 'ETH'
+                                    ? 'ETH'
+                                    : record.coinAddress}/${record.tokenAddress}/3000`
+                            )
                         }}
                     >
                         Add
@@ -177,14 +174,6 @@ const Stake: React.FC = () => {
                                         defaultMessage: 'Overview',
                                     })}
                                     extra={[
-                                        <Button
-                                            shape='round'
-                                            type='primary'
-                                            size='large'
-                                            disabled={ad3ApprovedLoading}
-                                            onClick={() => handleApproveAd3()}
-                                        > {ad3Approved ? 'Approved' : 'Approve AD3 Operation'}
-                                        </Button>,
                                         <Button
                                             shape='round'
                                             type='primary'
@@ -234,7 +223,7 @@ const Stake: React.FC = () => {
                                                     defaultMessage: 'AD3 Current Price',
                                                 })}
                                                 prefix={'$'}
-                                                value={0.67764}
+                                                value={0.000000000000308402}
                                             />
                                         </Col>
                                     </Row>
@@ -275,7 +264,7 @@ const Stake: React.FC = () => {
                             >
                                 {intl.formatMessage({
                                     id: 'dashboard.bridge.connectETH',
-                                    defaultMessage: 'Connect Wallet',
+                                    defaultMessage: 'Connect ETH',
                                 })}
                             </Button>
                         )}
@@ -301,7 +290,7 @@ const Stake: React.FC = () => {
                     defaultMessage: 'Add Liquidity',
                 })}
                 content={
-                    <AddModal pools={pairs(4, apys)} setVisiable={setAddModal} />
+                    <AddModal />
                 }
                 footer={false}
                 close={() => setAddModal(false)}

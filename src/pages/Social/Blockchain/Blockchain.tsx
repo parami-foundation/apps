@@ -1,10 +1,10 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { GetLinkedInfo, LinkBlockChain } from '@/services/parami/linker';
+import { LinkBlockChain } from '@/services/parami/linker';
 import { Alert, Button, Divider, Input, message, Image, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import { hexToDid } from '@/utils/common';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
@@ -92,14 +92,17 @@ const BindModal: React.FC<{
 					});
 					return;
 				}
+				setBindModal(false);
 				setSecModal(false);
 		}
 	};
+
 	useEffect(() => {
 		if (password !== '') {
 			handleSubmit();
 		}
 	}, [password]);
+
 	useEffect(() => {
 		setOrigin(`Link: ${hexToDid(did)}`);
 	}, []);
@@ -271,24 +274,10 @@ const BindModal: React.FC<{
 const Blockchain: React.FC = () => {
 	const [bindModal, setBindModal] = useState<boolean>(false);
 	const [blockchain, setBlockchain] = useState<string>('');
-	const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
+
+	const linkedInfo = useModel('sns');
 
 	const intl = useIntl();
-
-	const blockchains = ['Bitcoin', 'Ethereum', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
-
-	const init = async () => {
-		const data = {};
-		for (let i = 0; i < blockchains.length; i++) {
-			const res = await GetLinkedInfo(did, blockchains[i]);
-			data[blockchains[i]] = res;
-		}
-		setLinkedInfo(data);
-	};
-
-	useEffect(() => {
-		init();
-	}, []);
 
 	return (
 		<>

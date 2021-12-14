@@ -3,7 +3,7 @@ import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import { Button, Card, Spin } from 'antd';
 import classNames from 'classnames';
-import { LinkOutlined } from '@ant-design/icons';
+import { ArrowRightOutlined, LinkOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
 import SelectWallet from './components/selectWallet';
 import Ethereum from './ethereum';
@@ -48,7 +48,9 @@ const Bridge: React.FC = () => {
                                 >
                                     {intl.formatMessage({
                                         id: 'dashboard.bridge.ethtoad3',
-                                        defaultMessage: 'ETHToAD3',
+                                        defaultMessage: 'ETH{icon}AD3',
+                                    }, {
+                                        icon: <ArrowRightOutlined />
                                     })}
                                 </div>
                                 <div
@@ -57,7 +59,9 @@ const Bridge: React.FC = () => {
                                 >
                                     {intl.formatMessage({
                                         id: 'pages.liquidity.ad3toeth',
-                                        defaultMessage: 'AD3ToETH',
+                                        defaultMessage: 'AD3{icon}ETH',
+                                    }, {
+                                        icon: <ArrowRightOutlined />
                                     })}
                                 </div>
                             </div>
@@ -81,10 +85,10 @@ const Bridge: React.FC = () => {
                                 </div>
                             )}
                             {tab === 'ETHToAD3' && account && (
-                                <Ethereum />
+                                <Ethereum setLoading={setLoading} />
                             )}
                             {tab === 'AD3ToETH' && (
-                                <Parami />
+                                <Parami setLoading={setLoading} />
                             )}
                         </Card>
                     </Spin>

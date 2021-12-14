@@ -7,8 +7,8 @@ export default () => {
   const [controller, setController] = useState<State.Controller>({});
   const [stash, setStash] = useState<State.Stash>({});
 
-  const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
-  const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
+  const controllerUserAddress = localStorage.getItem('dashboardControllerUserAddress') as string;
+  const stashUserAddress = localStorage.getItem('dashboardStashUserAddress');
 
   const getController = async () => {
     const api = await getOrInit();
@@ -20,7 +20,7 @@ export default () => {
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
           notification.success({
-            message: 'Changes in Gas Balance',
+            message: 'Dashboard: Changes in Gas Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }
@@ -41,7 +41,7 @@ export default () => {
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
           notification.success({
-            message: 'Changes in Balance',
+            message: 'Dashboard: Changes in Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }

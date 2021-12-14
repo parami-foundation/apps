@@ -40,29 +40,39 @@ const GlobalHeaderRight: React.FC = () => {
   return (
     <>
       <Space className={styles.right}>
-        {access.canUser && (
+        {window.location.pathname.indexOf('dashboard') > -1 && (
           <Tag
             color="#f50"
             style={{
               cursor: 'pointer',
             }}
             onClick={() => {
-              history.push(window.location.pathname.indexOf('dashboard') > -1 ? config.page.walletPage : config.page.dashboard.homePage);
+              history.push(config.page.homePage);
             }}
             className={styles.switchButton}
           >
-            {window.location.pathname.indexOf('dashboard') > -1 && (
-              intl.formatMessage({
-                id: 'common.wallet',
-              })
-            )}
-            {window.location.pathname.indexOf('dashboard') < 0 && (
-              intl.formatMessage({
-                id: 'common.dashboard',
-              })
-            )}
+            {intl.formatMessage({
+              id: 'common.wallet',
+            })}
           </Tag>
         )}
+        {window.location.pathname.indexOf('dashboard') < 0 && (
+          <Tag
+            color="#f50"
+            style={{
+              cursor: 'pointer',
+            }}
+            onClick={() => {
+              history.push(config.page.dashboard.homePage);
+            }}
+            className={styles.switchButton}
+          >
+            {intl.formatMessage({
+              id: 'common.dashboard',
+            })}
+          </Tag>
+        )}
+
         <Upload
           accept="image/*"
           showUploadList={false}
