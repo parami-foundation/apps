@@ -40,24 +40,24 @@ export function BigIntToFloatString(value: string | bigint | BigNumber, decimals
     if (!value) {
         return '0';
     };
-
     if (typeof (value) !== 'string') {
         value = value.toString();
-    }
 
+    }
     if (value === '0') {
         return '0';
     }
     if (value.length <= decimals) {
         let floatPart = value.padStart(decimals, '0');
-        const zeroIndex = floatPart.search(/([1-9])([0]+)$/);
-        floatPart = floatPart.substring(0, zeroIndex + 1);
+        const zeroIndex = floatPart.search(/([0]+)$/);
+        if (zeroIndex > -1) {
+            floatPart = floatPart.substring(0, zeroIndex);
+        }
         if (floatPart.length > 0) {
             floatPart = '0.' + floatPart;
         } else {
             floatPart = '0';
         }
-
         return floatPart;
     }
     const intPart = value.substring(0, value.length - decimals);

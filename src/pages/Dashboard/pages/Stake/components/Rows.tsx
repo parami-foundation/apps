@@ -28,7 +28,7 @@ const Rows = ({ row }: { row: any; }) => {
     const [token, setToken] = useState<Token>();
     const [coin, setCoin] = useState<Token>();
     const [liquidities, setLiquidities] = useState<any[]>([])
-    const [isApprovedAll, setIsApproveAll] = useState(false);
+    const [isApprovedAll, setIsApproveAll] = useState(true);
     const [loading, setLoading] = useState(false);
 
     const intl = useIntl();
@@ -217,16 +217,16 @@ const Rows = ({ row }: { row: any; }) => {
                 console.log('incentiveId', (incentiveKeys));
                 console.log('tokenId', liquid[i].tokenId);
                 console.log('incentiveKey', incentiveKeys[liquid[i].incentiveIndex]);
-                let reward: any;
                 try {
                     const res = await stakeContract?.getAccruedRewardInfo(incentiveKeys[liquid[i].incentiveIndex], liquid[i].tokenId);
-                    reward = res.reward;
-                } catch {
-                    reward = 0;
+                    console.log(res);
+                    const reward = BigIntToFloatString(res.reward, 18);
+                    console.log('reward', reward);
+                    liquid[i] = { ...liquid[i], reward: reward };
+                } catch (e) {
+                    console.log('error', e);
+                    liquid[i] = { ...liquid[i], reward: '0' };
                 }
-
-                console.log('reward', reward.toString());
-                liquid[i] = { ...liquid[i], reward: BigIntToFloatString(reward.toString(), 18) };
             }
         }
         console.log('liquid3', liquid);
@@ -331,16 +331,16 @@ const Rows = ({ row }: { row: any; }) => {
         {
             title: 'Token',
             dataIndex: 'tokenId',
-            key: 'tokenId',
+            //key: 'tokenId',
         },
         {
             title: 'Reward',
             dataIndex: 'reward',
-            key: 'tokenId',
+            //key: 'tokenId',
         },
         {
             title: 'Action',
-            key: 'tokenId',
+            //key: 'tokenId',
             width: 300,
             render: (item) => (
                 <>
