@@ -1,4 +1,5 @@
 import Did from '@/components/Did/did';
+import { didToHex } from '@/utils/common';
 import { Card, Col, Divider, Row, Statistic, Typography, Image, message } from 'antd';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -37,7 +38,7 @@ const User: React.FC<{
                         >
                             {user?.nickname}
                         </Title>
-                        <Did did={did} />
+                        <Did did={didToHex(did)} />
                         {asset && (
                             <>
                                 <Divider />
