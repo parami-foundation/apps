@@ -41,6 +41,10 @@ export const contractAddresses = {
         1: '0xE9c94322e3fFC563BD97a74e916D77DEE4797A9F',
         4: '0xE9c94322e3fFC563BD97a74e916D77DEE4797A9F',
     },
+    uniswapFactory: {
+        1: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
+        4: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
+    }
 }
 
 export const pairsData = [
