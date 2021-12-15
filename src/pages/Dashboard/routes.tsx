@@ -35,6 +35,12 @@ export default {
                 icon: <GoldOutlined />,
                 component: './Stake',
             },
+            {
+                path: '/dashboard/farm',
+                name: 'Farm',
+                icon: <GoldOutlined />,
+                component: './Farm',
+            },
         ],
     },
     location: {

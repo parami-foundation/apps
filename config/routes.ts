@@ -154,6 +154,11 @@
         component: './Dashboard/pages/Stake',
       },
       {
+        path: '/dashboard/farm',
+        name: 'Farm',
+        component: './Dashboard/pages/Farm',
+      },
+      {
         component: './404',
       },
     ],

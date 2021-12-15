@@ -1,0 +1,165 @@
+.stakeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+    max-width: 1100px;
+
+    .headerContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 24px;
+        width: 100%;
+        color: #0a0b0d;
+        background: hsla(0,0%,100%,.24);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        margin: 0 10px 0 0;
+        padding: 32px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+
+        .titleContainer {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+
+            .description {
+                opacity: .6;
+                font-size: .875rem;
+                line-height: 1.25rem;
+            }
+        }
+    }
+
+    .stakeContainer {
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        background: hsla(0,0%,100%,.24);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        margin-top: 32px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        width: 100%;
+
+        .stakeItem {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 24px 40px;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            margin-top: 16px;
+
+            .tokenPair {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                align-items: center;
+                flex: 1.8;
+
+                .tokenIcons {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 30px 0;
+                    flex: 1;
+
+                    .icon {
+                        width: 35px;
+                        height: 35px;
+                    }
+
+                    :first-child {
+                        margin-top: -15px;
+                    }
+
+                    :last-child {
+                        margin-left: -10px;
+                        margin-bottom: -15px;
+                    }
+                }
+                
+                .tokenNameAndRate {
+                    flex: 1.5;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    justify-content: center;
+
+                    .tokenName {
+                        font-family: Montserrat;
+                        font-size: 14px;
+                        line-height: 17px;
+                        font-weight: 900;
+                    }
+                    
+                    .tokenRate {
+                        margin-top: 6px;
+                        outline: transparent solid 2px;
+                        outline-offset: 2px;
+                        min-width: 1.5rem;
+                        padding: 3px 15px;
+                        background-color: #fff3e6;
+                        border-radius: 32px;
+                    }
+                }
+            }
+
+            .tokenAPY,
+            .tokenLiquidity,
+            .tokenRewardRange,
+            .tokenRewards {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+
+                .title {
+                    font-size: 12px;
+                    line-height: 15px;
+                    font-weight: 100;
+                    margin-bottom: 3px;
+                }
+
+                .value {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    font-family: Montserrat;
+                    margin-top: 4px;
+                    font-size: 14px;
+                    line-height: 17px;
+                    font-weight: 900;
+
+                    .tipButton {
+                        margin-left: 10px;
+                    }
+
+                    .icon {
+                        width: 16px;
+                        height: 16px;
+                        margin-right: 10px;
+                    }
+                }
+            }
+
+            .expandButton {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                flex: 0.5;
+            }
+        }
+    }
+}
