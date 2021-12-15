@@ -14,7 +14,7 @@ import { LinkOutlined, RightOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
 import SelectWallet from '../Bridge/components/selectWallet';
 import AddModal from './components/Modal';
-import { getAd3UsdtPrice } from './api/uniswap/pool';
+import { getAd3EthPrice, getAd3UsdtPrice } from './api/uniswap/pool';
 
 const ICON_AD3 = '/images/logo-round-core.svg';
 const ICON_ETH = '/images/crypto/ethereum-circle.svg';
@@ -24,7 +24,7 @@ const ICON_USDC = '/images/crypto/usdc-circle.svg';
 const { Title } = Typography;
 
 const Stake: React.FC = () => {
-    const [AD3Price, setAD3Price] = useState(BigInt(0));
+    const [AD3Price, setAD3Price] = useState('0');
     const [AD3Supply, setSupply] = useState(BigInt(0));
     const [apys, setApys] = useState<any[]>([]);
     const [selectModal, setSelectModal] = useState<boolean>(false);
@@ -58,8 +58,8 @@ const Stake: React.FC = () => {
     }, [ad3Contract])
     async function updatePrice() {
         if (factoryContract) {
-            const price = await getAd3UsdtPrice(factoryContract);
-            setAD3Price(BigInt(price.toSignificant()));
+            const price = await getAd3EthPrice(factoryContract);
+            setAD3Price(price.toSignificant());
         }
     }
     useEffect(() => {
@@ -251,7 +251,7 @@ const Stake: React.FC = () => {
                                                     defaultMessage: 'AD3 Current Price',
                                                 })}
                                                 prefix={'$'}
-                                                value={BigIntToFloatString(AD3Price, 18) + 'USDT'}
+                                                value={AD3Price + 'ETH'}
                                             />
                                         </Col>
                                     </Row>
