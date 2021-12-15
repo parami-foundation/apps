@@ -1,25 +1,35 @@
+
+
 function BigIntToFloatString(value: string | bigint, decimals: number): string {
     if (!value) {
         return '0';
     };
     if (typeof (value) !== 'string') {
-        if (typeof (value) === 'bigint') {
-            value = value.toString();
-        } else {
-            return '0';
-        }
+        value = value.toString();
+
+    }
+    if (value === '0') {
+        return '0';
     }
     if (value.length <= decimals) {
         let floatPart = value.padStart(decimals, '0');
-        const zeroIndex = floatPart.search(/([1-9])([0]+)$/);
-        floatPart = floatPart.substring(0, zeroIndex + 1);
-        floatPart = '0.' + floatPart;
+        const zeroIndex = floatPart.search(/([0]+)$/);
+        if (zeroIndex > -1) {
+            floatPart = floatPart.substring(0, zeroIndex);
+        }
+        if (floatPart.length > 0) {
+            floatPart = '0.' + floatPart;
+        } else {
+            floatPart = '0';
+        }
         return floatPart;
     }
-    let intPart = value.substring(0, value.length - decimals);
+    const intPart = value.substring(0, value.length - decimals);
     let floatPart = value.substring(value.length - decimals);
-    const zeroIndex = floatPart.search(/([1-9])([0]+)$/);
-    floatPart = floatPart.substring(0, zeroIndex + 1);
+    const zeroIndex = floatPart.search(/([0]+)$/);
+    if (zeroIndex > -1) {
+        floatPart = floatPart.substring(0, zeroIndex);
+    }
     if (floatPart.length === 0) {
         return intPart;
     }
@@ -47,6 +57,7 @@ function FloatStringToBigInt(value: string, decimals: number): bigint {
 }
 
 function main() {
+    console.log(BigIntToFloatString('148885221901016141', 18))
     const a = BigIntToFloatString('100000000000000022222222000', 18);
     console.log(a);
     const b = BigIntToFloatString('1222000000000000000000', 18);

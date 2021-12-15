@@ -16,9 +16,11 @@ const Rows = ({ row }: { row: any; }) => {
         provider,
         signer,
         chainId,
-        stakeContract,
         blockNumber,
     } = useModel("metaMask");
+    const {
+        stakeContract
+    } = useModel('contracts');
     const [LPContract, setLPContract] = useState<ethers.Contract>()
     const [requestedApproval, setRequestedApproval] = useState(false)
     const [pendingStake, setPendingStake] = useState<(true | false)[]>([])
@@ -334,7 +336,7 @@ const Rows = ({ row }: { row: any; }) => {
             //key: 'tokenId',
         },
         {
-            title: 'Reward',
+            title: 'Reward (AD3)',
             dataIndex: 'reward',
             //key: 'tokenId',
         },
