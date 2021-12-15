@@ -14,6 +14,7 @@ import { LinkOutlined, RightOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
 import SelectWallet from '../Bridge/components/selectWallet';
 import AddModal from './components/Modal';
+import { getAd3UsdtPrice } from './api/uniswap/pool';
 
 const ICON_AD3 = '/images/logo-round-core.svg';
 const ICON_ETH = '/images/crypto/ethereum-circle.svg';
@@ -32,11 +33,13 @@ const Stake: React.FC = () => {
     const [ad3ApprovedLoading, setAd3ApprovedLoading] = useState<boolean>(false);
     const {
         account,
-        ad3Contract,
-        stakeContract,
         chainId,
     } = useModel("metaMask");
-
+    const {
+        ad3Contract,
+        stakeContract,
+        factoryContract
+    } = useModel('contracts');
     const intl = useIntl();
 
     const handleApproveAd3 = async () => {
@@ -48,10 +51,20 @@ const Stake: React.FC = () => {
     useEffect(() => {
         if (ad3Contract) {
             ad3Contract.totalSupply().then(res => {
+                console.log(res.toString());
                 setSupply(res);
             })
         }
     }, [ad3Contract])
+    async function updatePrice() {
+        if (factoryContract) {
+            const price = await getAd3UsdtPrice(factoryContract);
+            setAD3Price(BigInt(price.toSignificant()));
+        }
+    }
+    useEffect(() => {
+        updatePrice();
+    }, [factoryContract]);
     const fetchIncentive = useCallback(async () => {
         const pools = pairsData;
         if (pools.length) {
@@ -105,7 +118,7 @@ const Stake: React.FC = () => {
                         </div>
                         <div className={style.info}>
                             <span className={style.pair}>Uniswap V3: {record.name}</span>
-                            <span className={style.range}>Reward Range: $ {record.incentives[0].minPrice}-$ {record.incentives[2].maxPrice}</span>
+                            <span className={style.range}>Reward Range: ${record.incentives[0].minPrice}-${record.incentives[2].maxPrice}</span>
                         </div>
                     </div>
                 </>
@@ -139,7 +152,7 @@ const Stake: React.FC = () => {
                         </Title>
                         <small>Fee tier: 0.3%</small>
                         <br />
-                        <small>Price Range: $ {record.minPrice} - $ {record.maxPrice}</small>
+                        <small>Reward Range: ${record.incentives[0].minPrice}-${record.incentives[2].maxPrice}</small>
                     </>
                 }>
                     <Button
@@ -181,14 +194,14 @@ const Stake: React.FC = () => {
                                         defaultMessage: 'Overview',
                                     })}
                                     extra={[
-                                        <Button
-                                            shape='round'
-                                            type='primary'
-                                            size='large'
-                                            disabled={ad3ApprovedLoading}
-                                            onClick={() => handleApproveAd3()}
-                                        > {ad3Approved ? 'Approved' : 'Approve AD3 Operation'}
-                                        </Button>,
+                                        // <Button
+                                        //     shape='round'
+                                        //     type='primary'
+                                        //     size='large'
+                                        //     disabled={ad3ApprovedLoading}
+                                        //     onClick={() => handleApproveAd3()}
+                                        // > {ad3Approved ? 'Approved' : 'Approve AD3 Operation'}
+                                        // </Button>,
                                         <Button
                                             shape='round'
                                             type='primary'
@@ -238,7 +251,7 @@ const Stake: React.FC = () => {
                                                     defaultMessage: 'AD3 Current Price',
                                                 })}
                                                 prefix={'$'}
-                                                value={0.67764}
+                                                value={BigIntToFloatString(AD3Price, 18) + 'USDT'}
                                             />
                                         </Col>
                                     </Row>
@@ -250,11 +263,13 @@ const Stake: React.FC = () => {
                                     dataSource={pairs(4, apys)}
                                     pagination={false}
                                     expandIcon={({ expanded, onExpand, record }) => (
-                                        <RightOutlined
-                                            key={record.name}
-                                            onClick={(e) => onExpand(record, e)}
-                                            rotate={!expanded ? 0 : 90}
-                                        />
+                                        <Button type="text" onClick={(e) => onExpand(record, e)}>
+                                            Details
+                                            <RightOutlined
+                                                key={record.name}
+                                                rotate={!expanded ? 0 : 90}
+                                            />
+                                        </Button>
                                     )}
                                     expandable={{
                                         expandedRowRender: (record, i) => (

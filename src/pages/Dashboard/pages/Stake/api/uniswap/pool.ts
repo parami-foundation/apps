@@ -2,11 +2,7 @@ import { ethers } from "ethers";
 import { Pool } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
 import { abi as IUniswapV3PoolABI } from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
-
-
-
-
-
+import { contractAddresses } from "../../config";
 interface Immutables {
     factory: string;
     token0: string;
@@ -69,7 +65,10 @@ async function getPoolState(poolContract) {
     return PoolState;
 }
 
-async function getPool(provider: ethers.providers.JsonRpcProvider, poolAddress: string) {
+async function GetPool(uniswapFactory: ethers.Contract, provider: ethers.providers.Provider, token0: Token, token1: Token, fee: number) {
+    console.log(token0.address, token1.address);
+    const poolAddress = await uniswapFactory.getPool(token0.address, token1.address, fee);
+    console.log(poolAddress);
     const poolContract = new ethers.Contract(
         poolAddress,
         IUniswapV3PoolABI,
@@ -80,11 +79,11 @@ async function getPool(provider: ethers.providers.JsonRpcProvider, poolAddress: 
         getPoolState(poolContract),
     ]);
 
-    const TokenA = new Token(3, immutables.token0, 6, "USDC", "USD Coin");
+    const TokenA = token0;
 
-    const TokenB = new Token(3, immutables.token1, 18, "WETH", "Wrapped Ether");
+    const TokenB = token1;
 
-    const poolExample = new Pool(
+    const pool = new Pool(
         TokenA,
         TokenB,
         immutables.fee,
@@ -92,7 +91,30 @@ async function getPool(provider: ethers.providers.JsonRpcProvider, poolAddress: 
         state.liquidity.toString(),
         state.tick
     );
-    console.log(poolExample);
+    return pool;
 }
 
-export default getPool;
+export async function getAd3UsdtPrice(uinswapFactory: ethers.Contract) {
+    const chianId = await uinswapFactory.signer.getChainId();
+    console.log('chianId', chianId);
+    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
+    const token1 = new Token(chianId, contractAddresses.usdt[chianId], 6);
+    const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
+    console.log('pool', pool);
+    return pool.token0Price;
+}
+export async function getAd3EthPrice(uinswapFactory: ethers.Contract) {
+    const chianId = await uinswapFactory.signer.getChainId();
+    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
+    const token1 = new Token(chianId, contractAddresses.weth[chianId], 18);
+    const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
+    return pool.token0Price;
+}
+export async function getAd3UsdcPrice(uinswapFactory: ethers.Contract) {
+    const chianId = await uinswapFactory.signer.getChainId();
+    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
+    const token1 = new Token(chianId, contractAddresses.usdc[chianId], 18);
+    const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
+    return pool.token0Price;
+}
+export default GetPool;
