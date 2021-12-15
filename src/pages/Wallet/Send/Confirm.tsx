@@ -6,14 +6,16 @@ import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/servic
 import config from '@/config/config';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { didToHex } from '@/utils/common';
-import { formatBalance } from '@polkadot/util';
+import Token from '@/components/Token/Token';
+import { FloatStringToBigInt } from '@/utils/format';
+import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
 
 const Confirm: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<string>>;
   number: string;
-  token: Record<string, number>;
+  token: any;
   address: string;
   userAddress: string;
   keystore: string;
@@ -26,14 +28,19 @@ const Confirm: React.FC<{
 
   const intl = useIntl();
 
+  let toAddress = address;
+
   const handleSubmit = async () => {
     setSubmitting(true);
+    if (toAddress.indexOf('did:ad3:') > -1) {
+      toAddress = didToHex(toAddress);
+    };
     try {
-      if (Object.keys(token)[0] === 'AD3') {
+      if (!Object.keys(token).length) {
         await Transfer(
-          number.toString(),
+          number,
           keystore,
-          address,
+          toAddress,
           password,
         );
       } else {
@@ -41,7 +48,7 @@ const Confirm: React.FC<{
           token[Object.keys(token)[0]],
           number.toString(),
           keystore,
-          address,
+          toAddress,
           password,
         );
       }
@@ -81,18 +88,17 @@ const Confirm: React.FC<{
 
   const partialFee = async () => {
     setSubmitting(true);
-    let toAddress = address;
     if (toAddress.indexOf('did:ad3:') > -1) {
       toAddress = didToHex(toAddress);
     };
 
     try {
-      if (Object.keys(token)[0] === 'AD3') {
+      if (!Object.keys(token).length) {
         const info = await getTransFee(toAddress, userAddress, number);
-        setFee(formatBalance(info, { withUnit: 'AD3' }, 18));
+        setFee(`${info}`);
       } else {
         const info = await getTokenTransFee(token[Object.keys(token)[0]], toAddress, userAddress, number);
-        setFee(formatBalance(info, { withUnit: 'AD3' }, 18));
+        setFee(`${info}`);
       }
     } catch (e) {
       message.error(
@@ -138,7 +144,7 @@ const Confirm: React.FC<{
             })}
           </span>
           <span className={styles.value}>
-            {number + ' ' + Object.keys(token)[0]}
+            <Token value={FloatStringToBigInt(number, 18).toString()} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
           </span>
         </div>
         <div className={styles.field}>
@@ -157,11 +163,14 @@ const Confirm: React.FC<{
               id: 'wallet.send.serviceFee',
             })}
           </span>
-          <span className={styles.value}>{fee}</span>
+          <span className={styles.value}>
+            <AD3 value={fee} />
+          </span>
         </div>
       </div>
       <div className={styles.buttons}>
         <Button
+          block
           type="primary"
           shape="round"
           size="large"
@@ -175,6 +184,7 @@ const Confirm: React.FC<{
           })}
         </Button>
         <Button
+          block
           type="text"
           shape="round"
           size="large"

@@ -81,7 +81,7 @@ const Index: React.FC = () => {
 
     return (
         <>
-            <div className={styles.mainBgContainer}>
+            <div className={styles.mainContainer}>
                 <div className={style.indexContainer}>
                     <Card className={style.indexCard}>
                         <Title

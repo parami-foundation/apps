@@ -41,6 +41,9 @@ const Layout: React.FC = (props) => {
             logo={'/images/logo-round-core.svg'}
             title={'Dashboard'}
             headerHeight={70}
+            navTheme='light'
+            headerTheme='light'
+            layout='mix'
         >
             {props.children}
         </ProLayout>

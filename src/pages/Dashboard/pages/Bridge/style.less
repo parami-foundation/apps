@@ -14,3 +14,278 @@
         width: 100%;
     }
 }
+
+.bridgeContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+    width: 100%;
+
+    .leftContainer {
+        max-width: 380px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 0 10px 0 0;
+        width: 100%;
+        color: #0a0b0d;
+        background: hsla(0,0%,100%,.24);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        margin: 0 10px 0 0;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+
+        .innerWrapper {
+            padding: 32px;
+
+            .description {
+                opacity: .6;
+                font-size: .875rem;
+                line-height: 1.25rem;
+            }
+
+            .points {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: flex-start;
+                margin-top: 40px;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 22px;
+
+                a:not(last-child) {
+                    margin-bottom: 10px;
+                }
+            }
+        }
+
+        .bottomSection {
+            display: flex;
+            justify-content: center;
+
+            .background {
+                width: 100%;
+            }
+        }
+    }
+
+    .rightContainer {
+        max-width: 540px;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        background: hsla(0,0%,100%,.24);
+        backdrop-filter: blur(16px);
+        border-radius: 20px;
+        margin: 0 0 0 10px;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        width: 100%;
+
+        .bridgeTabs {
+            display: flex;
+            padding: 4px;
+            background: hsla(0,0%,100%,.4);
+            border-radius: 12px;
+            position: relative;
+
+            .bridgeTabsItem {
+                width: 100%;
+                padding: 12px;
+                text-align: center;
+                cursor: pointer;
+                position: relative;
+                z-index: 2;
+
+                &.active {
+                    background: #fff;
+                    border-radius: 8px;
+                    transition: .3s ease-in;
+                    font-weight: 900;
+                }
+            }
+        }
+
+        .bridgeBody {
+            padding: 24px;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            margin-top: 16px;
+
+            .fromLabel,
+            .toLabel,
+            .destinationLabel {
+                font-size: 14px;
+                line-height: 20px;
+                font-weight: 900;
+            }
+
+            .formSection {
+                border: 1px solid #dddfe0;
+                border-radius: 12px;
+                margin-top: 8px;
+
+                .chainAndBalanceDetails {
+                    padding: 16px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+
+                .tokenAndAmountDetails {
+                    border-top: 1px solid #dddfe0;
+                    display: flex;
+                    align-items: center;
+                    border-bottom-left-radius: 12px;
+                    border-bottom-right-radius: 12px;
+
+                    .tokenDetails {
+                        flex-direction: row;
+                        width: unset;
+                        max-width: 50%;
+                        padding: 20px 16px;
+                        border-right: 1px solid #dddfe0;
+                        display: flex;
+                        align-items: center;
+
+                        .chainIcon {
+                            height: 24px;
+                            width: 24px;
+                        }
+
+                        .tokenDetailsTokenName {
+                            margin-left: 8px;
+                            text-align: center;
+                            white-space: nowrap;
+                            max-width: 100px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    }
+
+                    .amountDetails {
+                        border-left: 1px solid #dddfe0;
+                        margin-left: -1px;
+                        display: flex;
+                        align-items: center;
+                        width: 100%;
+
+                        input {
+                            max-width: none;
+                            line-height: 64px;
+                            padding: 0 0 0 16px;
+                            border: unset;
+                            width: 100%;
+                            outline: none;
+                            border-radius: 12px;
+                            background-color: unset !important;
+                            font-weight: 900;
+
+                            &:focus {
+                                border: none;
+                                box-shadow: none;
+                            }
+                        }
+
+                        .amountDetailsMaxButton {
+                            margin-right: 10px;
+                            color: #ff5b00;
+                            font-weight: 900;
+                            font-size: 14px;
+                            line-height: 140%;
+                        }
+                    }
+                }
+            }
+
+            .downArrowSection {
+                margin-top: 8px;
+                text-align: center;
+                color: #dddfe0;
+                font-size: 22px;
+                font-weight: 900;
+            }
+
+            .toChainAndBalanceDetails {
+                margin-top: 8px;
+                padding: 16px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: #f7f7f8;
+                border-radius: 12px;
+            }
+
+            .chainDetails {
+                display: flex;
+                align-items: center;
+
+                .chainIcon {
+                    height: 24px;
+                    width: 24px;
+                }
+
+                .chainDetailsChainName {
+                    margin-left: 8px;
+                    font-weight: 900;
+                    font-size: 14px;
+                    line-height: 20px;
+                }
+            }
+
+            .balanceDetails {
+                font-weight: 500;
+                font-size: 12px;
+                line-height: 16px;
+
+                .balanceDetailsLabel {
+                    color: #b0b4bb;
+                }
+
+                .balanceDetailsBalance {
+                    font-weight: 900;
+                }
+            }
+
+            .transferButton {
+                margin-top: 32px;
+                font-size: 18px;
+                line-height: 145%;
+                height: 54px;
+                padding: 14px 20px;
+            }
+
+            .destinationDetails {
+                position: relative;
+                margin-top: 8px;
+
+                input {
+                    max-width: none;
+                    border: unset;
+                    width: 100%;
+                    outline: none;
+                    background-color: #f7f7f8 !important;
+                    font-weight: 900;
+
+                    &:focus {
+                        border: none;
+                        box-shadow: none;
+                    }
+                }
+
+                .destinationMyAddressButton {
+                    position: absolute;
+                    right: 10px;
+                    top: 12px;
+                    color: #ff5b00;
+                    font-weight: 900;
+                    font-size: 14px;
+                    line-height: 140%;
+                }
+            }
+        }
+    }
+}

@@ -4,7 +4,6 @@ import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Card, Image } from 'antd';
-import { hexToDid } from '@/utils/common';
 import Assets from './components/Assets';
 import AD3 from '@/components/Token/AD3';
 import DID from '@/components/Did/did';
@@ -49,7 +48,7 @@ const Did: React.FC = () => {
                                         : <AD3 value={stash.free} />
                                     </div>
                                 </div>
-                                <DID did={hexToDid(did)} />
+                                <DID did={did} />
                             </div>
                         </div>
                     </Card>

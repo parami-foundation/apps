@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import styles from '@/pages/dashboard.less';
-import { Button, Card, Spin } from 'antd';
-import classNames from 'classnames';
-import { ArrowRightOutlined, LinkOutlined } from '@ant-design/icons';
-import BigModal from '@/components/ParamiModal/BigModal';
+import { Image, Spin, Typography } from 'antd';
 import SelectWallet from './components/selectWallet';
-import Ethereum from './ethereum';
-import Parami from './parami';
+import styles from '@/pages/dashboard.less';
+import style from './style.less';
+import classNames from 'classnames';
+import Deposit from './deposit';
+import Withdraw from './withdraw';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const Bridge: React.FC = () => {
-    const [tab, setTab] = useState<string>('ETHToAD3');
-    const [selectModal, setSelectModal] = useState<boolean>(false);
+    const [tab, setTab] = useState<string>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
 
     const {
@@ -20,92 +19,100 @@ const Bridge: React.FC = () => {
 
     const intl = useIntl();
 
+    const { Title } = Typography;
+
     return (
         <>
-            <div className={styles.mainContainer}>
-                <div className={styles.contentContainer}>
-                    <Spin
-                        tip={intl.formatMessage({
-                            id: 'common.submitting',
-                        })}
-                        wrapperClassName={styles.contentContainer}
-                        spinning={loading}
-                    >
-                        <Card
-                            style={{
-                                padding: 0
-                            }}
-                            bodyStyle={{
-                                padding: 0,
-                                width: '100%',
-                            }}
-                            className={styles.windowCard}
-                        >
-                            <div className={styles.tabSelector}>
-                                <div
-                                    className={classNames(styles.tabItem, tab === 'ETHToAD3' ? '' : styles.inactive)}
-                                    onClick={() => setTab('ETHToAD3')}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'dashboard.bridge.ethtoad3',
-                                        defaultMessage: 'ETH{icon}AD3',
-                                    }, {
-                                        icon: <ArrowRightOutlined />
-                                    })}
+            {account ? (
+                <Spin
+                    indicator={
+                        <LoadingOutlined style={{ fontSize: 60 }} spin />
+                    }
+                    spinning={loading}
+                >
+                    <div className={styles.mainBgContainer}>
+                        <div className={styles.contentContainer}>
+                            <div className={style.bridgeContainer}>
+                                <div className={style.leftContainer}>
+                                    <div className={style.innerWrapper}>
+                                        <Title level={2}>
+                                            {intl.formatMessage({
+                                                id: 'dashboard.bridge.title',
+                                                defaultMessage: 'Parami Bridge',
+                                            })}
+                                        </Title>
+                                        <span className={style.description}>
+                                            {intl.formatMessage({
+                                                id: 'dashboard.bridge.description',
+                                                defaultMessage: 'The safe, fast and most secure way to bring cross-chain assets to Parami chain.',
+                                            })}
+                                        </span>
+                                        <div className={style.points}>
+                                            <a>
+                                                {intl.formatMessage({
+                                                    id: 'dashboard.bridge.howItWorks',
+                                                    defaultMessage: 'How it works?',
+                                                })}
+                                            </a>
+                                            <a>
+                                                {intl.formatMessage({
+                                                    id: 'dashboard.bridge.faq',
+                                                    defaultMessage: 'FAQ',
+                                                })}
+                                            </a>
+                                            <a>
+                                                {intl.formatMessage({
+                                                    id: 'dashboard.bridge.userGuide',
+                                                    defaultMessage: 'User guide',
+                                                })}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div className={style.bottomSection}>
+                                        <Image
+                                            src='/images/background/chainbridge.svg'
+                                            preview={false}
+                                            className={style.background}
+                                        />
+                                    </div>
                                 </div>
-                                <div
-                                    className={classNames(styles.tabItem, tab === 'AD3ToETH' ? '' : styles.inactive)}
-                                    onClick={() => setTab('AD3ToETH')}
-                                >
-                                    {intl.formatMessage({
-                                        id: 'pages.liquidity.ad3toeth',
-                                        defaultMessage: 'AD3{icon}ETH',
-                                    }, {
-                                        icon: <ArrowRightOutlined />
-                                    })}
+                                <div className={style.rightContainer}>
+                                    <div className={style.bridgeTabs}>
+                                        <div
+                                            className={classNames(style.bridgeTabsItem, tab === 'deposit' ? style.active : '')}
+                                            onClick={() => setTab('deposit')}
+                                        >
+                                            {intl.formatMessage({
+                                                id: 'dashboard.bridge.deposit',
+                                                defaultMessage: 'Deposit',
+                                            })}
+                                        </div>
+                                        <div
+                                            className={classNames(style.bridgeTabsItem, tab === 'withdraw' ? style.active : '')}
+                                            onClick={() => setTab('withdraw')}
+                                        >
+                                            {intl.formatMessage({
+                                                id: 'dashboard.bridge.withdraw',
+                                                defaultMessage: 'Withdraw',
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div className={style.bridgeBody}>
+                                        {tab === 'deposit' && (
+                                            <Deposit setLoading={setLoading} />
+                                        )}
+                                        {tab === 'withdraw' && (
+                                            <Withdraw setLoading={setLoading} />
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                            {tab === 'ETHToAD3' && !account && (
-                                <div className={styles.windowCardBody}>
-                                    <Button
-                                        block
-                                        type='primary'
-                                        size='large'
-                                        shape='round'
-                                        icon={<LinkOutlined />}
-                                        onClick={() => {
-                                            setSelectModal(true);
-                                        }}
-                                    >
-                                        {intl.formatMessage({
-                                            id: 'dashboard.bridge.connectETH',
-                                            defaultMessage: 'Connect ETH',
-                                        })}
-                                    </Button>
-                                </div>
-                            )}
-                            {tab === 'ETHToAD3' && account && (
-                                <Ethereum setLoading={setLoading} />
-                            )}
-                            {tab === 'AD3ToETH' && (
-                                <Parami setLoading={setLoading} />
-                            )}
-                        </Card>
-                    </Spin>
-                </div>
-            </div>
-            <BigModal
-                visable={selectModal}
-                title={intl.formatMessage({
-                    id: 'dashboard.bridge.selectAWallet',
-                    defaultMessage: 'Select a Wallet',
-                })}
-                content={
-                    <SelectWallet setSelectModal={setSelectModal} />
-                }
-                footer={false}
-                close={() => setSelectModal(false)}
-            />
+                        </div>
+                    </div>
+                </Spin>
+            ) : (
+                <SelectWallet />
+            )}
         </>
     )
 }
