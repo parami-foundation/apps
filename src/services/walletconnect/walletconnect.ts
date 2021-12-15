@@ -1,62 +1,133 @@
-import WalletConnect from "@walletconnect/client";
-import QRCodeModal from "@walletconnect/qrcode-modal";
-import { convertUtf8ToHex } from "@walletconnect/utils";
-import config from "@/config/config";
+import WalletConnect from '@walletconnect/client';
+import QRCodeModal from '@walletconnect/qrcode-modal';
+import { ITxData, IWalletConnectSession } from '@walletconnect/types';
+import { convertUtf8ToHex } from '@walletconnect/utils';
 
-export const walletConnectInit = async () => {
-    // Create a connector
-    const connector = new WalletConnect({
-        bridge: config.walletConnect.bridge,
-        qrcodeModal: QRCodeModal,
+import config from '@/config/config';
+
+interface EventHandlers {
+  handleInit?(uri: string): void;
+  handleConnect?({
+    address,
+    chainId,
+    session,
+  }: {
+    address: string;
+    chainId: number;
+    session: IWalletConnectSession;
+  }): void;
+  handleError?(error: Error): void;
+  handleReject?(error: Error): void;
+  handleUpdate?({
+    address,
+    chainId,
+  }: {
+    address: string;
+    chainId: number;
+  }): void;
+  handleDisconnect?(params: any): void;
+}
+
+export default function WalletConnectService({
+  handleInit = () => {},
+  handleConnect = () => {},
+  handleError = () => {},
+  handleReject = () => {},
+  handleUpdate = () => {},
+  handleDisconnect = () => {},
+}: EventHandlers) {
+  const connector = new WalletConnect({
+    bridge: config.walletConnect.bridge,
+    qrcodeModal: QRCodeModal,
+  });
+
+  const getMessage = (payload: any) =>
+    payload.params ? payload.params[0].message : false;
+
+  const sendTx = async (tx: ITxData) => connector.sendTransaction(tx);
+
+  const signMessage = async (msg: string, address: string) =>
+    connector.signPersonalMessage([msg, address]);
+
+  const kill = async () => connector.killSession();
+
+  const init = async () => {
+    if (connector.connected) await kill();
+
+    connector.createSession().then(() => {
+      handleInit(connector.uri);
     });
+  };
 
-    // Check if connection is already established
-    if (!connector.connected) {
-        // create new session
-        connector.createSession();
-    };
+  connector.on('connect', (error, payload) => {
+    if (error) {
+      return handleError(error);
+    }
 
-    return connector;
-};
+    const { accounts, chainId } = payload.params[0];
+    handleConnect({
+      address: accounts[0] as string,
+      chainId,
+      session: connector.session,
+    });
+  });
+
+  connector.on('session_update', (error, payload) => {
+    if (error) {
+      return handleError(error);
+    }
+
+    const { accounts, chainId } = payload.params[0];
+    handleUpdate({ address: accounts[0] as string, chainId });
+  });
+
+  connector.on('disconnect', (error, payload) => {
+    if (error) {
+      return handleError(error);
+    }
+
+    if (handleReject && getMessage(payload) === 'Session Rejected') {
+      handleReject(payload.params);
+    } else {
+      handleDisconnect(payload);
+    }
+  });
+
+  return {
+    init,
+    kill,
+    sendTx,
+    signMessage,
+    isConnected: connector.connected,
+  };
+}
 
 export const signPersonalMessage = async (message: string) => {
-    return new Promise(async (resolve, reject) => {
-        const connector = await walletConnectInit();
-        if (!connector) return;
+  return new Promise((resolve, reject) => {
+    const service = WalletConnectService({
+      handleConnect: async ({ address, chainId, session }) => {
+        try {
+          const result = await service.signMessage(
+            convertUtf8ToHex(message),
+            address
+          );
 
-        // Subscribe to connection events
-        connector.on("connect", async (error, payload) => {
-            if (error) {
-                throw error;
-            }
+          resolve({
+            address,
+            result,
+          });
 
-            // Get provided accounts and chainId
-            const { accounts } = payload.params[0];
+          await service.kill();
+        } catch (e) {
+          reject(e);
+        }
+      },
+    });
 
-            const msgParams = [
-                accounts[0],
-                convertUtf8ToHex(message),
-            ];
-
-            // Sign personal message
-            try {
-                const result = await connector.signPersonalMessage(msgParams);
-
-                await connector.killSession();
-
-                connector.on("disconnect", (err) => {
-                    if (err) {
-                        throw err;
-                    }
-                });
-
-                resolve({
-                    account: accounts[0],
-                    result
-                });
-            } catch (e: any) {
-                reject(e);
-            }
-        });
-    })
+    try {
+      service.init();
+    } catch (e) {
+      reject(e);
+    }
+  });
 };
