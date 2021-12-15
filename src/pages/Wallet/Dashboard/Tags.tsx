@@ -7,7 +7,7 @@ import { useIntl, useModel } from 'umi';
 const { Title } = Typography;
 
 const Tags: React.FC = () => {
-    const tags = useModel('tags');
+    const { tagsArr } = useModel('tags');
 
     const intl = useIntl();
 
@@ -28,7 +28,7 @@ const Tags: React.FC = () => {
                     })}
                 </Title>
                 <div className={style.tagContainer}>
-                    {[...tags?.values()].map((tag) => (
+                    {tagsArr.map((tag) => (
                         <Tag
                             color={tag.color}
                             className={style.tagItem}

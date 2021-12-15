@@ -7,7 +7,7 @@ import Token from '@/components/Token/Token';
 import AD3 from '@/components/Token/AD3';
 
 const Assets: React.FC = () => {
-    const assets = useModel('dashboard.assets');
+    const { assetsArr } = useModel('dashboard.assets');
 
     const intl = useIntl();
 
@@ -25,7 +25,7 @@ const Assets: React.FC = () => {
             }),
             dataIndex: 'balance',
             key: 'balance',
-            render: (text, row, index) => (
+            render: (text, row) => (
                 <Token value={row.balance} symbol={row.symbol} />
             ),
         },
@@ -53,7 +53,7 @@ const Assets: React.FC = () => {
             </Divider>
             <Table
                 className={styles.table}
-                dataSource={[...assets?.values()]}
+                dataSource={assetsArr}
                 columns={columns}
             />
         </>

@@ -1,10 +1,9 @@
 import Did from '@/components/Did/did';
-import { didToHex } from '@/utils/common';
-import { Card, Col, Divider, Row, Statistic, Typography, Image, message } from 'antd';
+import { Card, Col, Divider, Row, Statistic, Typography, Image } from 'antd';
 import React from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
 import { useIntl } from 'umi';
 import styles from './style.less';
+import { didToHex } from '@/utils/common';
 
 const User: React.FC<{
     avatar: string,

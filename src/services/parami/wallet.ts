@@ -7,6 +7,7 @@ import { didToHex, parseAmount } from '@/utils/common';
 import { message, notification } from 'antd';
 import type { AccountData } from '@polkadot/types/interfaces';
 import { subCallback } from './subscription';
+import { getOrInit } from '@/services/parami/init';
 
 // Create a new keyring, and add an sr25519 type account
 const instanceKeyring = new Keyring({ type: 'sr25519' });
@@ -104,11 +105,12 @@ export const DecodeKeystoreWithPwd = (password: string, keystore: string) => {
 };
 
 export const QueryAccountFromDid = async (did: string) => {
+  const api = await getOrInit();
   const hex = didToHex(did);
-  const data = await window.apiWs.query.did.metadata(hex);
+  const data = await api.query.did.metadata(hex);
 
-  if (data && (data as any)?.toHuman() && (data as any)?.toHuman()?.length) {
-    const result = (data as any)?.toHuman()[0];
+  if (!data.isEmpty) {
+    const result = data.toHuman();
     return result;
   }
 

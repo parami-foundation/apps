@@ -84,7 +84,7 @@ const InputAmount: React.FC<{
             preview={false}
           />
           <span className={styles.name}>
-            {Object.keys(token).length ? token.symbol : 'AD3'}
+            {Object.keys(token).length ? token.token : 'AD3'}
           </span>
           <RightOutlined
             style={{
@@ -107,6 +107,7 @@ const InputAmount: React.FC<{
       </div>
       <div className={styles.buttons}>
         <Button
+          block
           type="primary"
           shape="round"
           size="large"
@@ -120,6 +121,7 @@ const InputAmount: React.FC<{
           })}
         </Button>
         <Button
+          block
           type="text"
           shape="round"
           size="large"

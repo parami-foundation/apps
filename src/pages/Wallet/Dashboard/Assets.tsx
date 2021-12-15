@@ -8,7 +8,7 @@ import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 
 const Assets: React.FC = () => {
-    const assets = useModel('assets');
+    const { assetsArr } = useModel('assets');
 
     const intl = useIntl();
 
@@ -19,7 +19,7 @@ const Assets: React.FC = () => {
 
     return (
         <div className={style.assetsList}>
-            {(assets?.size ?? 0) == 0 && (
+            {assetsArr.length === 0 && (
                 <div className={style.noAssets}>
                     <img
                         src={'/images/icon/query.svg'}
@@ -32,7 +32,7 @@ const Assets: React.FC = () => {
                     </span>
                 </div>
             )}
-            {[...assets?.values()].map((item) => {
+            {assetsArr.map((item) => {
                 return (
                     <Badge
                         count={intl.formatMessage({

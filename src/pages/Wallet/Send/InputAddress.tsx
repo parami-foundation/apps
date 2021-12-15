@@ -32,7 +32,7 @@ const InputAddress: React.FC<{
                 placeholder='did:ad3:……'
                 size='large'
                 className={styles.input}
-                onChange={(e) => (setAddress(`did:ad3:${e.target.value}`))}
+                onChange={(e) => (setAddress(e.target.value))}
                 disabled={submitting}
             />
             <div className={styles.buttons}>

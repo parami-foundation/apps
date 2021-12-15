@@ -6,6 +6,7 @@ import { notification } from "antd";
 export default () => {
     const [first, setFirst] = useState((new Date()).getTime());
     const [tags, setTags] = useState<Map<string, any>>(new Map());
+    const [tagsArr, setTagsArr] = useState<any[]>([]);
 
     const colorPool = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
 
@@ -49,6 +50,7 @@ export default () => {
                         });
                     }
                     setTags(data);
+                    setTagsArr([...data?.values()]);
                 }
             });
         });
@@ -58,5 +60,5 @@ export default () => {
         getTags();
     }, []);
 
-    return tags;
+    return { tags, tagsArr };
 }

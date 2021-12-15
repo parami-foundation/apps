@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 export default () => {
     const [first, setFirst] = useState((new Date()).getTime());
     const [assets, setAssets] = useState<Map<string, any>>(new Map());
+    const [assetsArr, setAssetsArr] = useState<any[]>([]);
 
     const currentAccount = localStorage.getItem('stashUserAddress');
 
@@ -70,16 +71,18 @@ export default () => {
                     icon,
                 });
 
-                setAssets(assets)
+                setAssets(assets);
+                setAssetsArr([...assets?.values()]);
             });
         }
 
-        setAssets(assets)
+        setAssets(assets);
+        setAssetsArr([...assets?.values()]);
     }
 
     useEffect(() => {
         getAssets();
     }, []);
 
-    return assets;
+    return { assets, assetsArr };
 }
