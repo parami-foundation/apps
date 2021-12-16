@@ -48,7 +48,7 @@
 
         .stakeItem {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
             justify-content: flex-start;
             padding: 24px 40px;
@@ -57,108 +57,212 @@
             border-radius: 12px;
             margin-top: 16px;
 
-            .tokenPair {
+            .stakeMain {
                 display: flex;
                 flex-direction: row;
-                justify-content: flex-start;
                 align-items: center;
-                flex: 1.8;
+                justify-content: center;
+                width: 100%;
 
-                .tokenIcons {
+                .tokenPair {
                     display: flex;
                     flex-direction: row;
-                    justify-content: center;
+                    justify-content: flex-start;
                     align-items: center;
-                    padding: 30px 0;
-                    flex: 1;
+                    flex: 1.8;
 
-                    .icon {
-                        width: 35px;
-                        height: 35px;
-                    }
+                    .tokenIcons {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        align-items: center;
+                        padding: 30px 0;
+                        flex: 1;
 
-                    :first-child {
-                        margin-top: -15px;
-                    }
+                        .icon {
+                            width: 35px;
+                            height: 35px;
+                        }
 
-                    :last-child {
-                        margin-left: -10px;
-                        margin-bottom: -15px;
+                        :first-child {
+                            margin-top: -15px;
+                        }
+
+                        :last-child {
+                            margin-left: -10px;
+                            margin-bottom: -15px;
+                        }
                     }
-                }
                 
-                .tokenNameAndRate {
-                    flex: 1.5;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    justify-content: center;
+                    .tokenNameAndRate {
+                        flex: 1.5;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-start;
+                        justify-content: center;
 
-                    .tokenName {
-                        font-size: 14px;
-                        line-height: 17px;
-                        font-weight: 900;
-                    }
+                        .tokenName {
+                            font-size: 14px;
+                            line-height: 17px;
+                            font-weight: 900;
+                        }
                     
-                    .tokenRate {
-                        margin-top: 6px;
-                        outline: transparent solid 2px;
-                        outline-offset: 2px;
-                        min-width: 1.5rem;
-                        padding: 3px 10px;
-                        background-color: #fff3e6;
-                        border-radius: 8px;
-                        font-size: 12px;
+                        .tokenRate {
+                            margin-top: 6px;
+                            outline: transparent solid 2px;
+                            outline-offset: 2px;
+                            min-width: 1.5rem;
+                            padding: 3px 10px;
+                            background-color: #fff3e6;
+                            border-radius: 8px;
+                            font-size: 12px;
+                        }
                     }
                 }
+
+                .expandButton {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: flex-end;
+                    flex: 0.5;
+
+                    .expandButtonIcon {
+                        svg {
+                            transition: all 1s;
+                        }
+                    }
+                }
+
             }
 
-            .tokenAPY,
-            .tokenLiquidity,
-            .tokenRewardRange,
-            .tokenRewards {
-                flex: 1;
+            .rowsContainer {
                 display: flex;
                 flex-direction: column;
-                align-items: flex-start;
-                justify-content: center;
+                align-items: center;
+                justify-content: flex-start;
+                width: 100%;
+                overflow: hidden;
+                transition: all 2s;
 
-                .title {
-                    font-size: 12px;
-                    line-height: 15px;
-                    font-weight: 100;
-                    margin-bottom: 3px;
-                }
-
-                .value {
+                .rowsContentContainer {
                     display: flex;
                     flex-direction: row;
-                    align-items: center;
+                    align-items: flex-start;
                     justify-content: space-between;
-                    margin-top: 4px;
-                    font-size: 14px;
-                    line-height: 17px;
-                    font-weight: 900;
+                    width: 100%;
 
-                    .tipButton {
-                        margin-left: 10px;
+                    .actionButtons {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+                        margin-right: 60px;
+                        padding-top: 10px;
+
+                        .actionButton {
+                            margin-bottom: 20px;
+                        }
+
+                        .actionButtonDesc {
+                            opacity: .8;
+                            font-size: 12px;
+                            text-align: center;
+                        }
                     }
 
-                    .icon {
-                        width: 16px;
-                        height: 16px;
-                        margin-right: 10px;
+                    .nftList {
+                        flex: 6;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+
+                        .nftItem {
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            justify-content: space-between;
+                            width: 100%;
+                            padding-top: 10px;
+                            padding-bottom: 10px;
+
+                            &:not(:last-child) {
+                                border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+                            }
+
+                            .nftReward {
+                                flex: 2;
+                                display: flex;
+                                flex-direction: row;
+                                align-items: center;
+                                justify-content: space-between;
+                                background-color: #EDF2F7;
+                                border-radius: 8px;
+                                padding: 10px 15px;
+                            }
+
+                            .stakeButton {
+                                flex: 1;
+                                margin-left: 15px;
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+}
 
-            .expandButton {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: flex-end;
-                flex: 0.5;
-            }
+.noNFT {
+    flex: 6;
+    opacity: .8;
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.tokenAPY,
+.tokenLiquidity,
+.tokenRewardRange,
+.tokenRewards,
+.nftItemBlock {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+
+    .title {
+        font-size: 12px;
+        line-height: 15px;
+        font-weight: 100;
+        margin-bottom: 3px;
+    }
+
+    .value {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 4px;
+        font-size: 14px;
+        line-height: 17px;
+        font-weight: 900;
+
+        .tipButton {
+            margin-left: 10px;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
         }
     }
 }
