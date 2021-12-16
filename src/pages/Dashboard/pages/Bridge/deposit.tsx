@@ -217,7 +217,7 @@ const Deposit: React.FC<{
                             defaultMessage: 'Balance',
                         })}:
                     </span>
-                    <Tooltip placement="top" title={'0.00'}>
+                    <Tooltip placement="top" title={BigIntToFloatString(stash.total, 18)}>
                         <span className={style.balanceDetailsBalance}>
                             <AD3 value={stash.total} />
                         </span>
