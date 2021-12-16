@@ -166,7 +166,7 @@ const InitialDeposit: React.FC<{
       );
       const did = events['did']['Assigned'][0][0];
       localStorage.setItem('did', did);
-      if (minimal) {
+      if (minimal || qsTicket) {
         await minimalSubmit(airdropData, did);
         return;
       }
@@ -192,7 +192,7 @@ const InitialDeposit: React.FC<{
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
       return;
     }
-    if (minimal) {
+    if (minimal || qsTicket) {
       minimalAirdrop().then((data) => {
         pendingStatus(data);
       });

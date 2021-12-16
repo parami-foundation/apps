@@ -9,6 +9,9 @@ import { notification } from 'antd';
 import { getOrInit } from './services/parami/init';
 import type { Mutex } from 'async-mutex';
 import UnAccessible from './pages/403';
+import { access } from '@/access';
+import { history } from 'umi';
+
 declare global {
   interface Window {
     apiWs: ApiPromise;
@@ -28,6 +31,10 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   apiWs?: ApiPromise;
 }> {
+  if (access().canPreDid && history.location.pathname !== config.page.createPage) {
+    window.location.href = config.page.createPage;
+  };
+
   const api = await getOrInit();
   window.apiWs = api;
 

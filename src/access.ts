@@ -11,6 +11,11 @@ export const access = () => {
   const dashboardCurrentAccount = localStorage.getItem('dashboardCurrentAccount');
 
   return {
+    canPreDid:
+      !!magicUserAddress &&
+      !!controllerKeystore &&
+      !!controllerUserAddress &&
+      !did,
     canUser:
       !!magicUserAddress &&
       !!controllerKeystore &&
