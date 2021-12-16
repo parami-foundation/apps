@@ -95,26 +95,29 @@ async function GetPool(uniswapFactory: ethers.Contract, provider: ethers.provide
 }
 
 export async function getAd3UsdtPrice(uinswapFactory: ethers.Contract) {
-    const chianId = await uinswapFactory.signer.getChainId();
-    console.log('chianId', chianId);
-    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
-    const token1 = new Token(chianId, contractAddresses.usdt[chianId], 6);
+    const chainId = await uinswapFactory.signer.getChainId();
+    console.log('chainId', chainId);
+    const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
+    const token1 = new Token(chainId, contractAddresses.usdt[chainId], 6);
     const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
     console.log('pool', pool);
     return pool.token0Price;
 }
+
 export async function getAd3EthPrice(uinswapFactory: ethers.Contract) {
-    const chianId = await uinswapFactory.signer.getChainId();
-    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
-    const token1 = new Token(chianId, contractAddresses.weth[chianId], 18);
+    const chainId = await uinswapFactory.signer.getChainId();
+    const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
+    const token1 = new Token(chainId, contractAddresses.weth[chainId], 18);
     const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
     return pool.token0Price;
 }
+
 export async function getAd3UsdcPrice(uinswapFactory: ethers.Contract) {
-    const chianId = await uinswapFactory.signer.getChainId();
-    const token0 = new Token(chianId, contractAddresses.ad3[chianId], 18);
-    const token1 = new Token(chianId, contractAddresses.usdc[chianId], 18);
+    const chainId = await uinswapFactory.signer.getChainId();
+    const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
+    const token1 = new Token(chainId, contractAddresses.usdc[chainId], 18);
     const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
     return pool.token0Price;
 }
+
 export default GetPool;

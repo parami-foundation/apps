@@ -64,19 +64,36 @@ const InitialDeposit: React.FC<{
       });
 
       if (Resp?.status === 200) {
-        message.success('Airdrop Succeed');
+        notification.success({
+          message: 'Airdrop Success',
+        })
         return data;
       }
       if (Resp?.status === 401) {
-        message.error('Ticket Error');
+        notification.error({
+          message: 'Ticket Error',
+          description: 'There are some problems with your Telegram. Please try to deposit manually.',
+          duration: null,
+        })
+        setLoading(false);
         return;
       }
       if (Resp?.status === 409) {
-        message.error('Airdroped');
+        notification.error({
+          message: 'Airdroped',
+          description: 'Your Telegram account has participated in airdrop. Please try to deposit manually.',
+          duration: null,
+        })
+        setLoading(false);
         return;
       }
       if (Resp?.status === 400) {
-        message.error('Unsupported');
+        notification.error({
+          message: 'Got an error',
+          description: 'Something went wrong, please try again latar.',
+          duration: null,
+        })
+        setLoading(false);
         return;
       }
     } catch (e: any) {
@@ -94,7 +111,7 @@ const InitialDeposit: React.FC<{
     if (response?.status === 204) {
       try {
         if (data?.nickname && data?.avatar) {
-          const file = await GetAvatar(data?.avatar);
+          const { data: file } = await GetAvatar(data?.avatar);
           generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);
@@ -166,8 +183,13 @@ const InitialDeposit: React.FC<{
       );
       const did = events['did']['Assigned'][0][0];
       localStorage.setItem('did', did);
-      if (minimal || qsTicket) {
+      if (minimal) {
         await minimalSubmit(airdropData, did);
+        return;
+      }
+      if (qsTicket) {
+        await minimalSubmit(airdropData, did);
+        goto();
         return;
       }
       goto();
@@ -221,9 +243,6 @@ const InitialDeposit: React.FC<{
                 indicator={
                   <LoadingOutlined
                     spin
-                    style={{
-                      fontSize: 60,
-                    }}
                   />
                 }
                 spinning={miniLoading}
@@ -329,16 +348,13 @@ const InitialDeposit: React.FC<{
       {!minimal && (
         <>
           <Spin
-            tip={intl.formatMessage({
-              id: 'common.loading',
-            })}
             size='large'
+            tip={intl.formatMessage({
+              id: 'account.loading.creating',
+            })}
             indicator={
               <LoadingOutlined
                 spin
-                style={{
-                  fontSize: 60,
-                }}
               />
             }
             spinning={loading}

@@ -4,9 +4,11 @@ import QuickSign from './CreateAccount/QuickSign';
 import SetPassword from './CreateAccount/SetPassword';
 import ConfirmPassword from './CreateAccount/ConfirmPassword';
 import MagicLink from './CreateAccount/MagicLink';
-import InitialDeposit from './CreateAccount/InitialDeposit';
+import InitialDeposit from './CreateAccount/initialDeposit';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { CreateAccount as createAccount } from '@/services/parami/wallet';
+import { useAccess, history } from 'umi';
+import config from '@/config/config';
 
 const CreateAccount: React.FC<{
   minimal?: boolean;
@@ -41,7 +43,12 @@ const CreateAccount: React.FC<{
   };
   // Magic Account
 
+  const access = useAccess();
+
   useEffect(() => {
+    if (access.canUser) {
+      history.push(config.page.walletPage);
+    }
     if (MagicUserAddress === null || magicMnemonic === '') {
       createMagicAccount();
     };
@@ -82,6 +89,7 @@ const CreateAccount: React.FC<{
               magicMnemonic={magicMnemonic}
               minimal={minimal}
               setMagicLink={setMagicLink}
+              qsTicket={qsTicket}
             />
           }
           {step === 3 &&
@@ -124,6 +132,7 @@ const CreateAccount: React.FC<{
             {step === 2 &&
               <MagicLink
                 setStep={setStep}
+                qsTicket={qsTicket}
                 magicMnemonic={magicMnemonic}
               />
             }
@@ -148,6 +157,7 @@ const CreateAccount: React.FC<{
                 magicUserAddress={magicUserAddress}
                 controllerUserAddress={controllerUserAddress}
                 controllerKeystore={controllerKeystore}
+                qsTicket={qsTicket}
               />
             }
           </div>
