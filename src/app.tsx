@@ -10,7 +10,6 @@ import { getOrInit } from './services/parami/init';
 import type { Mutex } from 'async-mutex';
 import UnAccessible from './pages/403';
 import { access } from '@/access';
-import { history } from 'umi';
 
 declare global {
   interface Window {
@@ -31,7 +30,7 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   apiWs?: ApiPromise;
 }> {
-  if (access().canPreDid && history.location.pathname !== config.page.createPage) {
+  if (access().canPreDid && window.location.toString().indexOf('create') < 0) {
     window.location.href = config.page.createPage;
   };
 
