@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Typography, Image, Space, Tooltip, Badge, Spin } from 'antd';
@@ -6,6 +6,8 @@ import { DownOutlined, FireOutlined, InfoCircleOutlined, LoadingOutlined } from 
 import Rows from './components/Rows';
 import { useModel } from 'umi';
 import SelectWallet from '../Bridge/components/selectWallet';
+import { ethers } from 'ethers';
+import { getAd3EthPrice } from './api/uniswap/pool';
 
 const ICON_AD3 = '/images/logo-round-core.svg';
 const ICON_ETH = '/images/crypto/ethereum-circle.svg';
@@ -15,12 +17,51 @@ const ICON_USDC = '/images/crypto/usdc-circle.svg';
 const Farm: React.FC = () => {
     const [collapse, setCollapse] = useState<Record<number, boolean>>({});
     const [loading, setLoading] = useState<boolean>(false);
+    const [AD3Price, setAD3Price] = useState('0');
+    const [AD3Supply, setSupply] = useState(BigInt(0));
+    const [apys, setApys] = useState<any[]>([]);
+    const [ad3Approved, setAd3Approved] = useState<boolean>(false);
+    const [ad3ApprovedLoading, setAd3ApprovedLoading] = useState<boolean>(false);
+
+    const { Title } = Typography;
 
     const {
         account,
+        chainId,
     } = useModel("metaMask");
 
-    const { Title } = Typography;
+    const {
+        ad3Contract,
+        stakeContract,
+        factoryContract
+    } = useModel('contracts');
+
+    const handleApproveAd3 = async () => {
+        const tx = await ad3Contract?.approve(stakeContract?.address, ethers.constants.MaxUint256)
+        setAd3ApprovedLoading(true);
+        await tx.wait();
+        setAd3Approved(true);
+    };
+
+    const updatePrice = async () => {
+        if (factoryContract) {
+            const price = await getAd3EthPrice(factoryContract);
+            setAD3Price(price.toSignificant());
+        }
+    }
+
+    useEffect(() => {
+        if (ad3Contract) {
+            ad3Contract.totalSupply().then(res => {
+                console.log(res.toString());
+                setSupply(res);
+            })
+        }
+    }, [ad3Contract]);
+
+    useEffect(() => {
+        updatePrice();
+    }, [factoryContract]);
 
     return (
         <>
