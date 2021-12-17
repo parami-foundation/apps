@@ -26,11 +26,14 @@ const Loading: React.FC = () => {
                         message={
                             intl.formatMessage({
                                 id: 'common.loading.rpc',
-                                defaultMessage: 'Connecting to RPC... Please REFRESH if it takes too long to load the page.'
+                                defaultMessage: 'Connecting to RPC...{br}Please REFRESH if it takes too long to load the page.'
+                            }, {
+                                br: <br />
                             })
                         }
                         style={{
                             marginTop: 30,
+                            textAlign: 'center',
                         }}
                         type="info"
                     />
