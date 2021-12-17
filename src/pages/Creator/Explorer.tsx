@@ -9,7 +9,7 @@ import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams } from 'umi';
 import { hexToDid, didToHex, parseAmount, checkInIAP } from '@/utils/common';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetUserInfo, GetValueOf } from '@/services/parami/nft';
-import { Alert, message, Spin, Image } from 'antd';
+import { Alert, message, Image } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
@@ -48,7 +48,6 @@ const Explorer: React.FC = () => {
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [notAccess, setNotAccess] = useState<boolean>(false);
     const [notSysBroswer, setNotSysBroswer] = useState<boolean>(false);
-    const [avatarLoad, setAvatarLoad] = useState<number>(0);
 
     const [adData, setAdData] = useState<any>({});
     const [ad, setAd] = useState<Type.AdInfo>(null);
@@ -193,8 +192,6 @@ const Explorer: React.FC = () => {
         init();
     }, []);
 
-    const avatarRef = React.useRef(null);
-
     return (
         <>
             <div
@@ -210,6 +207,7 @@ const Explorer: React.FC = () => {
                         width: loading ? 200 : 30,
                         height: loading ? 200 : 30,
                         animation: loading ? 1 : 0,
+                        position: loading ? 'fixed' : 'absolute',
                     }}
                     preview={false}
                 />
@@ -218,6 +216,7 @@ const Explorer: React.FC = () => {
                     style={{
                         opacity: loading ? 1 : 0,
                         zIndex: loading ? 10 : -1,
+                        height: windowHeight,
                     }}
                 >
                     <span className={style.loadingTip}>
