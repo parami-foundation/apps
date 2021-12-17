@@ -197,37 +197,41 @@ const Explorer: React.FC = () => {
             <div
                 className={styles.mainContainer}
             >
-                <Image
-                    src={avatar}
-                    fallback='/images/default-avatar.svg'
-                    className={style.avatar}
-                    style={{
-                        top: loading ? (windowHeight - 400) / 2 : avatarTop,
-                        left: loading ? (windowWidth - 200) / 2 : avatarLeft,
-                        width: loading ? 200 : 30,
-                        height: loading ? 200 : 30,
-                        animation: loading ? 1 : 0,
-                        position: loading ? 'fixed' : 'absolute',
-                    }}
-                    preview={false}
-                />
-                <div
-                    className={style.loading}
-                    style={{
-                        opacity: loading ? 1 : 0,
-                        zIndex: loading ? 10 : -1,
-                        height: windowHeight,
-                    }}
-                >
-                    <span className={style.loadingTip}>
-                        {intl.formatMessage({
-                            id: 'creator.explorer.loading.tip',
-                            defaultMessage: 'Let\'s find out more about the NFT.{br} Surprise awaits...',
-                        }, {
-                            br: <br />
-                        })}
-                    </span>
-                </div>
+                {KOL && (
+                    <>
+                        <Image
+                            src={avatar}
+                            fallback='/images/default-avatar.svg'
+                            className={style.avatar}
+                            style={{
+                                top: loading ? (windowHeight - 400) / 2 : avatarTop,
+                                left: loading ? (windowWidth - 200) / 2 : avatarLeft,
+                                width: loading ? 200 : 30,
+                                height: loading ? 200 : 30,
+                                animation: loading ? 1 : 0,
+                                position: loading ? 'fixed' : 'absolute',
+                            }}
+                            preview={false}
+                        />
+                        <div
+                            className={style.loading}
+                            style={{
+                                opacity: loading ? 1 : 0,
+                                zIndex: loading ? 10 : -1,
+                                height: windowHeight,
+                            }}
+                        >
+                            <span className={style.loadingTip}>
+                                {intl.formatMessage({
+                                    id: 'creator.explorer.loading.tip',
+                                    defaultMessage: 'Let\'s find out more about the NFT.{br} Surprise awaits...',
+                                }, {
+                                    br: <br />
+                                })}
+                            </span>
+                        </div>
+                    </>
+                )}
                 {errorState.Message && <Message content={errorState.Message} />}
                 {!KOL && access.canUser && (
                     <div
