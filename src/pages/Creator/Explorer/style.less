@@ -19,6 +19,10 @@
             width: 100%;
         }
 
+        :global(.ant-image) {
+            width: 100% !important;
+        }
+
         .viewer {
             position: absolute;
             bottom: 10px;
@@ -32,14 +36,20 @@
     }
 }
 
+.daoCardContent {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(66.32% 66.32% at 54.13% 113.95%,rgba(255, 182, 66, .2) 0,rgba(242,89,255,0) 100%),linear-gradient(
+        211.99deg,rgba(255, 93, 66, .2) -4.17%,rgba(45,143,234,0) 68.7%),radial-gradient(100% 100% at 28.65% 0,#f7cfa4 0,rgba(250,247,254,0) 100%);
+}
+
 .countDown {
     display: flex;
     flex-direction: column;
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
     line-height: 50px;
 
     span {
@@ -48,7 +58,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-weight: 900;
-        font-size: 1rem;
+        font-size: 0.8rem;
     }
 }
 
@@ -237,6 +247,7 @@
                 height: 30px;
                 width: 30px;
                 border-radius: 100%;
+                opacity: 0;
             }
         }
     }

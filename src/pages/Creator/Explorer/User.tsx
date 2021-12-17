@@ -17,6 +17,16 @@ const User: React.FC<{
 
     return (
         <>
+            <Divider>
+                <strong>
+                    {intl.formatMessage({
+                        id: 'creator.explorer.aboutDao',
+                        defaultMessage: 'About {name} DAO',
+                    }, {
+                        name: user?.nickname,
+                    })}
+                </strong>
+            </Divider>
             <Card
                 className={styles.userCard}
                 bodyStyle={{

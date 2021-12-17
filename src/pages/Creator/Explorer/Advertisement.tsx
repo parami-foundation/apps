@@ -40,6 +40,7 @@ const Advertisement: React.FC<{
                             src={avatar || '/images/logo-round-core.svg'}
                             className={style.avatar}
                             preview={false}
+                            id='avatar'
                             fallback='/images/logo-round-core.svg'
                         />
                         <span>
@@ -51,7 +52,7 @@ const Advertisement: React.FC<{
                 </div>
             </div>
             <Card
-                className={styles.card}
+                className={`${styles.card} ${style.adCard}`}
                 bodyStyle={{
                     padding: 0,
                     width: '100%',
@@ -88,6 +89,7 @@ const Advertisement: React.FC<{
                             preview={false}
                             style={{
                                 cursor: 'pointer',
+                                width: '100%',
                             }}
                             onClick={() => {
                                 window.open(ad?.link);

@@ -225,7 +225,7 @@ const InitialDeposit: React.FC<{
 
   return (
     <>
-      {minimal && (
+      {minimal ? (
         <div
           style={{
             display: 'flex',
@@ -344,8 +344,7 @@ const InitialDeposit: React.FC<{
             </>
           )}
         </div>
-      )}
-      {!minimal && (
+      ) : (
         <>
           <Spin
             size='large'
@@ -358,6 +357,7 @@ const InitialDeposit: React.FC<{
               />
             }
             spinning={loading}
+            className={styles.mainContainer}
           >
             <Card className={styles.card}>
               <img src={'/images/icon/transaction.svg'} className={style.topIcon} />

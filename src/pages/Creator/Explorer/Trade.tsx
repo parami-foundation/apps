@@ -137,7 +137,7 @@ const Trade: React.FC<{
                             })}
                         </Title>
                         <Input
-                            autoFocus
+                            autoFocus={false}
                             size="large"
                             placeholder={'0'}
                             bordered={false}

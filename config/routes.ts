@@ -167,6 +167,7 @@
     path: '/did:kol',
     hideInMenu: true,
     exact: true,
+    headerRender: false,
     component: './Creator/Explorer',
   },
   {

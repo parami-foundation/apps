@@ -12,12 +12,12 @@ import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetUserInfo, GetValueOf
 import { Alert, message, Spin, Image } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
-import { LoadingOutlined } from '@ant-design/icons';
 import { GetSlotAdOf } from '@/services/parami/ads';
 import { getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
 import CreateAccount from '../Account/CreateAccount';
 import { GetAdRemain } from '../../services/parami/nft';
+import { GetAvatar } from '@/services/parami/api';
 
 const Message: React.FC<{
     content: string;
@@ -48,6 +48,7 @@ const Explorer: React.FC = () => {
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [notAccess, setNotAccess] = useState<boolean>(false);
     const [notSysBroswer, setNotSysBroswer] = useState<boolean>(false);
+    const [avatarLoad, setAvatarLoad] = useState<number>(0);
 
     const [adData, setAdData] = useState<any>({});
     const [ad, setAd] = useState<Type.AdInfo>(null);
@@ -57,6 +58,11 @@ const Explorer: React.FC = () => {
 
     const intl = useIntl();
     const access = useAccess();
+
+    const avatarTop = document.getElementById('avatar')?.offsetTop;
+    const avatarLeft = document.getElementById('avatar')?.offsetLeft;
+    const windowHeight = document.body.clientHeight;
+    const windowWidth = document.body.clientWidth;
 
     const params: {
         kol: string;
@@ -135,7 +141,10 @@ const Explorer: React.FC = () => {
 
             if (userInfo['avatar'].indexOf('ipfs://') > -1) {
                 const hash = userInfo['avatar'].substring(7);
-                setAvatar(config.ipfs.endpoint + hash);
+                const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+                if (response?.status === 200) {
+                    setAvatar(window.URL.createObjectURL(data));
+                }
             };
             document.title = `${userInfo?.nickname || did} - Para Metaverse Identity`;
             if (userInfo.nft !== null) {
@@ -161,7 +170,9 @@ const Explorer: React.FC = () => {
                 setKOL(false);
             };
             await getAd();
-            setLoading(false);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
         } catch (e: any) {
             setErrorState({
                 Type: 'chain error',
@@ -182,58 +193,44 @@ const Explorer: React.FC = () => {
         init();
     }, []);
 
+    const avatarRef = React.useRef(null);
+
     return (
         <>
             <div
                 className={styles.mainContainer}
             >
-                <Spin
-                    spinning={loading}
-                    size='large'
-                    indicator={
-                        <LoadingOutlined
-                            spin
-                            size={24}
-                        />
-                    }
-                    wrapperClassName={styles.mainContainer}
+                <Image
+                    src={avatar}
+                    fallback='/images/default-avatar.svg'
+                    className={style.avatar}
+                    style={{
+                        top: loading ? (windowHeight - 400) / 2 : avatarTop,
+                        left: loading ? (windowWidth - 200) / 2 : avatarLeft,
+                        width: loading ? 200 : 30,
+                        height: loading ? 200 : 30,
+                        animation: loading ? 1 : 0,
+                    }}
+                    preview={false}
+                />
+                <div
+                    className={style.loading}
+                    style={{
+                        opacity: loading ? 1 : 0,
+                        zIndex: loading ? 10 : -1,
+                    }}
                 >
-                    {errorState.Message && <Message content={errorState.Message} />}
-                    {!KOL && access.canUser && (
-                        <div
-                            className={styles.pageContainer}
-                            style={{
-                                paddingTop: 50,
-                                maxWidth: 1920,
-                            }}
-                        >
-                            <Support
-                                did={did}
-                                stashUserAddress={stashUserAddress}
-                                controllerKeystore={controllerKeystore}
-                            />
-                        </div>
-                    )}
-                    {(KOL && Object.keys(adData).length > 0) && (
-                        <div
-                            className={styles.pageContainer}
-                            style={{
-                                paddingTop: 50,
-                                maxWidth: '100%',
-                                backgroundColor: 'rgba(244,245,246,1)',
-                            }}
-                        >
-                            <Advertisement
-                                ad={ad}
-                                viewer={viewer}
-                                asset={asset}
-                                avatar={avatar}
-                                did={did}
-                                adData={adData}
-                                remain={remain}
-                            />
-                        </div>
-                    )}
+                    <span className={style.loadingTip}>
+                        {intl.formatMessage({
+                            id: 'creator.explorer.loading.tip',
+                            defaultMessage: 'Let\'s find out more about the NFT.{br} Surprise awaits...',
+                        }, {
+                            br: <br />
+                        })}
+                    </span>
+                </div>
+                {errorState.Message && <Message content={errorState.Message} />}
+                {!KOL && access.canUser && (
                     <div
                         className={styles.pageContainer}
                         style={{
@@ -241,39 +238,72 @@ const Explorer: React.FC = () => {
                             maxWidth: 1920,
                         }}
                     >
-                        <User
+                        <Support
+                            did={did}
+                            stashUserAddress={stashUserAddress}
+                            controllerKeystore={controllerKeystore}
+                        />
+                    </div>
+                )}
+                {(KOL && Object.keys(adData).length > 0) && (
+                    <div
+                        className={styles.pageContainer}
+                        style={{
+                            paddingTop: 50,
+                            maxWidth: '100%',
+                            backgroundColor: 'rgba(244,245,246,1)',
+                        }}
+                    >
+                        <Advertisement
+                            ad={ad}
+                            viewer={viewer}
+                            asset={asset}
                             avatar={avatar}
                             did={did}
-                            user={user}
-                            asset={asset}
+                            adData={adData}
+                            remain={remain}
                         />
                     </div>
-                    <div
-                        className={styles.pageContainer}
-                        style={{
-                            paddingTop: 50,
-                            maxWidth: 1920,
-                        }}
-                    >
-                        {KOL && access.canUser && (
-                            <>
-                                <Stat
-                                    asset={asset}
-                                    assetPrice={assetPrice}
-                                    totalSupply={totalSupply}
-                                    viewer={viewer}
-                                    member={member}
-                                />
-                                <Trade
-                                    stashUserAddress={stashUserAddress}
-                                    controllerKeystore={controllerKeystore}
-                                    user={user}
-                                    asset={asset}
-                                />
-                            </>
-                        )}
-                    </div>
-                </Spin>
+                )}
+                <div
+                    className={styles.pageContainer}
+                    style={{
+                        paddingTop: 50,
+                        maxWidth: 1920,
+                    }}
+                >
+                    <User
+                        avatar={avatar}
+                        did={did}
+                        user={user}
+                        asset={asset}
+                    />
+                </div>
+                <div
+                    className={styles.pageContainer}
+                    style={{
+                        paddingTop: 50,
+                        maxWidth: 1920,
+                    }}
+                >
+                    {KOL && access.canUser && (
+                        <>
+                            <Stat
+                                asset={asset}
+                                assetPrice={assetPrice}
+                                totalSupply={totalSupply}
+                                viewer={viewer}
+                                member={member}
+                            />
+                            <Trade
+                                stashUserAddress={stashUserAddress}
+                                controllerKeystore={controllerKeystore}
+                                user={user}
+                                asset={asset}
+                            />
+                        </>
+                    )}
+                </div>
             </div>
             <BigModal
                 visable={notAccess}
