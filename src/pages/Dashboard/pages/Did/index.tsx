@@ -19,7 +19,7 @@ const Did: React.FC = () => {
 
     return (
         <>
-            <div className={styles.mainContainer}>
+            <div className={styles.mainBgContainer}>
                 <div className={styles.contentContainer}>
                     <Card
                         className={styles.dashboardCard}
