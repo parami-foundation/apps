@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useState, useCallback, useEffect } from 'react'
 import { defaultChainId } from '@/pages/Dashboard/pages/Stake/config';
 
-import { message } from 'antd';
+import { message, notification } from 'antd';
 import ethNet from '@/config/ethNet';
 
 export default () => {
@@ -23,6 +23,14 @@ export default () => {
     }
 
     useEffect(() => {
+        if (chainId !== 1 && chainId !== 4) {
+            notification.error({
+                message: 'Unsupported Chain',
+                description: 'This feature is only supported on mainnet and rinkeby',
+                duration: null
+            });
+            return;
+        }//TODO: error msg
         setChainName(ethNet[chainId]);
         provider?.on('block', (blockNo: number) => {
             setBlockNumber(blockNo)
@@ -30,7 +38,7 @@ export default () => {
         return () => {
             provider?.removeAllListeners();
         };
-    }, [chainId, chainName]);
+    }, [chainId, chainName, provider]);
 
     const connect = useCallback(async () => {
         const newProvider = await detectEthereumProvider();
