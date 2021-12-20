@@ -2,7 +2,7 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { Keyring } from '@polkadot/api';
 import { Button, Card, Typography, message, Alert } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
@@ -73,11 +73,6 @@ const Visa: React.FC = () => {
         window.opener.postMessage(ticket, audience);
         window.close();
     };
-    useEffect(() => {
-        if (password !== '') {
-            handleStamp();
-        }
-    }, [password]);
 
     const handleDecline = async () => {
         window.opener.postMessage('eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.e30.', audience);
@@ -176,7 +171,7 @@ const Visa: React.FC = () => {
                 setVisable={setSecModal}
                 password={password}
                 setPassword={setPassword}
-            // func={handleStamp}
+                func={handleStamp}
             />
         </>
     )

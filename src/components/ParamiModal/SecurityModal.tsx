@@ -60,10 +60,8 @@ const SecurityModal: React.FC<{
   };
 
   useEffect(() => {
-    if (!!stamp) {
+    if (!!stamp && visable) {
       setPassword(stamp);
-    };
-    if (visable) {
       handleSubmit();
     };
   }, [stamp, password, visable]);

@@ -163,12 +163,6 @@ const Add: React.FC = () => {
     };
 
     useEffect(() => {
-        if (password !== '') {
-            handleSubmit();
-        }
-    }, [password]);
-
-    useEffect(() => {
         getBalance();
         updateAssetsInfo();
     }, []);
@@ -411,7 +405,7 @@ const Add: React.FC = () => {
                 setVisable={setSecModal}
                 password={password}
                 setPassword={setPassword}
-            // func={handleSubmit}
+                func={handleSubmit}
             />
         </>
     );

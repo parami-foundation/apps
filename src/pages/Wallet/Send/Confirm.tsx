@@ -80,12 +80,6 @@ const Confirm: React.FC<{
     }
   };
 
-  useEffect(() => {
-    if (password !== '') {
-      handleSubmit();
-    }
-  }, [password]);
-
   const partialFee = async () => {
     setSubmitting(true);
     if (toAddress.indexOf('did:ad3:') > -1) {
@@ -202,7 +196,7 @@ const Confirm: React.FC<{
         setVisable={setSecModal}
         password={password}
         setPassword={setPassword}
-      //func={handleSubmit}
+        func={handleSubmit}
       />
     </>
   );

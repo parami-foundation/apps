@@ -140,12 +140,6 @@ const Redeem: React.FC = () => {
 	};
 
 	useEffect(() => {
-		if (password !== '') {
-			handleSubmit();
-		}
-	}, [password]);
-
-	useEffect(() => {
 		updateAssetsInfo();
 	}, []);
 
@@ -386,7 +380,7 @@ const Redeem: React.FC = () => {
 				setVisable={setSecModal}
 				password={password}
 				setPassword={setPassword}
-			//func={handleSubmit}
+				func={handleSubmit}
 			/>
 		</>
 	);

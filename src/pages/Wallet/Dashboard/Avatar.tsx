@@ -8,7 +8,6 @@ import { CloudUploadOutlined } from '@ant-design/icons';
 import config from '@/config/config';
 import styles from './Avatar.less';
 import generateRoundAvatar from '@/utils/encode';
-import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { b64toBlob } from '@/utils/common';
 import { uploadAvatar, uploadIPFS } from '@/services/parami/ipfs';
@@ -41,6 +40,12 @@ const AvatarMain: React.FC<{
     };
 
     const UploadAvatar = async () => {
+        if (!File) {
+            message.error(intl.formatMessage({
+                id: 'error.avatar.empty',
+            }));
+            return;
+        }
         setSpinning(true);
         try {
             const res = await uploadIPFS(File);
@@ -51,13 +56,6 @@ const AvatarMain: React.FC<{
         }
         setSpinning(false);
     };
-
-    useEffect(() => {
-        if (password !== '' && !!File) {
-            UploadAvatar();
-        }
-        return;
-    }, [password, File]);
 
     return (
         <>
@@ -131,7 +129,7 @@ const AvatarMain: React.FC<{
                 setVisable={setSecModal}
                 password={password}
                 setPassword={setPassword}
-            //func={async () => { }}
+                func={UploadAvatar}
             />
         </>
     )

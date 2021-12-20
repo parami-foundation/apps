@@ -100,12 +100,6 @@ const BindModal: React.FC<{
 	};
 
 	useEffect(() => {
-		if (password !== '') {
-			handleSubmit();
-		}
-	}, [password]);
-
-	useEffect(() => {
 		setOrigin(`Link: ${hexToDid(did)}`);
 	}, []);
 
@@ -312,7 +306,7 @@ const BindModal: React.FC<{
 				setVisable={setSecModal}
 				password={password}
 				setPassword={setPassword}
-			//func={handleSubmit}
+				func={handleSubmit}
 			/>
 		</>
 	)
