@@ -109,6 +109,14 @@ const BindModal: React.FC<{
 		setOrigin(`Link: ${hexToDid(did)}`);
 	}, []);
 
+	useEffect(() => {
+		if (blockchain === 'Ethereum' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') {
+			setCollapse(true);
+		} else {
+			setCollapse(false);
+		};
+	}, [blockchain]);
+
 	return (
 		<>
 			<div className={styles.bindModal}>
@@ -133,14 +141,39 @@ const BindModal: React.FC<{
 								id: 'social.blockchain.walletconnet',
 							})}
 						</Button>
-						<Divider>
-							{intl.formatMessage({
-								id: 'social.blockchain.manual',
-							})}
-						</Divider>
+						<div
+							style={{
+								display: 'flex',
+								width: '100%',
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}}
+							onClick={() => {
+								setCollapse(!collapse);
+							}}
+						>
+							<Divider>
+								{intl.formatMessage({
+									id: 'social.blockchain.manual',
+								})}
+								<Button
+									type="link"
+									icon={
+										<DownOutlined
+											rotate={!collapse ? 0 : -180}
+											className={styles.expandButtonIcon}
+										/>
+									}
+									onClick={() => {
+										setCollapse(!collapse);
+									}}
+								/>
+							</Divider>
+						</div>
 					</>
 				)}
-				{(blockchain === 'Polkadot' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') && (
+				{(blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') && (
 					<>
 						<Button
 							block
@@ -195,7 +228,7 @@ const BindModal: React.FC<{
 				<div
 					className={styles.manualContainer}
 					style={{
-						maxHeight: collapse ? '100vh' : 0,
+						maxHeight: !collapse ? '100vh' : 0,
 					}}
 				>
 					<div className={styles.field}>
