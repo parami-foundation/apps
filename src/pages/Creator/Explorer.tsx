@@ -210,6 +210,7 @@ const Explorer: React.FC = () => {
                                 height: loading ? 200 : 30,
                                 animation: loading ? 1 : 0,
                                 position: loading ? 'fixed' : 'absolute',
+                                display: Object.keys(adData).length > 0 ? 'flex' : 'none',
                             }}
                             preview={false}
                         />

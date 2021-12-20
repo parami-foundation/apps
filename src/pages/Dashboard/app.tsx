@@ -41,6 +41,7 @@ const Layout: React.FC = (props) => {
             logo={'/images/logo-round-core.svg'}
             title={'Dashboard'}
             headerHeight={70}
+            siderWidth={260}
             navTheme='light'
             headerTheme='light'
             layout='mix'
