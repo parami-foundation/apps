@@ -62,8 +62,6 @@ const Rows: React.FC<{
                 startTime: pair.incentives[incentiveIndex].startTime,
                 endTime: pair.incentives[incentiveIndex].endTime,
             }
-            const tx= await StakeContract?.unstakeToken(incentiveKey, tokenId, account)
-            console.log('asdasdasdasd',tx);
             try {
                 //unstake
                 await StakeContract?.unstakeToken(incentiveKey, tokenId, account)
