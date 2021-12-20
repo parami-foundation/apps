@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import styles from './ExportController.less';
@@ -8,7 +8,9 @@ import { Button, Input, message } from 'antd';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
 
-const ExportController: React.FC = () => {
+const ExportController: React.FC<{
+    setMenuVisible: (value: React.SetStateAction<boolean>) => void;
+}> = ({ setMenuVisible }) => {
     const [modalVisable, setModalVisable] = useState<boolean>(false);
     const [secModal, setSecModal] = useState<boolean>(false);
     const [mnemonic, setMnemonic] = useState<string>('');
@@ -16,11 +18,12 @@ const ExportController: React.FC = () => {
 
     const intl = useIntl();
 
-    const controllerKeystore = localStorage.getItem('controllerKeystore');
+    const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
+    const stamp = localStorage.getItem('stamp') as string;
 
     const handleSubmit = async () => {
         try {
-            const decrypted = DecodeKeystoreWithPwd(password, controllerKeystore as string);
+            const decrypted = DecodeKeystoreWithPwd(password || stamp, controllerKeystore);
             if (!decrypted) {
                 message.error(
                     intl.formatMessage({
@@ -41,13 +44,7 @@ const ExportController: React.FC = () => {
             setPassword('');
         }
     }
-    useEffect(() => {
-        if (password !== '') {
-            handleSubmit();
-        }
-    }, [
-        password
-    ]);
+
     return (
         <>
             <Button
@@ -59,7 +56,10 @@ const ExportController: React.FC = () => {
                 icon={
                     <LockOutlined />
                 }
-                onClick={() => setSecModal(true)}
+                onClick={() => {
+                    setMenuVisible(false);
+                    setSecModal(true);
+                }}
             >
                 {intl.formatMessage({
                     id: 'wallet.exportController.title',
@@ -124,6 +124,7 @@ const ExportController: React.FC = () => {
                 setVisable={setSecModal}
                 password={password}
                 setPassword={setPassword}
+                func={handleSubmit}
             />
         </>
     )

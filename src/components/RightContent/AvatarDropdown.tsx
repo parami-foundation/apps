@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
 import { Avatar, Button, Divider, Input, message, Spin, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
@@ -49,12 +49,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
     }
   };
 
-  useEffect(() => {
-    if (password !== '' && nickname != '') {
-      updateNickname();
-    }
-  }, [password, nickname]);
-
   const menuHeaderDropdown = (
     <>
       <div className={styles.menuContainer}>
@@ -81,7 +75,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           <Did did={did} />
         </div>
         <div className={styles.buttons}>
-          <ExportController />
+          <ExportController setMenuVisible={setMenuVisible} />
         </div>
         <Divider />
         <div
@@ -156,6 +150,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           setVisable={setSecModal}
           password={password}
           setPassword={setPassword}
+          func={updateNickname}
         />
       </Spin>
     </>
