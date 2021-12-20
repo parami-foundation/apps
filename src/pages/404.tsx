@@ -1,30 +1,15 @@
-import { Button, Result } from 'antd';
+import config from '@/config/config';
 import React from 'react';
-import { useIntl, history } from 'umi';
+import { useEffect } from 'react';
+import { history } from 'umi';
 
 const NoFoundPage: React.FC = () => {
-  const intl = useIntl();
+  useEffect(() => {
+    history.push(config.page.homePage);
+  }, []);
 
   return (
-    <Result
-      status="404"
-      title="404"
-      subTitle={intl.formatMessage({
-        id: 'error.notfound.title',
-      })}
-      extra={
-        <Button
-          type='primary'
-          size='large'
-          shape='round'
-          onClick={() => history.push('/')}
-        >
-          {intl.formatMessage({
-            id: 'common.goHome',
-          })}
-        </Button>
-      }
-    />
+    <></>
   )
 };
 
