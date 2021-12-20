@@ -23,14 +23,6 @@ export default () => {
     }
 
     useEffect(() => {
-        if (chainId !== 1 && chainId !== 4) {
-            notification.error({
-                message: 'Unsupported Chain',
-                description: 'This feature is only supported on mainnet and rinkeby',
-                duration: null
-            });
-            return;
-        }//TODO: error msg
         setChainName(ethNet[chainId]);
         provider?.on('block', (blockNo: number) => {
             setBlockNumber(blockNo)

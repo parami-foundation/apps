@@ -19,7 +19,7 @@ const Rows = ({ row }: { row: any; }) => {
         blockNumber,
     } = useModel("metaMask");
     const {
-        stakeContract
+        StakeContract
     } = useModel('contracts');
     const [LPContract, setLPContract] = useState<ethers.Contract>()
     const [requestedApproval, setRequestedApproval] = useState(false)
@@ -82,7 +82,7 @@ const Rows = ({ row }: { row: any; }) => {
         if (!LPContract) return;
         try {
             console.log('LPContract', LPContract);
-            const tx = await LPContract?.setApprovalForAll(stakeContract?.address, true);
+            const tx = await LPContract?.setApprovalForAll(StakeContract?.address, true);
             console.log(tx);
             await tx.wait();
             return true
@@ -90,19 +90,19 @@ const Rows = ({ row }: { row: any; }) => {
             console.error(e)
             return false
         }
-    }, [LPContract, stakeContract, account]);
+    }, [LPContract, StakeContract, account]);
 
     const getIsApprovedAll = useCallback(async () => {
         if (!LPContract) return;
         setLoading(true);
-        const allowance = await LPContract?.isApprovedForAll(account, stakeContract?.address)
+        const allowance = await LPContract?.isApprovedForAll(account, StakeContract?.address)
         console.log('allowance', allowance);
         setIsApproveAll(allowance);
-    }, [LPContract, stakeContract, account]);
+    }, [LPContract, StakeContract, account]);
 
     useEffect(() => {
         getIsApprovedAll();
-    }, [LPContract, account, stakeContract]);
+    }, [LPContract, account, StakeContract]);
 
     useEffect(() => {
         if (token && coin) {
@@ -151,7 +151,7 @@ const Rows = ({ row }: { row: any; }) => {
     ];
 
 
-    const getStakeStatus = async () => {
+    async function getStakeStatus(){
         const balanceKinds: BigNumber = await LPContract?.balanceOf(account);
         console.log(balanceKinds);
         if (!balanceKinds) return;
@@ -192,17 +192,17 @@ const Rows = ({ row }: { row: any; }) => {
             }
         }
         console.log('liquid', liquid);
-        const tokenCountFromStakeManager = await stakeContract?.getUserTokenIdCount(account);
+        const tokenCountFromStakeManager = await StakeContract?.getUserTokenIdCount(account);
         console.log('tokenCountFromStakeManager', tokenCountFromStakeManager);
         for (let i = 0; i < tokenCountFromStakeManager; i++) {
-            if (!stakeContract) {
-                console.log('stakeContract is null');
+            if (!StakeContract) {
+                console.log('StakeContract is null');
                 return;
             }
-            const tokenId = await stakeContract['getTokenId(address,uint256)'](account, i);
+            const tokenId = await StakeContract['getTokenId(address,uint256)'](account, i);
             console.log('tokenId', tokenId);
             if (tokenId) {
-                const stake = await stakeContract?.deposits(tokenId);
+                const stake = await StakeContract?.deposits(tokenId);
                 console.log('staked', stake);
                 for (let j = 0; j < incentiveKeys.length; j++) {
                     if (ticks[j].tickLower <= stake.tickLower && stake.tickUpper <= ticks[j].tickUpper) {
@@ -220,7 +220,7 @@ const Rows = ({ row }: { row: any; }) => {
                 console.log('tokenId', liquid[i].tokenId);
                 console.log('incentiveKey', incentiveKeys[liquid[i].incentiveIndex]);
                 try {
-                    const res = await stakeContract?.getAccruedRewardInfo(incentiveKeys[liquid[i].incentiveIndex], liquid[i].tokenId);
+                    const res = await StakeContract?.getAccruedRewardInfo(incentiveKeys[liquid[i].incentiveIndex], liquid[i].tokenId);
                     console.log(res);
                     const reward = BigIntToFloatString(res.reward, 18);
                     console.log('reward', reward);
@@ -256,14 +256,14 @@ const Rows = ({ row }: { row: any; }) => {
             console.log(e)
             setRequestedApproval(false)
         }
-    }, [stakeContract, LPContract, account]);
+    }, [StakeContract, LPContract, account]);
 
     const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);
         console.log(incentiveKeys[incentiveIndex], tokenId);
         try {
-            const tx = await stakeContract?.depositToken(incentiveKeys[incentiveIndex], tokenId)
+            const tx = await StakeContract?.depositToken(incentiveKeys[incentiveIndex], tokenId)
             await tx.wait();
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
@@ -272,7 +272,7 @@ const Rows = ({ row }: { row: any; }) => {
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
         }
-    }, [stakeContract, incentiveKeys, account]);
+    }, [StakeContract, incentiveKeys, account]);
 
     const handleUnstake = useCallback(
         async (tokenId, incentiveIndex) => {
@@ -281,7 +281,7 @@ const Rows = ({ row }: { row: any; }) => {
 
             try {
                 //unstake
-                await stakeContract?.unstakeToken(incentiveKeys[incentiveIndex], tokenId, account)
+                await StakeContract?.unstakeToken(incentiveKeys[incentiveIndex], tokenId, account)
                 pendingUnstake[tokenId] = false
                 setPendingUnstake(pendingUnstake)
             } catch (e) {
@@ -290,14 +290,14 @@ const Rows = ({ row }: { row: any; }) => {
                 setPendingUnstake(pendingUnstake)
             }
         },
-        [stakeContract, incentiveKeys, account]
+        [StakeContract, incentiveKeys, account]
     )
 
     const handleClaim = useCallback(async (tokenId, amount, incentiveIndex) => {
         pendingClaim[tokenId] = true
         setPendingClaim(pendingClaim)
         try {
-            await stakeContract?.claimReward(incentiveKeys[incentiveIndex], tokenId, account, FloatStringToBigInt(amount, 18).toString());
+            await StakeContract?.claimReward(incentiveKeys[incentiveIndex], tokenId, account, FloatStringToBigInt(amount, 18).toString());
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         } catch (e) {
@@ -305,7 +305,7 @@ const Rows = ({ row }: { row: any; }) => {
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         }
-    }, [stakeContract, incentiveKeys, account]);
+    }, [StakeContract, incentiveKeys, account]);
 
     const handleCreateIncentives = useCallback(async () => {
         try {
@@ -314,18 +314,18 @@ const Rows = ({ row }: { row: any; }) => {
             const total = FloatStringToBigInt(String(1000), 18);
             console.log('Create Incentives', total.toString())
 
-            const res = await stakeContract?.createIncentive(incentiveKeys[0], total.toString(), ticks[0].tickLower, ticks[0].tickUpper);
-            const res1 = await stakeContract?.createIncentive(incentiveKeys[1], total.toString(), ticks[1].tickLower, ticks[1].tickUpper);
-            const res2 = await stakeContract?.createIncentive(incentiveKeys[2], total.toString(), ticks[2].tickLower, ticks[2].tickUpper);
+            const res = await StakeContract?.createIncentive(incentiveKeys[0], total.toString(), ticks[0].tickLower, ticks[0].tickUpper);
+            const res1 = await StakeContract?.createIncentive(incentiveKeys[1], total.toString(), ticks[1].tickLower, ticks[1].tickUpper);
+            const res2 = await StakeContract?.createIncentive(incentiveKeys[2], total.toString(), ticks[2].tickLower, ticks[2].tickUpper);
             console.log(res, res1, res2);
         } catch (e) {
             console.error(e)
         }
-    }, [incentiveKeys, stakeContract]);
+    }, [incentiveKeys, StakeContract]);
 
     const handleCancelIncentive = useCallback(async () => {
         alert('TODO: cancel incentive')
-        //await stakeContract?.cancelIncentive(incentiveKey)
+        //await StakeContract?.cancelIncentive(incentiveKey)
     }, [incentiveKeys]);
 
 

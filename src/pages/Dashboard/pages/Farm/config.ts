@@ -25,7 +25,6 @@ export const contractAddresses = {
         4: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
     },
     weth: {
-        // 1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
         1: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
         4: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
     },
@@ -44,24 +43,16 @@ export const contractAddresses = {
     uniswapFactory: {
         1: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
         4: '0x1F98431c8aD98523631AE4a59f267346ea31F984',
+    },
+    nonfungiblePositionManager:{
+        1: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
+        4: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
     }
 }
 
 export const pairsData = [
     {
         name: 'ETH-AD3',
-        lpAddresses: {
-            1: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-            4: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-        },
-        tokenAddresses: {
-            1: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-            4: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-        },
-        poolAddresses: {
-            1: '0x5B72C6c9751ca84838a5EA9A9Dd19d27757e58fE',
-            4: '0x5B72C6c9751ca84838a5EA9A9Dd19d27757e58fE',
-        },
         coinAddresses: {
             1: '0xc778417e063141139fce010982780140aa0cd5ab',
             4: '0xc778417e063141139fce010982780140aa0cd5ab',
@@ -94,18 +85,6 @@ export const pairsData = [
     },
     {
         name: 'USDT-AD3',
-        lpAddresses: { // contract source code: https://github.com/Uniswap/v3-periphery/blob/878a58a461ae30680acd84d44499058826bf5f3e/contracts/NonfungiblePositionManager.sol
-            1: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-            4: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-        },
-        tokenAddresses: { //https://github.com/parami-protocol/bridge/blob/main/ad3/contracts/AD3Token.sol
-            1: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-            4: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-        },
-        poolAddresses: { //
-            1: '0x2457d220f7bc316F7a287af6F233Af2fA5AcEA45',
-            4: '0x2457d220f7bc316F7a287af6F233Af2fA5AcEA45',
-        },
         coinAddresses: { //USDT contract
             1: '0xd9ba894e0097f8cc2bbc9d24d308b98e36dc6d02',
             4: '0xd9ba894e0097f8cc2bbc9d24d308b98e36dc6d02',
@@ -139,18 +118,6 @@ export const pairsData = [
     },
     {
         name: 'USDC-AD3',
-        lpAddresses: {
-            1: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-            4: '0xc36442b4a4522e871399cd717abdd847ab11fe88',
-        },
-        tokenAddresses: {
-            1: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-            4: '0x76B61Ae8F964F5CBE23ad9aea9BF597aa4cEA7eD',
-        },
-        poolAddresses: {
-            1: '0x209B2Ae730287B2866837fAa59c3B4940a9A9b7E',
-            4: '0x209B2Ae730287B2866837fAa59c3B4940a9A9b7E',
-        },
         coinAddresses: {
             1: '0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b',
             4: '0x4dbcdf9b62e891a7cec5a2568c3f4faf9e8abe2b',

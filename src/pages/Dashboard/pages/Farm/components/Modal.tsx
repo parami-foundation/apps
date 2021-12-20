@@ -5,8 +5,8 @@ import style from './Modal.less';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 
 const AddModal: React.FC<{
-    pools?: any[], setVisiable: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ pools, setVisiable }) => {
+    pair: Pair, setVisiable: React.Dispatch<React.SetStateAction<boolean>>
+}> = ({ pair, setVisiable }) => {
     const intl = useIntl();
     const [APYIndex, setAPYIndex] = React.useState(1);
     const { Title } = Typography;
@@ -153,12 +153,12 @@ const AddModal: React.FC<{
                             />
                         }
                         onClick={() => {
-                            //setVisiable(false);
-                            // window.open(
-                            //     `https://app.uniswap.org/#/add/${pools[0].coin === 'ETH'
-                            //         ? 'ETH'
-                            //         : pools[0].coinAddress}/${pools[0].tokenAddress}/3000`
-                            // )
+                            setVisiable(false);
+                            window.open(
+                                `https://app.uniswap.org/#/add/${pair.coin === 'ETH'
+                                    ? 'ETH'
+                                    : pair.coinAddress}/${AD3Address}/3000`
+                            )
                         }}
                     >
                         {intl.formatMessage({

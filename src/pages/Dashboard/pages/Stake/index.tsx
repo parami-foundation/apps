@@ -17,7 +17,7 @@ import AddModal from './components/Modal';
 import { getAd3EthPrice, getAd3UsdtPrice } from './api/uniswap/pool';
 
 const ICON_AD3 = '/images/logo-round-core.svg';
-const ICON_ETH = '/images/crypto/ethereum-circle.svg';
+const ICON_ETH = '/images/crypto/eth-circle.svg';
 const ICON_USDT = '/images/crypto/usdt-circle.svg';
 const ICON_USDC = '/images/crypto/usdc-circle.svg';
 
@@ -36,35 +36,36 @@ const Stake: React.FC = () => {
         chainId,
     } = useModel("metaMask");
     const {
-        ad3Contract,
-        stakeContract,
-        factoryContract
+        Ad3Contract,
+        StakeContract,
+        FactoryContract
     } = useModel('contracts');
     const intl = useIntl();
 
     const handleApproveAd3 = async () => {
-        const tx = await ad3Contract?.approve(stakeContract?.address, ethers.constants.MaxUint256)
+        const tx = await Ad3Contract?.approve(StakeContract?.address, ethers.constants.MaxUint256)
         setAd3ApprovedLoading(true);
         await tx.wait();
         setAd3Approved(true);
     };
     useEffect(() => {
-        if (ad3Contract) {
-            ad3Contract.totalSupply().then(res => {
+        if (Ad3Contract) {
+            Ad3Contract.totalSupply().then(res => {
+                console.log(res);
                 console.log(res.toString());
                 setSupply(res);
             })
         }
-    }, [ad3Contract])
+    }, [Ad3Contract])
     async function updatePrice() {
-        if (factoryContract) {
-            const price = await getAd3EthPrice(factoryContract);
+        if (FactoryContract) {
+            const price = await getAd3EthPrice(FactoryContract);
             setAD3Price(price.toSignificant());
         }
     }
     useEffect(() => {
         updatePrice();
-    }, [factoryContract]);
+    }, [FactoryContract]);
     const fetchIncentive = useCallback(async () => {
         const pools = pairsData;
         if (pools.length) {
@@ -79,7 +80,7 @@ const Stake: React.FC = () => {
                 console.log(incentiveKey);
                 const incentiveId = getIncentiveId(incentiveKey);
                 // console.log(incentiveId)
-                const incentive = await stakeContract?.incentives(incentiveId);
+                const incentive = await StakeContract?.incentives(incentiveId);
                 console.log('incentive', incentive);
                 console.log('pool', pool);
                 // console.log(new BigNumber(incentive.totalRewardUnclaimed).dividedBy(new BigNumber(10).pow(15)).toNumber())
@@ -94,13 +95,13 @@ const Stake: React.FC = () => {
             const newApys = await Promise.all(promises);
             setApys(newApys);
         }
-    }, [stakeContract]);
+    }, [StakeContract]);
 
     useEffect(() => {
-        if (!stakeContract) return;
+        if (!StakeContract) return;
         console.log(account)
         fetchIncentive();
-    }, [stakeContract]);
+    }, [StakeContract]);
 
     const columns = [
         {

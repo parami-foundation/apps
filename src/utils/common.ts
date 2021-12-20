@@ -1,13 +1,36 @@
 import type { AssetTransaction } from '@/services/subquery/subquery';
-import { hexlify, isHexString } from '@ethersproject/bytes';
 import { u8aToHex, isHex, BN_TEN, hexToNumber, formatBalance } from '@polkadot/util';
 import { base64Decode } from '@polkadot/util-crypto';
 import BN from 'bn.js';
 import bs58 from 'bs58';
-import { BytesLike, logger } from 'ethers';
 import { fromHexString } from './hexcode';
 
 type throttleDebounce = <T extends () => void>(fn: T, interval?: number, scope?: any) => T;
+
+export function CompareArray(A: any[], B: any[]) {
+  // if the other array is a falsy value, return
+  if (!A || !B)
+    return false;
+
+  // compare lengths - can save a lot of time
+  if (A.length != B.length)
+    return false;
+
+  for (let i = 0, l = A.length; i < l; i++) {
+    // Check if we have nested arrays
+    if (A[i] instanceof Array && B[i] instanceof Array) {
+      // recurse into the nested arrays
+      if (!AbortController[i].equals(B[i]))
+        return false;
+    }
+    else if (A[i] != B[i]) {
+      // Warning - two different object instances will never be equal: {x:20} != {x:20}
+      return false;
+    }
+  }
+  return true;
+}
+
 export const guid = () => {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0,
