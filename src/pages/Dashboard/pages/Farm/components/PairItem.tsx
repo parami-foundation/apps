@@ -11,7 +11,6 @@ import { Token } from '@uniswap/sdk-core';
 import ERC20_ABI from '@/pages/Dashboard/pages/Stake/abi/ERC20.json';
 import { getIncentiveId, tryParseTick } from '../api/parami/util';
 import { CompareArray } from '@/utils/common';
-import { BigIntToFloatString } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 const ICON_AD3 = '/images/logo-round-core.svg';
 

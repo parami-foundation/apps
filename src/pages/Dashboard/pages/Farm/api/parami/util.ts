@@ -1,5 +1,4 @@
-import { ethers } from 'ethers'
-import { Currency, CurrencyAmount, Price, Percent, TradeType, Token } from '@uniswap/sdk-core'
+import { Currency, CurrencyAmount, Price, Token } from '@uniswap/sdk-core'
 import { parseUnits } from '@ethersproject/units'
 import JSBI from 'jsbi'
 import {
