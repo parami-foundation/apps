@@ -26,7 +26,7 @@
         redirect: '/',
       },
       {
-        path: '/recover/link/:mnemonic',
+        path: '/recover/link/#/:mnemonic',
         name: 'recover.withlink',
         component: './Account/RecoverAccount',
       },

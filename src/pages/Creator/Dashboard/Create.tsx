@@ -42,11 +42,7 @@ const Create: React.FC<{
             }
         }
     };
-    useEffect(() => {
-        if (password != '') {
-            handleSubmit();
-        }
-    }, [password])
+
     return (
         <>
             <div className={styles.dashboard}>
@@ -254,7 +250,7 @@ const Create: React.FC<{
                 setVisable={setSecModal}
                 password={password}
                 setPassword={setPassword}
-            // func={handleSubmit}
+                func={handleSubmit}
             />
         </>
     )

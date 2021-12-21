@@ -59,11 +59,7 @@ const Support: React.FC<{
         setModal(false);
         setSubmitting(false);
     };
-    useEffect(() => {
-        if (password != '') {
-            handleSubmit();
-        };
-    }, [password]);
+
     useEffect(() => {
         init();
     }, []);
@@ -185,6 +181,7 @@ const Support: React.FC<{
                     setVisable={setSecModal}
                     password={password}
                     setPassword={setPassword}
+                    func={handleSubmit}
                 />
             </Spin>
         </>

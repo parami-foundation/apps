@@ -95,11 +95,6 @@ const Trade: React.FC<{
                 }
         }
     };
-    useEffect(() => {
-        if (password != '') {
-            handleSubmit();
-        }
-    }, [password]);
 
     useEffect(() => {
         init();
@@ -336,7 +331,7 @@ const Trade: React.FC<{
                     setVisable={setSecModal}
                     password={password}
                     setPassword={setPassword}
-                // func={handleSubmit}
+                    func={handleSubmit}
                 />
             </Spin>
         </>

@@ -105,11 +105,7 @@ const ChargeFee: React.FC = () => {
             setSubmitting(false);
         }
     };
-    useEffect(() => {
-        if (password !== '') {
-            handleSubmit();
-        }
-    }, [password]);
+
     useEffect(() => {
         getBalance();
         partialFee();
@@ -235,7 +231,7 @@ const ChargeFee: React.FC = () => {
                             setVisable={setSecModal}
                             password={password}
                             setPassword={setPassword}
-                        //func={handleSubmit}
+                            func={handleSubmit}
                         />
                     </>
                 )}

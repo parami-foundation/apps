@@ -1,6 +1,6 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Alert, Button, Input, Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Alert, Button, Input, Spin, message } from 'antd';
+import React, { useState } from 'react';
 import { useIntl } from 'umi';
 import { LinkSociality } from '@/services/parami/linker';
 import styles from '../style.less';
@@ -39,6 +39,12 @@ const BindModal: React.FC<{
 	const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
 	const handleSubmit = async () => {
+		if (profileURL !== '') {
+			message.error(intl.formatMessage({
+				id: 'error.sns.emptyInput',
+			}));
+			return;
+		}
 		setLoading(true);
 		try {
 			await LinkSociality(did, platform, profileURL, Password, controllerKeystore);
@@ -55,12 +61,6 @@ const BindModal: React.FC<{
 			return;
 		}
 	};
-
-	useEffect(() => {
-		if (Password !== '' && profileURL !== '') {
-			handleSubmit();
-		}
-	}, [Password, profileURL]);
 
 	return (
 		<>
@@ -162,7 +162,7 @@ const BindModal: React.FC<{
 					setVisable={setSecModal}
 					password={Password}
 					setPassword={setPassword}
-				//func={handleSubmit}
+					func={handleSubmit}
 				/>
 			</Spin>
 		</>

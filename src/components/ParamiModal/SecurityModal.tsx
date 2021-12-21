@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Button, Input, Modal, Typography } from 'antd';
 import { useIntl } from 'umi';
 import styles from './style.less';
-import { guid } from '@/utils/common';
 
 const { Title } = Typography;
 
@@ -11,31 +10,27 @@ const SecurityModal: React.FC<{
   setVisable: React.Dispatch<React.SetStateAction<boolean>>;
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
-  //func: () => Promise<void>;
-}> = ({ visable, setVisable, password, setPassword }) => {
+  func?: () => Promise<void>;
+}> = ({ visable, setVisable, password, setPassword, func }) => {
   const [submitting, setSubmitting] = useState(false);
   const [errorState, setErrorState] = useState<API.Error>({});
 
   const intl = useIntl();
 
-  //bypass
-  const init = () => {
-    let pswd = localStorage.getItem('stamp');
-    if (!pswd) {
-      pswd = guid().substring(0, 6);
-    }
-    localStorage.setItem('stamp', pswd);
-    setVisable(false);
-    setSubmitting(false);
-    setPassword(pswd);
-  }
+  const stamp = localStorage.getItem('stamp');
 
-  useEffect(() => {
-    if (visable) {
-      init();
-    }
-  }, [visable]);
-  //bypass end
+  const Message: React.FC<{
+    content: string;
+  }> = ({ content }) => (
+    <Alert
+      style={{
+        marginBottom: 24,
+      }}
+      message={content}
+      type="error"
+      showIcon
+    />
+  );
 
   const inputVerify = (e: any) => {
     if (e) {
@@ -57,23 +52,19 @@ const SecurityModal: React.FC<{
       setSubmitting(false);
       return;
     }
-    //func();
+    if (func) {
+      func();
+    }
     setVisable(false);
     setSubmitting(false);
   };
 
-  const Message: React.FC<{
-    content: string;
-  }> = ({ content }) => (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
+  useEffect(() => {
+    if (!!stamp && visable) {
+      setPassword(stamp);
+      handleSubmit();
+    };
+  }, [stamp, password, visable]);
 
   return (
     <Modal

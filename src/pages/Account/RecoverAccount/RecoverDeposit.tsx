@@ -90,11 +90,13 @@ const RecoverDeposit: React.FC<{
       await fetchChargeStatus();
     }, 2000);
   };
+
   useEffect(() => {
-    if (Password !== '') {
-      fetchChargeStatus();
+    if (Password === '') {
+      setSecModal(true);
     }
   }, [Password]);
+
   useEffect(() => {
     const isPassword = checkPassword();
     if (!!isPassword) {
@@ -269,6 +271,7 @@ const RecoverDeposit: React.FC<{
         setVisable={setSecModal}
         password={Password}
         setPassword={setPassword}
+        func={fetchChargeStatus}
       />
     </>
   );

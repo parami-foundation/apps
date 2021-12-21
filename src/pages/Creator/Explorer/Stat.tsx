@@ -81,7 +81,7 @@ const Stat: React.FC<{
                         <Col xs={12} sm={12} md={8} lg={8} xl={4}>
                             <Statistic
                                 title={intl.formatMessage({
-                                    id: 'creator.explorer.viewers',
+                                    id: 'creator.explorer.totalViewers',
                                 })}
                                 value={viewer}
                             />

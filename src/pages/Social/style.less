@@ -36,6 +36,22 @@
     }
 }
 
+.manualContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    overflow: hidden;
+    transition: all 300ms;
+
+    .expandButtonIcon {
+        svg {
+            transition: all 100ms;
+        }
+    }
+}
+
 @media (max-width: 921px) {
     .bindList {
         padding: 0 20px;

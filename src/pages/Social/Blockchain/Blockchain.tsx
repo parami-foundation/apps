@@ -1,7 +1,7 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LinkBlockChain } from '@/services/parami/linker';
-import { Alert, Button, Divider, Input, message, Image, Spin } from 'antd';
+import { Alert, Button, Divider, Input, message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useIntl, useModel } from 'umi';
@@ -9,7 +9,7 @@ import styles from '../style.less';
 import { hexToDid } from '@/utils/common';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
-import { LoadingOutlined } from '@ant-design/icons';
+import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
 
 const { TextArea } = Input;
 
@@ -33,19 +33,23 @@ const BindModal: React.FC<{
 	blockchain: string,
 	setBindModal: React.Dispatch<React.SetStateAction<boolean>>,
 }> = ({ blockchain, setBindModal }) => {
+	const stmap = localStorage.getItem('stamp');
+
 	const [errorState, setErrorState] = useState<API.Error>({});
 	const [origin, setOrigin] = useState<string>('');
 	const [address, setAddress] = useState<string>('');
 	const [signed, setSigned] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
+	const [password, setPassword] = useState<string>(stmap || '');
 	const [secModal, setSecModal] = useState(false);
 	const [type, setType] = useState<string>('');
+	const [collapse, setCollapse] = useState<boolean>(false);
 
 	const intl = useIntl();
 
 	const handleSubmit = async () => {
 		switch (type) {
 			case 'walletconnect':
+				console.log(password)
 				try {
 					const { account, result }: any = await signPersonalMessage(origin);
 					await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
@@ -98,14 +102,16 @@ const BindModal: React.FC<{
 	};
 
 	useEffect(() => {
-		if (password !== '') {
-			handleSubmit();
-		}
-	}, [password]);
-
-	useEffect(() => {
 		setOrigin(`Link: ${hexToDid(did)}`);
 	}, []);
+
+	useEffect(() => {
+		if (blockchain === 'Ethereum' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') {
+			setCollapse(true);
+		} else {
+			setCollapse(false);
+		};
+	}, [blockchain, password]);
 
 	return (
 		<>
@@ -122,16 +128,6 @@ const BindModal: React.FC<{
 							style={{
 								backgroundColor: '#3B99FC',
 							}}
-							icon={
-								<Image
-									height={18}
-									src={'/images/sns/walletconnect-white.svg'}
-									preview={false}
-									style={{
-										marginRight: 20,
-									}}
-								/>
-							}
 							onClick={() => {
 								setType('walletconnect');
 								setSecModal(true);
@@ -141,14 +137,39 @@ const BindModal: React.FC<{
 								id: 'social.blockchain.walletconnet',
 							})}
 						</Button>
-						<Divider>
-							{intl.formatMessage({
-								id: 'social.blockchain.manual',
-							})}
-						</Divider>
+						<div
+							style={{
+								display: 'flex',
+								width: '100%',
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}}
+							onClick={() => {
+								setCollapse(!collapse);
+							}}
+						>
+							<Divider>
+								{intl.formatMessage({
+									id: 'social.blockchain.manual',
+								})}
+								<Button
+									type="link"
+									icon={
+										<DownOutlined
+											rotate={!collapse ? 0 : -180}
+											className={styles.expandButtonIcon}
+										/>
+									}
+									onClick={() => {
+										setCollapse(!collapse);
+									}}
+								/>
+							</Divider>
+						</div>
 					</>
 				)}
-				{(blockchain === 'Polkadot' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') && (
+				{(blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') && (
 					<>
 						<Button
 							block
@@ -159,16 +180,6 @@ const BindModal: React.FC<{
 							style={{
 								backgroundColor: '#2980FE',
 							}}
-							icon={
-								<Image
-									height={18}
-									src={'/images/sns/tokenpocket-white.svg'}
-									preview={false}
-									style={{
-										marginRight: 20,
-									}}
-								/>
-							}
 							onClick={() => {
 								setType('tokenpocket');
 								setSecModal(true);
@@ -178,85 +189,117 @@ const BindModal: React.FC<{
 								id: 'social.blockchain.tokenpocket',
 							})}
 						</Button>
-						<Divider>
-							{intl.formatMessage({
-								id: 'social.blockchain.manual',
-							})}
-						</Divider>
+						<div
+							style={{
+								display: 'flex',
+								width: '100%',
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'center',
+							}}
+							onClick={() => {
+								setCollapse(!collapse);
+							}}
+						>
+							<Divider>
+								{intl.formatMessage({
+									id: 'social.blockchain.manual',
+								})}
+								<Button
+									type="link"
+									icon={
+										<DownOutlined
+											rotate={!collapse ? 0 : -180}
+											className={styles.expandButtonIcon}
+										/>
+									}
+									onClick={() => {
+										setCollapse(!collapse);
+									}}
+								/>
+							</Divider>
+						</div>
 					</>
 				)}
-				<div className={styles.field}>
-					<div className={styles.title}>
-						{intl.formatMessage({
-							id: 'social.blockchain.originText',
-						})}
+				<div
+					className={styles.manualContainer}
+					style={{
+						maxHeight: !collapse ? '100vh' : 0,
+					}}
+				>
+					<div className={styles.field}>
+						<div className={styles.title}>
+							{intl.formatMessage({
+								id: 'social.blockchain.originText',
+							})}
+						</div>
+						<div className={styles.value}>
+							<CopyToClipboard
+								text={origin}
+								onCopy={() => message.success(
+									intl.formatMessage({
+										id: 'common.copied',
+									})
+								)}
+							>
+								<Input
+									readOnly
+									size='large'
+									value={origin}
+								/>
+							</CopyToClipboard>
+						</div>
 					</div>
-					<div className={styles.value}>
-						<CopyToClipboard
-							text={origin}
-							onCopy={() => message.success(
-								intl.formatMessage({
-									id: 'common.copied',
-								})
-							)}
-						>
-							<Input
-								readOnly
+					<Divider>
+						{intl.formatMessage({
+							id: 'social.blockchain.tip',
+						})}
+					</Divider>
+					<div className={styles.field}>
+						<div className={styles.title}>
+							{intl.formatMessage({
+								id: 'social.blockchain.signed',
+							})}
+						</div>
+						<div className={styles.value}>
+							<TextArea
 								size='large'
-								value={origin}
+								rows={4}
+								value={signed}
+								onChange={(e) => { setSigned(e.target.value) }}
 							/>
-						</CopyToClipboard>
+						</div>
 					</div>
-				</div>
-				<Divider>
-					{intl.formatMessage({
-						id: 'social.blockchain.tip',
-					})}
-				</Divider>
-				<div className={styles.field}>
-					<div className={styles.title}>
-						{intl.formatMessage({
-							id: 'social.blockchain.signed',
-						})}
+					<div className={styles.field}>
+						<div className={styles.title}>
+							{intl.formatMessage({
+								id: 'social.blockchain.address',
+							})}
+						</div>
+						<div className={styles.value}>
+							<Input
+								size='large'
+								onChange={(e) => { setAddress(e.target.value) }}
+							/>
+						</div>
 					</div>
-					<div className={styles.value}>
-						<TextArea
+					<div className={styles.field}>
+						<Button
+							block
 							size='large'
-							rows={4}
-							value={signed}
-							onChange={(e) => { setSigned(e.target.value) }}
-						/>
+							type='primary'
+							shape='round'
+							onClick={() => {
+								setPassword('');
+								setSecModal(true);
+							}}
+							disabled={!address || !signed}
+						>
+							{intl.formatMessage({
+								id: 'common.submit',
+							})}
+						</Button>
 					</div>
-				</div>
-				<div className={styles.field}>
-					<div className={styles.title}>
-						{intl.formatMessage({
-							id: 'social.blockchain.address',
-						})}
-					</div>
-					<div className={styles.value}>
-						<Input
-							size='large'
-							onChange={(e) => { setAddress(e.target.value) }}
-						/>
-					</div>
-				</div>
-				<div className={styles.field}>
-					<Button
-						block
-						size='large'
-						type='primary'
-						shape='round'
-						onClick={() => {
-							setPassword('');
-							setSecModal(true);
-						}}
-						disabled={!address || !signed}
-					>
-						{intl.formatMessage({
-							id: 'common.submit',
-						})}
-					</Button>
 				</div>
 			</div>
 
@@ -265,7 +308,7 @@ const BindModal: React.FC<{
 				setVisable={setSecModal}
 				password={password}
 				setPassword={setPassword}
-			//func={handleSubmit}
+				func={handleSubmit}
 			/>
 		</>
 	)
