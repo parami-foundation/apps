@@ -15,7 +15,6 @@ const { TextArea } = Input;
 
 const did = localStorage.getItem('did') as string;
 const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
-const stamp = localStorage.getItem('stamp') as string;
 
 const Message: React.FC<{
 	content: string;
@@ -34,11 +33,13 @@ const BindModal: React.FC<{
 	blockchain: string,
 	setBindModal: React.Dispatch<React.SetStateAction<boolean>>,
 }> = ({ blockchain, setBindModal }) => {
+	const stmap = localStorage.getItem('stamp');
+
 	const [errorState, setErrorState] = useState<API.Error>({});
 	const [origin, setOrigin] = useState<string>('');
 	const [address, setAddress] = useState<string>('');
 	const [signed, setSigned] = useState<string>('');
-	const [password, setPassword] = useState<string>('');
+	const [password, setPassword] = useState<string>(stmap || '');
 	const [secModal, setSecModal] = useState(false);
 	const [type, setType] = useState<string>('');
 	const [collapse, setCollapse] = useState<boolean>(false);
@@ -48,9 +49,10 @@ const BindModal: React.FC<{
 	const handleSubmit = async () => {
 		switch (type) {
 			case 'walletconnect':
+				console.log(password)
 				try {
 					const { account, result }: any = await signPersonalMessage(origin);
-					await LinkBlockChain(blockchain, account, result, password || stamp, controllerKeystore);
+					await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
 					setBindModal(false);
 				} catch (e: any) {
 					message.error(e.message);
@@ -68,7 +70,7 @@ const BindModal: React.FC<{
 						case 'Polkadot':
 							res = await signPolkadotMessage(origin);
 					}
-					await LinkBlockChain(blockchain, res.address, res.result, password || stamp, controllerKeystore);
+					await LinkBlockChain(blockchain, res.address, res.result, password, controllerKeystore);
 					setBindModal(false);
 				} catch (e: any) {
 					message.error(e.message);
@@ -86,7 +88,7 @@ const BindModal: React.FC<{
 					Signed = `0x00${signed.substring(2)}`;
 				};
 				try {
-					await LinkBlockChain(blockchain, address, Signed, password || stamp, controllerKeystore);
+					await LinkBlockChain(blockchain, address, Signed, password, controllerKeystore);
 				} catch (e: any) {
 					setErrorState({
 						Type: 'chain error',
@@ -109,7 +111,7 @@ const BindModal: React.FC<{
 		} else {
 			setCollapse(false);
 		};
-	}, [blockchain]);
+	}, [blockchain, password]);
 
 	return (
 		<>
