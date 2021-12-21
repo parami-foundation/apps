@@ -31,7 +31,6 @@ export default () => {
             provider?.removeAllListeners();
         };
     }, [chainId, chainName, provider]);
-
     const connect = useCallback(async () => {
         const newProvider = await detectEthereumProvider();
         let accounts: string[] = [];
@@ -49,6 +48,8 @@ export default () => {
             setAccount(accounts[0]);
             const newSigner = ethersProvider.getSigner()
             setSigner(newSigner);
+            const initChainId = await newSigner.getChainId();
+            setChainId(initChainId);
             (window as any).ethereum.on('chainChanged', (newChainId: string) => {
                 setChainId(parseInt(newChainId));
             });

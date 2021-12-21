@@ -10,7 +10,7 @@ import {
   encodeSqrtRatioX96,
   TickMath,
 } from '@uniswap/v3-sdk/dist/'
-
+import Web3 from 'web3'
 // try to parse a user entered amount for a given token
 export function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
   if (!value || !currency) {
@@ -65,5 +65,21 @@ export function tryParseTick(
   return -nearestUsableTick(tick, TICK_SPACINGS[feeAmount])
 }
 export function getIncentiveId(incentiveKey) {
-  return ethers.utils.solidityKeccak256(['address', 'address', 'uint256', 'uint256'], [incentiveKey.rewardToken, incentiveKey.pool, incentiveKey.startTime, incentiveKey.endTime])
+  const web3 = new Web3(window.ethereum);
+  const encode = web3.eth.abi.encodeParameter(
+    {
+      IncentiveKey: {
+        rewardToken: 'address',
+        pool: 'address',
+        startTime: 'uint256',
+        endTime: 'uint256',
+      },
+    },
+    incentiveKey
+  );
+  // @ts-ignore
+  const incentiveId = web3.utils.soliditySha3(encode);
+  console.log('getIncentiveId',encode,incentiveId)
+  return incentiveId;
+  //return ethers.utils.solidityKeccak256(['address', 'address', 'uint256', 'uint256'], [incentiveKey.rewardToken, incentiveKey.pool, incentiveKey.startTime, incentiveKey.endTime])
 }

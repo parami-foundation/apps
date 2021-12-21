@@ -1,10 +1,11 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import { BigIntToFloatString } from '@/utils/format';
 import { LinkOutlined } from '@ant-design/icons';
+import { formatBalance } from '@polkadot/util';
 import { Button, Divider, Space, Image } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useModel } from 'umi';
-import { contractAddresses, pairs } from '../config';
+import { contractAddresses } from '../config';
 import style from '../style.less';
 import AddModal from './Modal';
 
@@ -15,26 +16,26 @@ const Rows: React.FC<{
     rewards: any[];
     pair: Pair;
     poolAddress: string;
-}> = ({ collapse, stakedLPs, unstakedLPs, rewards, pair, poolAddress }) => {
+    apys: string[]
+}> = ({ collapse, stakedLPs, unstakedLPs, rewards, pair, poolAddress, apys }) => {
     const {
         StakeContract
     } = useModel('contracts');
     const {
-        account
+        account,
+        chainId
     } = useModel('metaMask');
     const [AddModalShow, setAddModalShow] = useState<boolean>(false);
     const [pendingStake, setPendingStake] = useState<(true | false)[]>([])
     const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([])
     const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([])
-    useEffect(() => {
-        console.log(stakedLPs, unstakedLPs)
-    }, [stakedLPs, unstakedLPs])
+
     const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);
-
+        console.log(`handle Stake ${tokenId}`);
         const incentiveKey = {
-            rewardToken: contractAddresses.ad3,
+            rewardToken: contractAddresses.ad3[chainId],
             pool: poolAddress,
             startTime: pair.incentives[incentiveIndex].startTime,
             endTime: pair.incentives[incentiveIndex].endTime,
@@ -49,7 +50,7 @@ const Rows: React.FC<{
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
         }
-    }, [StakeContract, pair.incentives, pendingStake]);
+    }, [StakeContract, chainId, pair.incentives, pendingStake, poolAddress]);
 
     const handleUnstake = useCallback(
         async (tokenId, incentiveIndex) => {
@@ -57,7 +58,7 @@ const Rows: React.FC<{
             pendingUnstake[tokenId] = true
             setPendingUnstake(pendingUnstake)
             const incentiveKey = {
-                rewardToken: contractAddresses.ad3,
+                rewardToken: contractAddresses.ad3[chainId],
                 pool: poolAddress,
                 startTime: pair.incentives[incentiveIndex].startTime,
                 endTime: pair.incentives[incentiveIndex].endTime,
@@ -73,20 +74,21 @@ const Rows: React.FC<{
                 setPendingUnstake(pendingUnstake)
             }
         },
-        [StakeContract, account, pair.incentives, pendingUnstake, poolAddress]
+        [StakeContract, account, chainId, pair.incentives, pendingUnstake, poolAddress]
     )
 
     const handleClaim = useCallback(async (tokenId, amount, incentiveIndex) => {
         pendingClaim[tokenId] = true
         setPendingClaim(pendingClaim)
+        console.log('handleclaim', tokenId, amount, incentiveIndex)
         const incentiveKey = {
-            rewardToken: contractAddresses.ad3,
+            rewardToken: contractAddresses.ad3[chainId],
             pool: poolAddress,
             startTime: pair.incentives[incentiveIndex].startTime,
             endTime: pair.incentives[incentiveIndex].endTime,
         }
         try {
-            await StakeContract?.claimReward(incentiveKey, tokenId, account, FloatStringToBigInt(amount, 18).toString());
+            await StakeContract?.claimReward(incentiveKey, tokenId, account, amount);
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         } catch (e) {
@@ -94,7 +96,7 @@ const Rows: React.FC<{
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         }
-    }, [StakeContract, account, pair.incentives, pendingClaim, poolAddress]);
+    }, [StakeContract, account, pair.incentives, pendingClaim, poolAddress, chainId]);
     return (
         <>
             <div
@@ -154,7 +156,7 @@ const Rows: React.FC<{
                                                 </div>
                                                 <div className={style.value}>
                                                     {
-                                                        //BigIntToFloatString(item.liquidity, 18)
+                                                        formatBalance(item.liquidity, { withUnit: false }, 18)
                                                     }
                                                 </div>
                                             </div>
@@ -171,7 +173,7 @@ const Rows: React.FC<{
                                                     My APR
                                                 </div>
                                                 <div className={style.value}>
-                                                    TODO%
+                                                    {apys[item.incentiveIndex]}
                                                 </div>
                                             </div>
                                             <div className={style.nftReward}>
@@ -185,14 +187,14 @@ const Rows: React.FC<{
                                                             preview={false}
                                                             className={style.icon}
                                                         />
-                                                        {BigIntToFloatString(rewards[item.tokenId], 18)}
+                                                        {formatBalance(rewards.filter((reward) => { return reward.tokenId === item.tokenId })[0]?.reward, { withUnit: false }, 18)}
                                                     </div>
                                                 </div>
                                                 <Button
                                                     size='middle'
                                                     shape='round'
                                                     type='primary'
-                                                    onClick={() => handleClaim(item.tokenId, rewards[item.tokenId], item.incentiveIndex)}
+                                                    onClick={() => handleClaim(item.tokenId, rewards.filter((reward) => { return reward.tokenId === item.tokenId })[0]?.reward, item.incentiveIndex)}
                                                 >
                                                     Harvest
                                                 </Button>
@@ -214,7 +216,6 @@ const Rows: React.FC<{
                                 })}
                             {
                                 unstakedLPs.filter((item) => { return item != undefined }).map((item) => {
-                                    console.log('item', item);
                                     return (
                                         <div className={style.nftItem}>
                                             <div className={style.nftItemBlock}>
@@ -232,9 +233,9 @@ const Rows: React.FC<{
                                                     Liquidity
                                                 </div>
                                                 <div className={style.value}>
-                                                    {//BigIntToFloatString(item.liquidity,18)
+                                                    {
+                                                        formatBalance(item.liquidity, { withUnit: false }, 18)
                                                     }
-                                                    TODO
                                                 </div>
                                             </div>
                                             <div className={style.nftItemBlock}>
@@ -250,7 +251,7 @@ const Rows: React.FC<{
                                                     My APR
                                                 </div>
                                                 <div className={style.value}>
-                                                    TODO%
+                                                    0%
                                                 </div>
                                             </div>
                                             <div className={style.nftReward}>
@@ -264,7 +265,7 @@ const Rows: React.FC<{
                                                             preview={false}
                                                             className={style.icon}
                                                         />
-                                                        {BigIntToFloatString(rewards[item.tokenId], 18)}
+                                                        0
                                                     </div>
                                                 </div>
                                                 <Button

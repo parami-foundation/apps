@@ -12,5 +12,5 @@ declare type Liquid = {
     tickLower: any;
     tickUpper: any;
     incentiveIndex: number;
-    //liquidity: bigint;
+    liquidity: bigint;
 } ;

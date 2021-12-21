@@ -23,6 +23,14 @@ export default () => {
     const [LPContract, setLPContract] = useState<ethers.Contract | null>(null);
     // Init contract instances
     useEffect(() => {
+        if (chainId !== 1 && chainId !== 4) {
+            setAd3Contract(null);
+            setWethContract(null);
+            setStakeContract(null);
+            setFactoryContract(null);
+            setLPContract(null);
+            return;
+        }
         if (!provider || !signer) return;
         const ad3 = new ethers.Contract(contractAddresses.ad3[chainId], AD3Abi, signer);
         const weth = new ethers.Contract(contractAddresses.weth[chainId], WETHAbi, signer);
