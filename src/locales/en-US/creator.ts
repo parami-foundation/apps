@@ -25,7 +25,7 @@ export default {
     'creator.explorer.totalValue': 'Total Value',
     'creator.explorer.reservedValue': 'Reserved Value',
     'creator.explorer.members': 'Members',
-    'creator.explorer.viewers': 'Viewers',
+    'creator.explorer.totalViewers': 'Total Viewers',
     'creator.explorer.advertisement': 'Advertisement',
     'creator.explorer.chart': 'Chart',
     'creator.explorer.stat': 'Stat',
