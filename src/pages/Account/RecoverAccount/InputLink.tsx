@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, Button, Card, Divider, Input, message, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, Typography } from 'antd';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -14,38 +14,44 @@ import config from '@/config/config';
 const { Title } = Typography;
 
 const InputLink: React.FC<{
-  mnemonic: string;
-  setMnemonic: React.Dispatch<React.SetStateAction<string>>;
+  magicMnemonic: string;
+  setMagicMnemonic: React.Dispatch<React.SetStateAction<string>>;
+  setControllerKeystore: React.Dispatch<React.SetStateAction<string>>;
+  setMagicUserAddress: React.Dispatch<React.SetStateAction<string>>;
   setStep: React.Dispatch<React.SetStateAction<number>>;
-}> = ({ mnemonic, setMnemonic, setStep }) => {
+}> = ({ magicMnemonic, setMagicMnemonic, setMagicUserAddress, setStep }) => {
   const [submitting, setSubmitting] = useState(false);
-  const [errorState, setErrorState] = useState<API.Error>({});
 
   const intl = useIntl();
 
   const queryAccount = async () => {
     try {
-      const { userAddress: magicUserAddress } = await QueryAccountFromMnemonic(mnemonic);
+      const { userAddress: MagicUserAddress } = await QueryAccountFromMnemonic(magicMnemonic);
 
-      const oldControllerData = await QueryStableAccountByMagic(
-        magicUserAddress,
+      const oldControllerData: any = await QueryStableAccountByMagic(
+        MagicUserAddress,
       );
+
+      setMagicUserAddress(MagicUserAddress);
 
       const stableAccountData = await GetStableAccount(
         oldControllerData?.oldControllerAddress,
       );
-      const stashAccount = stableAccountData?.stashAccount;
-      const didData = await QueryDid(stashAccount);
+
+      const didData = await QueryDid(stableAccountData?.stashAccount);
 
       if (didData === null) {
-        setErrorState({
-          Type: 'restore',
-          Message: intl.formatMessage({
+        message.error(
+          intl.formatMessage({
             id: 'error.account.notFound',
           }),
-        });
+        );
+        history.push(config.page.homePage);
         return;
       }
+      localStorage.setItem('stashUserAddress', MagicUserAddress);
+      localStorage.setItem('stashUserAddress', stableAccountData?.stashAccount as string);
+      localStorage.setItem('did', didData);
 
       setStep(2);
 
@@ -63,22 +69,8 @@ const InputLink: React.FC<{
     setSubmitting(false);
   };
 
-  const Message: React.FC<{
-    content: string;
-  }> = ({ content }) => (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
-
   return (
     <>
-      {errorState.Message && <Message content={errorState.Message} />}
       <Card className={styles.card}>
         <img src={'/images/icon/link.svg'} className={style.topIcon} />
         <Title
@@ -111,7 +103,7 @@ const InputLink: React.FC<{
               const pos = e.target.value.indexOf('/link/') + 6;
               const urlEncode = e.target.value.substring(pos);
               const Mnemonic = urlEncode.replace(/%20/g, ' ');
-              setMnemonic(Mnemonic);
+              setMagicMnemonic(Mnemonic);
             }}
             disabled={submitting}
             placeholder={'https://wallet.parami.io/recover/link/...'}
@@ -123,7 +115,7 @@ const InputLink: React.FC<{
             shape="round"
             size="large"
             className={style.button}
-            disabled={!mnemonic}
+            disabled={!magicMnemonic}
             loading={submitting}
             onClick={() => handleSubmit()}
           >

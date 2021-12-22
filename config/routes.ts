@@ -87,6 +87,13 @@
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Social/Bind',
+    routes: [
+      {
+        path: '/social/:from',
+        name: 'social',
+        component: './Social/Bind',
+      },
+    ],
   },
   {
     path: '/creator',

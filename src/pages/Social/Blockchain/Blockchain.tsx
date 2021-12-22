@@ -314,13 +314,22 @@ const BindModal: React.FC<{
 	)
 }
 
-const Blockchain: React.FC = () => {
+const Blockchain: React.FC<{
+	from: string;
+}> = ({ from }) => {
 	const [bindModal, setBindModal] = useState<boolean>(false);
 	const [blockchain, setBlockchain] = useState<string>('');
 
 	const linkedInfo = useModel('sns');
 
 	const intl = useIntl();
+
+	useEffect(() => {
+		if (from) {
+			setBindModal(true);
+			setBlockchain(from);
+		}
+	}, [from]);
 
 	return (
 		<>

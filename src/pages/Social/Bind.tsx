@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Card } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useParams } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import classNames from 'classnames';
@@ -12,6 +12,11 @@ const Bind: React.FC = () => {
     const [tab, setTab] = useState<string>('sns');
 
     const intl = useIntl();
+
+
+    const params: {
+        from: string;
+    } = useParams();
 
     return (
         <>
@@ -45,12 +50,12 @@ const Bind: React.FC = () => {
                         <div className={style.bindList}>
                             {tab === 'sns' && (
                                 <>
-                                    <SNS />
+                                    <SNS from={params.from} />
                                 </>
                             )}
                             {tab === 'blockchain' && (
                                 <>
-                                    <Blockchain />
+                                    <Blockchain from={params.from} />
                                 </>
                             )}
                         </div>

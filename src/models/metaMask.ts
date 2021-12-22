@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useState, useCallback, useEffect } from 'react'
 import { defaultChainId } from '@/pages/Dashboard/pages/Stake/config';
 
-import { message, notification } from 'antd';
+import { message } from 'antd';
 import ethNet from '@/config/ethNet';
 
 export default () => {
