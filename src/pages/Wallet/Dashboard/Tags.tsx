@@ -51,8 +51,10 @@ const Tags: React.FC = () => {
                                     style={{
                                         color: tag.textColor,
                                         backgroundColor: tag.bgColor,
-                                        borderColor: 'transparent',
+                                        borderColor: '#000',
                                         fontSize: `2rem`,
+                                        borderStyle: 'dashed',
+                                        borderWidth: 20
                                     }}
                                     className='tagItem'
                                     onClick={() => { history.push(`${config.page.socialPage}/?type=${tag.count.type}&from=${tag.count.chain}`) }}

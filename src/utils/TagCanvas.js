@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright (C) 2010-2015 Graham Breach
  *
@@ -945,14 +946,22 @@ function Outline(tc, t) {
     this.ts = null;
     this.tc = tc;
     this.tag = t;
+    console.log("t",t)
     this.x = this.y = this.w = this.h = this.sc = 1;
     this.z = 0;
     this.pulse = 1;
     this.pulsate = tc.pulsateTo < 1;
     this.colour = tc.outlineColour;
     this.adash = ~~tc.outlineDash;
+    
+    if (this.adash == -1) {
+        var border = GetProperty(t.a, 'border-width');
+        this.adash = border.substring(0,border.length - 2);
+    }
+
     this.agap = ~~tc.outlineDashSpace || this.adash;
     this.aspeed = tc.outlineDashSpeed * 1;
+    
     if (this.colour == 'tag')
         this.colour = GetProperty(t.a, 'color');
     else if (this.colour == 'tagbg')
@@ -2147,7 +2156,7 @@ TagCanvas.options = {
     z1: 20000,
     z2: 20000,
     z0: 0.0002,
-    freezeActive: false,
+    freezeActive: true,
     freezeDecel: false,
     activeCursor: 'pointer',
     pulsateTo: 1,
@@ -2200,7 +2209,7 @@ TagCanvas.options = {
     stretchY: 1,
     offsetX: 0,
     offsetY: 0,
-    shuffleTags: false,
+    shuffleTags: true,
     noSelect: false,
     noMouse: false,
     imageScale: 1,
@@ -2231,8 +2240,8 @@ TagCanvas.options = {
     repeatTags: 0,
     minTags: 0,
     imageRadius: 0,
-    scrollPause: true,
-    outlineDash: 20,
+    scrollPause: false,
+    outlineDash: -1,
     outlineDashSpace: 0,
     outlineDashSpeed: 1
 };
