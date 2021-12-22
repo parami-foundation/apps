@@ -691,6 +691,7 @@ function FindWeight(a, wFrom, tHeight) {
     } else if (p = GetProperty(a, 'font-size')) {
         w = (p.indexOf('px') > -1 && p.replace('px', '') * 1) ||
             (p.indexOf('pt') > -1 && p.replace('pt', '') * 1.25) ||
+            (p.indexOf('rem') > -1 && p.replace('rem', '') * 2) ||
             p * 3.3;
     }
     return w;
@@ -2215,7 +2216,7 @@ TagCanvas.options = {
     bgColour: 'tag',
     bgRadius: 16,
     bgOutline: 'tag',
-    bgOutlineThickness: 1,
+    bgOutlineThickness: 0,
     outlineIncrease: 1,
     textAlign: 'center',
     textVAlign: 'middle',
@@ -2231,7 +2232,7 @@ TagCanvas.options = {
     minTags: 0,
     imageRadius: 0,
     scrollPause: true,
-    outlineDash: 0,
+    outlineDash: 20,
     outlineDashSpace: 0,
     outlineDashSpeed: 1
 };

@@ -51,16 +51,16 @@ export default () => {
                             value: item.value,
                             count: Data.all[item.count],
                             hex: item.count,
-                            textColor: textColor[Math.floor((item.value - 1) / (11 - 1))],
-                            bgColor: bgColor[Math.floor((item.value - 1) / (11 - 1))],
-                            borderColor: borderColor[Math.floor((item.value - 1) / (11 - 1))],
+                            textColor: '#d4380d',
+                            bgColor: '#fff2e8',
+                            borderColor: '#ffbb96',
                         });
                     }
 
                     Object.keys(Data.guide).map((guideItem) => {
                         guide.set(Data.guide[guideItem].name, {
                             count: Data.guide[guideItem],
-                            textColor: '#000',
+                            textColor: '#909090',
                             bgColor: '#fafafa',
                             borderColor: '#d9d9d9',
                         });

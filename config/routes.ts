@@ -86,18 +86,7 @@
     icon: 'ApiOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
-    routes: [
-      {
-        path: '/social',
-        name: 'social',
-        component: './Social/Bind',
-      },
-      {
-        path: '/social/:from',
-        name: 'social',
-        component: './Social/Bind',
-      },
-    ],
+    component: './Social/Bind',
   },
   {
     path: '/creator',

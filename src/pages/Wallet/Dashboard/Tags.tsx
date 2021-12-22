@@ -51,12 +51,13 @@ const Tags: React.FC = () => {
                                     style={{
                                         color: tag.textColor,
                                         backgroundColor: tag.bgColor,
-                                        borderColor: tag.borderColor,
-                                        fontSize: `0.5rem`,
+                                        borderColor: 'transparent',
+                                        fontSize: `2rem`,
                                     }}
-                                    onClick={() => { history.push(`${config.page.socialPage}/${tag.count.chain}`) }}
+                                    className='tagItem'
+                                    onClick={() => { history.push(`${config.page.socialPage}/?type=${tag.count.type}&from=${tag.count.chain}`) }}
                                 >
-                                    {tag.count.name}
+                                    👉{tag.count.name}
                                 </a>
                             </li>
                         ))}

@@ -11,10 +11,12 @@
     "guide": {
         "0x722ad376117d414e25bb0d9b573eec8566cd6f94cda60191c87598c5f32b2e83": {
             "name": "Ethereum",
+            "type": "blockchain",
             "chain": "Ethereum"
         },
         "0x3eeeaf2b24de92d6c804955d3a696c3d8832d946b0fa12122859f63a8e627b12": {
             "name": "CryptoMines",
+            "type": "blockchain",
             "chain": "Binance"
         }
     }
