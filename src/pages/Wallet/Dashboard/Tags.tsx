@@ -2,7 +2,7 @@ import { Card, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import styles from '../style.less';
 import style from './Tags.less';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
 import { TagCanvas } from '@/utils/TagCanvas';
 import config from '@/config/config';
 
@@ -54,7 +54,7 @@ const Tags: React.FC = () => {
                                         borderColor: tag.borderColor,
                                         fontSize: `0.5rem`,
                                     }}
-                                    href={`${config.page.socialPage}/${tag.count.chain}`}
+                                    onClick={() => { history.push(`${config.page.socialPage}/${tag.count.chain}`) }}
                                 >
                                     {tag.count.name}
                                 </a>
