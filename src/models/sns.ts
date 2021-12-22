@@ -4,7 +4,7 @@ import { getOrInit } from '@/services/parami/init';
 export default () => {
     const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
 
-    const platforms = ['Telegram', 'Twitter', 'Bitcoin', 'Ethereum', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
+    const platforms = ['Telegram', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
     const did = localStorage.getItem('did') as string;
 

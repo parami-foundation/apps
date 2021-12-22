@@ -1,28 +1,31 @@
-import { Card, Tag, Typography } from 'antd';
+import { Card, Typography } from 'antd';
 import React, { useEffect } from 'react';
 import styles from '../style.less';
 import style from './Tags.less';
 import { useIntl, useModel } from 'umi';
 import { TagCanvas } from '@/utils/TagCanvas';
+import config from '@/config/config';
 
 const { Title } = Typography;
 
 const Tags: React.FC = () => {
-    const { tagsArr } = useModel('tags');
+    const { tagsArr, guideTagsArr } = useModel('tags');
 
     const intl = useIntl();
 
     useEffect(() => {
-        try {
-            TagCanvas.Start(
-                'tagcloud',
-                '',
-            );
+        if (tagsArr && guideTagsArr) {
+            try {
+                TagCanvas.Start(
+                    'tagcloud',
+                    '',
+                );
+            }
+            catch (e) {
+                console.log(e)
+            }
         }
-        catch (e) {
-            console.log(e)
-        }
-    });
+    }, [tagsArr, guideTagsArr]);
 
     return (
         <>
@@ -41,30 +44,29 @@ const Tags: React.FC = () => {
                     })}
                 </Title>
                 <canvas height="300" id="tagcloud">
-                    {tagsArr.map((tag) => (
-                        <Tag
-                            color={tag.color}
-                            className={style.tagItem}
-                            style={{
-                                fontSize: `${1 + tag.value / 100}rem`,
-                            }}
-                            icon={
-                                <span className={style.value}>
-                                    {tag.value}
-                                </span>
-                            }
-                        >
-                            {tag.count}
-                        </Tag>
-                    ))}
                     <ul className={style.tagCloud}>
+                        {guideTagsArr.map((tag) => (
+                            <li>
+                                <a
+                                    style={{
+                                        color: tag.textColor,
+                                        backgroundColor: tag.bgColor,
+                                        borderColor: tag.borderColor,
+                                        fontSize: `0.5rem`,
+                                    }}
+                                    href={`${config.page.socialPage}/${tag.count.chain}`}
+                                >
+                                    {tag.count.name}
+                                </a>
+                            </li>
+                        ))}
                         {tagsArr.map((tag) => (
                             <li>
                                 <a
                                     style={{
-                                        color: tag.color,
-                                        backgroundColor: '#fff2f0',
-                                        borderColor: '#ffccc7',
+                                        color: tag.textColor,
+                                        backgroundColor: tag.bgColor,
+                                        borderColor: tag.borderColor,
                                         fontSize: `${1 + tag.value / 100}rem`,
                                     }}
                                 >
@@ -75,24 +77,6 @@ const Tags: React.FC = () => {
                         ))}
                     </ul>
                 </canvas>
-                {/* <div className={style.tagContainer}>
-                    {tagsArr.map((tag) => (
-                        <Tag
-                            color={tag.color}
-                            className={style.tagItem}
-                            style={{
-                                fontSize: `${1 + tag.value / 100}rem`,
-                            }}
-                            icon={
-                                <span className={style.value}>
-                                    {tag.value}
-                                </span>
-                            }
-                        >
-                            {tag.count}
-                        </Tag>
-                    ))}
-                </div> */}
             </Card>
         </>
     )

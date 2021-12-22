@@ -7,8 +7,11 @@ export default () => {
     const [first, setFirst] = useState((new Date()).getTime());
     const [tags, setTags] = useState<Map<string, any>>(new Map());
     const [tagsArr, setTagsArr] = useState<any[]>([]);
+    const [guideTagsArr, setGuideTagsArr] = useState<any[]>([]);
 
-    const colorPool = ['magenta', 'red', 'volcano', 'orange', 'gold', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple'];
+    const textColor = ['#c41d7f', '#cf1322', '#d4380d', '#d46b08', '#d48806', '#7cb305', '#389e0d', '#08979c', '#096dd9', '#1d39c4', '#531dab'];
+    const bgColor = ['#fff0f6', '#fff1f0', '#fff2e8', '#fff7e6', '#fffbe6', '#fcffe6', '#f6ffed', '#e6fffb', '#e6f7ff', '#f0f5ff', '#f9f0ff'];
+    const borderColor = ['#ffadd2', '#ffa39e', '#ffbb96', '#ffd591', '#ffe58f', '#eaff8f', '#b7eb8f', '#87e8de', '#91d5ff', '#adc6ff', '#d3adf7'];
 
     const getTags = async () => {
         const did = localStorage.getItem('did') as string;
@@ -31,10 +34,11 @@ export default () => {
         }
 
         const data: Map<string, any> = new Map();
+        const guide: Map<string, any> = new Map();
         tmpTags.map((item) => {
             GetTagsMap().then(({ response, data: Data }) => {
                 if (response?.status === 200) {
-                    if (((new Date()).getTime() - first >= 30000) && !data.has(Data[item.count])) {
+                    if (((new Date()).getTime() - first >= 30000) && !data.has(Data.all[item.count])) {
                         notification.success({
                             message: 'Get new tag!',
                             description: Data[item.count],
@@ -42,15 +46,32 @@ export default () => {
                         });
                     }
 
-                    if (Data[item.count]) {
-                        data.set(Data[item.count], {
+                    if (Data.all[item.count]) {
+                        data.set(Data.all[item.count], {
                             value: item.value,
-                            count: Data[item.count],
-                            color: colorPool[Math.floor((item.value - 1) / (11 - 1))],
+                            count: Data.all[item.count],
+                            hex: item.count,
+                            textColor: textColor[Math.floor((item.value - 1) / (11 - 1))],
+                            bgColor: bgColor[Math.floor((item.value - 1) / (11 - 1))],
+                            borderColor: borderColor[Math.floor((item.value - 1) / (11 - 1))],
                         });
                     }
+
+                    Object.keys(Data.guide).map((guideItem) => {
+                        guide.set(Data.guide[guideItem].name, {
+                            count: Data.guide[guideItem],
+                            textColor: '#000',
+                            bgColor: '#fafafa',
+                            borderColor: '#d9d9d9',
+                        });
+                    })
+                    if (Data.guide[item.count]) {
+                        guide.delete(Data.guide[item.count].name);
+                    }
+
                     setTags(data);
                     setTagsArr([...data?.values()]);
+                    setGuideTagsArr([...guide?.values()]);
                 }
             });
         });
@@ -60,5 +81,5 @@ export default () => {
         getTags();
     }, []);
 
-    return { tags, tagsArr };
+    return { tags, tagsArr, guideTagsArr };
 }

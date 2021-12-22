@@ -402,6 +402,39 @@ const Blockchain: React.FC<{
 				</div>
 				<div className={styles.field}>
 					<span className={styles.title}>
+						<img className={styles.icon} src="/images/crypto/binance-bsc-logo.svg" />
+						<span className={styles.label}>BSC</span>
+					</span>
+					<span className={styles.value}>
+						<Spin
+							indicator={
+								<LoadingOutlined spin />
+							}
+							spinning={!Object.keys(linkedInfo).length}
+						>
+							<Button
+								disabled={null !== linkedInfo.Binance}
+								type="primary"
+								shape="round"
+								onClick={() => {
+									setBindModal(true);
+									setBlockchain('Binance');
+								}}
+							>
+								{!linkedInfo.Bitcoin ?
+									intl.formatMessage({
+										id: 'social.bind',
+									}) :
+									intl.formatMessage({
+										id: 'social.binded',
+									})
+								}
+							</Button>
+						</Spin>
+					</span>
+				</div>
+				<div className={styles.field}>
+					<span className={styles.title}>
 						<img className={styles.icon} src="/images/crypto/eos-eos-logo.svg" />
 						<span className={styles.label}>EOS</span>
 					</span>
