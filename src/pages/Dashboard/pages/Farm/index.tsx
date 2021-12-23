@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
@@ -15,17 +16,15 @@ import { getIncentiveId } from './api/parami/util';
 import { BigIntToFloatString } from '@/utils/format';
 import PairItem from './components/PairItem';
 import ERC20_ABI from './abi/ERC20.json';
-
+import ETHAddress from '../../components/ETHAddress/ETHAddress';
 
 const Farm: React.FC = () => {
-
     const [loading, setLoading] = useState<boolean>(false);
     const [Postitions, setPostitions] = useState<any[]>([]);
     const [isApprovedAll, setIsApproveAll] = useState(true);
     const [requestedApproval, setRequestedApproval] = useState(false);
     const [Pairs, setPairs] = useState<any[]>([]);
     const [Balances, setBalances] = useState<BigNumber[]>([]);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [AD3Price, setAD3Price] = useState('0');
     // const [AD3Supply, setSupply] = useState(BigInt(0));
     const [Pools, setPools] = useState<string[]>([]);
@@ -57,6 +56,7 @@ const Farm: React.FC = () => {
     //     setAd3Approved(true);
     // };
     //check chainId
+
     useEffect(() => {
         console.log('chainId', chainId);
         if (chainId !== 1 && chainId !== 4) {
@@ -72,6 +72,7 @@ const Farm: React.FC = () => {
             setWalletReady(true);
         }
     }, [chainId, account]);
+
     useEffect(() => {
         if (chainId !== 1 && chainId !== 4) {
             return;
@@ -82,6 +83,7 @@ const Farm: React.FC = () => {
         }
         setPairs(p);
     }, [chainId]);
+
     //get total supply
     useEffect(() => {
         if (Ad3Contract) {
@@ -91,6 +93,7 @@ const Farm: React.FC = () => {
             })
         }
     }, [Ad3Contract]);
+
     //get LPContract's balance
     async function getLPBalance() {
         if (chainId !== 1 && chainId !== 4) {
@@ -111,10 +114,12 @@ const Farm: React.FC = () => {
             }
         }
     }
+
     useEffect(() => {
         getLPBalance();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chainId, signer, Pools]);
+
     //update AD3 price && set pools
     const getPoolsAndPrice = useCallback(async () => {
         if (FactoryContract && chainId !== undefined) {
@@ -133,7 +138,8 @@ const Farm: React.FC = () => {
                 setAD3Price(res.toSignificant())
             }
         }
-    }, [FactoryContract, Pools, chainId])
+    }, [FactoryContract, Pools, chainId]);
+
     useEffect(() => {
         setLoading(true);
         getPoolsAndPrice();
@@ -169,6 +175,7 @@ const Farm: React.FC = () => {
             setPostitions(positions);
         }
     };
+
     useEffect(() => {
         if (LPContract) {
             getPositions();
@@ -180,8 +187,8 @@ const Farm: React.FC = () => {
     const updateApy = useCallback(async () => {
         if (pairsData.length > 0 && Pools.length > 0) {
             const allApys: any[] = [];
-            for(let i = 0; i < pairsData.length; i++) {
-                const promises= pairsData[i].incentives.map(async (incentive) => {
+            for (let i = 0; i < pairsData.length; i++) {
+                const promises = pairsData[i].incentives.map(async (incentive) => {
                     const incentiveKey = {
                         rewardToken: contractAddresses.ad3[chainId],
                         pool: Pools[i],
@@ -190,11 +197,11 @@ const Farm: React.FC = () => {
                     }
                     const incentiveId = getIncentiveId(incentiveKey);
                     const incentiveRes = await StakeContract?.incentives(incentiveId);
-                    console.log('incentive', incentiveRes ,incentiveId);
+                    console.log('incentive', incentiveRes, incentiveId);
                     // console.log(new BigNumber(incentive.totalRewardUnclaimed).dividedBy(new BigNumber(10).pow(15)).toNumber())
                     const time = ((Date.now() / 1000) | 0) - incentive.startTime;
                     // console.log(time)
-                    const apy = (incentive.totalReward - Number(BigIntToFloatString(incentiveRes.totalRewardUnclaimed, 18))) / time * 365 * 24 * 60 * 60 /incentive.totalReward * 100;
+                    const apy = (incentive.totalReward - Number(BigIntToFloatString(incentiveRes.totalRewardUnclaimed, 18))) / time * 365 * 24 * 60 * 60 / incentive.totalReward * 100;
                     // console.log(apy)
                     // reward / staked time 
                     return `${apy > 0 ? apy.toFixed(2) : '0.00'}%`
@@ -236,6 +243,7 @@ const Farm: React.FC = () => {
         updateApy();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [StakeContract, Pools]);
+
     const onApprove = useCallback(async () => {
         if (!LPContract || !StakeContract) return;
         try {
@@ -249,6 +257,7 @@ const Farm: React.FC = () => {
             return false
         }
     }, [LPContract, StakeContract]);
+
     const handleApprove = useCallback(async () => {
         try {
             setRequestedApproval(true)
@@ -264,6 +273,7 @@ const Farm: React.FC = () => {
             setRequestedApproval(false)
         }
     }, [onApprove]);
+
     const getIsApprovedAll = useCallback(async () => {
         if (!LPContract || !StakeContract) return;
         setLoading(true);
@@ -290,6 +300,7 @@ const Farm: React.FC = () => {
                     <div className={styles.mainBgContainer}>
                         <div className={styles.contentContainer}>
                             <div className={style.stakeContainer}>
+                                <ETHAddress />
                                 <div className={style.headerContainer}>
                                     <div className={style.titleContainer}>
                                         <Title level={2}>
@@ -299,28 +310,34 @@ const Farm: React.FC = () => {
                                             Stake your AD3 to earn rewards
                                         </span>
                                     </div>
-                                    <Button
-                                        shape='round'
-                                        type='primary'
-                                        size='large'
-                                        onClick={() => {
-                                            window.open();
-                                        }}
-                                    >
-                                        Exchange AD3
-                                    </Button>
-                                    <Button
-                                        shape='round'
-                                        type='primary'
-                                        size='large'
-                                        disabled={isApprovedAll || requestedApproval}
-                                        onClick={() => {
-                                            handleApprove()
-                                        }}
-                                    >
-                                        {requestedApproval ? 'pending' : isApprovedAll ? 'LP Operation Approved' : 'LP Operation Approve'}
+                                    <div className={style.buttonContainer}>
+                                        <Button
+                                            block
+                                            shape='round'
+                                            type='primary'
+                                            size='middle'
+                                            className={style.button}
+                                            onClick={() => {
+                                                window.open();
+                                            }}
+                                        >
+                                            Exchange AD3
+                                        </Button>
+                                        <Button
+                                            block
+                                            shape='round'
+                                            type='primary'
+                                            size='middle'
+                                            disabled={isApprovedAll || requestedApproval}
+                                            className={style.button}
+                                            onClick={() => {
+                                                handleApprove()
+                                            }}
+                                        >
+                                            {requestedApproval ? 'pending' : isApprovedAll ? 'LP Operation Approved' : 'LP Operation Approve'}
 
-                                    </Button>
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className={style.stakeContainer}>
                                     {Apys.length > 0 && Balances.length > 0 && Pairs.map((pair: Pair, index: number) => {

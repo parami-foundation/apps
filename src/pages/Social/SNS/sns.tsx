@@ -8,6 +8,7 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LoadingOutlined } from '@ant-design/icons';
 import MyAvatar from '@/components/Avatar/MyAvatar';
 import { useModel } from 'umi';
+import { useEffect } from 'react';
 
 const did = localStorage.getItem('did') as string;
 
@@ -169,12 +170,21 @@ const BindModal: React.FC<{
 	)
 }
 
-const SNS: React.FC = () => {
+const SNS: React.FC<{
+	from: string;
+}> = ({ from }) => {
 	const [bindModal, setBindModal] = useState<boolean>(false);
 	const [platform, setPlatform] = useState<string>('');
 	const linkedInfo = useModel('sns');
 
 	const intl = useIntl();
+
+	useEffect(() => {
+		if (from) {
+			setBindModal(true);
+			setPlatform(from);
+		}
+	}, [from]);
 
 	return (
 		<>

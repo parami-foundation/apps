@@ -1,17 +1,27 @@
 import React from 'react';
 import { useState } from 'react';
 import { Card } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import classNames from 'classnames';
 import SNS from './SNS/sns';
 import Blockchain from './Blockchain/Blockchain';
+import { useEffect } from 'react';
 
 const Bind: React.FC = () => {
     const [tab, setTab] = useState<string>('sns');
 
     const intl = useIntl();
+
+    const { query } = history.location;
+    const { type, from } = query as { type: string, from: string };
+
+    useEffect(() => {
+        if (type) {
+            setTab(type);
+        }
+    }, []);
 
     return (
         <>
@@ -45,12 +55,12 @@ const Bind: React.FC = () => {
                         <div className={style.bindList}>
                             {tab === 'sns' && (
                                 <>
-                                    <SNS />
+                                    <SNS from={from} />
                                 </>
                             )}
                             {tab === 'blockchain' && (
                                 <>
-                                    <Blockchain />
+                                    <Blockchain from={from} />
                                 </>
                             )}
                         </div>

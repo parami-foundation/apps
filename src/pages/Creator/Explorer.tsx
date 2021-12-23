@@ -200,7 +200,7 @@ const Explorer: React.FC = () => {
                 {KOL && (
                     <>
                         <Image
-                            src={avatar}
+                            src={avatar || '/images/default-avatar.svg'}
                             fallback='/images/default-avatar.svg'
                             className={style.avatar}
                             style={{
@@ -210,7 +210,7 @@ const Explorer: React.FC = () => {
                                 height: loading ? 200 : 30,
                                 animation: loading ? 1 : 0,
                                 position: loading ? 'fixed' : 'absolute',
-                                display: Object.keys(adData).length > 0 ? 'flex' : 'none',
+                                display: loading || Object.keys(adData).length ? 'flex' : 'none',
                             }}
                             preview={false}
                         />

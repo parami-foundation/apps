@@ -10,7 +10,7 @@ export default {
     'creator.create.nft.add2liquid': '(Goes to liquid pool)',
     'creator.create.nft.total': 'Total amount',
     'creator.create.nft.total.unlock': 'System automatically adds',
-    'creator.create.goToMine': 'Go to my page',
+    'creator.create.shareMine': 'Share my page',
     'creator.create.congratulate': 'Congratulations!',
     'creator.explorer.availableBalance': 'Transferable amount',
     'creator.explorer.transactionHistory': 'Transaction History',

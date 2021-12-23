@@ -1,15 +1,20 @@
-import { Currency, CurrencyAmount, Price, Token } from '@uniswap/sdk-core'
+import type { Currency, Token } from '@uniswap/sdk-core';
+import { CurrencyAmount, Price } from '@uniswap/sdk-core'
 import { parseUnits } from '@ethersproject/units'
 import JSBI from 'jsbi'
+import type {
+  FeeAmount
+} from '@uniswap/v3-sdk/dist/';
+
 import {
   priceToClosestTick,
   nearestUsableTick,
-  FeeAmount,
   TICK_SPACINGS,
   encodeSqrtRatioX96,
   TickMath,
 } from '@uniswap/v3-sdk/dist/'
-import Web3 from 'web3'
+import Web3 from 'web3';
+
 // try to parse a user entered amount for a given token
 export function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
   if (!value || !currency) {
@@ -63,8 +68,9 @@ export function tryParseTick(
 
   return -nearestUsableTick(tick, TICK_SPACINGS[feeAmount])
 }
+
 export function getIncentiveId(incentiveKey) {
-  const web3 = new Web3(window.ethereum);
+  const web3 = new Web3((window as any).ethereum);
   const encode = web3.eth.abi.encodeParameter(
     {
       IncentiveKey: {
@@ -78,7 +84,7 @@ export function getIncentiveId(incentiveKey) {
   );
   // @ts-ignore
   const incentiveId = web3.utils.soliditySha3(encode);
-  console.log('getIncentiveId',encode,incentiveId)
+  console.log('getIncentiveId', encode, incentiveId)
   return incentiveId;
   //return ethers.utils.solidityKeccak256(['address', 'address', 'uint256', 'uint256'], [incentiveKey.rewardToken, incentiveKey.pool, incentiveKey.startTime, incentiveKey.endTime])
 }

@@ -48,6 +48,7 @@ const CreateAccount: React.FC<{
   useEffect(() => {
     if (access.canUser) {
       history.push(config.page.walletPage);
+      return;
     }
     if (MagicUserAddress === null || magicMnemonic === '') {
       createMagicAccount();

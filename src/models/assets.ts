@@ -62,14 +62,16 @@ export default () => {
                     });
                 }
 
-                assets.set(assetId, {
-                    id: assetId,
-                    token: tmpAssets[assetId].name,
-                    symbol: tmpAssets[assetId].symbol,
-                    balance: `${balance}`,
-                    ad3: `${ad3}`,
-                    icon,
-                });
+                if (!!balance && balance > 0 && !tmpAssets[assetId].name.endsWith('LP*')) {
+                    assets.set(assetId, {
+                        id: assetId,
+                        token: tmpAssets[assetId].name,
+                        symbol: tmpAssets[assetId].symbol,
+                        balance: `${balance}`,
+                        ad3: `${ad3}`,
+                        icon,
+                    });
+                }
 
                 setAssets(assets);
                 setAssetsArr([...assets?.values()]);

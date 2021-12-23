@@ -1,15 +1,31 @@
-import { Card, Tag, Typography } from 'antd';
-import React from 'react';
+import { Card, Typography } from 'antd';
+import React, { useEffect } from 'react';
 import styles from '../style.less';
 import style from './Tags.less';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
+import { TagCanvas } from '@/utils/TagCanvas';
+import config from '@/config/config';
 
 const { Title } = Typography;
 
 const Tags: React.FC = () => {
-    const { tagsArr } = useModel('tags');
+    const { tagsArr, guideTagsArr } = useModel('tags');
 
     const intl = useIntl();
+
+    useEffect(() => {
+        if (tagsArr && guideTagsArr) {
+            try {
+                TagCanvas.Start(
+                    'tagcloud',
+                    '',
+                );
+            }
+            catch (e) {
+                console.log(e)
+            }
+        }
+    }, [tagsArr, guideTagsArr]);
 
     return (
         <>
@@ -27,24 +43,43 @@ const Tags: React.FC = () => {
                         id: 'wallet.tags.title',
                     })}
                 </Title>
-                <div className={style.tagContainer}>
-                    {tagsArr.map((tag) => (
-                        <Tag
-                            color={tag.color}
-                            className={style.tagItem}
-                            style={{
-                                fontSize: `${1 + tag.value / 100}rem`,
-                            }}
-                            icon={
-                                <span className={style.value}>
-                                    {tag.value}
-                                </span>
-                            }
-                        >
-                            {tag.count}
-                        </Tag>
-                    ))}
-                </div>
+                <canvas height="300" id="tagcloud">
+                    <ul className={style.tagCloud}>
+                        {guideTagsArr.map((tag) => (
+                            <li>
+                                <a
+                                    style={{
+                                        color: tag.textColor,
+                                        backgroundColor: tag.bgColor,
+                                        borderColor: '#000',
+                                        fontSize: `2rem`,
+                                        borderStyle: 'dashed',
+                                        borderWidth: 20
+                                    }}
+                                    className='tagItem'
+                                    onClick={() => { history.push(`${config.page.socialPage}/?type=${tag.count.type}&from=${tag.count.chain}`) }}
+                                >
+                                    👉{tag.count.name}
+                                </a>
+                            </li>
+                        ))}
+                        {tagsArr.map((tag) => (
+                            <li>
+                                <a
+                                    style={{
+                                        color: tag.textColor,
+                                        backgroundColor: tag.bgColor,
+                                        borderColor: tag.borderColor,
+                                        fontSize: `${1 + tag.value / 100}rem`,
+                                    }}
+                                >
+                                    <small>{tag.value}</small>
+                                    {tag.count}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </canvas>
             </Card>
         </>
     )

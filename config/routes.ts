@@ -15,25 +15,7 @@
     path: '/recover',
     name: 'recover',
     hideInMenu: true,
-    routes: [
-      {
-        path: '/recover',
-        name: 'recover',
-        component: './Account/RecoverAccount',
-      },
-      {
-        path: '/recover/link',
-        redirect: '/',
-      },
-      {
-        path: '/recover/link/#/:mnemonic',
-        name: 'recover.withlink',
-        component: './Account/RecoverAccount',
-      },
-      {
-        component: './404',
-      },
-    ],
+    component: './Account/RecoverAccount',
   },
   {
     path: '/wallet',

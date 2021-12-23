@@ -1,11 +1,12 @@
-import { Badge, Card } from 'antd';
+import { Badge, Card, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import Create from './Dashboard/Create';
 import styles from '@/pages/wallet.less';
 import Explorer from './Explorer';
 import { GetKolDeposit, GetUserInfo } from '@/services/parami/nft';
 import { parseAmount, hexToDid } from '@/utils/common';
-import { useIntl, history } from 'umi';
+import { useIntl } from 'umi';
+import copy from 'copy-to-clipboard';
 
 const Dashboard: React.FC = () => {
     const [KOL, setKOL] = useState(false);
@@ -40,6 +41,8 @@ const Dashboard: React.FC = () => {
         init();
     }, []);
 
+    const link = `https://wallet.parami.io/${hexToDid(did)}`;
+
     return (
         <>
             {!KOL && (
@@ -60,12 +63,38 @@ const Dashboard: React.FC = () => {
                                             paddingRight: 10,
                                             fontSize: 15,
                                         }}
-                                        onClick={() => {
-                                            history.push(`/${hexToDid(did)}`)
+                                        onClick={async () => {
+                                            const shareData = {
+                                                title: 'Para Metaverse Identity',
+                                                text: intl.formatMessage({
+                                                    id: 'creator.explorer.shareMessage',
+                                                }),
+                                                url: link,
+                                            };
+                                            if (navigator.canShare && navigator.canShare(shareData)) {
+                                                try {
+                                                    await navigator.share(shareData);
+                                                } catch (e) {
+                                                    message.error(intl.formatMessage({
+                                                        id: 'error.share.failed',
+                                                    }));
+
+                                                    return;
+                                                }
+                                            } else {
+                                                copy(link + ` ${intl.formatMessage({
+                                                    id: 'creator.explorer.shareMessage',
+                                                })}`);
+                                                message.success(
+                                                    intl.formatMessage({
+                                                        id: 'common.copied',
+                                                    }),
+                                                );
+                                            }
                                         }}
                                     >
                                         {intl.formatMessage({
-                                            id: 'creator.create.goToMine',
+                                            id: 'creator.create.shareMine',
                                         })}
                                     </span>
                                 }

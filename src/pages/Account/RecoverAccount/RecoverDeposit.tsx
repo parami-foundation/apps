@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Button, Card, Divider, Input, message, Tag, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, notification, Tag, Typography } from 'antd';
 import { useIntl } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
@@ -9,12 +9,13 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
-import {
-  ChangeController,
-  GetStableAccount,
-  QueryDid,
-} from '@/services/parami/wallet';
+import { ChangeController } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { Mutex } from 'async-mutex';
+import { getOrInit } from '@/services/parami/init';
+import { formatBalance } from '@polkadot/util';
+import { FloatStringToBigInt } from '@/utils/format';
+import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
 
@@ -27,82 +28,89 @@ const goto = () => {
 };
 
 const RecoverDeposit: React.FC<{
-  setStep: React.Dispatch<React.SetStateAction<number>>,
-  magicKeystore: string,
-  oldController: string,
-  password: string,
-}> = ({ setStep, magicKeystore, oldController, password }) => {
+  magicKeystore: string;
+  password: string;
+  controllerUserAddress: string;
+  magicUserAddress: string;
+  setStep: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ magicKeystore, password, controllerUserAddress, magicUserAddress, setStep }) => {
   const [modalVisable, setModalVisable] = useState(false);
   const [secModal, setSecModal] = useState(false);
   const [Password, setPassword] = useState('');
 
-  const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
-  const magicUserAddress = localStorage.getItem('magicUserAddress') as string;
+  const passwd = password || Password
 
-  if (controllerUserAddress === null) {
+  const ControllerUserAddress = controllerUserAddress || localStorage.getItem('controllerUserAddress') as string;
+  const MagicUserAddress = magicUserAddress || localStorage.getItem('magicUserAddress') as string;
+
+  if (ControllerUserAddress === null) {
     setStep(1);
   }
 
-  const OldController = oldController || localStorage.getItem('oldController') as string;
   const MagicKeystore = magicKeystore || localStorage.getItem('magicKeystore') as string;
 
   const intl = useIntl();
+  const mutex = new Mutex();
 
-  const checkPassword = () => {
-    if (password == null || !password) {
-      setSecModal(true);
-      return false;
-    }
-    return true;
-  };
-
-  const fetchChargeStatus = async () => {
-    let pass = password;
-    if (!password || password == null) {
-      pass = Password;
-    }
-
-    setTimeout(async () => {
+  const listenController = () => {
+    return new Promise(async (resolve, reject) => {
       try {
-        await ChangeController(
-          pass,
-          MagicKeystore,
-          controllerUserAddress,
-        );
-
-        const existAccounts = await GetStableAccount(OldController);
-
-        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
-
-        // Query DID
-        const didData = await QueryDid(existAccounts?.stashAccount);
-        if (didData !== null) {
-          localStorage.setItem('did', didData as string);
-          localStorage.removeItem('oldController');
-          localStorage.removeItem('magicKeystore');
-
-          goto();
-          return;
+        const api = await getOrInit();
+        if (!!magicUserAddress) {
+          let free: any;
+          await api.query.system.account(magicUserAddress, (info) => {
+            const data: any = info.data;
+            if (free && free !== `${data.free}`) {
+              notification.success({
+                message: 'Changes in Magic Balance',
+                description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
+              })
+            }
+            free = `${data.free}`;
+            if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
+              resolve(data.free);
+            }
+          });
         }
       } catch (e: any) {
-        console.log(e.message);
+        reject(e);
       }
-      await fetchChargeStatus();
-    }, 2000);
-  };
+    });
+  }
+
+  const pendingStatus = async () => {
+    const release = await mutex.acquire();
+    const free: any = await listenController();
+
+    if (BigInt(free) < FloatStringToBigInt('0.0005', 18)) {
+      release();
+      return;
+    }
+
+    try {
+      const events: any = await ChangeController(
+        passwd,
+        MagicKeystore,
+        ControllerUserAddress,
+      );
+      const stashUserAddress = events['magic']['Changed'][0][0];
+      localStorage.setItem('stashUserAddress', stashUserAddress);
+      goto();
+      return;
+    } catch (e: any) {
+      console.log(e.message);
+    }
+  }
 
   useEffect(() => {
-    if (Password === '') {
+    if (passwd === '') {
       setSecModal(true);
     }
-  }, [Password]);
-
-  useEffect(() => {
-    const isPassword = checkPassword();
-    if (!!isPassword) {
-      fetchChargeStatus();
+    if (passwd === '' || controllerUserAddress === '') {
+      return;
     }
-  }, []);
+    pendingStatus();
+  }, [password, controllerUserAddress]);
 
   return (
     <>
@@ -159,7 +167,7 @@ const RecoverDeposit: React.FC<{
               </span>
               <span className={style.value}>
                 <CopyToClipboard
-                  text={magicUserAddress}
+                  text={MagicUserAddress}
                   onCopy={() =>
                     message.success(
                       intl.formatMessage({
@@ -177,7 +185,7 @@ const RecoverDeposit: React.FC<{
               </span>
             </div>
             <CopyToClipboard
-              text={magicUserAddress}
+              text={MagicUserAddress}
               onCopy={() =>
                 message.success(
                   intl.formatMessage({
@@ -189,7 +197,7 @@ const RecoverDeposit: React.FC<{
               <Input
                 size="small"
                 readOnly
-                value={magicUserAddress}
+                value={MagicUserAddress}
               />
             </CopyToClipboard>
           </div>
@@ -213,7 +221,7 @@ const RecoverDeposit: React.FC<{
                 id: 'account.initialDeposit.minCharge',
               })}
             </span>
-            <span className={style.value}>2 AD3</span>
+            <span className={style.value}><AD3 value={FloatStringToBigInt('0.0005', 18).toString()} /></span>
           </div>
           <a
             style={{
@@ -271,7 +279,7 @@ const RecoverDeposit: React.FC<{
         setVisable={setSecModal}
         password={Password}
         setPassword={setPassword}
-        func={fetchChargeStatus}
+        func={pendingStatus}
       />
     </>
   );
