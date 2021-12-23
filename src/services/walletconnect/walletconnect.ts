@@ -1,13 +1,15 @@
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
-import { ITxData, IWalletConnectSession } from '@walletconnect/types';
+import type { ITxData, IWalletConnectSession } from '@walletconnect/types';
 import { convertUtf8ToHex } from '@walletconnect/utils';
 
 import config from '@/config/config';
+import { notification } from 'antd';
+import { String } from 'lodash';
 
 interface EventHandlers {
-  handleInit?(uri: string): void;
-  handleConnect?({
+  handleInit?: (uri: string) => void;
+  handleConnect?: ({
     address,
     chainId,
     session,
@@ -15,26 +17,26 @@ interface EventHandlers {
     address: string;
     chainId: number;
     session: IWalletConnectSession;
-  }): void;
-  handleError?(error: Error): void;
-  handleReject?(error: Error): void;
-  handleUpdate?({
+  }) => void;
+  handleError?: (error: Error) => void;
+  handleReject?: (error: Error) => void;
+  handleUpdate?: ({
     address,
     chainId,
   }: {
     address: string;
     chainId: number;
-  }): void;
-  handleDisconnect?(params: any): void;
+  }) => void;
+  handleDisconnect?: (params: any) => void;
 }
 
-export default function WalletConnectService({
-  handleInit = () => {},
-  handleConnect = () => {},
-  handleError = () => {},
-  handleReject = () => {},
-  handleUpdate = () => {},
-  handleDisconnect = () => {},
+export default async function WalletConnectService({
+  handleInit = () => { },
+  handleConnect = () => { },
+  handleError = () => { },
+  handleReject = () => { },
+  handleUpdate = () => { },
+  handleDisconnect = () => { },
 }: EventHandlers) {
   const connector = new WalletConnect({
     bridge: config.walletConnect.bridge,
@@ -58,7 +60,7 @@ export default function WalletConnectService({
       handleInit(connector.uri);
     });
   };
-
+  await init();
   connector.on('connect', (error, payload) => {
     if (error) {
       return handleError(error);
@@ -101,33 +103,15 @@ export default function WalletConnectService({
     isConnected: connector.connected,
   };
 }
-
-export const signPersonalMessage = async (message: string) => {
-  return new Promise((resolve, reject) => {
-    const service = WalletConnectService({
-      handleConnect: async ({ address, chainId, session }) => {
-        try {
-          const result = await service.signMessage(
-            convertUtf8ToHex(message),
-            address
-          );
-
-          resolve({
-            address,
-            result,
-          });
-
-          await service.kill();
-        } catch (e) {
-          reject(e);
-        }
-      },
-    });
-
-    try {
-      service.init();
-    } catch (e) {
-      reject(e);
-    }
+export async function signPersonalMessage(message: string) {
+  const connector = new WalletConnect({
+    bridge: config.walletConnect.bridge,
+    qrcodeModal: QRCodeModal,
   });
-};
+  if (connector.connected) await connector.killSession();;
+
+  await connector.createSession();
+  const address = connector.accounts[0];
+  const sign = await connector.signPersonalMessage([convertUtf8ToHex(message), address]);
+  return { address, sign };
+}

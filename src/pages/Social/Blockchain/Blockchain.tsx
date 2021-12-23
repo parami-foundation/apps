@@ -1,7 +1,7 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LinkBlockChain } from '@/services/parami/linker';
-import { Alert, Button, Divider, Input, message, Spin } from 'antd';
+import { Alert, Button, Divider, Input, message, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { useIntl, useModel } from 'umi';
@@ -52,6 +52,11 @@ const BindModal: React.FC<{
 				console.log(password)
 				try {
 					const { account, result }: any = await signPersonalMessage(origin);
+					notification.error({
+						message: 'account',
+						description: result,
+						duration: null
+					})
 					await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
 					setBindModal(false);
 				} catch (e: any) {
