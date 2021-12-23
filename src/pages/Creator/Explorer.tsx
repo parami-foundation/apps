@@ -300,9 +300,7 @@ const Explorer: React.FC = () => {
                                 member={member}
                             />
                             <Trade
-                                stashUserAddress={stashUserAddress}
-                                controllerKeystore={controllerKeystore}
-                                user={user}
+                                avatar={avatar}
                                 asset={asset}
                             />
                         </>

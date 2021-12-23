@@ -6,10 +6,10 @@ import styles from './style.less';
 import { didToHex } from '@/utils/common';
 
 const User: React.FC<{
-    avatar: string,
-    did: string,
-    user: any,
-    asset: any,
+    avatar: string;
+    did: string;
+    user: any;
+    asset: any;
 }> = ({ avatar, did, user, asset }) => {
     const intl = useIntl();
 
@@ -18,7 +18,11 @@ const User: React.FC<{
     return (
         <>
             <Divider>
-                <strong>
+                <strong
+                    style={{
+                        opacity: .5,
+                    }}
+                >
                     {intl.formatMessage({
                         id: 'creator.explorer.aboutDao',
                         defaultMessage: 'About {name} DAO',

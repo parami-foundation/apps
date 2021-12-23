@@ -14,13 +14,13 @@ import Token from '@/components/Token/Token';
 import copy from 'copy-to-clipboard';
 
 const Advertisement: React.FC<{
-    ad: Type.AdInfo,
-    viewer: any,
-    asset: any,
-    avatar: string,
-    did: string,
-    adData: any,
-    remain: bigint,
+    ad: Type.AdInfo;
+    viewer: any;
+    asset: any;
+    avatar: string;
+    did: string;
+    adData: any;
+    remain: bigint;
 }> = ({ ad, viewer, asset, avatar, did, adData, remain }) => {
     const [infoModal, setInfoModal] = useState(false);
     const [chartModal, setChartModal] = useState(false);
