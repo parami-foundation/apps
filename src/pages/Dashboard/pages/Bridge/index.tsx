@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import Deposit from './deposit';
 import Withdraw from './withdraw';
 import { LoadingOutlined } from '@ant-design/icons';
+import ETHAddress from '../../components/ETHAddress/ETHAddress';
 
 const Bridge: React.FC = () => {
     const [tab, setTab] = useState<string>('deposit');
@@ -32,6 +33,7 @@ const Bridge: React.FC = () => {
                 >
                     <div className={styles.mainBgContainer}>
                         <div className={styles.contentContainer}>
+                            <ETHAddress />
                             <div className={style.bridgeContainer}>
                                 <div className={style.leftContainer}>
                                     <div className={style.innerWrapper}>

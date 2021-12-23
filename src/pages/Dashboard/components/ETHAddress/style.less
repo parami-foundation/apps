@@ -1,0 +1,46 @@
+.addressContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 24px;
+    background: hsla(0,0%,100%,.24);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    padding: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    max-width: 1100px;
+
+    .ethLogo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        font-weight: 900;
+        font-size: 15px;
+
+        .ethLogoImg {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+    }
+
+    .currentAddress {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 16px;
+
+        .prefix {
+            margin-right: 10px;
+        }
+
+        .address {
+            font-size: 14px;
+            line-height: 17px;
+            font-weight: 900;
+        }
+    }
+}

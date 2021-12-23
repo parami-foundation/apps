@@ -40,7 +40,7 @@ const GlobalHeaderRight: React.FC = () => {
   return (
     <>
       <Space className={styles.right}>
-        {window.location.pathname.indexOf('dashboard') > -1 && (
+        {/* {window.location.pathname.indexOf('dashboard') > -1 && (
           <Tag
             color="#f50"
             style={{
@@ -55,7 +55,7 @@ const GlobalHeaderRight: React.FC = () => {
               id: 'common.wallet',
             })}
           </Tag>
-        )}
+        )} */}
         {window.location.pathname.indexOf('dashboard') < 0 && (
           <Tag
             color="#f50"
