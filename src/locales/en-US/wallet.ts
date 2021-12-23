@@ -56,5 +56,5 @@ export default {
     'wallet.nickname.edit': 'Edit Nickname',
     'wallet.guide.welcome': 'Welcome',
     'wallet.guide.description': 'Use your telegram avatar and nickname, or you can edit it.',
-    'wallet.tags.title': 'My Preference Profile',
+    'wallet.tags.title': 'My Crypto Profile',
 };

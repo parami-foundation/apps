@@ -16,7 +16,6 @@ const { Title } = Typography;
 const InputLink: React.FC<{
   magicMnemonic: string;
   setMagicMnemonic: React.Dispatch<React.SetStateAction<string>>;
-  setControllerKeystore: React.Dispatch<React.SetStateAction<string>>;
   setMagicUserAddress: React.Dispatch<React.SetStateAction<string>>;
   setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ magicMnemonic, setMagicMnemonic, setMagicUserAddress, setStep }) => {
@@ -28,14 +27,14 @@ const InputLink: React.FC<{
     try {
       const { userAddress: MagicUserAddress } = await QueryAccountFromMnemonic(magicMnemonic);
 
-      const oldControllerData: any = await QueryStableAccountByMagic(
+      const oldControllerAddress: any = await QueryStableAccountByMagic(
         MagicUserAddress,
       );
 
       setMagicUserAddress(MagicUserAddress);
 
       const stableAccountData = await GetStableAccount(
-        oldControllerData?.oldControllerAddress,
+        oldControllerAddress,
       );
 
       const didData = await QueryDid(stableAccountData?.stashAccount);
@@ -49,8 +48,7 @@ const InputLink: React.FC<{
         history.push(config.page.homePage);
         return;
       }
-      localStorage.setItem('stashUserAddress', MagicUserAddress);
-      localStorage.setItem('stashUserAddress', stableAccountData?.stashAccount as string);
+      localStorage.setItem('magicUserAddress', MagicUserAddress);
       localStorage.setItem('did', didData);
 
       setStep(2);

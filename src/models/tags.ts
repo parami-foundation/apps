@@ -35,9 +35,19 @@ export default () => {
 
         const data: Map<string, any> = new Map();
         const guide: Map<string, any> = new Map();
-        tmpTags.map((item) => {
-            GetTagsMap().then(({ response, data: Data }) => {
-                if (response?.status === 200) {
+
+        GetTagsMap().then(({ response, data: Data }) => {
+            if (response?.status === 200) {
+                Object.keys(Data.guide).map((guideItem) => {
+                    guide.set(Data.guide[guideItem].name, {
+                        count: Data.guide[guideItem],
+                        textColor: '#909090',
+                        bgColor: '#fafafa',
+                        borderColor: '#d9d9d9',
+                    });
+                })
+
+                tmpTags.map((item) => {
                     if (((new Date()).getTime() - first >= 30000) && !data.has(Data.all[item.count])) {
                         notification.success({
                             message: 'Get new tag!',
@@ -57,23 +67,15 @@ export default () => {
                         });
                     }
 
-                    Object.keys(Data.guide).map((guideItem) => {
-                        guide.set(Data.guide[guideItem].name, {
-                            count: Data.guide[guideItem],
-                            textColor: '#909090',
-                            bgColor: '#fafafa',
-                            borderColor: '#d9d9d9',
-                        });
-                    })
                     if (Data.guide[item.count]) {
                         guide.delete(Data.guide[item.count].name);
                     }
+                })
 
-                    setTags(data);
-                    setTagsArr([...data?.values()]);
-                    setGuideTagsArr([...guide?.values()]);
-                }
-            });
+                setTags(data);
+                setTagsArr([...data?.values()]);
+                setGuideTagsArr([...guide?.values()]);
+            }
         });
     }
 

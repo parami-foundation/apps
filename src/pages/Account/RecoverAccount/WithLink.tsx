@@ -24,11 +24,10 @@ const WithLink: React.FC<{
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   setMagicKeystore: React.Dispatch<React.SetStateAction<string>>;
-  setOldController: React.Dispatch<React.SetStateAction<string>>;
-  setControllerKeystore: React.Dispatch<React.SetStateAction<string>>;
+  setControllerUserAddress: React.Dispatch<React.SetStateAction<string>>;
   setMagicUserAddress: React.Dispatch<React.SetStateAction<string>>;
   setStep: React.Dispatch<React.SetStateAction<number>>;
-}> = ({ magicMnemonic, password, setPassword, setMagicKeystore, setOldController, setControllerKeystore, setMagicUserAddress, setStep }) => {
+}> = ({ magicMnemonic, password, setPassword, setMagicKeystore, setControllerUserAddress, setMagicUserAddress, setStep }) => {
   const [submitting, setSubmitting] = useState(false);
   const [errorState, setErrorState] = useState<API.Error>({});
   const [Did, setDid] = useState<string>('');
@@ -47,12 +46,12 @@ const WithLink: React.FC<{
     try {
       const { userAddress: MagicUserAddress } = await QueryAccountFromMnemonic(magicMnemonic);
 
-      const oldControllerData: any = await QueryStableAccountByMagic(
+      const oldControllerAddress = await QueryStableAccountByMagic(
         MagicUserAddress,
       );
 
       const stableAccountData = await GetStableAccount(
-        oldControllerData?.oldControllerAddress,
+        oldControllerAddress,
       );
 
       const didData = await QueryDid(stableAccountData?.stashAccount);
@@ -66,10 +65,10 @@ const WithLink: React.FC<{
         history.push(config.page.homePage);
         return;
       }
-      localStorage.setItem('stashUserAddress', MagicUserAddress);
-      localStorage.setItem('stashUserAddress', stableAccountData?.stashAccount as string);
+      localStorage.setItem('magicUserAddress', MagicUserAddress);
       localStorage.setItem('did', didData);
 
+      setMagicUserAddress(MagicUserAddress);
       setDid(didData as string);
 
       return;
@@ -89,26 +88,20 @@ const WithLink: React.FC<{
         magicMnemonic,
       );
       setMagicKeystore(magicData?.keystore as string);
+      localStorage.setItem('magicKeystore', magicData?.keystore as string);
 
-      // Set Magic Address
-      localStorage.setItem('magicUserAddress', magicData?.userAddress as string);
-
+      // New Controller
       const controllerMnemonic = mnemonicGenerate(12);
       const newControllerData = await CreateAccount(
         controllerMnemonic,
         password,
       );
 
+      setControllerUserAddress(newControllerData?.userAddress as string);
+
       // Set Controller
       localStorage.setItem('controllerUserAddress', newControllerData?.userAddress as string);
       localStorage.setItem('controllerKeystore', newControllerData?.keystore as string);
-
-      const oldControllerData: any = await QueryStableAccountByMagic(
-        magicData?.userAddress as string
-      );
-      setOldController(oldControllerData?.oldControllerAddress as string);
-      localStorage.setItem('oldController', oldControllerData?.oldControllerAddress as string);
-      localStorage.setItem('magicKeystore', magicData?.keystore as string);
 
       setStep(3);
 

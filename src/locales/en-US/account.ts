@@ -27,7 +27,7 @@ export default {
     'account.fromMnemonic.description': 'Please enter the Recover Phrase to recover your account.',
     'account.fromMnemonic.subtitle': 'Recovery Phrase (12 words)',
     'account.recoverDeposit.title': 'Recover your account by making deposit',
-    'account.recoverDeposit.description': 'Please deposit at least 1 $AD3 to the following account to recover your Para Meta Identity.',
+    'account.recoverDeposit.description': 'Please deposit at least 0.0005 $AD3 to the following account to recover your Para Meta Identity.',
     'account.recoverDeposit.magicAddress': 'Deposit address',
     'account.withLink.title': 'Recover your account via MagicLink',
     'account.withLink.description': 'If you are not using an IM app, please copy the link and complete the recovery process in IM apps.',

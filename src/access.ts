@@ -5,6 +5,7 @@ export const access = () => {
   const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
   const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
   const magicUserAddress = localStorage.getItem('magicUserAddress') as string;
+  const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
   const did = localStorage.getItem('did') as string;
 
   const dashboardDid = localStorage.getItem('dashboardDid');
@@ -20,6 +21,7 @@ export const access = () => {
       !!magicUserAddress &&
       !!controllerKeystore &&
       !!controllerUserAddress &&
+      !!stashUserAddress &&
       !!did,
     canRecover:
       !!controllerKeystore &&

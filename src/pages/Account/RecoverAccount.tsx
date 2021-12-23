@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useAccess, history } from 'umi';
+import { useAccess, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import InputLink from './RecoverAccount/InputLink';
 import WithLink from './RecoverAccount/WithLink';
@@ -11,14 +11,11 @@ const RecoverAccount: React.FC = () => {
   const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState('');
 
-  const params: {
-    mnemonic: string;
-  } = useParams();
+  const { hash } = history.location;
+  const mnemonicHash = hash.substring(1);
 
   // Controller Account
-  const [oldController, setOldController] = useState<string>('');
   const [controllerUserAddress, setControllerUserAddress] = useState<string>('');
-  const [controllerKeystore, setControllerKeystore] = useState<string>('');
 
   // Magic Account
   const [magicUserAddress, setMagicUserAddress] = useState<string>('');
@@ -28,12 +25,11 @@ const RecoverAccount: React.FC = () => {
   // Exist Data
   const ExistPassword = localStorage.getItem('stamp') as string;
   const ControllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
-  const ControllerKeystore = localStorage.getItem('controllerKeystore') as string;
   const MagicUserAddress = localStorage.getItem('magicUserAddress') as string;
 
   const isRecoverLink = async () => {
-    if (params.mnemonic !== undefined) {
-      setMagicMnemonic(params.mnemonic.replace(/%20/g, ' '));
+    if (mnemonicHash !== undefined || mnemonicHash !== '') {
+      setMagicMnemonic(mnemonicHash.replace(/%20/g, ' '));
       setStep(2);
     }
   };
@@ -50,9 +46,8 @@ const RecoverAccount: React.FC = () => {
       setPassword(ExistPassword);
     };
 
-    if (!!ControllerUserAddress && !!ControllerKeystore && !!MagicUserAddress) {
+    if (!!ControllerUserAddress && !!MagicUserAddress) {
       setControllerUserAddress(ControllerUserAddress);
-      setControllerKeystore(ControllerKeystore);
       setMagicUserAddress(MagicUserAddress);
       setStep(3);
       return;
@@ -68,7 +63,6 @@ const RecoverAccount: React.FC = () => {
             <InputLink
               magicMnemonic={magicMnemonic}
               setMagicMnemonic={setMagicMnemonic}
-              setControllerKeystore={setControllerKeystore}
               setMagicUserAddress={setMagicUserAddress}
               setStep={setStep}
             />
@@ -79,18 +73,18 @@ const RecoverAccount: React.FC = () => {
               password={password}
               setPassword={setPassword}
               setMagicKeystore={setMagicKeystore}
-              setOldController={setOldController}
-              setControllerKeystore={setControllerKeystore}
+              setControllerUserAddress={setControllerUserAddress}
               setMagicUserAddress={setMagicUserAddress}
               setStep={setStep}
             />
           )}
           {step === 3 && (
             <RecoverDeposit
-              setStep={setStep}
               magicKeystore={magicKeystore}
-              oldController={oldController}
               password={password}
+              controllerUserAddress={controllerUserAddress}
+              magicUserAddress={magicUserAddress}
+              setStep={setStep}
             />
           )}
           {step === 4 && (

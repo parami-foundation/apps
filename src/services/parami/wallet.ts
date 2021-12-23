@@ -297,14 +297,10 @@ export const ChangeController = async (password: string, magicKeystore: string, 
   // Create a extrinsic, transferring 12345 units to Bob
   const ex = await window.apiWs.tx.magic.changeController(newControllerUserAddress);
 
-  // Sign and send the transaction using our account
-  const hash = await ex.signAndSend(sender, errCb);
-
-  return hash;
+  return await subCallback(ex, sender);
 };
 
 export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
-  console.log(magicUserAddress)
   const oldControllerAddress = await window.apiWs.query.magic.controllerAccountOf(
     magicUserAddress,
   );
