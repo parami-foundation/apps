@@ -290,7 +290,7 @@ export const ChangeController = async (password: string, magicKeystore: string, 
   const decodedMnemonic = DecodeKeystoreWithPwd(password, magicKeystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    return;
+    throw new Error('Wrong Password');
   }
 
   const sender = instanceKeyring.createFromUri(decodedMnemonic);

@@ -15,7 +15,7 @@ import {
   RestoreAccount,
 } from '@/services/parami/wallet';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { hexToDid } from '@/utils/common';
+import { guid, hexToDid } from '@/utils/common';
 
 const { Title } = Typography;
 
@@ -79,12 +79,14 @@ const WithLink: React.FC<{
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (genPassword?: string) => {
     setSubmitting(true);
+
+    const passwd = genPassword || password;
 
     try {
       const magicData = await RestoreAccount(
-        password,
+        passwd,
         magicMnemonic,
       );
       setMagicKeystore(magicData?.keystore as string);
@@ -94,7 +96,7 @@ const WithLink: React.FC<{
       const controllerMnemonic = mnemonicGenerate(12);
       const newControllerData = await CreateAccount(
         controllerMnemonic,
-        password,
+        passwd,
       );
 
       setControllerUserAddress(newControllerData?.userAddress as string);
@@ -114,6 +116,15 @@ const WithLink: React.FC<{
       return;
     }
   };
+
+  // GeneratePassword
+  const GeneratePassword = async () => {
+    const generatePassword = guid().substring(0, 6);
+    setPassword(generatePassword);
+    localStorage.setItem('stamp', generatePassword);
+    await handleSubmit(generatePassword);
+  };
+  // GeneratePassword
 
   useEffect(() => {
     queryAccount();
@@ -206,6 +217,19 @@ const WithLink: React.FC<{
           </div>
         </div>
         <div className={style.buttons}>
+          <Button
+            block
+            type="primary"
+            shape="round"
+            size="large"
+            className={style.button}
+            loading={submitting}
+            onClick={() => GeneratePassword()}
+          >
+            {intl.formatMessage({
+              id: 'account.withLink.generatePassword',
+            })}
+          </Button>
           <Button
             block
             type="primary"

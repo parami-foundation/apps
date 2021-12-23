@@ -34,6 +34,7 @@ export default {
     'account.withLink.subtitle': 'The Para Meta Identity you want to recover is',
     'account.withLink.setPassword': 'Set a password for your identity',
     'account.withLink.inputURL': 'Please enter the recovery link',
+    'account.withLink.generatePassword': 'Password free mode',
     'account.quicksign.title': 'Quick Create',
     'account.quicksign.description': 'Register quickly with an option below',
     'account.quicksign.manual': 'Manual Deposit',

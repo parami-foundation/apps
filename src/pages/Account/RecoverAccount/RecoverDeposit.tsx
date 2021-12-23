@@ -93,12 +93,13 @@ const RecoverDeposit: React.FC<{
         MagicKeystore,
         ControllerUserAddress,
       );
+      console.log(events)
       const stashUserAddress = events['magic']['Changed'][0][0];
       localStorage.setItem('stashUserAddress', stashUserAddress);
       goto();
       return;
     } catch (e: any) {
-      console.log(e.message);
+      message.error(e.message);
     }
   }
 
@@ -110,7 +111,7 @@ const RecoverDeposit: React.FC<{
       return;
     }
     pendingStatus();
-  }, [password, controllerUserAddress]);
+  }, [passwd, controllerUserAddress]);
 
   return (
     <>

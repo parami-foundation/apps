@@ -4,7 +4,6 @@ import styles from '@/pages/wallet.less';
 import InputLink from './RecoverAccount/InputLink';
 import WithLink from './RecoverAccount/WithLink';
 import RecoverDeposit from './RecoverAccount/RecoverDeposit';
-import BypassPasswd from './RecoverAccount/BypassPasswd';
 import config from '@/config/config';
 
 const RecoverAccount: React.FC = () => {
@@ -85,11 +84,6 @@ const RecoverAccount: React.FC = () => {
               controllerUserAddress={controllerUserAddress}
               magicUserAddress={magicUserAddress}
               setStep={setStep}
-            />
-          )}
-          {step === 4 && (
-            <BypassPasswd
-              mnemonic={magicMnemonic}
             />
           )}
         </div>
