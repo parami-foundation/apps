@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Avatar, Button, Divider, Input, message, Spin, Typography } from 'antd';
+import { Avatar, Button, Divider, Input, message, Spin, Typography, Image } from 'antd';
 import { useIntl, useModel } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
@@ -170,6 +170,17 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           className={styles.avatar}
           src={avatar || '/images/logo-square-core.svg'}
           alt="avatar"
+        />
+        <Image
+          src={'/images/SantaHat.svg'}
+          preview={false}
+          style={{
+            position: 'absolute',
+            height: '25px',
+            width: '25px',
+            top: '-25px',
+            right: '-11px',
+          }}
         />
       </span>
     </HeaderDropdown>

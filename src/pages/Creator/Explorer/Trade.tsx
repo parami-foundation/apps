@@ -93,7 +93,7 @@ const Trade: React.FC<{
                     className={styles.card}
                     bodyStyle={{
                         width: '100%',
-                        padding: '8px',
+                        padding: '24px 8px',
                     }}
                     style={{
                         marginTop: 50,
