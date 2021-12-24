@@ -57,6 +57,7 @@ function FloatStringToBigInt(value: string, decimals: number): bigint {
 }
 
 function main() {
+    console.log(BigInt('0x10'));
     console.log(BigIntToFloatString('148885221901016141', 18))
     const a = BigIntToFloatString('100000000000000022222222000', 18);
     console.log(a);
@@ -71,5 +72,6 @@ function main() {
     console.log(FloatStringToBigInt(c, 18));
     console.log(BigInt('000000010000000000000000'));
     console.log(1 + 2 * 3);
+
 }
 main();

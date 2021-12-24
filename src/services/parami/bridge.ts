@@ -9,5 +9,5 @@ export const AD3ToETH = async (account: any, amount: string, recipient: string) 
     const tx = api.tx.xAssets.transferNative(amount, recipient, config.bridge.destId);
     const ex = api.tx.magic.codo(tx);
 
-    await subWeb3Callback(ex, injector, account);
+    return await subWeb3Callback(ex, injector, account);
 };

@@ -3,10 +3,7 @@ import { useIntl, useModel } from 'umi';
 import { Alert, Button, Image, Input, message, Tooltip } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
-import { BigNumber, ethers, utils } from 'ethers';
-import AD3Abi from '@/pages/Dashboard/pages/Stake/abi/ERC20.json';
-import BRIDGE_ABI from './abi/Bridge.json';
-import { contractAddresses } from '../Stake/config';
+import { BigNumber, utils } from 'ethers';
 import { decodeAddress } from '@polkadot/util-crypto';
 import config from './config';
 import AD3 from '@/components/Token/AD3';
@@ -31,23 +28,48 @@ const Deposit: React.FC<{
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setLoading }) => {
     const { account, chainName, provider, signer } = useModel('metaMask');
+    const { Events,
+        SubParamiEvents } = useModel('dashboard.paramiEvents');
     const { stash } = useModel('dashboard.balance');
+    const { Ad3Contract, BridgeContract } = useModel('contracts');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [freeBalance, setFreeBalance] = useState<string>('');
-
+    const [waitingParami, setWaitingParami] = useState<boolean>(false);
+    const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
     const [amount, setAmount] = useState<string>('');
     const [destinationAddress, setDestinationAddress] = useState<string>('');
+
 
     const Did = localStorage.getItem('dashboardDid') as string;
 
     const intl = useIntl();
+    function isDepositSuccessEvent(item: any, nonce: bigint) {
+        if (`${item.event.section}:${item.event.method}` === 'chainBridge:ProposalSucceeded') {
+            if (BigInt(item.event.data[1].toString()) === nonce) {
+                return true;
+            }
+        }
+        return false;
+    }
+    useEffect(() => {
+        if (waitingParami) {
+            for (const item of Events) {
+                console.log('event', `${item.event.section}:${item.event.method}`);
+                if (isDepositSuccessEvent(item, txNonce)) {
+                    setWaitingParami(false);
+                    console.log(window.unsubParami);
+                    window.unsubParami();
+                    message.success('deposit success');
+                }
+            }
+        } else {
 
+        }
+    }, [Events, txNonce, waitingParami]);
     const getBalance = async () => {
         if (!provider || !signer) return;
         try {
-            const ad3 = new ethers.Contract(contractAddresses.ad3[4], AD3Abi, provider);
-            const ad3_rw = await ad3.connect(signer);
-            const balance = await ad3_rw.balanceOf(account);
+            const balance = await Ad3Contract?.balanceOf(account);
             setFreeBalance(BigNumber.from(balance).toString());
         } catch (e: any) {
             console.log(e.message);
@@ -90,10 +112,8 @@ const Deposit: React.FC<{
             recipient.substring(2); // recipientAddress (?? bytes)
 
         try {
-            const ad3 = new ethers.Contract(contractAddresses.ad3[4], AD3Abi, provider);
-            const ad3_rw = ad3.connect(signer);
             await (
-                await ad3_rw.approve(
+                await Ad3Contract?.approve(
                     config.ERC20HandlerContract.address,
                     BigNumber.from(
                         utils.parseUnits(amount.toString(), 18)
@@ -101,16 +121,21 @@ const Deposit: React.FC<{
                 )
             ).wait();
 
-            const bridge = new ethers.Contract(config.bridge.address, BRIDGE_ABI, provider);
-            const bridge_rw = bridge.connect(signer);
-            await (
-                await bridge_rw.deposit(
+            const ethRes = await (
+                await BridgeContract?.deposit(
                     config.bridge.destinationChainId,
                     config.resource.id,
                     data,
                 )
             ).wait();
+            const nonce = BigInt(ethRes.logs[2].topics[3]);
+            console.log('nonce', BigInt(ethRes.logs[2].topics[3]))
+            setTxNonce(nonce);
             setLoading(false);
+
+            setWaitingParami(true);
+            window.unsubParami = await SubParamiEvents();
+
         } catch (e: any) {
             setErrorState({
                 Type: 'chain error',
@@ -121,8 +146,10 @@ const Deposit: React.FC<{
     }
 
     useEffect(() => {
+        if(!account||!Ad3Contract) return;
         getBalance();
-    }, [signer]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [signer, provider, Ad3Contract, account]);
 
     return (
         <>

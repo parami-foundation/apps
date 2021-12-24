@@ -47,6 +47,10 @@ export const contractAddresses = {
     nonfungiblePositionManager:{
         1: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
         4: '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
+    },
+    bridge: {
+        1: '0xDb59E0cA1644D1F93D1b85261c0D414656bA98F9',
+        4: '0xDb59E0cA1644D1F93D1b85261c0D414656bA98F9'
     }
 }
 

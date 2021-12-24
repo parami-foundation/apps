@@ -5,9 +5,7 @@ import style from './style.less';
 import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { AD3ToETH } from '@/services/parami/bridge';
 import { isETHAddress } from '@/utils/checkAddress';
-import { BigNumber, ethers } from 'ethers';
-import { contractAddresses } from '../Stake/config';
-import AD3Abi from '@/pages/Dashboard/pages/Stake/abi/ERC20.json';
+import { BigNumber } from 'ethers';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 
@@ -28,13 +26,29 @@ const Withdraw: React.FC<{
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setLoading }) => {
     const { account, chainName, provider, signer } = useModel('metaMask');
+    const { DepositNonce,
+        SubBridgeEvents,
+        UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
     const { stash } = useModel('dashboard.balance');
+    const { Ad3Contract, BridgeContract } = useModel('contracts');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [freeBalance, setFreeBalance] = useState<any>(null);
-
+    const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
+    const [waitingEth, setWaitingEth] = useState<boolean>(false);
     const [amount, setAmount] = useState<string>('');
     const [destinationAddress, setDestinationAddress] = useState<string>();
 
+    useEffect(()=>{
+        if(DepositNonce===txNonce){
+            setWaitingEth(false);
+            setTxNonce(BigInt(0));
+            message.success('Success!');
+            console.log('got the right bridge event');
+            if(BridgeContract){
+                UnsubBridgeEvents(BridgeContract);
+            }
+        }
+    },[BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce])
     const intl = useIntl();
 
     const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
@@ -48,8 +62,17 @@ const Withdraw: React.FC<{
         }
 
         try {
-            await AD3ToETH(JSON.parse(currentAccount), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+            const paramiRes: any = await AD3ToETH(JSON.parse(currentAccount), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+            console.log('paramiRes', paramiRes);
+            setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
             setLoading(false);
+            setWaitingEth(true);
+            if(BridgeContract){
+                SubBridgeEvents(BridgeContract);
+            }else{
+                alert('this should not run: no bridge contract');
+            }
+            
         } catch (e: any) {
             setErrorState({
                 Type: 'chain error',
@@ -62,9 +85,7 @@ const Withdraw: React.FC<{
     const getBalance = async () => {
         if (!provider || !signer) return;
         try {
-            const ad3 = new ethers.Contract(contractAddresses.ad3[4], AD3Abi, provider);
-            const ad3_rw = await ad3.connect(signer);
-            const balance = await ad3_rw.balanceOf(account);
+            const balance = await Ad3Contract?.balanceOf(account);
             setFreeBalance(BigNumber.from(balance).toString());
         } catch (e: any) {
             console.log(e.message);
@@ -72,8 +93,10 @@ const Withdraw: React.FC<{
     }
 
     useEffect(() => {
+        if(!account||!Ad3Contract) return;
         getBalance();
-    }, [signer]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [signer, provider, Ad3Contract, account]);
 
     return (
         <>

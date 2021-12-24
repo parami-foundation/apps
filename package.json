@@ -136,6 +136,7 @@
     "umi-request": "^1.4.0",
     "umi-serve": "^1.9.10",
     "use-persisted-state": "^0.3.3",
+    "vconsole": "^3.10.1",
     "web3": "^1.6.1",
     "web3-eth": "^1.6.1"
   },

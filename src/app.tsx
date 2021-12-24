@@ -10,6 +10,7 @@ import { getOrInit } from './services/parami/init';
 import type { Mutex } from 'async-mutex';
 import UnAccessible from './pages/403';
 import { access } from '@/access';
+import type { VoidFn } from '@polkadot/api/types';
 
 declare global {
   interface Window {
@@ -18,6 +19,7 @@ declare global {
     __RUNTIME_CONFIG__: {
       CHAINBRIDGE: Bridge.ChainbridgeConfig;
     };
+    unsubParami: VoidFn;
   }
 }
 

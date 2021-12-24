@@ -322,11 +322,11 @@ export const GetStableAccount = async (controllerUserAddress: any) => {
 };
 
 export const isSyncing = async () => {
-  const response = await window.apiWs.rpc.system.health();
+  // const response = await window.apiWs.rpc.system.health();
 
-  if (response.isSyncing.valueOf()) {
-    throw new Error('Node is syncing');
-  }
+  // if (response.isSyncing.valueOf()) {
+  //   throw new Error('Node is syncing');
+  // }
 };
 
 export const setNickName = async (nickname: string, password: string, keystore: string) => {

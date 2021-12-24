@@ -109,9 +109,18 @@ export async function signPersonalMessage(message: string) {
     qrcodeModal: QRCodeModal,
   });
   if (connector.connected) await connector.killSession();;
-
+  console.log('init walletconnect');
   await connector.createSession();
+  console.log('createSession');
   const address = connector.accounts[0];
-  const sign = await connector.signPersonalMessage([convertUtf8ToHex(message), address]);
-  return { address, sign };
+  console.log('address', address);
+  try{
+    const sign = await connector.signPersonalMessage([convertUtf8ToHex(message), address]);
+    console.log('sign', sign);
+    return { address, sign };
+  }catch(e){
+    console.log('error', e);
+    return { address, sign: null };
+  }
+
 }

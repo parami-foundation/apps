@@ -7,6 +7,7 @@ import WETHAbi from '@/pages/Dashboard/pages/Farm/abi/WETH.json'
 import StakeManagerAbi from '@/pages/Dashboard/pages/Farm/abi/Ad3StakeManager.json'
 import { abi as IUniswapV3FactoryABI } from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json";
 import LP_ABI from '@/pages/Dashboard/pages/Stake/abi/ERC721-ABI.json';
+import BRIDGE_ABI from '@/pages/Dashboard/pages/Bridge/abi/Bridge.json';
 import { useModel } from 'umi';
 
 export default () => {
@@ -21,6 +22,7 @@ export default () => {
     const [WEthContract, setWethContract] = useState<ethers.Contract | null>(null);
     const [FactoryContract, setFactoryContract] = useState<ethers.Contract | null>(null);
     const [LPContract, setLPContract] = useState<ethers.Contract | null>(null);
+    const [BridgeContract, setBridgeContract] = useState<ethers.Contract | null>(null);
     // Init contract instances
     useEffect(() => {
         if (chainId !== 1 && chainId !== 4) {
@@ -29,6 +31,7 @@ export default () => {
             setStakeContract(null);
             setFactoryContract(null);
             setLPContract(null);
+            setBridgeContract(null);
             return;
         }
         if (!provider || !signer) return;
@@ -37,17 +40,20 @@ export default () => {
         const stakeManager = new ethers.Contract(contractAddresses.stake[chainId], StakeManagerAbi, signer);
         const factory = new ethers.Contract(contractAddresses.uniswapFactory[chainId], IUniswapV3FactoryABI, signer);
         const lp = new ethers.Contract(contractAddresses.nonfungiblePositionManager[chainId], LP_ABI, signer);
+        const bridge = new ethers.Contract(contractAddresses.bridge[chainId], BRIDGE_ABI, signer);
         setAd3Contract(ad3);
         setWethContract(weth);
         setStakeContract(stakeManager);
         setFactoryContract(factory);
         setLPContract(lp);
+        setBridgeContract(bridge);
         return () => {
             setAd3Contract(null);
             setWethContract(null);
             setStakeContract(null);
             setFactoryContract(null);
             setLPContract(null);
+            setBridgeContract(null);
         }
     }, [provider, chainId, signer]);
 
@@ -56,6 +62,7 @@ export default () => {
         Ad3Contract,
         WEthContract,
         FactoryContract,
-        LPContract
+        LPContract,
+        BridgeContract,
     }
 }
