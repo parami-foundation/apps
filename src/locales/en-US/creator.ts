@@ -33,7 +33,7 @@ export default {
     'creator.explorer.advertisement.earnUpTo': 'Visit to earn up to{value}!',
     'creator.explorer.advertisement.remain': 'Remain about',
     'creator.explorer.advertisement.share': 'Share to earn more {token}',
-    'creator.explorer.trade': 'Trade',
+    'creator.explorer.trade': 'Swap',
     'creator.explorer.advertisement.share.desc': 'Share rules',
     'creator.explorer.oneClick': 'Register quickly with an option below',
 };

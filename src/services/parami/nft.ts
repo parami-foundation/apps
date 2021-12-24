@@ -45,6 +45,16 @@ export const GetCostOf = async (assetId: string, amount: string) => {
   return value.toHuman();
 };
 
+export const DrylySellCurrency = async (assetId: string, amount: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylySellCurrency(assetId, amount);
+  return value.toHuman();
+};
+
+export const DrylyBuyCurrency = async (assetId: string, amount: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylyBuyCurrency(assetId, amount);
+  return value.toHuman();
+};
+
 export const GetAssetBalance = async (assetId: string, address: string): Promise<string> => {
   const { balance }: any = await window.apiWs.query.assets.account(Number(assetId), address);
   if (!!balance) {

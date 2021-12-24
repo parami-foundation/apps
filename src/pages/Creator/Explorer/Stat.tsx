@@ -9,11 +9,11 @@ import AD3 from '@/components/Token/AD3';
 const { Title } = Typography;
 
 const Stat: React.FC<{
-    asset: any,
-    assetPrice: string,
-    totalSupply: bigint,
-    viewer: any,
-    member: any,
+    asset: any;
+    assetPrice: string;
+    totalSupply: bigint;
+    viewer: any;
+    member: any;
 }> = ({ asset, assetPrice, totalSupply, viewer, member }) => {
     const intl = useIntl();
 

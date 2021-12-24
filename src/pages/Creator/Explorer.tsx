@@ -303,8 +303,8 @@ const Explorer: React.FC = () => {
                                 avatar={avatar}
                                 asset={asset}
                                 user={user}
-                                stashUserAddress={stashUserAddress}
                                 controllerKeystore={controllerKeystore}
+                                assetPrice={assetPrice}
                             />
                         </>
                     )}
