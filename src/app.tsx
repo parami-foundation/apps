@@ -2,23 +2,17 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import type { RequestConfig, RunTimeLayoutConfig } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import type { ApiPromise } from '@polkadot/api';
 import config from '@/config/config';
 import Loading from './components/Loading/Loading';
 import { notification } from 'antd';
-import { getOrInit } from './services/parami/init';
-import type { Mutex } from 'async-mutex';
 import UnAccessible from './pages/403';
 import { access } from '@/access';
 import type { VoidFn } from '@polkadot/api/types';
+import type { ApiPromise } from '@polkadot/api';
 
 declare global {
   interface Window {
     apiWs: ApiPromise;
-    mutex: Mutex;
-    __RUNTIME_CONFIG__: {
-      CHAINBRIDGE: Bridge.ChainbridgeConfig;
-    };
     unsubParami: VoidFn;
   }
 }
@@ -30,19 +24,14 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   collapsed?: boolean | undefined;
   settings?: Partial<LayoutSettings>;
-  apiWs?: ApiPromise;
 }> {
   if (access().canPreDid && window.location.toString().indexOf('create') < 0) {
     window.location.href = config.page.createPage;
   };
 
-  const api = await getOrInit();
-  window.apiWs = api;
-
   return {
     collapsed: false,
     settings: {},
-    apiWs: api,
   };
 };
 

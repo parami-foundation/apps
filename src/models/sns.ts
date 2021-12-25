@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { getOrInit } from '@/services/parami/init';
+import { useModel } from "umi";
 
 export default () => {
+    const apiWs = useModel('apiWs');
     const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
 
     const platforms = ['Telegram', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
@@ -9,12 +10,14 @@ export default () => {
     const did = localStorage.getItem('did') as string;
 
     const getLinkedInfo = async () => {
-        const api = await getOrInit();
+        if (!apiWs) {
+            return;
+        }
         const data = {};
         for (let i = 0; i < platforms.length; i++) {
-            await api.query.linker.linksOf(did, platforms[i], async (linked) => {
-                if (linked.isEmpty) {
-                    await api.query.linker.pendingOf(platforms[i], did, async (pending) => {
+            await apiWs.query.linker.linksOf(did, platforms[i], async (linked) => {
+                if (linked.isEmpty && apiWs) {
+                    await apiWs.query.linker.pendingOf(platforms[i], did, async (pending) => {
                         if (pending.isEmpty) {
                             data[platforms[i]] = null;
                         } else {
@@ -30,8 +33,10 @@ export default () => {
     }
 
     useEffect(() => {
-        getLinkedInfo();
-    }, []);
+        if (apiWs) {
+            getLinkedInfo();
+        }
+    }, [apiWs]);
 
     return linkedInfo;
 }

@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
-import { getOrInit } from "@/services/parami/init";
 import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/api";
+import { useModel } from "umi";
 
 export default () => {
+    const apiWs = useModel('apiWs');
     const [nickname, setNickname] = useState<string>('Nickname');
     const [avatar, setAvatar] = useState<string>();
 
     const did = localStorage.getItem('dashboardDid') as string;
 
     const getUserInfo = async () => {
-        const api = await getOrInit();
-
-        await api.query.did.metadata(did, async (res) => {
+        if (!apiWs) {
+            return;
+        }
+        await apiWs.query.did.metadata(did, async (res) => {
             const info = res.toHuman();
             if (!info) {
                 return;
@@ -31,8 +33,10 @@ export default () => {
     }
 
     useEffect(() => {
-        getUserInfo();
-    }, []);
+        if (apiWs) {
+            getUserInfo();
+        }
+    }, [apiWs]);
 
     return {
         nickname,

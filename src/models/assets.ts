@@ -1,13 +1,14 @@
 import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/api";
-import { getOrInit } from "@/services/parami/init";
 import { GetUserInfo, GetValueOf } from "@/services/parami/nft";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
+import { useModel } from "umi";
 
 export default () => {
+    const apiWs = useModel('apiWs');
     const [first, setFirst] = useState((new Date()).getTime());
     const [assets, setAssets] = useState<Map<string, any>>(new Map());
     const [assetsArr, setAssetsArr] = useState<any[]>([]);
@@ -15,9 +16,10 @@ export default () => {
     const currentAccount = localStorage.getItem('stashUserAddress');
 
     const getAssets = async () => {
-        const api = await getOrInit();
-
-        const allEntries = await api.query.assets.metadata.entries();
+        if (!apiWs) {
+            return;
+        }
+        const allEntries = await apiWs.query.assets.metadata.entries();
         const tmpAssets = {};
         for (let i = 0; i < allEntries.length; i++) {
             const [key, value] = allEntries[i];
@@ -28,7 +30,7 @@ export default () => {
             }
         }
         for (const assetId in tmpAssets) {
-            api.query.assets.account(Number(assetId), currentAccount, async (result: any) => {
+            apiWs.query.assets.account(Number(assetId), currentAccount, async (result: any) => {
                 const { balance } = result;
 
                 const ad3 = await GetValueOf(assetId, balance);
@@ -83,8 +85,10 @@ export default () => {
     }
 
     useEffect(() => {
-        getAssets();
-    }, []);
+        if (apiWs) {
+            getAssets();
+        }
+    }, [apiWs]);
 
     return { assets, assetsArr };
 }

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { GetTagsMap } from "@/services/parami/api";
-import { getOrInit } from "@/services/parami/init";
 import { notification } from "antd";
+import { useModel } from "umi";
 
 export default () => {
+    const apiWs = useModel('apiWs');
     const [first, setFirst] = useState((new Date()).getTime());
     const [tags, setTags] = useState<Map<string, any>>(new Map());
     const [tagsArr, setTagsArr] = useState<any[]>([]);
@@ -14,11 +15,12 @@ export default () => {
     const borderColor = ['#ffadd2', '#ffa39e', '#ffbb96', '#ffd591', '#ffe58f', '#eaff8f', '#b7eb8f', '#87e8de', '#91d5ff', '#adc6ff', '#d3adf7'];
 
     const getTags = async () => {
+        if (!apiWs) {
+            return;
+        }
         const did = localStorage.getItem('did') as string;
 
-        const api = await getOrInit();
-
-        const allTags = await api.query.tag.personasOf.entries(did);
+        const allTags = await apiWs.query.tag.personasOf.entries(did);
 
         const tmpTags: any[] = [];
 
@@ -80,8 +82,10 @@ export default () => {
     }
 
     useEffect(() => {
-        getTags();
-    }, []);
+        if (apiWs) {
+            getTags();
+        }
+    }, [apiWs]);
 
     return { tags, tagsArr, guideTagsArr };
 }

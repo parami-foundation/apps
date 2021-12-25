@@ -1,9 +1,10 @@
-import { getOrInit } from '@/services/parami/init';
 import { formatBalance } from '@polkadot/util';
 import { notification } from 'antd';
 import { useState, useEffect } from 'react';
+import { useModel } from 'umi';
 
 export default () => {
+  const apiWs = useModel('apiWs');
   const [controller, setController] = useState<State.Controller>({});
   const [stash, setStash] = useState<State.Stash>({});
 
@@ -11,11 +12,12 @@ export default () => {
   const stashUserAddress = localStorage.getItem('dashboardStashUserAddress');
 
   const getController = async () => {
-    const api = await getOrInit();
-
+    if (!apiWs) {
+      return;
+    }
     if (!!controllerUserAddress) {
       let free: any;
-      await api.query.system.account(controllerUserAddress, (info) => {
+      await apiWs.query.system.account(controllerUserAddress, (info) => {
         const data: any = info.data;
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
@@ -36,7 +38,7 @@ export default () => {
 
     if (!!stashUserAddress) {
       let free: any;
-      await api.query.system.account(stashUserAddress, (info) => {
+      await apiWs.query.system.account(stashUserAddress, (info) => {
         const data: any = info.data;
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
@@ -57,8 +59,10 @@ export default () => {
   }
 
   useEffect(() => {
-    getController();
-  }, []);
+    if (apiWs) {
+      getController();
+    }
+  }, [apiWs]);
 
   return {
     controller,
