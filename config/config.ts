@@ -19,7 +19,6 @@ export default defineConfig({
     siderWidth: 208,
     ...defaultSettings,
   },
-  // https://umijs.org/zh-CN/plugins/plugin-locale
   locale: {
     // default en-US
     default: 'en-US',
