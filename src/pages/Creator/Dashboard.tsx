@@ -5,10 +5,11 @@ import styles from '@/pages/wallet.less';
 import Explorer from './Explorer';
 import { GetKolDeposit, GetUserInfo } from '@/services/parami/nft';
 import { parseAmount, hexToDid } from '@/utils/common';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import copy from 'copy-to-clipboard';
 
 const Dashboard: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [KOL, setKOL] = useState(false);
     const [reach, setReach] = useState(false);
     const [deposit, setDeposit] = useState('');
@@ -38,8 +39,10 @@ const Dashboard: React.FC = () => {
         }
     }
     useEffect(() => {
-        init();
-    }, []);
+        if (apiWs) {
+            init();
+        }
+    }, [apiWs]);
 
     const link = `https://wallet.parami.io/${hexToDid(did)}`;
 

@@ -54,10 +54,10 @@ const RecoverDeposit: React.FC<{
 
   const listenController = () => {
     return new Promise(async (resolve, reject) => {
-      if (!apiWs) {
-        return;
-      }
       try {
+        if (!apiWs) {
+          return;
+        }
         if (!!magicUserAddress) {
           let free: any;
           await apiWs.query.system.account(magicUserAddress, (info) => {

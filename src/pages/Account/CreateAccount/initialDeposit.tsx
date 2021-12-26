@@ -129,10 +129,10 @@ const InitialDeposit: React.FC<{
 
   const listenController = () => {
     return new Promise(async (resolve, reject) => {
-      if (!apiWs) {
-        return;
-      }
       try {
+        if (!apiWs) {
+          return;
+        }
         if (!!controllerUserAddress) {
           let free: any;
           await apiWs.query.system.account(controllerUserAddress, (info) => {

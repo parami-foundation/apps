@@ -18,6 +18,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import CreateAccount from '../Account/CreateAccount';
 import { GetAdRemain } from '../../services/parami/nft';
 import { GetAvatar } from '@/services/parami/api';
+import { useModel } from 'umi';
 
 const Message: React.FC<{
     content: string;
@@ -37,6 +38,7 @@ const ios = /iphone|ipod|ipad/.test(userAgent);
 const android = /android|adr/.test(userAgent);
 
 const Explorer: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [avatar, setAvatar] = useState<string>('');
@@ -189,8 +191,10 @@ const Explorer: React.FC = () => {
         if (!access.canUser && checkInIAP()) {
             setNotAccess(true);
         };
-        init();
-    }, []);
+        if (apiWs) {
+            init();
+        }
+    }, [apiWs]);
 
     return (
         <>

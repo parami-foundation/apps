@@ -1,6 +1,6 @@
 import { Alert, Button, Card, Divider, Input, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -31,6 +31,7 @@ const Support: React.FC<{
     stashUserAddress: string,
     controllerKeystore: string,
 }> = ({ did, stashUserAddress, controllerKeystore }) => {
+    const apiWs = useModel('apiWs');
     const [submitting, setSubmitting] = useState(false);
     const [modal, setModal] = useState<boolean>(false);
     const [errorState, setErrorState] = useState<API.Error>({});
@@ -61,8 +62,10 @@ const Support: React.FC<{
     };
 
     useEffect(() => {
-        init();
-    }, []);
+        if (apiWs) {
+            init();
+        }
+    }, [apiWs]);
 
     return (
         <>
