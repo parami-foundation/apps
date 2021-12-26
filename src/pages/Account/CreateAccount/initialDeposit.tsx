@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Button, Card, Divider, Input, message, notification, Spin, Tag, Typography } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -23,7 +23,6 @@ import { uploadIPFS } from '@/services/parami/ipfs';
 import { b64toBlob } from '@/utils/common';
 import { Mutex } from 'async-mutex';
 import { FloatStringToBigInt } from '@/utils/format';
-import { getOrInit } from '@/services/parami/init';
 import { formatBalance } from '@polkadot/util';
 
 const { Title } = Typography;
@@ -45,6 +44,7 @@ const InitialDeposit: React.FC<{
   controllerUserAddress: string;
   controllerKeystore: string;
 }> = ({ password, qsTicket, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore }) => {
+  const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [secModal, setSecModal] = useState<boolean>(false);
   const [Password, setPassword] = useState<string>('');
@@ -129,11 +129,13 @@ const InitialDeposit: React.FC<{
 
   const listenController = () => {
     return new Promise(async (resolve, reject) => {
+      if (!apiWs) {
+        return;
+      }
       try {
-        const api = await getOrInit();
         if (!!controllerUserAddress) {
           let free: any;
-          await api.query.system.account(controllerUserAddress, (info) => {
+          await apiWs.query.system.account(controllerUserAddress, (info) => {
             const data: any = info.data;
             if (free && free !== `${data.free}`) {
               notification.success({

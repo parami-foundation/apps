@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Button, Card, Divider, Input, message, notification, Tag, Typography } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -12,7 +12,6 @@ import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
 import { ChangeController } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { Mutex } from 'async-mutex';
-import { getOrInit } from '@/services/parami/init';
 import { formatBalance } from '@polkadot/util';
 import { FloatStringToBigInt } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';
@@ -34,6 +33,7 @@ const RecoverDeposit: React.FC<{
   magicUserAddress: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ magicKeystore, password, controllerUserAddress, magicUserAddress, setStep }) => {
+  const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState(false);
   const [secModal, setSecModal] = useState(false);
   const [Password, setPassword] = useState('');
@@ -54,11 +54,13 @@ const RecoverDeposit: React.FC<{
 
   const listenController = () => {
     return new Promise(async (resolve, reject) => {
+      if (!apiWs) {
+        return;
+      }
       try {
-        const api = await getOrInit();
         if (!!magicUserAddress) {
           let free: any;
-          await api.query.system.account(magicUserAddress, (info) => {
+          await apiWs.query.system.account(magicUserAddress, (info) => {
             const data: any = info.data;
             if (free && free !== `${data.free}`) {
               notification.success({
