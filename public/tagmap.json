@@ -6,7 +6,10 @@
         "0xe93c851b7e320b9ad26ff96b17de9e4f301ad8e9f71de876eaba56d7791a7e7c": "Theta Arena",
         "0x4c027e41fb9d0619a6e2393bcdab92d3bacdd34c5519f73b7bf2ed234ee10bc4": "Polkadot",
         "0x8f54e49d11ae58a541fe46d6c859e3cfb4cee18a29038b83f3bc43498657110d": "Solana",
-        "0x40c8253a3fccae698a831d727547de3f8e7d961d3aabcb3b817c060cb40968eb": "DeFi"
+        "0x40c8253a3fccae698a831d727547de3f8e7d961d3aabcb3b817c060cb40968eb": "DeFi",
+        "0xfd5e088cae725f3fd1ead3fccf1ba30c6c99d5532e2b037fdfdf980eb684a633": "Telegram",
+        "0x0eedaeff323cd259b94326f5d591af9c4ddc4ed638abbf87678ecfdc5f9fefb6": "Discord",
+        "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": "Twitter"
     },
     "guide": {
         "0x722ad376117d414e25bb0d9b573eec8566cd6f94cda60191c87598c5f32b2e83": {
@@ -18,6 +21,21 @@
             "name": "CryptoMines",
             "type": "blockchain",
             "chain": "Binance"
+        },
+        "0xfd5e088cae725f3fd1ead3fccf1ba30c6c99d5532e2b037fdfdf980eb684a633": {
+            "name": "Telegram",
+            "type": "sns",
+            "chain": "Telegram"
+        },
+        "0x0eedaeff323cd259b94326f5d591af9c4ddc4ed638abbf87678ecfdc5f9fefb6": {
+            "name": "Discord",
+            "type": "sns",
+            "chain": "Discord"
+        },
+        "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": {
+            "name": "Twitter",
+            "type": "sns",
+            "chain": "Twitter"
         }
     }
 }
