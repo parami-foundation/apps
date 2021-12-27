@@ -168,11 +168,7 @@ const Advertisement: React.FC<{
                             try {
                                 await navigator.share(shareData);
                             } catch (e) {
-                                message.error(intl.formatMessage({
-                                    id: 'error.share.failed',
-                                }));
-
-                                return;
+                                console.log(e);
                             }
                         } else {
                             copy(link + ` ${intl.formatMessage({

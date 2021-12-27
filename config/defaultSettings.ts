@@ -10,7 +10,7 @@ const Settings: LayoutSettings & {
   contentWidth: 'Fluid',
   fixedHeader: true,
   fixSiderbar: false,
-  colorWeak: false,
+  colorWeak: true,
   title: 'Parami - Para Metaverse Identity',
   pwa: false,
   logo: '/images/logo-round-core.svg',
