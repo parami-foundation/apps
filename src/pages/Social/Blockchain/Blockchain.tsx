@@ -10,6 +10,8 @@ import { hexToDid } from '@/utils/common';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
+import VConsole from 'vconsole';
+import { convertUtf8ToHex } from '@walletconnect/utils';
 
 const { TextArea } = Input;
 
@@ -33,8 +35,10 @@ const BindModal: React.FC<{
 	blockchain: string,
 	setBindModal: React.Dispatch<React.SetStateAction<boolean>>,
 }> = ({ blockchain, setBindModal }) => {
-	const stmap = localStorage.getItem('stamp');
+	const vconsole = new VConsole();
 
+
+	const stmap = localStorage.getItem('stamp');
 	const [errorState, setErrorState] = useState<API.Error>({});
 	const [origin, setOrigin] = useState<string>('');
 	const [address, setAddress] = useState<string>('');
@@ -43,21 +47,34 @@ const BindModal: React.FC<{
 	const [secModal, setSecModal] = useState(false);
 	const [type, setType] = useState<string>('');
 	const [collapse, setCollapse] = useState<boolean>(false);
+	const [WConnected, setWConnected] = useState<boolean>(false);
+	const [connector, setConnector] = useState<any>(null);
 
+	async function sign() {
+		const signedMsg= await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
+		console.log(signedMsg)
+	}
+	useEffect(()=>{
+		console.log('connection status changed')
+		if(WConnected){
+			sign();
+		}
+	},[WConnected])
 	const intl = useIntl();
-
+	// await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
+	// setBindModal(false);
 	const handleSubmit = async () => {
 		switch (type) {
 			case 'walletconnect':
 				console.log(password)
 				try {
-					const { account, result }: any = await signPersonalMessage(origin);
-					notification.error({
-						message: 'account',
-						description: result,
-						duration: null
+					const {account ,signedMsg}  = await signPersonalMessage(origin);
+					notification.info({
+						message: 'Got an signed message',
+						description: signedMsg,
+						duration: 2
 					})
-					await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
+					await LinkBlockChain(blockchain, account, signedMsg, password, controllerKeystore);
 					setBindModal(false);
 				} catch (e: any) {
 					message.error(e.message);
