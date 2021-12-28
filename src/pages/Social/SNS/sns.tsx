@@ -393,7 +393,10 @@ const SNS: React.FC<{
 						platform={platform}
 						setBindModal={setBindModal}
 					/>}
-				close={() => { setBindModal(false) }}
+				close={() => {
+					setBindModal(false);
+					window.location.href = window.location.href.slice(0, window.location.href.indexOf('?'));
+				}}
 				footer={
 					<>
 						<Button

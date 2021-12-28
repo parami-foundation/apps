@@ -51,15 +51,15 @@ const BindModal: React.FC<{
 	const [connector, setConnector] = useState<any>(null);
 
 	async function sign() {
-		const signedMsg= await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
+		const signedMsg = await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
 		console.log(signedMsg)
 	}
-	useEffect(()=>{
+	useEffect(() => {
 		console.log('connection status changed')
-		if(WConnected){
+		if (WConnected) {
 			sign();
 		}
-	},[WConnected])
+	}, [WConnected])
 	const intl = useIntl();
 	// await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
 	// setBindModal(false);
@@ -68,7 +68,7 @@ const BindModal: React.FC<{
 			case 'walletconnect':
 				console.log(password)
 				try {
-					const {account ,signedMsg}  = await signPersonalMessage(origin);
+					const { account, signedMsg } = await signPersonalMessage(origin);
 					notification.info({
 						message: 'Got an signed message',
 						description: signedMsg,
@@ -633,7 +633,8 @@ const Blockchain: React.FC<{
 						setBindModal={setBindModal}
 					/>}
 				close={() => {
-					setBindModal(false)
+					setBindModal(false);
+					window.location.href = window.location.href.slice(0, window.location.href.indexOf('?'));
 				}}
 				footer={
 					<>
