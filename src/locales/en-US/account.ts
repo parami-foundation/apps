@@ -39,4 +39,5 @@ export default {
     'account.quicksign.description': 'Register quickly with an option below',
     'account.quicksign.manual': 'Manual Deposit',
     'account.loading.creating': 'Creating Account, please wait about 24s.',
+    'account.magicLink.lastStep': 'Last Step',
 };

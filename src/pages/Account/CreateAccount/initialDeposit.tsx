@@ -70,6 +70,7 @@ const InitialDeposit: React.FC<{
           message: 'Airdrop Success',
         })
         setAirDropData(data);
+        setStep(1);
       }
       if (Resp?.status === 401) {
         notification.error({
@@ -281,6 +282,18 @@ const InitialDeposit: React.FC<{
           )}
           {!miniLoading && (
             <>
+              <Title
+                level={2}
+                style={{
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                }}
+                className={style.title}
+              >
+                {intl.formatMessage({
+                  id: 'account.magicLink.lastStep',
+                })}
+              </Title>
               <p className={style.description}>
                 {intl.formatMessage({
                   id: 'account.magicLink.description',
