@@ -8,7 +8,7 @@ import { useModel } from 'umi';
 import SelectWallet from '../Bridge/components/selectWallet';
 import type { BigNumber } from 'ethers';
 import { ethers } from 'ethers';
-import { getAd3UsdtPrice } from './api/uniswap/pool';
+import { getAd3Price } from './api/uniswap/pool';
 import { contractAddresses, pairsData } from './config';
 import { FeeAmount } from '@uniswap/v3-sdk';
 import { CompareArray } from '@/utils/common';
@@ -133,7 +133,7 @@ const Farm: React.FC = () => {
             if (!CompareArray(pools, Pools)) {
                 setPools(pools);
             }
-            const res = await getAd3UsdtPrice(FactoryContract);
+            const res = await getAd3Price(FactoryContract, pairsData[1].coinAddresses[chainId]);//USDT
             if (res) {
                 setAD3Price(res.toSignificant())
             }

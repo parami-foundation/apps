@@ -94,35 +94,13 @@ async function GetPool(uniswapFactory: ethers.Contract, provider: ethers.provide
     return pool;
 }
 
-export async function getAd3UsdtPrice(uinswapFactory: ethers.Contract) {
-    const chainId = await uinswapFactory.signer.getChainId();
-    if (chainId != 1 && chainId != 4) {
-        return null;
-    }
-    console.log('chianId', chainId);
-    const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
-    const token1 = new Token(chainId, contractAddresses.usdt[chainId], 6);
-    const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
-    console.log('pool', pool);
-    return pool.token0Price;
-}
-export async function getAd3EthPrice(uinswapFactory: ethers.Contract) {
+export async function getAd3Price(uinswapFactory: ethers.Contract, coinAddress: string) {
     const chainId = await uinswapFactory.signer.getChainId();
     if (chainId != 1 && chainId != 4) {
         return null;
     }
     const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
-    const token1 = new Token(chainId, contractAddresses.weth[chainId], 18);
-    const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
-    return pool.token0Price;
-}
-export async function getAd3UsdcPrice(uinswapFactory: ethers.Contract) {
-    const chainId = await uinswapFactory.signer.getChainId();
-    if (chainId != 1 && chainId != 4) {
-        return null;
-    }
-    const token0 = new Token(chainId, contractAddresses.ad3[chainId], 18);
-    const token1 = new Token(chainId, contractAddresses.usdc[chainId], 18);
+    const token1 = new Token(chainId, coinAddress, 18);
     const pool = await GetPool(uinswapFactory, uinswapFactory.provider, token0, token1, 3000);
     return pool.token0Price;
 }

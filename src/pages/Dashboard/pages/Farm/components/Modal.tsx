@@ -1,16 +1,31 @@
-import React from 'react';
-import { useIntl } from 'umi';
+import React, { useEffect } from 'react';
+import { useIntl, useModel } from 'umi';
 import { Button, Input, Slider, Typography, Image } from 'antd';
 import style from './Modal.less';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { contractAddresses } from '../config';
+import { FloatStringToBigInt } from '@/utils/format';
 
 const AddModal: React.FC<{
-    pair: Pair, setVisiable: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ pair, setVisiable }) => {
+    pair: Pair, setVisiable: React.Dispatch<React.SetStateAction<boolean>>, currentPrice: bigint
+}> = ({ pair, setVisiable, currentPrice }) => {
+    const {
+        chainId,
+    } = useModel("metaMask");
     const intl = useIntl();
-    const [APYIndex, setAPYIndex] = React.useState(1);
+    const [APYIndex, setAPYIndex] = React.useState(0);
     const { Title } = Typography;
-
+    useEffect(() => {
+        if (currentPrice) {
+            for (let i = 0; i < pair.incentives.length; i++) {
+                const min = FloatStringToBigInt(pair.incentives[i].minPrice, 18);
+                const max = FloatStringToBigInt(pair.incentives[i].maxPrice, 18);
+                if (min <= currentPrice && currentPrice <= max) {
+                    setAPYIndex(i);
+                }
+            }
+        }
+    }, [currentPrice]);
     const marks = {
         0: '100%',
         1: '150%',
@@ -31,7 +46,7 @@ const AddModal: React.FC<{
                     max={2}
                     marks={marks}
                     step={null}
-                    defaultValue={1}
+                    defaultValue={APYIndex}
                     className={style.slider}
                     onChange={(value) => {
                         setAPYIndex(value);
@@ -59,7 +74,7 @@ const AddModal: React.FC<{
                                     placeholder='0.0'
                                     className={style.input}
                                     bordered={false}
-                                // value={pools[0].incentives[APYIndex].minPrice}
+                                    value={pair.incentives[APYIndex].minPrice}
                                 />
                                 <Button
                                     disabled
@@ -101,7 +116,7 @@ const AddModal: React.FC<{
                                     placeholder='0.0'
                                     className={style.input}
                                     bordered={false}
-                                // value={pools[0].incentives[APYIndex].maxPrice}
+                                    value={pair.incentives[APYIndex].maxPrice}
                                 />
                                 <Button
                                     disabled
@@ -157,7 +172,7 @@ const AddModal: React.FC<{
                             window.open(
                                 `https://app.uniswap.org/#/add/${pair.coin === 'ETH'
                                     ? 'ETH'
-                                    : pair.coinAddress}/${AD3Address}/3000`
+                                    : pair.coinAddress}/${contractAddresses.ad3[chainId]}/3000`
                             )
                         }}
                     >

@@ -1,10 +1,11 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { BigIntToFloatString } from '@/utils/format';
+import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBalance } from '@polkadot/util';
 import { Button, Divider, Space, Image } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useModel } from 'umi';
+import { getAd3Price } from '../api/uniswap/pool';
 import { contractAddresses } from '../config';
 import style from '../style.less';
 import AddModal from './Modal';
@@ -19,17 +20,18 @@ const Rows: React.FC<{
     apys: string[]
 }> = ({ collapse, stakedLPs, unstakedLPs, rewards, pair, poolAddress, apys }) => {
     const {
-        StakeContract
+        StakeContract,
+        FactoryContract
     } = useModel('contracts');
     const {
         account,
         chainId
     } = useModel('metaMask');
     const [AddModalShow, setAddModalShow] = useState<boolean>(false);
-    const [pendingStake, setPendingStake] = useState<(true | false)[]>([])
-    const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([])
-    const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([])
-
+    const [pendingStake, setPendingStake] = useState<(true | false)[]>([]);
+    const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([]);
+    const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([]);
+    const [currentPrice, setCurrentPrice] = useState<BigInt>(BigInt(0));
     const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);
@@ -97,6 +99,16 @@ const Rows: React.FC<{
             setPendingClaim(pendingClaim)
         }
     }, [StakeContract, account, pair.incentives, pendingClaim, poolAddress, chainId]);
+    const getAd3CoinPrice = useCallback(async () => {
+        if (!FactoryContract) return;
+        const res = await getAd3Price(FactoryContract, pair.coinAddress);
+        console.log('getAd3CoinPrice/', pair.coin, res?.toSignificant());
+
+        setCurrentPrice(BigInt(FloatStringToBigInt(res?.toSignificant() || '0', 18)));//todo: check decimals
+    }, [FactoryContract]);
+    useEffect(() => {
+        getAd3CoinPrice();
+    }, [FactoryContract]);
     return (
         <>
             <div
@@ -126,6 +138,9 @@ const Rows: React.FC<{
                             size='middle'
                             type='primary'
                             className={style.actionButton}
+                            onClick={() => {
+                                window.open('https://rinkeby.etherscan.io/address/' + StakeContract?.address)
+                            }}
                         >
                             View Contract
                         </Button>
@@ -305,7 +320,7 @@ const Rows: React.FC<{
                 visable={AddModalShow}
                 title={'Add Liquidity'}
                 content={
-                    <AddModal setVisiable={setAddModalShow} />
+                    <AddModal setVisiable={setAddModalShow} pair={pair} price={currentPrice} />
                 }
                 footer={false}
                 close={() => setAddModalShow(false)}
