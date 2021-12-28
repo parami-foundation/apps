@@ -5519,7 +5519,7 @@
 
 "@walletconnect/web3-provider@^1.7.0":
   version "1.7.0"
-  resolved "https://registry.npmmirror.com/@walletconnect/web3-provider/download/@walletconnect/web3-provider-1.7.0.tgz#14d67a75555547205e9fd916a7142b1f951a143e"
+  resolved "https://registry.yarnpkg.com/@walletconnect/web3-provider/-/web3-provider-1.7.0.tgz#14d67a75555547205e9fd916a7142b1f951a143e"
   integrity sha512-tX0nKVJAs1jrRmFAP8nv1h27ZttWQ/4pOW8hkH32JIB76zbsncdUOjHpnzpzgXrzMyrCzfeXeZ8dbdW4jS1KDw==
   dependencies:
     "@walletconnect/client" "^1.7.0"
