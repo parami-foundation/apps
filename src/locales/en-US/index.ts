@@ -4,4 +4,5 @@ export default {
     'index.createAccount': 'Create an identity',
     'index.or': 'or',
     'index.importAccount': 'Import an existing one',
+    'index.dashboard': 'Goto Dashboard',
 };

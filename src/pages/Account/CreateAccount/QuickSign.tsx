@@ -27,14 +27,14 @@ const QuickSign: React.FC<{
     return (
         <>
             {!minimal && (
-                <Spin
-                    tip={intl.formatMessage({
-                        id: 'common.loading',
-                    })}
-                    spinning={loading}
-                    wrapperClassName={styles.pageContainer}
-                >
-                    <Card className={styles.card}>
+                <Card className={styles.card}>
+                    <Spin
+                        tip={intl.formatMessage({
+                            id: 'common.loading',
+                        })}
+                        spinning={loading}
+                        wrapperClassName={styles.pageContainer}
+                    >
                         <img src={'/images/icon/option.svg'} className={style.topIcon} />
                         <Title
                             level={2}
@@ -95,8 +95,8 @@ const QuickSign: React.FC<{
                                 })}
                             </small>
                         </div>
-                    </Card>
-                </Spin>
+                    </Spin>
+                </Card>
             )}
             {minimal && (
                 <Spin

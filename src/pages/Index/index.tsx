@@ -69,10 +69,10 @@ const Index: React.FC = () => {
                                 shape="round"
                                 size="large"
                                 className={style.button}
-                                onClick={() => history.push(config.page.recoverPage)}
+                                onClick={() => history.push(config.page.dashboard.homePage)}
                             >
                                 {intl.formatMessage({
-                                    id: 'index.importAccount',
+                                    id: 'index.dashboard',
                                 })}
                             </Button>
                         </div>

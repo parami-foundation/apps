@@ -1,4 +1,4 @@
-import { message, Space, Tag, Upload } from 'antd';
+import { message, Space, Upload } from 'antd';
 import { ScanOutlined } from '@ant-design/icons';
 import React from 'react';
 import { useIntl, useModel, SelectLang, history, useAccess } from 'umi';
@@ -6,7 +6,6 @@ import Avatar from './AvatarDropdown';
 import styles from './index.less';
 import loadImg from '@/utils/decode';
 import { hexToDid } from '@/utils/common';
-import config from '@/config/config';
 
 export type SiderTheme = 'light' | 'dark';
 
@@ -56,7 +55,7 @@ const GlobalHeaderRight: React.FC = () => {
             })}
           </Tag>
         )} */}
-        {window.location.pathname.indexOf('dashboard') < 0 && (
+        {/* {window.location.pathname.indexOf('dashboard') < 0 && (
           <Tag
             color="#f50"
             style={{
@@ -71,7 +70,7 @@ const GlobalHeaderRight: React.FC = () => {
               id: 'common.dashboard',
             })}
           </Tag>
-        )}
+        )} */}
 
         <Upload
           accept="image/*"

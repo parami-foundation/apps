@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Button, Card, Divider, Input, message, notification, Spin, Tag, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, notification, Spin, Steps, Tag, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
@@ -8,7 +8,7 @@ import style from '../style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
+import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
 import {
   BatchNicknameAndAvatar,
@@ -21,11 +21,12 @@ import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
 import { uploadIPFS } from '@/services/parami/ipfs';
 import { b64toBlob } from '@/utils/common';
-import { Mutex } from 'async-mutex';
 import { FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
+import type { VoidFn } from '@polkadot/api/types';
 
 const { Title } = Typography;
+const { Step } = Steps;
 
 const goto = () => {
   setTimeout(() => {
@@ -34,7 +35,7 @@ const goto = () => {
     sessionStorage.removeItem('redirect');
   }, 10);
 };
-
+let unsub: VoidFn | null = null;
 const InitialDeposit: React.FC<{
   password: string;
   qsTicket?: any;
@@ -50,9 +51,10 @@ const InitialDeposit: React.FC<{
   const [Password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [miniLoading, setMiniLoading] = useState<boolean>(true);
-
+  const [airdropData, setAirDropData] = useState<any>(null);
+  const [step, setStep] = useState<number>(0);
+  const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
   const intl = useIntl();
-  const mutex = new Mutex();
 
   const handleTelegram = async (response) => {
     setLoading(true);
@@ -67,7 +69,7 @@ const InitialDeposit: React.FC<{
         notification.success({
           message: 'Airdrop Success',
         })
-        return data;
+        setAirDropData(data);
       }
       if (Resp?.status === 401) {
         notification.error({
@@ -127,103 +129,109 @@ const InitialDeposit: React.FC<{
     };
   };
 
-  const listenController = () => {
-    return new Promise(async (resolve, reject) => {
+  const createAccount = async () => {
+    let stashUserAddress = localStorage.getItem('stashUserAddress');
+    if (stashUserAddress === '' || stashUserAddress === null) {
       try {
-        if (!apiWs) {
-          return;
-        }
-        if (!!controllerUserAddress) {
-          let free: any;
-          await apiWs.query.system.account(controllerUserAddress, (info) => {
-            const data: any = info.data;
-            if (free && free !== `${data.free}`) {
-              notification.success({
-                message: 'Changes in Gas Balance',
-                description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
-              })
-            }
-            free = `${data.free}`;
-            if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
-              resolve(data.free);
-            }
-          });
-        }
+        const events: any = await CreateStableAccount(
+          password,
+          controllerKeystore,
+          magicUserAddress,
+          '0.01',
+        );
+        stashUserAddress = events['magic']['Created'][0][0];
+        localStorage.setItem('stashUserAddress', stashUserAddress as string);
+        setStep(2);
       } catch (e: any) {
-        reject(e);
+        console.log(e.message);
+        return;
       }
-    });
-  }
-
-  const pendingStatus = async (airdropData?: any) => {
-    const release = await mutex.acquire();
-    const free: any = await listenController();
-
-    if (BigInt(free) < FloatStringToBigInt('1', 18)) {
-      release();
+    }
+    let did = localStorage.getItem('did');
+    if (!did || did === '') {
+      try {
+        const events: any = await CreateDid(
+          controllerUserAddress,
+          password,
+          controllerKeystore,
+        );
+        did = events['did']['Assigned'][0][0];
+        localStorage.setItem('did', did as string);
+        setStep(3);
+      } catch (e: any) {
+        console.log(e.message);
+        return;
+      }
+    }
+    if (minimal) {
+      await minimalSubmit(airdropData, did);
       return;
     }
-
-    try {
-      const events: any = await CreateStableAccount(
-        password,
-        controllerKeystore,
-        magicUserAddress,
-        '0.01',
-      );
-      const stashUserAddress = events['magic']['Created'][0][0];
-      localStorage.setItem('stashUserAddress', stashUserAddress);
-    } catch (e: any) {
-      console.log(e.message);
-    }
-
-    try {
-      const events: any = await CreateDid(
-        controllerUserAddress,
-        password,
-        controllerKeystore,
-      );
-      const did = events['did']['Assigned'][0][0];
-      localStorage.setItem('did', did);
-      if (minimal) {
-        await minimalSubmit(airdropData, did);
-        return;
-      }
-      if (qsTicket) {
-        await minimalSubmit(airdropData, did);
-        goto();
-        return;
-      }
+    if (qsTicket) {
+      await minimalSubmit(airdropData, did);
       goto();
       return;
-    } catch (e: any) {
-      console.log(e.message);
     }
-
-    release();
+    goto();
+    return;
   }
+
+  const listenBalance = async () => {
+    if (!apiWs) {
+      return;
+    }
+    if (!!controllerUserAddress) {
+      let free: any;
+      unsub = await apiWs.query.system.account(controllerUserAddress, (info) => {
+        const data: any = info.data;
+        if (free && free !== `${data.free}`) {
+          notification.success({
+            message: 'Changes in Gas Balance',
+            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
+          })
+        }
+        free = `${data.free}`;
+        console.log('control free', free);
+        if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
+          setControllerBalance(data.free);
+        }
+      });
+    }
+  };
 
   const minimalAirdrop = async () => {
     try {
-      const data = await handleTelegram(qsTicket);
-      return data;
+      await handleTelegram(qsTicket);
+      if (unsub === null) {
+        listenBalance();
+      }
     } catch (e) {
       console.log(e);
     }
   };
 
   useEffect(() => {
+    listenBalance();
+  }, [apiWs]);
+
+  useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
       return;
     }
     if (minimal || qsTicket) {
-      minimalAirdrop().then((data) => {
-        pendingStatus(data);
-      });
+      minimalAirdrop()
       return;
     };
-    pendingStatus();
   }, [password, controllerUserAddress, controllerKeystore]);
+
+  useEffect(() => {
+    if (controllerBalance > FloatStringToBigInt('1', 18)) {
+      if (unsub !== null) {
+        unsub();
+      }
+      createAccount();
+    }
+  }, [controllerBalance]);
 
   return (
     <>
@@ -238,16 +246,20 @@ const InitialDeposit: React.FC<{
           {miniLoading && (
             <>
               <Spin
-                tip={intl.formatMessage({
-                  id: 'account.loading.creating',
-                })}
+                tip={(
+                  <Steps size="small" current={step} className={style.stepContainer}>
+                    <Step title="Airdrop" />
+                    <Step title="Create Account" />
+                    <Step title="Create DID" />
+                  </Steps>
+                )}
                 size='large'
-                indicator={
-                  <LoadingOutlined
-                    spin
-                  />
-                }
+                indicator={(<></>)}
                 spinning={miniLoading}
+                wrapperClassName={styles.pageContainer}
+                style={{
+                  background: 'rgba(255,255,255,.7)'
+                }}
               />
               <a
                 style={{
@@ -348,20 +360,23 @@ const InitialDeposit: React.FC<{
         </div>
       ) : (
         <>
-          <Spin
-            size='large'
-            tip={intl.formatMessage({
-              id: 'account.loading.creating',
-            })}
-            indicator={
-              <LoadingOutlined
-                spin
-              />
-            }
-            spinning={loading}
-            className={styles.mainContainer}
-          >
-            <Card className={styles.card}>
+          <Card className={styles.card}>
+            <Spin
+              size='large'
+              tip={(
+                <Steps size="small" current={step} className={style.stepContainer}>
+                  <Step title="Airdrop" />
+                  <Step title="Create Account" />
+                  <Step title="Create DID" />
+                </Steps>
+              )}
+              indicator={(<></>)}
+              spinning={loading}
+              wrapperClassName={styles.pageContainer}
+              style={{
+                background: 'rgba(255,255,255,.7)'
+              }}
+            >
               <img src={'/images/icon/transaction.svg'} className={style.topIcon} />
               <Title
                 level={2}
@@ -498,8 +513,8 @@ const InitialDeposit: React.FC<{
                 </Divider>
                 <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
               </div>
-            </Card>
-          </Spin>
+            </Spin>
+          </Card>
           <BigModal
             visable={modalVisable}
             title={intl.formatMessage({
