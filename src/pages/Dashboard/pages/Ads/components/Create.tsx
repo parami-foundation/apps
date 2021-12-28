@@ -248,7 +248,6 @@ const Create: React.FC<{
                     </div>
                     <div className={styles.value}>
                         <InputNumber
-                            readOnly
                             value={0}
                             className={styles.withAfterInput}
                             placeholder="0.00"
@@ -275,7 +274,7 @@ const Create: React.FC<{
                     <div className={styles.value}>
                         <InputNumber
                             className={styles.withAfterInput}
-                            placeholder="0.00"
+                            placeholder="0"
                             size='large'
                             type='number'
                             maxLength={18}
