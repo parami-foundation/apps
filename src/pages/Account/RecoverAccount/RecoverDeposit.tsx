@@ -133,6 +133,8 @@ const RecoverDeposit: React.FC<{
         <p className={style.description}>
           {intl.formatMessage({
             id: 'account.recoverDeposit.description',
+          }, {
+            ad3: (<strong>0.0005 $AD3</strong>)
           })}
         </p>
         <Divider />

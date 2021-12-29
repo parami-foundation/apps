@@ -382,5 +382,6 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
     avatarCodo,
   ]);
 
-  await batch.signAndSend(payUser, errCb);
+  const events = await subCallback(batch, payUser);
+  return events;
 };

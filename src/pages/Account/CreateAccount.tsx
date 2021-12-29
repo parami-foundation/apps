@@ -10,9 +10,6 @@ import { CreateAccount as createAccount } from '@/services/parami/wallet';
 import { useAccess, history } from 'umi';
 import config from '@/config/config';
 import VConsole from 'vconsole';
-import { Card, Steps } from 'antd';
-
-const { Step } = Steps;
 
 const CreateAccount: React.FC<{
   minimal?: boolean;
@@ -167,15 +164,6 @@ const CreateAccount: React.FC<{
                   qsTicket={qsTicket}
                 />
               }
-              <Card className={styles.card}>
-                <Steps size="small" current={step - 1}>
-                  <Step title="Quick Create" />
-                  <Step title="Create MagicLink" />
-                  <Step title="Set Passsword" />
-                  <Step title="Confirm Password" />
-                  <Step title="Verify" />
-                </Steps>
-              </Card>
             </div>
           </div>
         </>

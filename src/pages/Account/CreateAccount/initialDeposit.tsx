@@ -52,8 +52,9 @@ const InitialDeposit: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const [miniLoading, setMiniLoading] = useState<boolean>(true);
   const [airdropData, setAirDropData] = useState<any>(null);
-  const [step, setStep] = useState<number>(0);
+  const [step, setStep] = useState<number>(3);
   const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
+  const [avatarNicknameData, setAvatarNicknameData] = useState<any>();
   const intl = useIntl();
 
   const handleTelegram = async (response) => {
@@ -70,7 +71,7 @@ const InitialDeposit: React.FC<{
           message: 'Airdrop Success',
         })
         setAirDropData(data);
-        setStep(1);
+        setStep(4);
       }
       if (Resp?.status === 401) {
         notification.error({
@@ -119,7 +120,8 @@ const InitialDeposit: React.FC<{
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);
               const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-              await BatchNicknameAndAvatar(data?.nickname, `ipfs://${res.Hash}`, password, controllerKeystore);
+              const events = await BatchNicknameAndAvatar(data?.nickname, `ipfs://${res.Hash}`, password, controllerKeystore);
+              setAvatarNicknameData(events);
             });
         }
       } catch (e: any) {
@@ -142,7 +144,7 @@ const InitialDeposit: React.FC<{
         );
         stashUserAddress = events['magic']['Created'][0][0];
         localStorage.setItem('stashUserAddress', stashUserAddress as string);
-        setStep(2);
+        setStep(5);
       } catch (e: any) {
         console.log(e.message);
         return;
@@ -158,7 +160,7 @@ const InitialDeposit: React.FC<{
         );
         did = events['did']['Assigned'][0][0];
         localStorage.setItem('did', did as string);
-        setStep(3);
+        setStep(6);
       } catch (e: any) {
         console.log(e.message);
         return;
@@ -170,11 +172,7 @@ const InitialDeposit: React.FC<{
     }
     if (qsTicket) {
       await minimalSubmit(airdropData, did);
-      goto();
-      return;
     }
-    goto();
-    return;
   }
 
   const listenBalance = async () => {
@@ -216,6 +214,13 @@ const InitialDeposit: React.FC<{
   }, [apiWs]);
 
   useEffect(() => {
+    if (!!avatarNicknameData) {
+      goto();
+      return;
+    }
+  }, [avatarNicknameData]);
+
+  useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
       return;
     }
@@ -248,10 +253,13 @@ const InitialDeposit: React.FC<{
             <>
               <Spin
                 tip={(
-                  <Steps size="small" current={step} className={style.stepContainer}>
-                    <Step title="Airdrop" />
-                    <Step title="Create Account" />
-                    <Step title="Create DID" />
+                  <Steps size="default" current={step} className={style.stepContainer}>
+                    <Step title="Magic Account" />
+                    <Step title="Weak Password" />
+                    <Step title="Controller Account" />
+                    <Step title="Deposit" />
+                    <Step title="Stash Account" />
+                    <Step title="DID" />
                   </Steps>
                 )}
                 size='large'
@@ -373,14 +381,23 @@ const InitialDeposit: React.FC<{
         </div>
       ) : (
         <>
-          <Card className={styles.card}>
+          <Card
+            className={styles.card}
+            bodyStyle={{
+              padding: 0,
+              width: '100%'
+            }}
+          >
             <Spin
               size='large'
               tip={(
-                <Steps size="small" current={step} className={style.stepContainer}>
-                  <Step title="Airdrop" />
-                  <Step title="Create Account" />
-                  <Step title="Create DID" />
+                <Steps size="default" current={step} className={style.stepContainer}>
+                  <Step title="Magic Account" />
+                  <Step title="Weak Password" />
+                  <Step title="Controller Account" />
+                  <Step title="Deposit" />
+                  <Step title="Stash Account" />
+                  <Step title="DID" />
                 </Steps>
               )}
               indicator={(<></>)}
@@ -406,6 +423,8 @@ const InitialDeposit: React.FC<{
               <p className={style.description}>
                 {intl.formatMessage({
                   id: 'account.initialDeposit.description',
+                }, {
+                  ad3: (<strong>1 $AD3</strong>)
                 })}
               </p>
               <Divider />

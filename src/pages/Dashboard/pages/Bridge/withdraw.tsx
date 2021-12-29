@@ -38,17 +38,17 @@ const Withdraw: React.FC<{
     const [amount, setAmount] = useState<string>('');
     const [destinationAddress, setDestinationAddress] = useState<string>();
 
-    useEffect(()=>{
-        if(DepositNonce===txNonce){
+    useEffect(() => {
+        if (DepositNonce === txNonce) {
             setWaitingEth(false);
             setTxNonce(BigInt(0));
             message.success('Success!');
             console.log('got the right bridge event');
-            if(BridgeContract){
+            if (BridgeContract) {
                 UnsubBridgeEvents(BridgeContract);
             }
         }
-    },[BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce])
+    }, [BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce])
     const intl = useIntl();
 
     const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
@@ -66,13 +66,14 @@ const Withdraw: React.FC<{
             console.log('paramiRes', paramiRes);
             setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
             setLoading(false);
+            // Step 1
             setWaitingEth(true);
-            if(BridgeContract){
+            if (BridgeContract) {
                 SubBridgeEvents(BridgeContract);
-            }else{
+            } else {
                 alert('this should not run: no bridge contract');
             }
-            
+
         } catch (e: any) {
             setErrorState({
                 Type: 'chain error',
@@ -93,7 +94,7 @@ const Withdraw: React.FC<{
     }
 
     useEffect(() => {
-        if(!account||!Ad3Contract) return;
+        if (!account || !Ad3Contract) return;
         getBalance();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [signer, provider, Ad3Contract, account]);

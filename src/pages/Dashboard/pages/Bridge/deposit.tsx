@@ -133,6 +133,7 @@ const Deposit: React.FC<{
             setTxNonce(nonce);
             setLoading(false);
 
+            // Step 2
             setWaitingParami(true);
             window.unsubParami = await SubParamiEvents();
 
@@ -146,7 +147,7 @@ const Deposit: React.FC<{
     }
 
     useEffect(() => {
-        if(!account||!Ad3Contract) return;
+        if (!account || !Ad3Contract) return;
         getBalance();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [signer, provider, Ad3Contract, account]);
