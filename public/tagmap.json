@@ -9,7 +9,8 @@
         "0x40c8253a3fccae698a831d727547de3f8e7d961d3aabcb3b817c060cb40968eb": "DeFi",
         "0xfd5e088cae725f3fd1ead3fccf1ba30c6c99d5532e2b037fdfdf980eb684a633": "Telegram",
         "0x0eedaeff323cd259b94326f5d591af9c4ddc4ed638abbf87678ecfdc5f9fefb6": "Discord",
-        "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": "Twitter"
+        "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": "Twitter",
+        "0xb9b3f06f07466242fe6bb8eda23994818e34fcb8dcd26882ecc1c33497155f95": "Kusama"
     },
     "guide": {
         "0x722ad376117d414e25bb0d9b573eec8566cd6f94cda60191c87598c5f32b2e83": {
@@ -36,6 +37,11 @@
             "name": "Twitter",
             "type": "sns",
             "chain": "Twitter"
+        },
+        "0xb9b3f06f07466242fe6bb8eda23994818e34fcb8dcd26882ecc1c33497155f95": {
+            "name": "Kusama",
+            "type": "blockchain",
+            "chain": "Polkadot"
         }
     }
 }
