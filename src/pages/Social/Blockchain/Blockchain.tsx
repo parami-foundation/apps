@@ -4,14 +4,14 @@ import { LinkBlockChain } from '@/services/parami/linker';
 import { Alert, Button, Divider, Input, message, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
 import styles from '../style.less';
 import { hexToDid } from '@/utils/common';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import VConsole from 'vconsole';
 import { convertUtf8ToHex } from '@walletconnect/utils';
+import config from '@/config/config';
 
 const { TextArea } = Input;
 
@@ -35,9 +35,6 @@ const BindModal: React.FC<{
 	blockchain: string,
 	setBindModal: React.Dispatch<React.SetStateAction<boolean>>,
 }> = ({ blockchain, setBindModal }) => {
-	const vconsole = new VConsole();
-
-
 	const stmap = localStorage.getItem('stamp');
 	const [errorState, setErrorState] = useState<API.Error>({});
 	const [origin, setOrigin] = useState<string>('');
@@ -53,16 +50,10 @@ const BindModal: React.FC<{
 	async function sign() {
 		const signedMsg = await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
 		console.log(signedMsg)
-	}
-	useEffect(() => {
-		console.log('connection status changed')
-		if (WConnected) {
-			sign();
-		}
-	}, [WConnected])
+	};
+
 	const intl = useIntl();
-	// await LinkBlockChain(blockchain, account, result, password, controllerKeystore);
-	// setBindModal(false);
+
 	const handleSubmit = async () => {
 		switch (type) {
 			case 'walletconnect':
@@ -134,6 +125,13 @@ const BindModal: React.FC<{
 			setCollapse(false);
 		};
 	}, [blockchain, password]);
+
+	useEffect(() => {
+		console.log('Connection status changed')
+		if (WConnected) {
+			sign();
+		}
+	}, [WConnected]);
 
 	return (
 		<>
@@ -358,39 +356,6 @@ const Blockchain: React.FC<{
 			<div className={styles.snsList}>
 				<div className={styles.field}>
 					<span className={styles.title}>
-						<img className={styles.icon} src="/images/crypto/bitcoin-btc-logo.svg" />
-						<span className={styles.label}>BTC</span>
-					</span>
-					<span className={styles.value}>
-						<Spin
-							indicator={
-								<LoadingOutlined spin />
-							}
-							spinning={!Object.keys(linkedInfo).length}
-						>
-							<Button
-								disabled={null !== linkedInfo.Bitcoin}
-								type="primary"
-								shape="round"
-								onClick={() => {
-									setBindModal(true);
-									setBlockchain('Bitcoin');
-								}}
-							>
-								{!linkedInfo.Bitcoin ?
-									intl.formatMessage({
-										id: 'social.bind',
-									}) :
-									intl.formatMessage({
-										id: 'social.binded',
-									})
-								}
-							</Button>
-						</Spin>
-					</span>
-				</div>
-				<div className={styles.field}>
-					<span className={styles.title}>
 						<img className={styles.icon} src="/images/crypto/ethereum-eth-logo.svg" />
 						<span className={styles.label}>ETH</span>
 					</span>
@@ -424,6 +389,43 @@ const Blockchain: React.FC<{
 				</div>
 				<div className={styles.field}>
 					<span className={styles.title}>
+						<img className={styles.icon} src="/images/crypto/bitcoin-btc-logo.svg" />
+						<span className={styles.label}>BTC</span>
+					</span>
+					<span className={styles.value}>
+						<Spin
+							indicator={
+								<LoadingOutlined spin />
+							}
+							spinning={!Object.keys(linkedInfo).length}
+						>
+							<Button
+								disabled
+								// disabled={null !== linkedInfo.Bitcoin}
+								type="primary"
+								shape="round"
+								onClick={() => {
+									setBindModal(true);
+									setBlockchain('Bitcoin');
+								}}
+							>
+								{/* {!linkedInfo.Bitcoin ?
+									intl.formatMessage({
+										id: 'social.bind',
+									}) :
+									intl.formatMessage({
+										id: 'social.binded',
+									})
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
+							</Button>
+						</Spin>
+					</span>
+				</div>
+				<div className={styles.field}>
+					<span className={styles.title}>
 						<img className={styles.icon} src="/images/crypto/binance-bsc-logo.svg" />
 						<span className={styles.label}>BSC</span>
 					</span>
@@ -435,7 +437,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Binance}
+								disabled
+								// disabled={null !== linkedInfo.Binance}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -443,14 +446,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Binance');
 								}}
 							>
-								{!linkedInfo.Bitcoin ?
+								{/* {!linkedInfo.Bitcoin ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -468,7 +474,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Eosio}
+								disabled
+								// disabled={null !== linkedInfo.Eosio}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -476,14 +483,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Eosio');
 								}}
 							>
-								{!linkedInfo.Eosio ?
+								{/* {!linkedInfo.Eosio ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -501,7 +511,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Solana}
+								disabled
+								// disabled={null !== linkedInfo.Solana}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -509,14 +520,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Solana');
 								}}
 							>
-								{!linkedInfo.Solana ?
+								{/* {!linkedInfo.Solana ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -534,7 +548,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Kusama}
+								disabled
+								// disabled={null !== linkedInfo.Kusama}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -542,14 +557,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Kusama');
 								}}
 							>
-								{!linkedInfo.Kusama ?
+								{/* {!linkedInfo.Kusama ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -567,7 +585,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Polkadot}
+								disabled
+								// disabled={null !== linkedInfo.Polkadot}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -575,14 +594,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Polkadot');
 								}}
 							>
-								{!linkedInfo.Polkadot ?
+								{/* {!linkedInfo.Polkadot ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -600,7 +622,8 @@ const Blockchain: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Tron}
+								disabled
+								// disabled={null !== linkedInfo.Tron}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -608,14 +631,17 @@ const Blockchain: React.FC<{
 									setBlockchain('Tron');
 								}}
 							>
-								{!linkedInfo.Tron ?
+								{/* {!linkedInfo.Tron ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -626,6 +652,8 @@ const Blockchain: React.FC<{
 				visable={bindModal}
 				title={intl.formatMessage({
 					id: 'social.bind.blockchain.title',
+				}, {
+					blockchain: blockchain,
 				})}
 				content={
 					<BindModal
@@ -634,7 +662,7 @@ const Blockchain: React.FC<{
 					/>}
 				close={() => {
 					setBindModal(false);
-					window.location.href = window.location.href.slice(0, window.location.href.indexOf('?'));
+					history.push(config.page.socialPage);
 				}}
 				footer={
 					<>

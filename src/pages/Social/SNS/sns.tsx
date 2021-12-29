@@ -7,8 +7,9 @@ import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LoadingOutlined } from '@ant-design/icons';
 import MyAvatar from '@/components/Avatar/MyAvatar';
-import { useModel } from 'umi';
+import { useModel, history } from 'umi';
 import { useEffect } from 'react';
+import config from '@/config/config';
 
 const did = localStorage.getItem('did') as string;
 
@@ -235,7 +236,8 @@ const SNS: React.FC<{
 							spinning={!Object.keys(linkedInfo).length}
 						>
 							<Button
-								disabled={null !== linkedInfo.Twitter}
+								disabled
+								// disabled={null !== linkedInfo.Twitter}
 								type="primary"
 								shape="round"
 								onClick={() => {
@@ -243,14 +245,17 @@ const SNS: React.FC<{
 									setPlatform('Twitter');
 								}}
 							>
-								{!linkedInfo.Twitter ?
+								{/* {!linkedInfo.Twitter ?
 									intl.formatMessage({
 										id: 'social.bind',
 									}) :
 									intl.formatMessage({
 										id: 'social.binded',
 									})
-								}
+								} */}
+								{intl.formatMessage({
+									id: 'social.coming',
+								})}
 							</Button>
 						</Spin>
 					</span>
@@ -387,6 +392,8 @@ const SNS: React.FC<{
 				visable={bindModal}
 				title={intl.formatMessage({
 					id: 'social.bind.sns.title',
+				}, {
+					platform: platform,
 				})}
 				content={
 					<BindModal
@@ -395,7 +402,7 @@ const SNS: React.FC<{
 					/>}
 				close={() => {
 					setBindModal(false);
-					window.location.href = window.location.href.slice(0, window.location.href.indexOf('?'));
+					history.push(config.page.socialPage);
 				}}
 				footer={
 					<>
