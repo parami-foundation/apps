@@ -2,10 +2,9 @@ import { Badge, Card, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import Create from './Dashboard/Create';
 import styles from '@/pages/wallet.less';
-import Explorer from './Explorer';
 import { GetKolDeposit, GetUserInfo } from '@/services/parami/nft';
 import { parseAmount, hexToDid } from '@/utils/common';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
 import copy from 'copy-to-clipboard';
 
 const Dashboard: React.FC = () => {
@@ -14,9 +13,11 @@ const Dashboard: React.FC = () => {
     const [reach, setReach] = useState(false);
     const [deposit, setDeposit] = useState('');
 
-    const intl = useIntl();
-
     const did = localStorage.getItem('did') as string;
+
+    const link = `https://wallet.parami.io/${hexToDid(did)}`;
+
+    const intl = useIntl();
 
     const init = async () => {
         const res = await GetUserInfo(did);
@@ -38,13 +39,18 @@ const Dashboard: React.FC = () => {
             }
         }
     }
+
+    useEffect(() => {
+        if (KOL) {
+            history.push(link);
+        }
+    }, [KOL]);
+
     useEffect(() => {
         if (apiWs) {
             init();
         }
     }, [apiWs]);
-
-    const link = `https://wallet.parami.io/${hexToDid(did)}`;
 
     return (
         <>
@@ -111,9 +117,6 @@ const Dashboard: React.FC = () => {
                         </Card>
                     </div>
                 </div>
-            )}
-            {KOL && (
-                <Explorer />
             )}
         </>
     )

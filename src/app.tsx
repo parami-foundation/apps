@@ -5,10 +5,10 @@ import Footer from '@/components/Footer';
 import config from '@/config/config';
 import Loading from './components/Loading/Loading';
 import { notification } from 'antd';
-import UnAccessible from './pages/403';
 import { access } from '@/access';
 import type { VoidFn } from '@polkadot/api/types';
 import type { ApiPromise } from '@polkadot/api';
+import NoFoundPage from './pages/404';
 
 declare global {
   interface Window {
@@ -103,7 +103,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     headerTheme: "light",
     headerHeight: 70,
     // 自定义 403 页面
-    unAccessible: <UnAccessible />,
+    unAccessible: <NoFoundPage />,
     ...initialState?.settings,
   };
 };
