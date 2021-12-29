@@ -41,8 +41,9 @@ const Dashboard: React.FC = () => {
     }
 
     useEffect(() => {
+        console.log(link)
         if (KOL) {
-            history.push(link);
+            history.push(`/${hexToDid(did)}`);
         }
     }, [KOL]);
 
