@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Image, Spin, Typography } from 'antd';
+import { Image, Spin, Steps, Typography } from 'antd';
 import SelectWallet from './components/selectWallet';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import classNames from 'classnames';
 import Deposit from './deposit';
 import Withdraw from './withdraw';
-import { LoadingOutlined } from '@ant-design/icons';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
 
 const Bridge: React.FC = () => {
     const [tab, setTab] = useState<string>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
+    const [step, setStep] = useState<number>(0);
 
     const {
         account,
@@ -21,15 +21,42 @@ const Bridge: React.FC = () => {
     const intl = useIntl();
 
     const { Title } = Typography;
+    const { Step } = Steps;
 
     return (
         <>
             {account ? (
                 <Spin
-                    indicator={
-                        <LoadingOutlined style={{ fontSize: 60 }} spin />
+                    tip={
+                        [tab === 'deposit' && (
+                            <Steps
+                                direction="vertical"
+                                size="default"
+                                current={step}
+                                className={styles.stepContainer}
+                            >
+                                <Step title="Ethereum Chain" />
+                                <Step title="Parami Chain" />
+                            </Steps>
+                        ),
+                        tab === 'withdraw' && (
+                            <Steps
+                                direction="vertical"
+                                size="default"
+                                current={step}
+                                className={styles.stepContainer}
+                            >
+                                <Step title="Parami Chain" />
+                                <Step title="Ethereum Chain" />
+                            </Steps>
+                        )]
                     }
+                    size='large'
+                    indicator={(<></>)}
                     spinning={loading}
+                    style={{
+                        background: 'rgba(255,255,255,.7)'
+                    }}
                 >
                     <div className={styles.mainBgContainer}>
                         <div className={styles.contentContainer}>
@@ -101,10 +128,16 @@ const Bridge: React.FC = () => {
                                     </div>
                                     <div className={style.bridgeBody}>
                                         {tab === 'deposit' && (
-                                            <Deposit setLoading={setLoading} />
+                                            <Deposit
+                                                setLoading={setLoading}
+                                                setStep={setStep}
+                                            />
                                         )}
                                         {tab === 'withdraw' && (
-                                            <Withdraw setLoading={setLoading} />
+                                            <Withdraw
+                                                setLoading={setLoading}
+                                                setStep={setStep}
+                                            />
                                         )}
                                     </div>
                                 </div>

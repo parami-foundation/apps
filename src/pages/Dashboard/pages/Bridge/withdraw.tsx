@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Alert, Button, Image, Input, message, Tooltip } from 'antd';
+import { Alert, Button, Image, Input, message, notification, Tooltip } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
 import { AD3ToETH } from '@/services/parami/bridge';
@@ -24,7 +24,8 @@ const Message: React.FC<{
 
 const Withdraw: React.FC<{
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setLoading }) => {
+    setStep: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ setLoading, setStep }) => {
     const { account, chainName, provider, signer } = useModel('metaMask');
     const { DepositNonce,
         SubBridgeEvents,
@@ -38,17 +39,6 @@ const Withdraw: React.FC<{
     const [amount, setAmount] = useState<string>('');
     const [destinationAddress, setDestinationAddress] = useState<string>();
 
-    useEffect(() => {
-        if (DepositNonce === txNonce) {
-            setWaitingEth(false);
-            setTxNonce(BigInt(0));
-            message.success('Success!');
-            console.log('got the right bridge event');
-            if (BridgeContract) {
-                UnsubBridgeEvents(BridgeContract);
-            }
-        }
-    }, [BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce])
     const intl = useIntl();
 
     const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
@@ -65,8 +55,7 @@ const Withdraw: React.FC<{
             const paramiRes: any = await AD3ToETH(JSON.parse(currentAccount), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
             console.log('paramiRes', paramiRes);
             setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
-            setLoading(false);
-            // Step 1
+            setStep(1);
             setWaitingEth(true);
             if (BridgeContract) {
                 SubBridgeEvents(BridgeContract);
@@ -94,9 +83,24 @@ const Withdraw: React.FC<{
     }
 
     useEffect(() => {
+        if (DepositNonce === txNonce) {
+            setWaitingEth(false);
+            setStep(2);
+            setTxNonce(BigInt(0));
+            notification.success({
+                message: 'Withdraw Success',
+            });
+            setLoading(false);
+            console.log('Got the right bridge event');
+            if (BridgeContract) {
+                UnsubBridgeEvents(BridgeContract);
+            }
+        }
+    }, [BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce]);
+
+    useEffect(() => {
         if (!account || !Ad3Contract) return;
         getBalance();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [signer, provider, Ad3Contract, account]);
 
     return (

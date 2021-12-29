@@ -10,6 +10,7 @@ import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/wallet';
+import { notification } from 'antd';
 
 const Message: React.FC<{
     content: string;
@@ -26,7 +27,8 @@ const Message: React.FC<{
 
 const Deposit: React.FC<{
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setLoading }) => {
+    setStep: React.Dispatch<React.SetStateAction<number>>;
+}> = ({ setLoading, setStep }) => {
     const { account, chainName, provider, signer } = useModel('metaMask');
     const { Events,
         SubParamiEvents } = useModel('dashboard.paramiEvents');
@@ -34,38 +36,43 @@ const Deposit: React.FC<{
     const { Ad3Contract, BridgeContract } = useModel('contracts');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [freeBalance, setFreeBalance] = useState<string>('');
-    const [waitingParami, setWaitingParami] = useState<boolean>(false);
     const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
     const [amount, setAmount] = useState<string>('');
+    const [waitingParami, setWaitingParami] = useState<boolean>(false);
     const [destinationAddress, setDestinationAddress] = useState<string>('');
-
 
     const Did = localStorage.getItem('dashboardDid') as string;
 
     const intl = useIntl();
-    function isDepositSuccessEvent(item: any, nonce: bigint) {
+
+    let unsubParami;
+    const isDepositSuccessEvent = (item: any, nonce: bigint) => {
         if (`${item.event.section}:${item.event.method}` === 'chainBridge:ProposalSucceeded') {
             if (BigInt(item.event.data[1].toString()) === nonce) {
                 return true;
             }
         }
         return false;
-    }
+    };
+
     useEffect(() => {
         if (waitingParami) {
             for (const item of Events) {
                 console.log('event', `${item.event.section}:${item.event.method}`);
                 if (isDepositSuccessEvent(item, txNonce)) {
                     setWaitingParami(false);
-                    console.log(window.unsubParami);
-                    window.unsubParami();
-                    message.success('deposit success');
+                    setStep(2);
+                    console.log(unsubParami);
+                    unsubParami();
+                    notification.success({
+                        message: 'Deposit Success',
+                    });
+                    setLoading(false);
                 }
             }
-        } else {
-
         }
     }, [Events, txNonce, waitingParami]);
+
     const getBalance = async () => {
         if (!provider || !signer) return;
         try {
@@ -74,7 +81,7 @@ const Deposit: React.FC<{
         } catch (e: any) {
             console.log(e.message);
         }
-    }
+    };
 
     const handleSubmit = async () => {
         if (!provider || !signer) return;
@@ -128,14 +135,15 @@ const Deposit: React.FC<{
                     data,
                 )
             ).wait();
+
             const nonce = BigInt(ethRes.logs[2].topics[3]);
             console.log('nonce', BigInt(ethRes.logs[2].topics[3]))
             setTxNonce(nonce);
-            setLoading(false);
+            setStep(1);
 
             // Step 2
             setWaitingParami(true);
-            window.unsubParami = await SubParamiEvents();
+            unsubParami = await SubParamiEvents();
 
         } catch (e: any) {
             setErrorState({
@@ -149,7 +157,6 @@ const Deposit: React.FC<{
     useEffect(() => {
         if (!account || !Ad3Contract) return;
         getBalance();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [signer, provider, Ad3Contract, account]);
 
     return (
