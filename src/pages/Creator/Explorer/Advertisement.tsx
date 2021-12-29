@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Marquee from 'react-fast-marquee';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
-import { useIntl } from 'umi';
+import { useIntl, history } from 'umi';
 import { DollarCircleFilled, EyeFilled, InfoCircleOutlined, NotificationOutlined, RightOutlined, ShareAltOutlined } from '@ant-design/icons';
 import SmallModal from '@/components/ParamiModal/SmallModal';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -12,6 +12,11 @@ import { hexToDid } from '@/utils/common';
 import config from '@/config/config';
 import Token from '@/components/Token/Token';
 import copy from 'copy-to-clipboard';
+import { base64url } from '@/utils/format';
+import Keyring from '@polkadot/keyring';
+import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
+import { useEffect } from 'react';
+import SecurityModal from '@/components/ParamiModal/SecurityModal';
 
 const Advertisement: React.FC<{
     ad: Type.AdInfo;
@@ -24,12 +29,72 @@ const Advertisement: React.FC<{
 }> = ({ ad, viewer, asset, avatar, did, adData, remain }) => {
     const [infoModal, setInfoModal] = useState(false);
     const [chartModal, setChartModal] = useState(false);
+    const [password, setPassword] = useState('');
+    const [secModal, setSecModal] = useState(false);
 
     const intl = useIntl();
 
     const selfDid = localStorage.getItem('did') as string;
 
     const link = !!selfDid ? `https://wallet.parami.io/${did}?referrer=${selfDid}` : `https://wallet.parami.io/${did}`;
+
+    const { query } = history.location;
+    const { audience, scope } = query as { audience: string, scope: string | null | undefined };
+    const scopes = scope ?? '';
+    const sign = scopes.indexOf('sign') > -1;
+
+    const controllerAddress = localStorage.getItem('controllerUserAddress');
+    const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
+
+    let stamp: string = '';
+    const handleStamp = async () => {
+        const timestamp = Date.now() / 1000 | 0;
+
+        const header = JSON.stringify({
+            alg: sign ? 'SrDSA' : 'none',
+            typ: 'JWT'
+        });
+
+        const payload = JSON.stringify({
+            iss: window.location.origin,
+            sub: controllerAddress,
+            aud: audience,
+            iat: timestamp,
+            exp: timestamp + 30
+        });
+
+        const plain = `${base64url(header)}.${base64url(payload)}`;
+
+        if (!sign) {
+            stamp = `${plain}.`;
+            return;
+        }
+
+        const instanceKeyring = new Keyring({ type: 'sr25519' });
+        const decodedMnemonic = DecodeKeystoreWithPwd(password, controllerKeystore);
+        if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+            message.error(
+                intl.formatMessage({
+                    id: 'error.password.error',
+                })
+            );
+            return;
+        }
+        const keypair = instanceKeyring.createFromUri(decodedMnemonic);
+
+        const signature = keypair.sign(plain);
+        const ticket = `${plain}.${base64url(signature)}`;
+
+        stamp = ticket;
+    };
+
+    const gotoAdPage = async () => {
+        window.open(`${ad?.link}&stamp=${stamp}&t=${Date.now()}`);
+    }
+
+    useEffect(() => {
+        handleStamp();
+    }, [handleStamp]);
 
     return (
         <>
@@ -92,7 +157,11 @@ const Advertisement: React.FC<{
                                 width: '100%',
                             }}
                             onClick={() => {
-                                window.open(ad?.link);
+                                if (sign) {
+                                    setSecModal(true);
+                                } else {
+                                    gotoAdPage();
+                                }
                             }}
                         />
                     </div>
@@ -230,6 +299,13 @@ const Advertisement: React.FC<{
                 }
                 footer={false}
                 close={() => { setChartModal(false) }}
+            />
+            <SecurityModal
+                visable={secModal}
+                setVisable={setSecModal}
+                password={password}
+                setPassword={setPassword}
+                func={gotoAdPage}
             />
         </>
     )

@@ -27,6 +27,7 @@ import type { VoidFn } from '@polkadot/api/types';
 
 const { Title } = Typography;
 const { Step } = Steps;
+const { TextArea } = Input;
 
 const goto = () => {
   setTimeout(() => {
@@ -318,7 +319,7 @@ const InitialDeposit: React.FC<{
                   )
                 }}
               >
-                <Input size="large" bordered value={magicLink as string} readOnly />
+                <TextArea size="large" bordered value={magicLink as string} readOnly />
               </CopyToClipboard>
               <div className={style.buttons}>
                 <CopyToClipboard
@@ -489,13 +490,14 @@ const InitialDeposit: React.FC<{
                       )
                     }
                   >
-                    <Input
+                    <TextArea
                       size="small"
                       style={{
                         backgroundColor: '#fff',
                       }}
                       readOnly
                       value={controllerUserAddress}
+                      autoSize={{ minRows: 1, maxRows: 4 }}
                     />
                   </CopyToClipboard>
                 </div>

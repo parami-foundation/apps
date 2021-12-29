@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
+import { base64url } from '@/utils/format';
 
 const { Title } = Typography;
 
@@ -22,14 +23,6 @@ const Visa: React.FC = () => {
 
     const controllerAddress = localStorage.getItem('controllerUserAddress');
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
-
-    const base64url = (buffer) => {
-        return Buffer.from(buffer)
-            .toString('base64')
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/\=+$/m, '');
-    };
 
     const handleStamp = async () => {
         const timestamp = Date.now() / 1000 | 0;

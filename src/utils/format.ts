@@ -1,6 +1,6 @@
 import BN from "bn.js";
 import { formatBalance as _formatBalance } from '@polkadot/util';
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 
 export const formatBalance = (value = 0, showUnit = true): string => {
     const { unit, decimals } = _formatBalance.getDefaults();
@@ -37,18 +37,19 @@ export const formatHex = (value = '') => {
 };
 
 export function BigIntToFloatString(value: string | bigint | BigNumber, decimals: number): string {
-    if (!value) {
+    let Value = value;
+    if (!Value) {
         return '0';
     };
-    if (typeof (value) !== 'string') {
-        value = value.toString();
+    if (typeof (Value) !== 'string') {
+        Value = value.toString();
 
     }
-    if (value === '0') {
+    if (Value === '0') {
         return '0';
     }
-    if (value.length <= decimals) {
-        let floatPart = value.padStart(decimals, '0');
+    if (Value.length <= decimals) {
+        let floatPart = Value.padStart(decimals, '0');
         const zeroIndex = floatPart.search(/([0]+)$/);
         if (zeroIndex > -1) {
             floatPart = floatPart.substring(0, zeroIndex);
@@ -60,8 +61,8 @@ export function BigIntToFloatString(value: string | bigint | BigNumber, decimals
         }
         return floatPart;
     }
-    const intPart = value.substring(0, value.length - decimals);
-    let floatPart = value.substring(value.length - decimals);
+    const intPart = Value.substring(0, Value.length - decimals);
+    let floatPart = Value.substring(Value.length - decimals);
     const zeroIndex = floatPart.search(/([0]+)$/);
     if (zeroIndex > -1) {
         floatPart = floatPart.substring(0, zeroIndex);
@@ -94,3 +95,11 @@ export function FloatStringToBigInt(value: string, decimals: number): bigint {
         return BigInt(intPart + floatPart.substring(0, decimals));
     }
 }
+
+export const base64url = (buffer) => {
+    return Buffer.from(buffer)
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/\=+$/m, '');
+};
