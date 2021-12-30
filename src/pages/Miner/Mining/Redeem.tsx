@@ -83,6 +83,7 @@ const SelectAssets: React.FC<{
 };
 
 const Redeem: React.FC = () => {
+	const apiWs = useModel('apiWs');
 	const [submitting, setSubmitting] = useState(false);
 	const [number, setNumber] = useState<string>('0');
 	const [token, setToken] = useState<Record<string, string>>({});
@@ -100,10 +101,13 @@ const Redeem: React.FC = () => {
 	const currentAccount = localStorage.getItem('stashUserAddress');
 
 	const updateAssetsBalance = async (assets: any) => {
+		if (!apiWs) {
+			return;
+		}
 		const data: any[] = [];
 		if (!!assets) {
 			for (const assetsID in assets) {
-				const { balance }: any = await window.apiWs.query.assets.account(Number(assetsID), currentAccount);
+				const { balance }: any = await apiWs.query.assets.account(Number(assetsID), currentAccount);
 				if (!!balance && balance > 0 && assets[assetsID].name.endsWith('LP*')) {
 					data.push({
 						id: assetsID,
@@ -118,7 +122,10 @@ const Redeem: React.FC = () => {
 	};
 
 	const updateAssetsInfo = async () => {
-		const allEntries = await window.apiWs.query.assets.metadata.entries();
+		if (!apiWs) {
+			return;
+		}
+		const allEntries = await apiWs.query.assets.metadata.entries();
 		const tmpAssets = {};
 		for (let i = 0; i < allEntries.length; i++) {
 			const [key, value] = allEntries[i];
@@ -140,8 +147,10 @@ const Redeem: React.FC = () => {
 	};
 
 	useEffect(() => {
-		updateAssetsInfo();
-	}, []);
+		if (apiWs) {
+			updateAssetsInfo();
+		}
+	}, [apiWs]);
 
 	return (
 		<>

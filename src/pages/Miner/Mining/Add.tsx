@@ -3,7 +3,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import { GetUserBalance } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
@@ -87,6 +87,7 @@ const SelectAssets: React.FC<{
 };
 
 const Add: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [submitting, setSubmitting] = useState(false);
     const [number, setNumber] = useState<string>('0');
     const [token, setToken] = useState<Record<string, string>>({});
@@ -112,10 +113,13 @@ const Add: React.FC = () => {
     };
 
     const updateAssetsBalance = async (assets: any) => {
+        if (!apiWs) {
+            return;
+        }
         const data: any[] = [];
         if (!!assets) {
             for (const assetsID in assets) {
-                const { balance }: any = await window.apiWs.query.assets.account(Number(assetsID), currentAccount);
+                const { balance }: any = await apiWs.query.assets.account(Number(assetsID), currentAccount);
                 if (!!balance && balance > 0 && !assets[assetsID].name.endsWith('LP*')) {
                     let icon: any;
                     const did = await OwnerDidOfNft(assetsID);
@@ -142,7 +146,10 @@ const Add: React.FC = () => {
     };
 
     const updateAssetsInfo = async () => {
-        const allEntries = await window.apiWs.query.assets.metadata.entries();
+        if (!apiWs) {
+            return;
+        }
+        const allEntries = await apiWs.query.assets.metadata.entries();
         const tmpAssets = {};
         for (let i = 0; i < allEntries.length; i++) {
             const [key, value] = allEntries[i];
@@ -163,9 +170,11 @@ const Add: React.FC = () => {
     };
 
     useEffect(() => {
-        getBalance();
-        updateAssetsInfo();
-    }, []);
+        if (apiWs) {
+            getBalance();
+            updateAssetsInfo();
+        }
+    }, [apiWs]);
 
     return (
         <>
