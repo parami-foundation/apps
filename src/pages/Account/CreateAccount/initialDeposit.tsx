@@ -8,7 +8,7 @@ import style from '../style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
+import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
 import {
   BatchNicknameAndAvatar,
@@ -45,7 +45,8 @@ const InitialDeposit: React.FC<{
   magicUserAddress: string;
   controllerUserAddress: string;
   controllerKeystore: string;
-}> = ({ password, qsTicket, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore }) => {
+  setQsTicket: React.Dispatch<any>;
+}> = ({ password, qsTicket, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket }) => {
   const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [secModal, setSecModal] = useState<boolean>(false);
@@ -56,10 +57,13 @@ const InitialDeposit: React.FC<{
   const [step, setStep] = useState<number>(3);
   const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
   const [avatarNicknameData, setAvatarNicknameData] = useState<any>();
+  const [DID, setDID] = useState<string>();
+
   const intl = useIntl();
 
   const handleTelegram = async (response) => {
     setLoading(true);
+    setQsTicket(response);
     try {
       const { response: Resp, data } = await LoginWithTelegram({
         ticket: response,
@@ -73,6 +77,7 @@ const InitialDeposit: React.FC<{
         })
         setAirDropData(data);
         setStep(4);
+        return;
       }
       if (Resp?.status === 401) {
         notification.error({
@@ -101,6 +106,13 @@ const InitialDeposit: React.FC<{
         setLoading(false);
         return;
       }
+      notification.error({
+        message: 'Got an error',
+        description: `Unknown: Something went wrong, please try again latar.`,
+        duration: null,
+      })
+      setLoading(false);
+      return;
     } catch (e: any) {
       message.error(e.message);
       setLoading(false);
@@ -120,9 +132,14 @@ const InitialDeposit: React.FC<{
           generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);
-              const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-              const events = await BatchNicknameAndAvatar(data?.nickname, `ipfs://${res.Hash}`, password, controllerKeystore);
-              setAvatarNicknameData(events);
+              try {
+                const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
+                const events = await BatchNicknameAndAvatar(data?.nickname, `ipfs://${res.Hash}`, password, controllerKeystore);
+                setAvatarNicknameData(events);
+              } catch (e: any) {
+                setAvatarNicknameData(e);
+                console.log(e);
+              }
             });
         }
       } catch (e: any) {
@@ -161,6 +178,7 @@ const InitialDeposit: React.FC<{
         );
         did = events['did']['Assigned'][0][0];
         localStorage.setItem('did', did as string);
+        setDID(did as string);
         setStep(6);
       } catch (e: any) {
         console.log(e.message);
@@ -215,11 +233,15 @@ const InitialDeposit: React.FC<{
   }, [apiWs]);
 
   useEffect(() => {
-    if (!!avatarNicknameData) {
+    if (!!avatarNicknameData && !!qsTicket) {
       goto();
       return;
     }
-  }, [avatarNicknameData]);
+    if (!qsTicket && !!DID) {
+      goto();
+      return;
+    }
+  }, [avatarNicknameData, qsTicket, DID]);
 
   useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
@@ -232,7 +254,8 @@ const InitialDeposit: React.FC<{
   }, [password, controllerUserAddress, controllerKeystore]);
 
   useEffect(() => {
-    if (controllerBalance > FloatStringToBigInt('1', 18)) {
+    if (controllerBalance >= FloatStringToBigInt('1', 18)) {
+      setLoading(true);
       if (unsub !== null) {
         unsub();
       }
@@ -254,13 +277,13 @@ const InitialDeposit: React.FC<{
             <>
               <Spin
                 tip={(
-                  <Steps size="default" current={step} className={style.stepContainer}>
-                    <Step title="Magic Account" />
-                    <Step title="Weak Password" />
-                    <Step title="Controller Account" />
-                    <Step title="Deposit" />
-                    <Step title="Stash Account" />
-                    <Step title="DID" />
+                  <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
+                    <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
+                    <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
+                    <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
+                    <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
+                    <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
+                    <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
                   </Steps>
                 )}
                 size='large'
@@ -392,17 +415,17 @@ const InitialDeposit: React.FC<{
             <Spin
               size='large'
               tip={(
-                <Steps size="default" current={step} className={style.stepContainer}>
-                  <Step title="Magic Account" />
-                  <Step title="Weak Password" />
-                  <Step title="Controller Account" />
-                  <Step title="Deposit" />
-                  <Step title="Stash Account" />
-                  <Step title="DID" />
+                <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
+                  <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
+                  <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
+                  <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
+                  <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
+                  <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
+                  <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
                 </Steps>
               )}
               indicator={(<></>)}
-              spinning={loading}
+              spinning={!loading}
               wrapperClassName={styles.pageContainer}
               style={{
                 background: 'rgba(255,255,255,.7)'

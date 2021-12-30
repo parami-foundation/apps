@@ -61,7 +61,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         </Title>
         <div className={styles.account}>
           <span className={styles.nickname}>
-            {nickname}
+            {nickname || 'Nickname'}
             <EditOutlined
               style={{
                 marginLeft: 10,

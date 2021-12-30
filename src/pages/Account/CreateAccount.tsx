@@ -9,7 +9,6 @@ import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { CreateAccount as createAccount } from '@/services/parami/wallet';
 import { useAccess, history } from 'umi';
 import config from '@/config/config';
-import VConsole from 'vconsole';
 
 const CreateAccount: React.FC<{
   minimal?: boolean;
@@ -46,7 +45,6 @@ const CreateAccount: React.FC<{
 
   const access = useAccess();
 
-  new VConsole();
   useEffect(() => {
     if (access.canUser) {
       history.push(config.page.walletPage);
@@ -119,6 +117,7 @@ const CreateAccount: React.FC<{
               magicLink={magicLink}
               controllerUserAddress={controllerUserAddress}
               controllerKeystore={controllerKeystore}
+              setQsTicket={setQsTicket}
             />
           }
         </>
@@ -162,6 +161,7 @@ const CreateAccount: React.FC<{
                   controllerUserAddress={controllerUserAddress}
                   controllerKeystore={controllerKeystore}
                   qsTicket={qsTicket}
+                  setQsTicket={setQsTicket}
                 />
               }
             </div>
