@@ -81,7 +81,7 @@ const InitialDeposit: React.FC<{
       }
       if (Resp?.status === 401) {
         notification.error({
-          message: 'Ticket Error',
+          message: 'Abnormal account',
           description: 'There are some problems with your Telegram. Please try to deposit manually.',
           duration: null,
         })
@@ -127,7 +127,7 @@ const InitialDeposit: React.FC<{
 
     if (response?.status === 204) {
       try {
-        if (data?.nickname || data?.avatar) {
+        if (data?.nickname && data?.avatar) {
           const { data: file } = await GetAvatar(data?.avatar);
           generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
             .then(async (img) => {
@@ -137,10 +137,11 @@ const InitialDeposit: React.FC<{
                 const events = await BatchNicknameAndAvatar(data?.nickname || 'Telegram User', `ipfs://${res.Hash}`, password, controllerKeystore);
                 setAvatarNicknameData(events);
               } catch (e: any) {
-                setAvatarNicknameData(e);
                 console.log(e);
               }
             });
+        } else {
+          setAvatarNicknameData('Not have nickname or avatar');
         }
       } catch (e: any) {
         message.error(e.message);
