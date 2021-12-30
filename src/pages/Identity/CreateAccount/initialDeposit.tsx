@@ -82,7 +82,7 @@ const InitialDeposit: React.FC<{
       if (Resp?.status === 401) {
         notification.error({
           message: 'Abnormal account',
-          description: 'There are some problems with your Telegram. Please try to deposit manually.',
+          description: 'No profile picture or username. Please try to deposit manually.',
           duration: null,
         })
         setLoading(false);
