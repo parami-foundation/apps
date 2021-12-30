@@ -1,0 +1,206 @@
+.profileContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 920px;
+    width: 100%;
+    padding: 10px 0px;
+    margin: 30px auto 0px;
+
+    .left {
+        flex: 1.5 1 0%;
+        margin-right: 40px;
+    }
+
+    .right {
+        flex: 1 1 0%;
+    }
+
+    .section {
+        margin-top: 50px;
+
+        .sectionTitle {
+            margin: 10px 0px;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            font-weight: 900 !important;
+            font-size: 22px !important;
+            text-align: left !important;
+            line-height: 140% !important;
+            color: rgb(36, 39, 42) !important;
+
+            .sectionIcon {
+                width: 24px;
+                height: 24px;
+                margin-right: 10px;
+            }
+        }
+
+        .sectionSubtitle {
+            margin: 50px 0px 20px;
+            display: flex;
+            align-items: center;
+
+            .infoIcon {
+                margin: 0px 8px;
+            }
+        }
+    }
+
+    .accountDetails {
+        .field {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            width: 100%;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid rgb(243, 243, 243);
+            }
+
+            .title {
+                font-size: 14px;
+                font-weight: 600;
+
+                .infoIcon {
+                    margin: 0px 8px;
+                }
+            }
+
+            .value {
+                text-align: right;
+                font-weight: 900;
+                white-space: nowrap;
+                line-height: normal;
+            }
+
+            .idCody {
+                display: flex;
+                align-items: center;
+                background-color: rgb(240, 240, 240);
+                padding: 4px 4px 4px 15px;
+                border-radius: 40px;
+                font-weight: 600;
+                max-width: 210px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .valueButton {
+                margin-left: 15px;
+            }
+        }
+
+        .balanceDetail {
+            color: rgb(114, 114, 122);
+            background-color: rgb(250, 250, 250);
+            padding-left: 10px;
+            box-shadow: rgb(222 222 222) 0px 5px 6px -5px inset;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid rgb(243, 243, 243);
+            }
+        }
+    }
+
+    .security {
+        margin-top: 30px;
+        
+        .securityCard {
+            padding: 20px;
+
+            .field {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+
+                .title {
+                    font-size: 14px;
+                    font-weight: 600;
+                }
+            }
+        }
+    }
+
+    .bind {
+        margin-top: 30px;
+
+        .bindCard {
+            .field {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 20px;
+
+                &:not(:last-child) {
+                    border-bottom: 1px solid rgb(243, 243, 243);
+                }
+
+                .title {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+    
+                    .icon {
+                        width: 32px;
+                        height: 32px;
+                    }
+    
+                    .label {
+                        font-weight: 600;
+                        font-size: 14px;
+                        margin-left: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    .avatar {
+        margin-top: 30px;
+
+        .avatarCard {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding-bottom: 40px;
+        }
+    }
+}
+
+@media (max-width: 921px) {
+    .profileContainer {
+        flex-direction: column;
+        padding: 15px;
+        padding-top: 0;
+        margin-top: 0;
+        padding-bottom: 35px;
+
+        .left,
+        .right {
+            width: 100%;
+            margin-right: 0;
+        }
+
+        .right {
+            margin-top: 20px;
+        }
+
+        .sectionTitle,
+        .sectionSubtitle {
+            margin: 10px !important;
+        }
+    }
+}

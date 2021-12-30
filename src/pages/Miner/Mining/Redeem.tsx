@@ -3,7 +3,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DrylyRemoveLiquidity, RemoveLiquidity } from '@/services/parami/swap';
