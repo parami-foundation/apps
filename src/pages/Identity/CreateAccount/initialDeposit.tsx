@@ -127,14 +127,14 @@ const InitialDeposit: React.FC<{
 
     if (response?.status === 204) {
       try {
-        if (data?.nickname && data?.avatar) {
+        if (data?.nickname || data?.avatar) {
           const { data: file } = await GetAvatar(data?.avatar);
           generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);
               try {
                 const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-                const events = await BatchNicknameAndAvatar(data?.nickname, `ipfs://${res.Hash}`, password, controllerKeystore);
+                const events = await BatchNicknameAndAvatar(data?.nickname || 'Telegram User', `ipfs://${res.Hash}`, password, controllerKeystore);
                 setAvatarNicknameData(events);
               } catch (e: any) {
                 setAvatarNicknameData(e);
