@@ -143,6 +143,7 @@ const InitialDeposit: React.FC<{
         } else {
           setAvatarNicknameData('Not have nickname or avatar');
         }
+        setStep(7);
       } catch (e: any) {
         message.error(e.message);
       }
@@ -192,7 +193,9 @@ const InitialDeposit: React.FC<{
     }
     if (qsTicket) {
       await minimalSubmit(airdropData, did);
+      return;
     }
+    setStep(7);
   }
 
   const listenBalance = async () => {
@@ -285,6 +288,8 @@ const InitialDeposit: React.FC<{
                     <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
                     <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
                     <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
+                    <Step title="Link Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+                    <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
                   </Steps>
                 )}
                 size='large'
@@ -423,6 +428,8 @@ const InitialDeposit: React.FC<{
                   <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
                   <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
                   <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
+                  <Step title="Link Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+                  <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
                 </Steps>
               )}
               indicator={(<></>)}
