@@ -92,7 +92,7 @@ const Index: React.FC = () => {
 
     return (
         <>
-            <div className={styles.mainContainer}>
+            <div className={styles.mainIndexContainer}>
                 <div className={style.indexContainer}>
                     <div className={style.bodyContainer}>
                         <div className={style.innerWrapper}>

@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import Deposit from './deposit';
 import Withdraw from './withdraw';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const Bridge: React.FC = () => {
     const [tab, setTab] = useState<string>('deposit');
@@ -35,8 +36,8 @@ const Bridge: React.FC = () => {
                                 current={step}
                                 className={styles.stepContainer}
                             >
-                                <Step title="Ethereum Chain" />
-                                <Step title="Parami Chain" />
+                                <Step title="Ethereum Chain" icon={step === 0 ? <LoadingOutlined /> : false} />
+                                <Step title="Parami Chain" icon={step === 1 ? <LoadingOutlined /> : false} />
                             </Steps>
                         ),
                         tab === 'withdraw' && (
@@ -46,8 +47,8 @@ const Bridge: React.FC = () => {
                                 current={step}
                                 className={styles.stepContainer}
                             >
-                                <Step title="Parami Chain" />
-                                <Step title="Ethereum Chain" />
+                                <Step title="Parami Chain" icon={step === 0 ? <LoadingOutlined /> : false} />
+                                <Step title="Ethereum Chain" icon={step === 1 ? <LoadingOutlined /> : false} />
                             </Steps>
                         )]
                     }

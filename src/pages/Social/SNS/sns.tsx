@@ -85,12 +85,22 @@ const BindModal: React.FC<{
 							id: 'wallet.avatar.saveDesc',
 						})}
 					</span>
-					<Alert
-						message={intl.formatMessage({
-							id: 'social.sns.setAvatar',
-						})}
-						type="warning"
-					/>
+					{platform !== 'Telegram' && (
+						<Alert
+							message={intl.formatMessage({
+								id: 'social.sns.setAvatar',
+							})}
+							type="warning"
+						/>
+					)}
+					{platform === 'Telegram' && (
+						<Alert
+							message={intl.formatMessage({
+								id: 'social.sns.setAvatar.telegram',
+							})}
+							type="warning"
+						/>
+					)}
 					{platform === 'Telegram' && (
 						<div className={styles.field}>
 							<div className={styles.title}>

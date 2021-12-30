@@ -16,5 +16,6 @@ export default {
     'social.bind.sns.title': 'Bind {platform}',
     'social.sns.username': 'Username',
     'social.sns.setAvatar': 'Please modify the SNS account avatar to be bound to this avatar first.',
+    'social.sns.setAvatar.telegram': 'Please change your TELEGRAM ACCOUNT AVATAR in SETTING PAGE first.',
     'social.coming': 'Coming Soon',
 };
