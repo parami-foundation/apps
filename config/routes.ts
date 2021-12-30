@@ -9,13 +9,13 @@
     path: '/create',
     name: 'create',
     hideInMenu: true,
-    component: './Account/CreateAccount',
+    component: './Identity/CreateAccount',
   },
   {
     path: '/recover',
     name: 'recover',
     hideInMenu: true,
-    component: './Account/RecoverAccount',
+    component: './Identity/RecoverAccount',
   },
   {
     path: '/wallet',
@@ -53,6 +53,14 @@
         component: './404',
       },
     ],
+  },
+  {
+    path: '/profile',
+    name: 'account',
+    icon: 'UserOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Account/Profile',
   },
   {
     path: '/record',

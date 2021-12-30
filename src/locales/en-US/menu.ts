@@ -8,6 +8,7 @@ export default {
   'menu.wallet.receive': 'Receive',
   'menu.wallet.buy': 'Buy',
   'menu.wallet.charge': 'Top up',
+  'menu.account': 'Account',
   'menu.record': 'Recent activity',
   'menu.social': 'SocialApps',
   'menu.creator': 'Creator',

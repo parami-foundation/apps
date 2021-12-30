@@ -15,7 +15,7 @@ import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
 import { getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
-import CreateAccount from '../Account/CreateAccount';
+import CreateAccount from '../Identity/CreateAccount';
 import { GetAdRemain } from '../../services/parami/nft';
 import { GetAvatar } from '@/services/parami/api';
 import { useModel } from 'umi';

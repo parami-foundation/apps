@@ -425,7 +425,7 @@ const InitialDeposit: React.FC<{
                 </Steps>
               )}
               indicator={(<></>)}
-              spinning={!loading}
+              spinning={loading}
               wrapperClassName={styles.pageContainer}
               style={{
                 background: 'rgba(255,255,255,.7)'
