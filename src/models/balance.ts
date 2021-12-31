@@ -7,7 +7,6 @@ export default () => {
   const apiWs = useModel('apiWs');
   const [controller, setController] = useState<State.Controller>({});
   const [stash, setStash] = useState<State.Stash>({});
-
   const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
   const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
 
@@ -66,6 +65,6 @@ export default () => {
 
   return {
     controller,
-    stash,
+    stash
   }
 }

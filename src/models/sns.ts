@@ -3,8 +3,9 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
+    const { blockNumber } = useModel('blockNumber');
     const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
-
+    const [lastNumber, setLastNumber] = useState<any>(0);
     const platforms = ['Telegram', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
     const did = localStorage.getItem('did') as string;
@@ -14,29 +15,34 @@ export default () => {
             return;
         }
         const data = {};
-        for (let i = 0; i < platforms.length; i++) {
-            await apiWs.query.linker.linksOf(did, platforms[i], async (linked) => {
-                if (linked.isEmpty && apiWs) {
-                    await apiWs.query.linker.pendingOf(platforms[i], did, async (pending) => {
-                        if (pending.isEmpty) {
-                            data[platforms[i]] = null;
-                        } else {
-                            data[platforms[i]] = 'verifing';
-                        }
-                    });
+        const promises = platforms.map(async (platform) => {
+            const linked = await apiWs.query.linker.linksOf(did, platform);
+            if (linked.isEmpty && apiWs) {
+                const pending = await apiWs.query.linker.pendingOf(platform, did);
+                if (pending.isEmpty) {
+                    return null;
                 } else {
-                    data[platforms[i]] = 'linked';
+                    return 'verifing';
                 }
-                setLinkedInfo(data);
-            });
+            } else {
+                return 'linked';
+            }
+        });
+        const status = await Promise.all(promises);
+        for (let i = 0; i < platforms.length; i++) {
+            data[platforms[i]] = status[i];
         }
+        setLinkedInfo(data);
     }
 
     useEffect(() => {
         if (apiWs) {
-            getLinkedInfo();
+            if (lastNumber + 5 < blockNumber) {
+                getLinkedInfo();
+            }
+            setLastNumber(blockNumber);
         }
-    }, [apiWs]);
+    }, [apiWs, blockNumber, lastNumber]);
 
     return linkedInfo;
 }

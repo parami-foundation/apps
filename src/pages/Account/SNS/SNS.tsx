@@ -1,13 +1,31 @@
-import React from 'react';
-import { useIntl } from 'umi';
-import { Typography, Image, Card, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useIntl, history, useModel } from 'umi';
+import { Typography, Image, Card, Button, Spin } from 'antd';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
+import { LoadingOutlined } from '@ant-design/icons';
+import BigModal from '@/components/ParamiModal/BigModal';
+import BindModal from './BindModal';
+import config from '@/config/config';
 
 const SNS: React.FC = () => {
+    const linkedInfo = useModel('sns');
+    const [bindModal, setBindModal] = useState<boolean>(false);
+    const [platform, setPlatform] = useState<string>('');
+
     const intl = useIntl();
 
+    const { query } = history.location;
+    const { type, from } = query as { type: string, from: string };
+
     const { Title } = Typography;
+
+    useEffect(() => {
+        if (from && type === 'sns') {
+            setBindModal(true);
+            setPlatform(from);
+        }
+    }, [from, type]);
 
     return (
         <>
@@ -43,16 +61,32 @@ const SNS: React.FC = () => {
                             <span className={style.label}>Telegram</span>
                         </div>
                         <div className={style.button}>
-                            <Button
-                                size='large'
-                                shape='round'
-                                type='primary'
+                            <Spin
+                                indicator={
+                                    <LoadingOutlined spin />
+                                }
+                                spinning={!Object.keys(linkedInfo).length}
                             >
-                                {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
-                                })}
-                            </Button>
+                                <Button
+                                    disabled={null !== linkedInfo.Telegram}
+                                    size='large'
+                                    shape='round'
+                                    type='primary'
+                                    onClick={() => {
+                                        setBindModal(true);
+                                        setPlatform('Telegram');
+                                    }}
+                                >
+                                    {!linkedInfo.Telegram ?
+                                        intl.formatMessage({
+                                            id: 'social.bind',
+                                        }) :
+                                        intl.formatMessage({
+                                            id: 'social.binded',
+                                        })
+                                    }
+                                </Button>
+                            </Spin>
                         </div>
                     </div>
                     <div className={style.field}>
@@ -62,13 +96,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Twitter');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -80,13 +118,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Discord');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -98,13 +140,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Facebook');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -116,13 +162,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Mastodon');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -134,13 +184,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Github');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -152,13 +206,17 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Github');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -170,19 +228,57 @@ const SNS: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Reddit');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
                     </div>
                 </Card>
             </div>
+
+            <BigModal
+                visable={bindModal}
+                title={intl.formatMessage({
+                    id: 'social.bind.sns.title',
+                }, {
+                    platform: platform,
+                })}
+                content={
+                    <BindModal
+                        platform={platform}
+                        setBindModal={setBindModal}
+                    />}
+                close={() => {
+                    setBindModal(false);
+                    history.push(config.page.accountPage);
+                }}
+                footer={
+                    <>
+                        <Button
+                            block
+                            shape='round'
+                            size='large'
+                            onClick={() => {
+                                setBindModal(false);
+                            }}
+                        >
+                            {intl.formatMessage({
+                                id: 'common.close',
+                            })}
+                        </Button>
+                    </>
+                }
+            />
         </>
     )
 }

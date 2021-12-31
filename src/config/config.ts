@@ -26,6 +26,7 @@ export default {
         "receivePage": "/wallet/receive",
         "buyPage": "/wallet/buy",
         "chargePage": "/wallet/charge",
+        "accountPage": "/profile",
         "recordPage": "/record",
         "creatorPage": "/creator",
         "miningPage": "/mining",

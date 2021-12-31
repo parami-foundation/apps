@@ -1,31 +1,31 @@
-import React from 'react';
-import { useIntl } from 'umi';
-import { Typography, Image, Card, Button, Input, Alert } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useIntl, useModel, history } from 'umi';
+import { Typography, Image, Card, Button, Spin } from 'antd';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
-
-const { TextArea } = Input;
-
-const did = localStorage.getItem('did') as string;
-const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
-
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
+import { LoadingOutlined } from '@ant-design/icons';
+import BigModal from '@/components/ParamiModal/BigModal';
+import config from '@/config/config';
+import BindModal from './BindModal';
 
 const Blockchain: React.FC = () => {
+    const linkedInfo = useModel('sns');
+    const [bindModal, setBindModal] = useState<boolean>(false);
+    const [blockchain, setBlockchain] = useState<string>('');
+
     const intl = useIntl();
 
+    const { query } = history.location;
+    const { type, from } = query as { type: string, from: string };
+
     const { Title } = Typography;
+
+    useEffect(() => {
+        if (from && type === 'blockchain') {
+            setBindModal(true);
+            setBlockchain(from);
+        }
+    }, [from, type]);
 
     return (
         <>
@@ -61,16 +61,32 @@ const Blockchain: React.FC = () => {
                             <span className={style.label}>ETH</span>
                         </div>
                         <div className={style.button}>
-                            <Button
-                                size='large'
-                                shape='round'
-                                type='primary'
+                            <Spin
+                                indicator={
+                                    <LoadingOutlined spin />
+                                }
+                                spinning={!Object.keys(linkedInfo).length}
                             >
-                                {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
-                                })}
-                            </Button>
+                                <Button
+                                    disabled={null !== linkedInfo.Ethereum}
+                                    size='large'
+                                    shape='round'
+                                    type='primary'
+                                    onClick={() => {
+                                        setBindModal(true);
+                                        setBlockchain('Ethereum');
+                                    }}
+                                >
+                                    {!linkedInfo.Ethereum ?
+                                        intl.formatMessage({
+                                            id: 'social.bind',
+                                        }) :
+                                        intl.formatMessage({
+                                            id: 'social.binded',
+                                        })
+                                    }
+                                </Button>
+                            </Spin>
                         </div>
                     </div>
                     <div className={style.field}>
@@ -80,13 +96,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Bitcoin');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -98,13 +118,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Binance');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -116,13 +140,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Eosio');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -134,13 +162,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Solana');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -152,13 +184,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Kusama');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -170,13 +206,17 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Polkadot');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
@@ -188,19 +228,57 @@ const Blockchain: React.FC = () => {
                         </div>
                         <div className={style.button}>
                             <Button
+                                disabled
                                 size='large'
                                 shape='round'
                                 type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Tron');
+                                }}
                             >
                                 {intl.formatMessage({
-                                    id: 'profile.sns.bind',
-                                    defaultMessage: 'Bind'
+                                    id: 'social.coming',
                                 })}
                             </Button>
                         </div>
                     </div>
                 </Card>
             </div>
+
+            <BigModal
+                visable={bindModal}
+                title={intl.formatMessage({
+                    id: 'social.bind.blockchain.title',
+                }, {
+                    blockchain: blockchain,
+                })}
+                content={
+                    <BindModal
+                        blockchain={blockchain}
+                        setBindModal={setBindModal}
+                    />}
+                close={() => {
+                    setBindModal(false);
+                    history.push(config.page.socialPage);
+                }}
+                footer={
+                    <>
+                        <Button
+                            block
+                            shape='round'
+                            size='large'
+                            onClick={() => {
+                                setBindModal(false);
+                            }}
+                        >
+                            {intl.formatMessage({
+                                id: 'common.close',
+                            })}
+                        </Button>
+                    </>
+                }
+            />
         </>
     )
 }

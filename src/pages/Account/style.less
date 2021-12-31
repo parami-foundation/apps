@@ -121,6 +121,7 @@
         
         .securityCard,
         .exportCard {
+            margin-bottom: 20px;
             padding: 20px;
 
             .field {
@@ -190,6 +191,82 @@
     }
 }
 
+.bindModal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .iconButton {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border: 0;
+        height: 50px;
+        font-size: 16px;
+        box-shadow: none !important;
+    }
+
+    .avatar {
+        display: flex;
+        height: 200px;
+        width: 200px;
+        padding: 20px;
+        border-radius: 100%;
+        cursor: pointer;
+
+        >img {
+            width: 100%;
+            border-radius: 100%;
+            border: 0;
+            background-color: #ffffff;
+        }
+    }
+
+    .field {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        >span:first-child {
+            width: 100%;
+        }
+
+        .title {
+            margin-bottom: 10px;
+            font-weight: 900;
+            font-size: 15px;
+        }
+
+        .value {
+            width: 100%;
+        }
+    }
+}
+
+.manualContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    overflow: hidden;
+    transition: all 300ms;
+
+    .expandButtonIcon {
+        svg {
+            transition: all 100ms;
+        }
+    }
+}
+
 @media (max-width: 921px) {
     .profileContainer {
         flex-direction: column;
@@ -212,5 +289,9 @@
         .sectionSubtitle {
             margin: 10px !important;
         }
+    }
+
+    .bindList {
+        padding: 0 20px;
     }
 }
