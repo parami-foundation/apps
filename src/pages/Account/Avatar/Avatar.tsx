@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -7,6 +7,8 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import MyAvatar from '@/components/Avatar/MyAvatar';
 
 const Avatar: React.FC = () => {
+    const [modalVisable, setModalVisable] = useState<boolean>(false);
+
     const intl = useIntl();
 
     const { Title } = Typography;
@@ -55,12 +57,20 @@ const Avatar: React.FC = () => {
                         justifyContent: 'center',
                     }}
                 >
-                    <MyAvatar
-                        width={200}
-                        height={200}
-                    />
+                    <span
+                        onClick={() => { setModalVisable(true) }}
+                    >
+                        <MyAvatar
+                            width={200}
+                            height={200}
+                        />
+                    </span>
                 </Card>
             </div>
+            {/* <AvatarEdit
+                modalVisable={modalVisable}
+                setModalVisable={setModalVisable}
+            /> */}
         </>
     )
 }

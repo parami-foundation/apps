@@ -5,6 +5,7 @@ import AccountDetails from './AccountDetails/AccountDetails';
 import Security from './Security/Security';
 import Avatar from './Avatar/Avatar';
 import SNS from './SNS/SNS';
+import Blockchain from './Blockchain/Blockchain';
 
 const Profile: React.FC = () => {
     return (
@@ -17,6 +18,9 @@ const Profile: React.FC = () => {
                         </div>
                         <div className={style.section}>
                             <SNS />
+                        </div>
+                        <div className={style.section}>
+                            <Blockchain />
                         </div>
                     </div>
                     <div className={style.right}>

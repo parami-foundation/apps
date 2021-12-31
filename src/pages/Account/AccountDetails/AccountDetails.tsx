@@ -1,12 +1,19 @@
 import React from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
-import { Typography, Image, Card, Button, Tooltip } from 'antd';
+import { Typography, Image, Card, Button, Tooltip, message } from 'antd';
 import { CopyOutlined, ExclamationCircleOutlined, FormOutlined } from '@ant-design/icons';
 import AD3 from '@/components/Token/AD3';
+import { hexToDid } from '@/utils/common';
+import CopyToClipboard from 'react-copy-to-clipboard';
 
 const AccountDetails: React.FC = () => {
+    const { controller, stash } = useModel('balance');
+    const { nickname } = useModel('user');
+
+    const did = localStorage.getItem('did') as string;
+
     const intl = useIntl();
 
     const { Title } = Typography;
@@ -45,7 +52,9 @@ const AccountDetails: React.FC = () => {
                             })}
                         </div>
                         <div className={style.idCody}>
-                            Hikaru
+                            <span className={style.text}>
+                                {nickname}
+                            </span>
                             <Button
                                 size='middle'
                                 shape='circle'
@@ -62,13 +71,26 @@ const AccountDetails: React.FC = () => {
                             })}
                         </div>
                         <div className={style.idCody}>
-                            did:ad3:xxxx
-                            <Button
-                                size='middle'
-                                shape='circle'
-                                icon={<CopyOutlined />}
-                                className={style.valueButton}
-                            />
+                            <span className={style.text}>
+                                {hexToDid(did)}
+                            </span>
+                            <CopyToClipboard
+                                text={did}
+                                onCopy={() => {
+                                    message.success(
+                                        intl.formatMessage({
+                                            id: 'common.copied',
+                                        }),
+                                    )
+                                }}
+                            >
+                                <Button
+                                    size='middle'
+                                    shape='circle'
+                                    icon={<CopyOutlined />}
+                                    className={style.valueButton}
+                                />
+                            </CopyToClipboard>
                         </div>
                     </div>
                     <div className={style.field}>
@@ -79,7 +101,7 @@ const AccountDetails: React.FC = () => {
                             })}
                         </div>
                         <div className={style.value}>
-                            <AD3 value={'123'} />
+                            <AD3 value={stash?.total} />
                         </div>
                     </div>
                     <div className={style.balanceDetail}>
@@ -100,7 +122,7 @@ const AccountDetails: React.FC = () => {
                                 </Tooltip>
                             </div>
                             <div className={style.value}>
-                                <AD3 value={'123'} />
+                                <AD3 value={stash?.reserved} />
                             </div>
                         </div>
                         <div className={style.field}>
@@ -120,7 +142,7 @@ const AccountDetails: React.FC = () => {
                                 </Tooltip>
                             </div>
                             <div className={style.value}>
-                                <AD3 value={'123'} />
+                                <AD3 value={stash?.free} />
                             </div>
                         </div>
                         <div className={style.field}>
@@ -140,7 +162,7 @@ const AccountDetails: React.FC = () => {
                                 </Tooltip>
                             </div>
                             <div className={style.value}>
-                                <AD3 value={'123'} />
+                                <AD3 value={controller?.free} />
                             </div>
                         </div>
                     </div>

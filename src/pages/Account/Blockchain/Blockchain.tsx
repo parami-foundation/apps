@@ -1,8 +1,26 @@
 import React from 'react';
 import { useIntl } from 'umi';
-import { Typography, Image, Card, Button } from 'antd';
+import { Typography, Image, Card, Button, Input, Alert } from 'antd';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
+
+const { TextArea } = Input;
+
+const did = localStorage.getItem('did') as string;
+const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
+
+const Message: React.FC<{
+    content: string;
+}> = ({ content }) => (
+    <Alert
+        style={{
+            marginBottom: 24,
+        }}
+        message={content}
+        type="error"
+        showIcon
+    />
+);
 
 const Blockchain: React.FC = () => {
     const intl = useIntl();
@@ -16,12 +34,12 @@ const Blockchain: React.FC = () => {
                 className={style.sectionTitle}
             >
                 <Image
-                    src='/images/icon/sns.svg'
+                    src='/images/icon/chain.svg'
                     className={style.sectionIcon}
                 />
                 {intl.formatMessage({
-                    id: 'profile.sns.title',
-                    defaultMessage: 'SNS'
+                    id: 'profile.blockchain.title',
+                    defaultMessage: 'Blockchain'
                 })}
             </Title>
             <div className={style.bind}>
@@ -36,10 +54,10 @@ const Blockchain: React.FC = () => {
                         <div className={style.title}>
                             <Image
                                 className={style.icon}
-                                src="/images/sns/telegram.svg"
+                                src="/images/crypto/ethereum-eth-logo.svg"
                                 preview={false}
                             />
-                            <span className={style.label}>Telegram</span>
+                            <span className={style.label}>ETH</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -56,8 +74,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/twitter.svg" />
-                            <span className={style.label}>Twitter</span>
+                            <img className={style.icon} src="/images/crypto/bitcoin-btc-logo.svg" />
+                            <span className={style.label}>BTC</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -74,8 +92,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/discord.svg" />
-                            <span className={style.label}>Discord</span>
+                            <img className={style.icon} src="/images/crypto/binance-bsc-logo.svg" />
+                            <span className={style.label}>BSC</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -92,8 +110,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/facebook.svg" />
-                            <span className={style.label}>Facebook</span>
+                            <img className={style.icon} src="/images/crypto/eos-eos-logo.svg" />
+                            <span className={style.label}>EOS</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -110,8 +128,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/mastodon.svg" />
-                            <span className={style.label}>Mastodon</span>
+                            <img className={style.icon} src="/images/crypto/solana-sol-logo.svg" />
+                            <span className={style.label}>SOL</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -128,8 +146,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/github.svg" />
-                            <span className={style.label}>Github</span>
+                            <img className={style.icon} src="/images/crypto/kusama-ksm-logo.svg" />
+                            <span className={style.label}>KSM</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -146,8 +164,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/hacker-news.svg" />
-                            <span className={style.label}>Hacker News</span>
+                            <img className={style.icon} src="/images/crypto/polkadot-new-dot-logo.svg" />
+                            <span className={style.label}>DOT</span>
                         </div>
                         <div className={style.button}>
                             <Button
@@ -164,8 +182,8 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/reddit.svg" />
-                            <span className={style.label}>Reddit</span>
+                            <img className={style.icon} src="/images/crypto/tron-trx-logo.png" />
+                            <span className={style.label}>TRX</span>
                         </div>
                         <div className={style.button}>
                             <Button

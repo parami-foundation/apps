@@ -288,7 +288,7 @@ const InitialDeposit: React.FC<{
                     <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
                     <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
                     <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-                    <Step title="Link Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+                    <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
                     <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
                   </Steps>
                 )}
@@ -428,7 +428,7 @@ const InitialDeposit: React.FC<{
                   <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
                   <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
                   <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-                  <Step title="Link Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+                  <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
                   <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
                 </Steps>
               )}

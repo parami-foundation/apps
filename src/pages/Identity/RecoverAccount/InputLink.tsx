@@ -104,7 +104,7 @@ const InputLink: React.FC<{
               setMagicMnemonic(Mnemonic);
             }}
             disabled={submitting}
-            placeholder={'https://wallet.parami.io/recover/link/...'}
+            placeholder={'https://wallet.parami.io/recover/#...'}
           />
         </div>
         <div className={style.buttons}>
