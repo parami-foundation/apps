@@ -59,7 +59,7 @@ const RecordList: React.FC = () => {
                 {errorState.Message && <Message content={errorState.Message} />}
                 <Timeline className={styles.timeline}>
                     {allData.map((value, index) => {
-                        if (index >= 10) return null;
+                        if (index >= 5) return null;
                         return (
                             <Timeline.Item
                                 color={value.fromDid === did ? "red" : "green"}

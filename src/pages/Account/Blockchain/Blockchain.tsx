@@ -260,7 +260,7 @@ const Blockchain: React.FC = () => {
                     />}
                 close={() => {
                     setBindModal(false);
-                    history.push(config.page.socialPage);
+                    history.replace(config.page.socialPage);
                 }}
                 footer={
                     <>

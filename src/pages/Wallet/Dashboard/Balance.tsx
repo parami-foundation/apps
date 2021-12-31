@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
     ArrowDownOutlined,
     AuditOutlined,
@@ -9,7 +8,6 @@ import {
 import { Button } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
-import Avatar from './Avatar';
 import config from '@/config/config';
 import styles from './Balance.less';
 import SmallModal from '@/components/ParamiModal/SmallModal';
@@ -17,14 +15,13 @@ import AD3 from '@/components/Token/AD3';
 
 const Balance: React.FC = () => {
     const [tipModal, setTipModal] = useState<boolean>(false);
-    const { controller, stash } = useModel('balance');
+    const { stash } = useModel('balance');
 
     const intl = useIntl();
 
     return (
         <>
             <div className={styles.balanceCard}>
-                <Avatar />
                 <div className={styles.totalBalance}>
                     <div className={styles.amount}>
                         <AD3 value={stash?.total} />
@@ -118,28 +115,6 @@ const Balance: React.FC = () => {
                                 id: 'wallet.balance.rechargeFee',
                             })}
                         </small>
-                    </div>
-                </div>
-                <div className={styles.otherBalance}>
-                    <div className={styles.field}>
-                        <span className={styles.name}>
-                            {intl.formatMessage({
-                                id: 'wallet.balance.gas',
-                            })}
-                        </span>
-                        <span className={styles.value}>
-                            <AD3 value={controller?.free} />
-                        </span>
-                    </div>
-                    <div className={styles.field}>
-                        <span className={styles.name}>
-                            {intl.formatMessage({
-                                id: 'wallet.balance.reservedBalance',
-                            })}
-                        </span>
-                        <span className={styles.value}>
-                            <AD3 value={stash?.reserved} />
-                        </span>
                     </div>
                 </div>
             </div>

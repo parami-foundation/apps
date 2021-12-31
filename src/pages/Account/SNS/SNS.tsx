@@ -260,7 +260,7 @@ const SNS: React.FC = () => {
                     />}
                 close={() => {
                     setBindModal(false);
-                    history.push(config.page.accountPage);
+                    history.replace(config.page.accountPage);
                 }}
                 footer={
                     <>

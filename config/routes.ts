@@ -73,7 +73,7 @@
   {
     path: '/record',
     name: 'record',
-    icon: 'OrderedListOutlined',
+    icon: 'HistoryOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Record/Record',
@@ -81,7 +81,7 @@
   {
     path: '/creator',
     name: 'creator',
-    icon: 'SmileOutlined',
+    icon: 'TrophyOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Creator/Dashboard',

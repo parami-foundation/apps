@@ -11,7 +11,8 @@ const SecurityModal: React.FC<{
   password: string;
   setPassword: React.Dispatch<React.SetStateAction<string>>;
   func?: () => Promise<void>;
-}> = ({ visable, setVisable, password, setPassword, func }) => {
+  changePassword?: boolean;
+}> = ({ visable, setVisable, password, setPassword, func, changePassword }) => {
   const [submitting, setSubmitting] = useState(false);
   const [errorState, setErrorState] = useState<API.Error>({});
 
@@ -60,11 +61,11 @@ const SecurityModal: React.FC<{
   };
 
   useEffect(() => {
-    if (!!stamp && visable) {
+    if (!!stamp && visable && !changePassword) {
       setPassword(stamp);
       handleSubmit();
     };
-  }, [stamp, password, visable]);
+  }, [stamp, password, visable, changePassword]);
 
   return (
     <Modal
