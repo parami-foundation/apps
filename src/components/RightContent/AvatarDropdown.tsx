@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import { EditOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Avatar, Button, Divider, Input, message, Spin, Typography } from 'antd';
+import { LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Divider, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import config from '@/config/config';
-import { setNickName } from '@/services/parami/wallet';
-import BigModal from '../ParamiModal/BigModal';
-import SecurityModal from '../ParamiModal/SecurityModal';
 import Did from '../Did/did';
 import ExportController from './ExportController/ExportController';
 
@@ -17,15 +14,10 @@ export type GlobalHeaderRightProps = {
   menu?: boolean;
 };
 
-const keystore = localStorage.getItem('controllerKeystore') as string;
 
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
-  const [nicknameModal, setNicknameModal] = useState<boolean>(false);
-  const [secModal, setSecModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [spinning, setSpinning] = useState<boolean>(false);
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
-  const { nickname, avatar, setNickname } = useModel('user');
+  const { nickname, avatar } = useModel('user');
 
   const intl = useIntl();
 
@@ -35,18 +27,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = config.page.homePage;
-  };
-
-  const updateNickname = async () => {
-    setSpinning(true);
-    try {
-      await setNickName(nickname, password, keystore);
-      setNicknameModal(false);
-      setSpinning(false);
-    } catch (e: any) {
-      message.error(e.message);
-      setSpinning(false);
-    }
   };
 
   const menuHeaderDropdown = (
@@ -62,15 +42,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         <div className={styles.account}>
           <span className={styles.nickname}>
             {nickname || 'Nickname'}
-            <EditOutlined
-              style={{
-                marginLeft: 10,
-              }}
-              onClick={() => {
-                setNicknameModal(true);
-                setMenuVisible(false);
-              }}
-            />
           </span>
           <Did did={did} />
         </div>
@@ -92,67 +63,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           })}
         </div>
       </div>
-      <Spin
-        tip={intl.formatMessage({
-          id: 'common.uploading',
-        })}
-        spinning={spinning}
-      >
-        <BigModal
-          visable={nicknameModal}
-          title={intl.formatMessage({
-            id: 'wallet.nickname.edit',
-          })}
-          content={
-            <>
-              <Input
-                size="large"
-                value={nickname}
-                onChange={(e) => {
-                  setNickname(e.target.value)
-                }}
-              />
-              <Button
-                block
-                type='primary'
-                size='large'
-                shape='round'
-                className={styles.button}
-                style={{
-                  marginTop: 20,
-                }}
-                onClick={() => { setSecModal(true) }}
-              >
-                {intl.formatMessage({
-                  id: 'common.submit',
-                })}
-              </Button>
-            </>
-          }
-          footer={
-            <>
-              <Button
-                block
-                shape='round'
-                size='large'
-                className={styles.button}
-                onClick={() => { setNicknameModal(false) }}
-              >
-                {intl.formatMessage({
-                  id: 'common.close',
-                })}
-              </Button>
-            </>
-          }
-        />
-        <SecurityModal
-          visable={secModal}
-          setVisable={setSecModal}
-          password={password}
-          setPassword={setPassword}
-          func={updateNickname}
-        />
-      </Spin>
     </>
   );
   return (

@@ -4,10 +4,10 @@ import { Card } from 'antd';
 import classNames from 'classnames';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
-import Add from './Mining/Add';
-import Redeem from './Mining/Redeem';
+import Add from './Staking/Add';
+import Redeem from './Staking/Redeem';
 
-const Mining: React.FC = () => {
+const Staking: React.FC = () => {
     const [tab, setTab] = useState<string>('add');
 
     const intl = useIntl();
@@ -54,4 +54,4 @@ const Mining: React.FC = () => {
     )
 }
 
-export default Mining;
+export default Staking;

@@ -63,6 +63,14 @@
     component: './Account/Profile',
   },
   {
+    path: '/staking',
+    name: 'staking',
+    icon: 'DeploymentUnitOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Stake/Staking',
+  },
+  {
     path: '/record',
     name: 'record',
     icon: 'OrderedListOutlined',
@@ -71,28 +79,12 @@
     component: './Record/Record',
   },
   {
-    path: '/social',
-    name: 'social',
-    icon: 'ApiOutlined',
-    access: 'canUser',
-    hideChildrenInMenu: true,
-    component: './Social/Bind',
-  },
-  {
     path: '/creator',
     name: 'creator',
     icon: 'SmileOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Creator/Dashboard',
-  },
-  {
-    path: '/mining',
-    name: 'mining',
-    icon: 'DeploymentUnitOutlined',
-    access: 'canUser',
-    hideChildrenInMenu: true,
-    component: './Miner/Mining',
   },
   {
     path: '/visa',

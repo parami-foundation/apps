@@ -13,7 +13,7 @@ export default {
   'menu.social': 'SocialApps',
   'menu.creator': 'Creator',
   'menu.creator.did': 'Creator Home',
-  'menu.mining': 'Liquid Swap',
+  'menu.staking': 'Staking',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.did': 'DID',
   'menu.dashboard.ads': 'Ads',

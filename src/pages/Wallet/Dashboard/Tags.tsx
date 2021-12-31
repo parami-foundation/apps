@@ -57,7 +57,7 @@ const Tags: React.FC = () => {
                                         borderWidth: 20
                                     }}
                                     className='tagItem'
-                                    onClick={() => { history.push(`${config.page.socialPage}/?type=${tag.count.type}&from=${tag.count.chain}`) }}
+                                    onClick={() => { history.push(`${config.page.accountPage}/?type=${tag.count.type}&from=${tag.count.chain}`) }}
                                 >
                                     ❗{tag.count.name}
                                 </a>

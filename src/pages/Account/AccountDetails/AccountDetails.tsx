@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -7,10 +7,12 @@ import { CopyOutlined, ExclamationCircleOutlined, FormOutlined } from '@ant-desi
 import AD3 from '@/components/Token/AD3';
 import { hexToDid } from '@/utils/common';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import Nickname from './Nickname';
 
 const AccountDetails: React.FC = () => {
     const { controller, stash } = useModel('balance');
     const { nickname } = useModel('user');
+    const [nicknameModal, setNicknameModal] = useState<boolean>(false);
 
     const did = localStorage.getItem('did') as string;
 
@@ -54,13 +56,16 @@ const AccountDetails: React.FC = () => {
                         </div>
                         <div className={style.idCody}>
                             <span className={style.text}>
-                                {nickname}
+                                {nickname || 'Nickname'}
                             </span>
                             <Button
                                 size='middle'
                                 shape='circle'
                                 icon={<FormOutlined />}
                                 className={style.valueButton}
+                                onClick={() => {
+                                    setNicknameModal(true);
+                                }}
                             />
                         </div>
                     </div>
@@ -169,6 +174,11 @@ const AccountDetails: React.FC = () => {
                     </div>
                 </div>
             </Card>
+
+            <Nickname
+                nicknameModal={nicknameModal}
+                setNicknameModal={setNicknameModal}
+            />
         </>
     )
 }
