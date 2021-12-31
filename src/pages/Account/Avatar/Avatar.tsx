@@ -5,6 +5,7 @@ import style from '../style.less';
 import { Typography, Image, Card, Tooltip } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import MyAvatar from '@/components/Avatar/MyAvatar';
+import Edit from './Edit';
 
 const Avatar: React.FC = () => {
     const [modalVisable, setModalVisable] = useState<boolean>(false);
@@ -22,6 +23,7 @@ const Avatar: React.FC = () => {
                 <Image
                     src='/images/icon/camera.svg'
                     className={style.sectionIcon}
+                    preview={false}
                 />
                 {intl.formatMessage({
                     id: 'profile.avatar.title',
@@ -67,10 +69,10 @@ const Avatar: React.FC = () => {
                     </span>
                 </Card>
             </div>
-            {/* <AvatarEdit
+            <Edit
                 modalVisable={modalVisable}
                 setModalVisable={setModalVisable}
-            /> */}
+            />
         </>
     )
 }

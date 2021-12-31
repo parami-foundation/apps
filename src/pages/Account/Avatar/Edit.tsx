@@ -1,6 +1,7 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import React from 'react';
 import { useIntl } from 'umi';
+import Main from './Main';
 
 const Edit: React.FC<{
     modalVisable: boolean;
@@ -15,9 +16,9 @@ const Edit: React.FC<{
                 id: 'wallet.avatar.edit',
             })}
             content={
-                // <AvatarMain
-                //     setModalVisable={setModalVisable}
-                // />
+                <Main
+                    setModalVisable={setModalVisable}
+                />
             }
             footer={false}
         />

@@ -36,6 +36,7 @@ const Blockchain: React.FC = () => {
                 <Image
                     src='/images/icon/chain.svg'
                     className={style.sectionIcon}
+                    preview={false}
                 />
                 {intl.formatMessage({
                     id: 'profile.blockchain.title',

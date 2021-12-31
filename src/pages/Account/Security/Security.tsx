@@ -19,6 +19,7 @@ const Security: React.FC = () => {
                 <Image
                     src='/images/icon/safe.svg'
                     className={style.sectionIcon}
+                    preview={false}
                 />
                 {intl.formatMessage({
                     id: 'profile.security.title',

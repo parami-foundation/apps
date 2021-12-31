@@ -18,6 +18,7 @@ const SNS: React.FC = () => {
                 <Image
                     src='/images/icon/sns.svg'
                     className={style.sectionIcon}
+                    preview={false}
                 />
                 {intl.formatMessage({
                     id: 'profile.sns.title',

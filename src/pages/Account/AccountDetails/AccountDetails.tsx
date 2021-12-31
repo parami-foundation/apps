@@ -27,6 +27,7 @@ const AccountDetails: React.FC = () => {
                 <Image
                     src='/images/icon/mine.svg'
                     className={style.sectionIcon}
+                    preview={false}
                 />
                 {intl.formatMessage({
                     id: 'profile.accountDetails.title',

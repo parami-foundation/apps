@@ -6,6 +6,7 @@ import Security from './Security/Security';
 import Avatar from './Avatar/Avatar';
 import SNS from './SNS/SNS';
 import Blockchain from './Blockchain/Blockchain';
+import ExportController from './Export/ExportController';
 
 const Profile: React.FC = () => {
     return (
@@ -29,6 +30,9 @@ const Profile: React.FC = () => {
                         </div>
                         <div className={style.section}>
                             <Security />
+                        </div>
+                        <div className={style.section}>
+                            <ExportController />
                         </div>
                     </div>
                 </div>
