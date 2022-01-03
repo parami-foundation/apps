@@ -77,12 +77,19 @@ const SNS: React.FC = () => {
                                         setPlatform('Telegram');
                                     }}
                                 >
-                                    {!linkedInfo.Telegram ?
+                                    {!linkedInfo.Telegram &&
                                         intl.formatMessage({
                                             id: 'social.bind',
-                                        }) :
+                                        })
+                                    }
+                                    {linkedInfo.Telegram === 'linked' &&
                                         intl.formatMessage({
                                             id: 'social.binded',
+                                        })
+                                    }
+                                    {linkedInfo.Telegram === 'verifing' &&
+                                        intl.formatMessage({
+                                            id: 'social.verifing',
                                         })
                                     }
                                 </Button>

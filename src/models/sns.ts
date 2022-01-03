@@ -32,6 +32,7 @@ export default () => {
         for (let i = 0; i < platforms.length; i++) {
             data[platforms[i]] = status[i];
         }
+        console.log(data)
         setLinkedInfo(data);
     }
 

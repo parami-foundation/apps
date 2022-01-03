@@ -3,6 +3,7 @@ export default {
     'social.blockchainAccount': 'Blockchain Account',
     'social.bind': 'Bind',
     'social.binded': 'Binded',
+    'social.verifing': 'Verifing',
     'social.changeBind': 'Change Binding',
     'social.bind.blockchain.title': 'Bind {blockchain}',
     'social.blockchain.originText': 'Content to be signed',

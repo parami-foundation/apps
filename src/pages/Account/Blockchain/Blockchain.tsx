@@ -77,12 +77,19 @@ const Blockchain: React.FC = () => {
                                         setBlockchain('Ethereum');
                                     }}
                                 >
-                                    {!linkedInfo.Ethereum ?
+                                    {!linkedInfo.Ethereum &&
                                         intl.formatMessage({
                                             id: 'social.bind',
-                                        }) :
+                                        })
+                                    }
+                                    {linkedInfo.Ethereum === 'linked' &&
                                         intl.formatMessage({
                                             id: 'social.binded',
+                                        })
+                                    }
+                                    {linkedInfo.Ethereum === 'verifing' &&
+                                        intl.formatMessage({
+                                            id: 'social.verifing',
                                         })
                                     }
                                 </Button>

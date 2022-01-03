@@ -35,7 +35,7 @@ const BindModal: React.FC<{
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     const handleSubmit = async () => {
-        if (profileURL !== '') {
+        if (profileURL === '') {
             message.error(intl.formatMessage({
                 id: 'error.sns.emptyInput',
             }));
