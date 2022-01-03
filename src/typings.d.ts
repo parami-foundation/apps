@@ -10,6 +10,7 @@ declare module '*.jpeg';
 declare module '*.gif';
 declare module '*.bmp';
 declare module '*.tiff';
+declare module '*.svga';
 declare module 'omit.js';
 declare module 'numeral';
 declare module '@antv/data-set';

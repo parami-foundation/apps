@@ -94,7 +94,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       </>
     ),
     onPageChange: () => {
-      setInitialState({ ...initialState, collapsed: true })
+      setInitialState({ ...initialState, collapsed: true });
     },
     collapsed: initialState?.collapsed,
     onCollapse: (collapsed) => {

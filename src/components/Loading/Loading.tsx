@@ -1,41 +1,17 @@
 import React from 'react';
-import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
-import { Spin, Alert } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
+import { Svga } from 'react-svga';
+import style from './style.less';
 
 const Loading: React.FC = () => {
-    const intl = useIntl();
 
     return (
         <>
             <div className={styles.mainContainer}>
                 <div className={styles.pageContainer}>
-                    <Spin
-                        size='large'
-                        indicator={
-                            <LoadingOutlined
-                                spin
-                                style={{
-                                    fontSize: 60,
-                                }}
-                            />
-                        }
-                    />
-                    <Alert
-                        message={
-                            intl.formatMessage({
-                                id: 'common.loading.rpc',
-                                defaultMessage: 'Connecting to RPC...{br}Please REFRESH if it takes too long to load the page.'
-                            }, {
-                                br: <br />
-                            })
-                        }
-                        style={{
-                            marginTop: 30,
-                            textAlign: 'center',
-                        }}
-                        type="info"
+                    <Svga
+                        src={'/images/parami.svga'}
+                        className={style.loadingContainer}
                     />
                 </div>
             </div>

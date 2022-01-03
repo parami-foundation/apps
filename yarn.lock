@@ -18324,6 +18324,13 @@ react-svg@^14.1.2:
     "@types/prop-types" "^15.7.4"
     prop-types "^15.7.2"
 
+react-svga@^0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/react-svga/-/react-svga-0.1.6.tgz#007d75f0f3f9bfc3eaf6117649c72814790934cf"
+  integrity sha512-TnQDdarSd140UbsDdOe7liGXKEs8AxJ1G2chtx8qayUg9ikZk6Mk22DgymqY3uVSzdaSfgDCiWd3SSZbeJ5KXg==
+  dependencies:
+    svga.lite "^1.4.2"
+
 react-syntax-highlighter@^15.4.4:
   version "15.4.5"
   resolved "https://registry.yarnpkg.com/react-syntax-highlighter/-/react-syntax-highlighter-15.4.5.tgz#db900d411d32a65c8e90c39cd64555bf463e712e"
@@ -20673,6 +20680,11 @@ svg-tags@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/svg-tags/-/svg-tags-1.0.0.tgz#58f71cee3bd519b59d4b2a843b6c7de64ac04764"
   integrity sha1-WPcc7jvVGbWdSyqEO2x95krAR2Q=
+
+svga.lite@^1.4.2:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/svga.lite/-/svga.lite-1.6.1.tgz#71066b3a4e79fd0fe4c9b2e5ff13deca6cae45fa"
+  integrity sha512-imw16yqYG13i6gTmSIvFeZWiJ8o/S+WkmmA/qtCjV8GZqfFdOIB7KG3GBG3NrcMylXTf25nvHO/5Fed4l4AITg==
 
 swagger-client@^3.17.0:
   version "3.17.0"
