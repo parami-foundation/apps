@@ -10,7 +10,6 @@ import { hexToDid } from '@/utils/common';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
-import { convertUtf8ToHex } from '@walletconnect/utils';
 import config from '@/config/config';
 
 const { TextArea } = Input;
@@ -44,13 +43,7 @@ const BindModal: React.FC<{
 	const [secModal, setSecModal] = useState(false);
 	const [type, setType] = useState<string>('');
 	const [collapse, setCollapse] = useState<boolean>(false);
-	const [WConnected, setWConnected] = useState<boolean>(false);
-	const [connector, setConnector] = useState<any>(null);
 
-	async function sign() {
-		const signedMsg = await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
-		console.log(signedMsg)
-	};
 
 	const intl = useIntl();
 
@@ -126,12 +119,6 @@ const BindModal: React.FC<{
 		};
 	}, [blockchain, password]);
 
-	useEffect(() => {
-		console.log('Connection status changed')
-		if (WConnected) {
-			sign();
-		}
-	}, [WConnected]);
 
 	return (
 		<>
