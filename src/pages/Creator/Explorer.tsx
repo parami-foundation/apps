@@ -39,6 +39,7 @@ const android = /android|adr/.test(userAgent);
 
 const Explorer: React.FC = () => {
     const apiWs = useModel('apiWs');
+    const { bodyHeight, bodyWidth } = useModel('bodyChange');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [avatar, setAvatar] = useState<string>('');
@@ -62,8 +63,6 @@ const Explorer: React.FC = () => {
 
     const avatarTop = document.getElementById('avatar')?.offsetTop;
     const avatarLeft = document.getElementById('avatar')?.offsetLeft;
-    const windowHeight = document.body.clientHeight;
-    const windowWidth = document.body.clientWidth;
 
     const params: {
         kol: string;
@@ -208,8 +207,8 @@ const Explorer: React.FC = () => {
                             fallback='/images/default-avatar.svg'
                             className={style.avatar}
                             style={{
-                                top: loading ? (windowHeight - 400) / 2 : avatarTop,
-                                left: loading ? (windowWidth - 200) / 2 : avatarLeft,
+                                top: loading ? (bodyHeight - 400) / 2 : avatarTop,
+                                left: loading ? (bodyWidth - 200) / 2 : avatarLeft,
                                 width: loading ? 200 : 30,
                                 height: loading ? 200 : 30,
                                 animation: loading ? 1 : 0,
@@ -223,7 +222,7 @@ const Explorer: React.FC = () => {
                             style={{
                                 opacity: loading ? 1 : 0,
                                 zIndex: loading ? 10 : -1,
-                                height: windowHeight,
+                                height: bodyHeight,
                             }}
                         >
                             <span className={style.loadingTip}>
