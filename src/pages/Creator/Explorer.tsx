@@ -324,7 +324,7 @@ const Explorer: React.FC = () => {
                         <CreateAccount minimal={true} />
                     </>
                 }
-                close={() => setNotAccess(false)}
+                close={undefined}
                 footer={false}
             />
             <BigModal

@@ -166,6 +166,9 @@ const Trade: React.FC<{
                                         className={style.maxButton}
                                         onClick={() => {
                                             setAd3Number(BigIntToFloatString(stash.free, 18));
+                                            DrylySellCurrency(user?.nft, FloatStringToBigInt(stash.free, 18).toString()).then((res: any) => {
+                                                setFlat(BigIntToFloatString(res, 18));
+                                            });
                                         }}
                                     >
                                         {intl.formatMessage({
@@ -235,6 +238,9 @@ const Trade: React.FC<{
                                         className={style.maxButton}
                                         onClick={() => {
                                             setTokenNumber(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18));
+                                            GetValueOf(user?.nft, FloatStringToBigInt(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18), 18).toString()).then((res: any) => {
+                                                setFlat(BigIntToFloatString(res, 18));
+                                            });
                                         }}
                                     >
                                         {intl.formatMessage({

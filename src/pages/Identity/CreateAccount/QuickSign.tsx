@@ -5,6 +5,7 @@ import styles from '@/pages/wallet.less';
 import style from '../style.less';
 import TelegramLoginButton from 'react-telegram-login';
 import config from '@/config/config';
+import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 
 const { Title } = Typography;
 
@@ -55,6 +56,7 @@ const QuickSign: React.FC<{
                         </p>
                         <Divider />
                         <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
+                        <DiscordLoginButton />
                         <Divider>
                             {intl.formatMessage({
                                 id: 'index.or',
@@ -106,6 +108,7 @@ const QuickSign: React.FC<{
                     spinning={loading}
                 >
                     <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
+                    <DiscordLoginButton />
                     <small
                         style={{
                             textAlign: 'center',
