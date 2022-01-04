@@ -94,7 +94,7 @@ const ExportController: React.FC = () => {
                         </div>
                     </div>
                 </Card>
-                <Card
+                {/* <Card
                     className={`${styles.card} ${style.exportCard}`}
                     bodyStyle={{
                         padding: 0,
@@ -121,7 +121,7 @@ const ExportController: React.FC = () => {
                             </Button>
                         </div>
                     </div>
-                </Card>
+                </Card> */}
             </div>
 
             <BigModal
