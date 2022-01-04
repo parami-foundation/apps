@@ -55,20 +55,20 @@
     ],
   },
   {
-    path: '/profile',
-    name: 'account',
-    icon: 'UserOutlined',
-    access: 'canUser',
-    hideChildrenInMenu: true,
-    component: './Account/Profile',
-  },
-  {
     path: '/staking',
     name: 'staking',
     icon: 'DeploymentUnitOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Stake/Staking',
+  },
+  {
+    path: '/profile',
+    name: 'account',
+    icon: 'UserOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Account/Profile',
   },
   {
     path: '/record',

@@ -165,7 +165,6 @@ const InitialDeposit: React.FC<{
       existAccounts = await GetStableAccount(controllerUserAddress);
       if (!!existAccounts?.stashAccount) {
         localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
-        setStep(5);
       } else try {
         const events: any = await CreateStableAccount(
           password,
@@ -175,21 +174,20 @@ const InitialDeposit: React.FC<{
         );
         stashUserAddress = events['magic']['Created'][0][0];
         localStorage.setItem('stashUserAddress', stashUserAddress as string);
-        setStep(5);
       } catch (e: any) {
         console.log(e.message);
         return;
       }
     }
+    setStep(5);
 
     let did = localStorage.getItem('did');
     if (!did || did === '') {
       // Query DID
-      const didData = await QueryDid(existAccounts?.stashAccount);
+      const didData = await QueryDid(existAccounts?.stashAccount || stashUserAddress);
       if (!!didData) {
         localStorage.setItem('did', didData as string);
         setDID(didData as string);
-        setStep(6);
       } else try {
         const events: any = await CreateDid(
           controllerUserAddress,
@@ -199,12 +197,13 @@ const InitialDeposit: React.FC<{
         did = events['did']['Assigned'][0][0];
         localStorage.setItem('did', did as string);
         setDID(did as string);
-        setStep(6);
       } catch (e: any) {
         console.log(e.message);
         return;
       }
     }
+    setStep(6);
+
     if (minimal) {
       await minimalSubmit(airdropData, did);
       return;
