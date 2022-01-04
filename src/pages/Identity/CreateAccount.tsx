@@ -13,7 +13,7 @@ import config from '@/config/config';
 const CreateAccount: React.FC<{
   minimal?: boolean;
 }> = ({ minimal }) => {
-  const [step, setStep] = useState<number>(5);
+  const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [qsTicket, setQsTicket] = useState<any>();
   const [magicLink, setMagicLink] = useState<string>('');
