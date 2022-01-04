@@ -14,6 +14,8 @@ import {
   BatchNicknameAndAvatar,
   CreateDid,
   CreateStableAccount,
+  GetStableAccount,
+  QueryDid,
 } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { GetAvatar, LinkWithTelegram, LoginWithTelegram } from '@/services/parami/api';
@@ -24,10 +26,13 @@ import { b64toBlob } from '@/utils/common';
 import { FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
+import VConsole from 'vconsole';
 
 const { Title } = Typography;
 const { Step } = Steps;
 const { TextArea } = Input;
+
+new VConsole();
 
 const goto = () => {
   setTimeout(() => {
@@ -154,8 +159,14 @@ const InitialDeposit: React.FC<{
 
   const createAccount = async () => {
     let stashUserAddress = localStorage.getItem('stashUserAddress');
+    let existAccounts
     if (stashUserAddress === '' || stashUserAddress === null) {
-      try {
+      // Get whether all accounts exist
+      existAccounts = await GetStableAccount(controllerUserAddress);
+      if (!!existAccounts?.stashAccount) {
+        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
+        setStep(5);
+      } else try {
         const events: any = await CreateStableAccount(
           password,
           controllerKeystore,
@@ -170,9 +181,16 @@ const InitialDeposit: React.FC<{
         return;
       }
     }
+
     let did = localStorage.getItem('did');
     if (!did || did === '') {
-      try {
+      // Query DID
+      const didData = await QueryDid(existAccounts?.stashAccount);
+      if (!!didData) {
+        localStorage.setItem('did', didData as string);
+        setDID(didData as string);
+        setStep(6);
+      } else try {
         const events: any = await CreateDid(
           controllerUserAddress,
           password,
@@ -196,7 +214,7 @@ const InitialDeposit: React.FC<{
       return;
     }
     setStep(7);
-  }
+  };
 
   const listenBalance = async () => {
     if (!apiWs) {
@@ -276,7 +294,10 @@ const InitialDeposit: React.FC<{
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-          }}>
+            position: 'relative',
+            height: '100vh',
+          }}
+        >
           {miniLoading && (
             <>
               <Spin
@@ -295,9 +316,8 @@ const InitialDeposit: React.FC<{
                 size='large'
                 indicator={(<></>)}
                 spinning={miniLoading}
-                wrapperClassName={styles.pageContainer}
                 style={{
-                  background: 'rgba(255,255,255,.7)'
+                  background: 'rgba(255,255,255,.7)',
                 }}
               />
               <a

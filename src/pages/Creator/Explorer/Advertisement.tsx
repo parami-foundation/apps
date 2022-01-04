@@ -90,7 +90,9 @@ const Advertisement: React.FC<{
 
     const gotoAdPage = async () => {
         window.open(`${ad?.link}&stamp=${stamp}&t=${Date.now()}`);
-    }
+    };
+
+    const sponsoredBy = hexToDid(adData?.creator).substring(8);
 
     useEffect(() => {
         handleStamp();
@@ -111,7 +113,7 @@ const Advertisement: React.FC<{
                         <span>
                             {intl.formatMessage({
                                 id: 'creator.explorer.advertisement.sponsoredBy',
-                            }, { did: hexToDid(adData?.creator).substring(8) })}
+                            }, { did: `${sponsoredBy}` })}
                         </span>
                     </div>
                 </div>

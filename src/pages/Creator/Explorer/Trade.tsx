@@ -234,7 +234,7 @@ const Trade: React.FC<{
                                         size='middle'
                                         className={style.maxButton}
                                         onClick={() => {
-                                            setTokenNumber(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18))
+                                            setTokenNumber(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18));
                                         }}
                                     >
                                         {intl.formatMessage({
