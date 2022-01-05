@@ -7,13 +7,16 @@ import MagicLink from './CreateAccount/MagicLink';
 import InitialDeposit from './CreateAccount/initialDeposit';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 import { CreateAccount as createAccount } from '@/services/parami/wallet';
-import { useAccess, history } from 'umi';
+import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
+import BeforeStart from './CreateAccount/BeforeStart';
+import NotSupport from './CreateAccount/NotSupport';
 
 const CreateAccount: React.FC<{
   minimal?: boolean;
 }> = ({ minimal }) => {
-  const [step, setStep] = useState<number>(1);
+  const apiWs = useModel('apiWs');
+  const [step, setStep] = useState<number>(0);
   const [password, setPassword] = useState<string>('');
   const [qsTicket, setQsTicket] = useState<any>();
   const [qsPlatform, setQsPlatform] = useState<string>();
@@ -47,6 +50,9 @@ const CreateAccount: React.FC<{
   const access = useAccess();
 
   useEffect(() => {
+    if (!apiWs) {
+      return;
+    }
     if (access.canUser) {
       history.push(config.page.walletPage);
       return;
@@ -72,12 +78,27 @@ const CreateAccount: React.FC<{
       setStep(1);
       return;
     };
-  }, []);
+  }, [apiWs]);
+
+  useEffect(() => {
+    console.log(step)
+  }, [step]);
 
   return (
     <>
       {minimal && (
         <>
+          {step === -1 &&
+            <NotSupport
+              minimal={minimal}
+            />
+          }
+          {step === 0 &&
+            <BeforeStart
+              setStep={setStep}
+              minimal={minimal}
+            />
+          }
           {step === 1 &&
             <QuickSign
               setStep={setStep}
@@ -129,6 +150,15 @@ const CreateAccount: React.FC<{
         <>
           <div className={styles.mainBgContainer}>
             <div className={styles.pageContainer}>
+              {step === -1 &&
+                <NotSupport
+                />
+              }
+              {step === 0 &&
+                <BeforeStart
+                  setStep={setStep}
+                />
+              }
               {step === 1 &&
                 <QuickSign
                   setStep={setStep}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Card, Input, message, Typography, Divider } from 'antd';
-import { useIntl, history } from 'umi';
+import { useIntl, history, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -28,6 +28,7 @@ const WithLink: React.FC<{
   setMagicUserAddress: React.Dispatch<React.SetStateAction<string>>;
   setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ magicMnemonic, password, setPassword, setMagicKeystore, setControllerUserAddress, setMagicUserAddress, setStep }) => {
+  const apiWs = useModel('apiWs');
   const [submitting, setSubmitting] = useState(false);
   const [errorState, setErrorState] = useState<API.Error>({});
   const [Did, setDid] = useState<string>('');
@@ -127,8 +128,10 @@ const WithLink: React.FC<{
   // GeneratePassword
 
   useEffect(() => {
-    queryAccount();
-  }, []);
+    if (apiWs) {
+      queryAccount();
+    }
+  }, [apiWs]);
 
   const Message: React.FC<{
     content: string;

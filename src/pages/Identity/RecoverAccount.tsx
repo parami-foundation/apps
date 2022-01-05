@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAccess, history } from 'umi';
+import { useAccess, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import InputLink from './RecoverAccount/InputLink';
 import WithLink from './RecoverAccount/WithLink';
@@ -7,6 +7,7 @@ import RecoverDeposit from './RecoverAccount/RecoverDeposit';
 import config from '@/config/config';
 
 const RecoverAccount: React.FC = () => {
+  const apiWs = useModel('apiWs');
   const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState('');
 
@@ -36,6 +37,9 @@ const RecoverAccount: React.FC = () => {
   const access = useAccess();
 
   useEffect(() => {
+    if (!apiWs) {
+      return;
+    }
     if (access.canUser) {
       history.push(config.page.walletPage);
       return;
@@ -52,7 +56,7 @@ const RecoverAccount: React.FC = () => {
       return;
     };
     isRecoverLink();
-  }, []);
+  }, [apiWs]);
 
   return (
     <>

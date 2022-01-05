@@ -15,7 +15,7 @@ const DiscordLoginButton: React.FC<{
         const url = new URL(event.data);
         const ticket = qs.parse(url.hash.substring(1));
         dataOnauth(ticket);
-    }
+    };
 
     const params: {
         platfrom: string;
@@ -24,7 +24,7 @@ const DiscordLoginButton: React.FC<{
     let RedirectUri = redirectUri;
     if (!RedirectUri) {
         RedirectUri = window.location.href;
-    }
+    };
 
     useEffect(() => {
         if (params.platfrom === 'discord') {
