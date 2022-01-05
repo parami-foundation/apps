@@ -12,17 +12,18 @@ declare namespace API {
         response?: Response;
     };
 
-    type TelegramLogin = {
+    type AirdropLogin = {
         ticket?: {};
         site?: string;
         wallet?: string;
     };
 
-    type TelegramLoginResp = {
+    type AirdropLoginResp = {
         avatar?: string;
+        nickname?: string;
     };
 
-    type TelegramLink = {
+    type AirdropLink = {
         site?: string;
         wallet?: string;
     };

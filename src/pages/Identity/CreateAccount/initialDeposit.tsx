@@ -18,7 +18,7 @@ import {
   QueryDid,
 } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { GetAvatar, LinkWithTelegram, LoginWithTelegram } from '@/services/parami/api';
+import { GetAvatar, LinkWithAirdrop, LoginWithAirdrop } from '@/services/parami/api';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
 import { uploadIPFS } from '@/services/parami/ipfs';
@@ -26,13 +26,11 @@ import { b64toBlob } from '@/utils/common';
 import { FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
-import VConsole from 'vconsole';
+import DiscordLoginButton from '@/components/Discord';
 
 const { Title } = Typography;
 const { Step } = Steps;
 const { TextArea } = Input;
-
-new VConsole();
 
 const goto = () => {
   setTimeout(() => {
@@ -41,17 +39,21 @@ const goto = () => {
     sessionStorage.removeItem('redirect');
   }, 10);
 };
+
 let unsub: VoidFn | null = null;
+
 const InitialDeposit: React.FC<{
   password: string;
   qsTicket?: any;
+  qsPlatform?: string | undefined;
   minimal?: boolean;
   magicLink?: string;
   magicUserAddress: string;
   controllerUserAddress: string;
   controllerKeystore: string;
   setQsTicket: React.Dispatch<any>;
-}> = ({ password, qsTicket, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket }) => {
+  setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
+}> = ({ password, qsTicket, qsPlatform, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
   const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [secModal, setSecModal] = useState<boolean>(false);
@@ -66,13 +68,14 @@ const InitialDeposit: React.FC<{
 
   const intl = useIntl();
 
-  const handleTelegram = async (response) => {
+  const handleQuickCreate = async (response, platform) => {
     setLoading(true);
+    setQsPlatform(platform);
     setQsTicket(response);
     try {
-      const { response: Resp, data } = await LoginWithTelegram({
+      const { response: Resp, data } = await LoginWithAirdrop({
         ticket: response,
-        site: 'Telegram',
+        site: platform,
         wallet: controllerUserAddress,
       });
 
@@ -87,7 +90,7 @@ const InitialDeposit: React.FC<{
       if (Resp?.status === 401) {
         notification.error({
           message: 'Abnormal account',
-          description: 'No profile picture or username. Please check your Telegram privacy setting, or verify by making a deposit instead.',
+          description: `No profile picture or username. Please check your ${qsPlatform} privacy setting, or verify by making a deposit instead.`,
           duration: null,
         })
         setLoading(false);
@@ -96,7 +99,7 @@ const InitialDeposit: React.FC<{
       if (Resp?.status === 409) {
         notification.error({
           message: 'Airdroped',
-          description: 'Your Telegram account has participated in airdrop. Please try to deposit manually.',
+          description: `Your ${qsPlatform} account has participated in airdrop. Please try to deposit manually.`,
           duration: null,
         })
         setLoading(false);
@@ -125,8 +128,8 @@ const InitialDeposit: React.FC<{
   };
 
   const minimalSubmit = async (data: any, didData: any) => {
-    const { response } = await LinkWithTelegram({
-      site: 'Telegram',
+    const { response } = await LinkWithAirdrop({
+      site: qsPlatform,
       wallet: controllerUserAddress,
     });
 
@@ -139,7 +142,7 @@ const InitialDeposit: React.FC<{
               const imgBlob = (img as string).substring(22);
               try {
                 const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-                const events = await BatchNicknameAndAvatar(data?.nickname || 'Telegram User', `ipfs://${res.Hash}`, password, controllerKeystore);
+                const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, password, controllerKeystore);
                 setAvatarNicknameData(events);
               } catch (e: any) {
                 console.log(e);
@@ -240,7 +243,7 @@ const InitialDeposit: React.FC<{
 
   const minimalAirdrop = async () => {
     try {
-      await handleTelegram(qsTicket);
+      await handleQuickCreate(qsTicket, qsPlatform);
       if (unsub === null) {
         listenBalance();
       }
@@ -595,7 +598,15 @@ const InitialDeposit: React.FC<{
                     id: 'account.beforeStart.faucet',
                   })}
                 </Divider>
-                <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
+                <TelegramLoginButton
+                  dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                  botName={config.airdropService.telegram.botName}
+                />
+                <DiscordLoginButton
+                  dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+                  clientId={config.airdropService.discord.clientId}
+                  redirectUri={config.airdropService.discord.redirectUri}
+                />
               </div>
             </Spin>
           </Card>

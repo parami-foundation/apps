@@ -15,9 +15,9 @@ const request = extend({
     credentials: 'same-origin', // 默认请求是否带上cookie
 });
 
-/** Login with Telegram POST /feed */
+/** Login with Airdrop POST /feed */
 // OK:200, Ticket Err:401, Airdroped:403, Site Err:400
-export async function LoginWithTelegram(body: API.TelegramLogin, options?: { [key: string]: any }) {
+export async function LoginWithAirdrop(body: API.AirdropLogin, options?: { [key: string]: any }) {
     const airdrop = 'https://airdrop.parami.io';
     return request(`${airdrop}/feed`, {
         method: 'POST',
@@ -30,9 +30,9 @@ export async function LoginWithTelegram(body: API.TelegramLogin, options?: { [ke
     });
 }
 
-/** Login with Telegram POST /link */
+/** Login with Airdrop POST /link */
 // OK:204, Ticket Err:401, Airdroped:403, Site Err:400
-export async function LinkWithTelegram(body: API.TelegramLink, options?: { [key: string]: any }) {
+export async function LinkWithAirdrop(body: API.AirdropLink, options?: { [key: string]: any }) {
     const airdrop = 'https://airdrop.parami.io';
     return request(`${airdrop}/link`, {
         method: 'POST',

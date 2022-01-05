@@ -12,14 +12,16 @@ const { Title } = Typography;
 const QuickSign: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
     setQsTicket: React.Dispatch<any>;
+    setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
     minimal?: boolean;
-}> = ({ setStep, setQsTicket, minimal }) => {
+}> = ({ setStep, setQsTicket, setQsPlatform, minimal }) => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const intl = useIntl();
 
-    const handleTelegram = async (response) => {
+    const handleQuickCreate = async (response, platform) => {
         setLoading(true);
+        setQsPlatform(platform);
         setQsTicket(response);
         setStep(2);
         setLoading(false);
@@ -55,8 +57,15 @@ const QuickSign: React.FC<{
                             })}
                         </p>
                         <Divider />
-                        <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
-                        <DiscordLoginButton />
+                        <TelegramLoginButton
+                            dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                            botName={config.airdropService.telegram.botName}
+                        />
+                        <DiscordLoginButton
+                            dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+                            clientId={config.airdropService.discord.clientId}
+                            redirectUri={config.airdropService.discord.redirectUri}
+                        />
                         <Divider>
                             {intl.formatMessage({
                                 id: 'index.or',
@@ -107,8 +116,15 @@ const QuickSign: React.FC<{
                     })}
                     spinning={loading}
                 >
-                    <TelegramLoginButton dataOnauth={handleTelegram} botName="paramiofficialbot" />
-                    <DiscordLoginButton />
+                    <TelegramLoginButton
+                        dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                        botName={config.airdropService.telegram.botName}
+                    />
+                    <DiscordLoginButton
+                        dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+                        clientId={config.airdropService.discord.clientId}
+                        redirectUri={config.airdropService.discord.redirectUri}
+                    />
                     <small
                         style={{
                             textAlign: 'center',

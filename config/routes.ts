@@ -9,7 +9,22 @@
     path: '/create',
     name: 'create',
     hideInMenu: true,
-    component: './Identity/CreateAccount',
+    hideChildrenInMenu: true,
+    routes: [
+      {
+        path: '/create',
+        name: 'create',
+        component: './Identity/CreateAccount',
+      },
+      {
+        path: '/create/:platfrom',
+        name: 'create',
+        component: './Identity/CreateAccount',
+      },
+      {
+        component: './404',
+      },
+    ],
   },
   {
     path: '/recover',

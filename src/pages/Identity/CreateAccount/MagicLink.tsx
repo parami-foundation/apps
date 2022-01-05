@@ -16,8 +16,7 @@ const MagicLink: React.FC<{
   minimal?: boolean;
   magicMnemonic: string;
   setMagicLink?: React.Dispatch<React.SetStateAction<string>>;
-  qsTicket?: any;
-}> = ({ setStep, minimal, magicMnemonic, setMagicLink, qsTicket }) => {
+}> = ({ setStep, minimal, magicMnemonic, setMagicLink }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   const recoverWithLink = `${window.location.origin}/recover/#${encodeURI(

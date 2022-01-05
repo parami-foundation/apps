@@ -16,6 +16,7 @@ const CreateAccount: React.FC<{
   const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [qsTicket, setQsTicket] = useState<any>();
+  const [qsPlatform, setQsPlatform] = useState<string>();
   const [magicLink, setMagicLink] = useState<string>('');
 
   // Controller Account
@@ -81,6 +82,7 @@ const CreateAccount: React.FC<{
             <QuickSign
               setStep={setStep}
               setQsTicket={setQsTicket}
+              setQsPlatform={setQsPlatform}
               minimal={minimal}
             />
           }
@@ -90,7 +92,6 @@ const CreateAccount: React.FC<{
               magicMnemonic={magicMnemonic}
               minimal={minimal}
               setMagicLink={setMagicLink}
-              qsTicket={qsTicket}
             />
           }
           {step === 3 &&
@@ -114,10 +115,12 @@ const CreateAccount: React.FC<{
               minimal={minimal}
               magicUserAddress={magicUserAddress}
               qsTicket={qsTicket}
+              qsPlatform={qsPlatform}
               magicLink={magicLink}
               controllerUserAddress={controllerUserAddress}
               controllerKeystore={controllerKeystore}
               setQsTicket={setQsTicket}
+              setQsPlatform={setQsPlatform}
             />
           }
         </>
@@ -130,12 +133,12 @@ const CreateAccount: React.FC<{
                 <QuickSign
                   setStep={setStep}
                   setQsTicket={setQsTicket}
+                  setQsPlatform={setQsPlatform}
                 />
               }
               {step === 2 &&
                 <MagicLink
                   setStep={setStep}
-                  qsTicket={qsTicket}
                   magicMnemonic={magicMnemonic}
                 />
               }
@@ -161,7 +164,9 @@ const CreateAccount: React.FC<{
                   controllerUserAddress={controllerUserAddress}
                   controllerKeystore={controllerKeystore}
                   qsTicket={qsTicket}
+                  qsPlatform={qsPlatform}
                   setQsTicket={setQsTicket}
+                  setQsPlatform={setQsPlatform}
                 />
               }
             </div>

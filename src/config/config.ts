@@ -17,6 +17,15 @@ export default {
         "relay": "wss://relay.walletconnect.com",
         "key": "69e4534ef8f5fd6b94a3fc46ad255014",
     },
+    "airdropService": {
+        "telegram": {
+            "botName": "paramiofficialbot",
+        },
+        "discord": {
+            "clientId": "928193512619536465",
+            "redirectUri": "https://wallet.parami.io/create/discord",
+        },
+    },
     "page": {
         "homePage": "/",
         "createPage": "/create",
