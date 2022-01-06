@@ -11,6 +11,7 @@ const hasValidDocumentElementRatio =
         375 / 629, // 12 mini, 13 mini
         390 / 664, // 12, 12 Pro, 13, 13 Pro
         428 / 746, // 12 Pro Max, 13 Pro Max
+        375 / 812, // X, Xs, 11 Pro (chrome simulator)
     ].some(ratio =>
         ratio === document.documentElement.clientWidth /
         document.documentElement.clientHeight
