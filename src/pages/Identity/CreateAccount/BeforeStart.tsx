@@ -18,7 +18,7 @@ const BeforeStart: React.FC<{
   const { iab } = query as { iab: string | null | undefined };
 
   const handleMessage = (event: MessageEvent) => {
-    console.log(event)
+    setStep(event?.data);
   };
 
   const onClick = () => {
@@ -27,16 +27,16 @@ const BeforeStart: React.FC<{
   }
 
   useEffect(() => {
-    console.log(iab)
-    console.log(window.history)
     if (iab && history.length > 1) {
-      setStep(-1);
-      //window.close();
+      window.opener.postMessage(-1);
+      alert(window.history.length)
+      window.close();
       return;
     }
     if (iab && history.length < 2) {
-      setStep(1);
-      //window.close();
+      window.opener.postMessage(1);
+      alert(window.history.length)
+      window.close();
       return;
     }
   }, []);

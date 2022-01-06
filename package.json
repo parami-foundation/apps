@@ -101,6 +101,7 @@
     "cross-fetch": "^3.1.4",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.10.7",
+    "detect-inapp": "^1.4.0",
     "dotenv": "^10.0.0",
     "easy-peasy": "^5.0.4",
     "eslint-plugin-jest": "^25.2.4",

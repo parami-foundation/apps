@@ -11,12 +11,16 @@ import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
 import BeforeStart from './CreateAccount/BeforeStart';
 import NotSupport from './CreateAccount/NotSupport';
+import isiOSSafari from '@/utils/isSafaiApp';
+import InApp from 'detect-inapp';
+
+const inapp = new InApp(navigator.userAgent || navigator.vendor || (window as any).opera);
 
 const CreateAccount: React.FC<{
   minimal?: boolean;
 }> = ({ minimal }) => {
   const apiWs = useModel('apiWs');
-  const [step, setStep] = useState<number>(0);
+  const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
   const [qsTicket, setQsTicket] = useState<any>();
   const [qsPlatform, setQsPlatform] = useState<string>();
@@ -81,7 +85,14 @@ const CreateAccount: React.FC<{
   }, [apiWs]);
 
   useEffect(() => {
-    console.log(step)
+    if (inapp.isInApp) {
+      setStep(-1);
+      return;
+    }
+    if (inapp.browser === 'safari' && !isiOSSafari) {
+      setStep(-1);
+      return;
+    }
   }, [step]);
 
   return (

@@ -5,6 +5,11 @@ import InputLink from './RecoverAccount/InputLink';
 import WithLink from './RecoverAccount/WithLink';
 import RecoverDeposit from './RecoverAccount/RecoverDeposit';
 import config from '@/config/config';
+import NotSupport from './CreateAccount/NotSupport';
+import isiOSSafari from '@/utils/isSafaiApp';
+import InApp from 'detect-inapp';
+
+const inapp = new InApp(navigator.userAgent || navigator.vendor || (window as any).opera);
 
 const RecoverAccount: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -58,10 +63,24 @@ const RecoverAccount: React.FC = () => {
     isRecoverLink();
   }, [apiWs]);
 
+  useEffect(() => {
+    if (inapp.isInApp) {
+      setStep(-1);
+      return;
+    }
+    if (inapp.browser === 'safari' && !isiOSSafari) {
+      setStep(-1);
+      return;
+    }
+  }, [step]);
+
   return (
     <>
       <div className={styles.mainBgContainer}>
         <div className={styles.pageContainer}>
+          {step === -1 &&
+            <NotSupport />
+          }
           {step === 1 && (
             <InputLink
               magicMnemonic={magicMnemonic}
