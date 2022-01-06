@@ -270,6 +270,7 @@ const Explorer: React.FC = () => {
                             did={did}
                             adData={adData}
                             remain={remain}
+                            loading={loading}
                         />
                     </div>
                 )}

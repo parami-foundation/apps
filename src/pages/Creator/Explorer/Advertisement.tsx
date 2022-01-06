@@ -26,11 +26,13 @@ const Advertisement: React.FC<{
     did: string;
     adData: any;
     remain: bigint;
-}> = ({ ad, viewer, asset, avatar, did, adData, remain }) => {
+    loading: boolean;
+}> = ({ ad, viewer, asset, avatar, did, adData, remain, loading }) => {
     const [infoModal, setInfoModal] = useState(false);
     const [chartModal, setChartModal] = useState(false);
     const [password, setPassword] = useState('');
     const [secModal, setSecModal] = useState(false);
+    const [guide, setGuide] = useState<boolean>(true);
 
     const intl = useIntl();
 
@@ -98,6 +100,14 @@ const Advertisement: React.FC<{
         handleStamp();
     }, [handleStamp]);
 
+    useEffect(() => {
+        if (!loading) {
+            setTimeout(() => {
+                setGuide(false);
+            }, 8000);
+        }
+    }, [loading]);
+
     return (
         <>
             <div className={style.container}>
@@ -150,22 +160,52 @@ const Advertisement: React.FC<{
                                 />
                             </Tag>
                         </div>
-                        <Image
-                            src={ad?.media}
-                            placeholder={true}
-                            preview={false}
-                            style={{
-                                cursor: 'pointer',
-                                width: '100%',
-                            }}
-                            onClick={() => {
-                                if (sign) {
-                                    setSecModal(true);
-                                } else {
-                                    gotoAdPage();
-                                }
-                            }}
-                        />
+                        <div className={style.adMedia}>
+                            <div
+                                className={style.guideClickContainer}
+                                style={{
+                                    opacity: guide ? 1 : 0,
+                                    zIndex: guide ? 3 : -1,
+                                }}
+                            >
+                                <div className={style.guideClickFinger} />
+                                <div className={style.guideClickText}>
+                                    {intl.formatMessage({
+                                        id: 'creator.explorer.advertisement.earnUpTo',
+                                    }, {
+                                        value: (
+                                            <>
+                                                <span
+                                                    style={{
+                                                        color: '#ff5b00',
+                                                        fontSize: '1.3rem',
+                                                        marginLeft: 10,
+                                                    }}
+                                                >
+                                                    <Token value={config.const.adEarnUpTo} symbol={asset?.symbol} />
+                                                </span>
+                                            </>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                            <Image
+                                src={ad?.media}
+                                placeholder={true}
+                                preview={false}
+                                style={{
+                                    cursor: 'pointer',
+                                    width: '100%',
+                                }}
+                                onClick={() => {
+                                    if (sign) {
+                                        setSecModal(true);
+                                    } else {
+                                        gotoAdPage();
+                                    }
+                                }}
+                            />
+                        </div>
                     </div>
                     <Alert
                         banner
