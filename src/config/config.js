@@ -1,4 +1,4 @@
-export default {
+export const config = {
     "const": {
         "minimalCharge": "1000000000000000000",
         "adEarnUpTo": "500000000000000000000",
@@ -241,4 +241,5 @@ export default {
             },
         },
     }
-}
+};
+export default config;

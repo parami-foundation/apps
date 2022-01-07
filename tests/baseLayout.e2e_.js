@@ -1,8 +1,11 @@
-const { uniq } = require('lodash');
+import { uniq } from 'lodash';
 const RouterConfig = require('../../config/config').default.routes;
 
 const BASE_URL = `http://localhost:${process.env.PORT || 8001}`;
 
+/**
+ * @param {any[]} routes
+ */
 function formatter(routes, parentPath = '') {
   const fixedParentPath = parentPath.replace(/\/{1,}/g, '/');
   let result = [];
@@ -33,7 +36,7 @@ describe('Ant Design Pro E2E test', () => {
   const testPage = (path) => async () => {
     await page.goto(`${BASE_URL}${path}`);
     await page.waitForSelector('footer', {
-      timeout: 2000,
+      timeout: 5000,
     });
     const haveFooter = await page.evaluate(
       () => document.getElementsByTagName('footer').length > 0,
@@ -43,7 +46,9 @@ describe('Ant Design Pro E2E test', () => {
 
   const routers = formatter(RouterConfig);
   routers.forEach((route) => {
-    it(`test pages ${route}`, testPage(route));
+    if (route.indexOf('/dashboard') === -1) {
+      it(`test pages ${route}`, testPage(route));
+    }
   });
 
   it('topmenu should have footer', async () => {
