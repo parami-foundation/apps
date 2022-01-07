@@ -6,7 +6,7 @@ export default {
     "main": {
         "socketServer": "wss://rpc.parami.io/ws",
         "subqueryServer": "https://graph.parami.io/subsquery",
-        "tagMapConfig": "https://wallet.parami.io/tagmap.json",
+        "tagMapConfig": "http://localhost:8000/tagmap.json",
     },
     "ipfs": {
         "upload": "https://ipfs.parami.io/api/v0/add?stream-channels=true",

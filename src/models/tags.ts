@@ -9,10 +9,7 @@ export default () => {
     const [tags, setTags] = useState<Map<string, any>>(new Map());
     const [tagsArr, setTagsArr] = useState<any[]>([]);
     const [guideTagsArr, setGuideTagsArr] = useState<any[]>([]);
-
-    const textColor = ['#c41d7f', '#cf1322', '#d4380d', '#d46b08', '#d48806', '#7cb305', '#389e0d', '#08979c', '#096dd9', '#1d39c4', '#531dab'];
-    const bgColor = ['#fff0f6', '#fff1f0', '#fff2e8', '#fff7e6', '#fffbe6', '#fcffe6', '#f6ffed', '#e6fffb', '#e6f7ff', '#f0f5ff', '#f9f0ff'];
-    const borderColor = ['#ffadd2', '#ffa39e', '#ffbb96', '#ffd591', '#ffe58f', '#eaff8f', '#b7eb8f', '#87e8de', '#91d5ff', '#adc6ff', '#d3adf7'];
+    const [allTagsArr, setAllTagsArr] = useState<any[]>([]);
 
     const getTags = async () => {
         if (!apiWs) {
@@ -40,13 +37,15 @@ export default () => {
 
         GetTagsMap().then(({ response, data: Data }) => {
             if (response?.status === 200) {
-                Object.keys(Data.guide).map((guideItem) => {
-                    guide.set(Data.guide[guideItem].name, {
-                        count: Data.guide[guideItem],
-                        textColor: '#909090',
-                        bgColor: '#fafafa',
-                        borderColor: '#d9d9d9',
-                    });
+                Object.keys(Data).map((item) => {
+                    if (Data[item].guide) {
+                        guide.set(Data[item].label, {
+                            data: Data[item],
+                            fontColor: '#909090',
+                            bgColor: '#fafafa',
+                            borderColor: '#d9d9d9',
+                        });
+                    }
                 })
 
                 tmpTags.map((item) => {
@@ -58,25 +57,26 @@ export default () => {
                         });
                     }
 
-                    if (Data.all[item.count]) {
-                        data.set(Data.all[item.count], {
+                    if (Data[item.count]) {
+                        data.set(Data[item.count], {
                             value: item.value,
-                            count: Data.all[item.count],
+                            data: Data[item.count],
                             hex: item.count,
-                            textColor: '#d4380d',
+                            fontColor: '#d4380d',
                             bgColor: '#fff2e8',
                             borderColor: '#ffbb96',
                         });
                     }
 
-                    if (Data.guide[item.count]) {
-                        guide.delete(Data.guide[item.count].name);
+                    if (Data[item.count]) {
+                        guide.delete(Data[item.count].label);
                     }
                 })
 
                 setTags(data);
                 setTagsArr([...data?.values()]);
                 setGuideTagsArr([...guide?.values()]);
+                setAllTagsArr([...data?.values()].concat([...guide?.values()]));
             }
         });
     }
@@ -87,5 +87,5 @@ export default () => {
         }
     }, [apiWs]);
 
-    return { tags, tagsArr, guideTagsArr };
+    return { tags, tagsArr, guideTagsArr, allTagsArr };
 }

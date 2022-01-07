@@ -182,42 +182,45 @@ export function SVG3DTagCloud(element, params) {
     function addEntry(index, entryObj, x, y, z) {
         const entry: any = {};
 
-        if (typeof entryObj.label != 'undefined') {
+        if (typeof entryObj.data.label != 'undefined') {
             entry.element = document.createElementNS(svgNS, 'text');
             entry.element.setAttribute('x', 0);
             entry.element.setAttribute('y', 0);
-            entry.element.setAttribute('fill', settings.fontColor);
-            entry.element.setAttribute('font-family', settings.fontFamily);
-            entry.element.setAttribute('font-size', settings.fontSize);
-            entry.element.setAttribute('font-weight', settings.fontWeight);
-            entry.element.setAttribute('font-style', settings.fontStyle);
-            entry.element.setAttribute('font-stretch', settings.fontStretch);
+            entry.element.setAttribute('fill', entryObj.fontColor);
+            entry.element.setAttribute('font-family', entryObj.fontFamily || settings.fontFamily);
+            entry.element.setAttribute('font-size', entryObj.fontSize || settings.fontSize);
+            entry.element.setAttribute('font-weight', entryObj.fontWeight || settings.fontWeight);
+            entry.element.setAttribute('font-style', entryObj.fontStyle || settings.fontStyle);
+            entry.element.setAttribute('font-stretch', entryObj.fontStretch || settings.fontStretch);
             entry.element.setAttribute('text-anchor', 'middle');
-            entry.element.textContent = settings.fontToUpperCase ? entryObj.label.toUpperCase() : entryObj.label;
-        } else if (typeof entryObj.image != 'undefined') {
+            entry.element.textContent = (entryObj.value ? '' : '❗') + ' ' + entryObj.data.label + (entryObj.value ? ' ' + `(${entryObj.value})` : '');
+        } else if (typeof entryObj.data.image != 'undefined') {
             entry.element = document.createElementNS(svgNS, 'image');
             entry.element.setAttribute('x', 0);
             entry.element.setAttribute('y', 0);
-            entry.element.setAttribute('width', entryObj.width);
-            entry.element.setAttribute('height', entryObj.height);
+            entry.element.setAttribute('width', entryObj.data.width);
+            entry.element.setAttribute('height', entryObj.data.height);
             entry.element.setAttribute('id', 'image_' + index);
-            entry.element.setAttributeNS('http://www.w3.org/1999/xlink', 'href', entryObj.image);
+            entry.element.setAttributeNS('http://www.w3.org/1999/xlink', 'href', entryObj.data.image);
 
-            entry.diffX = entryObj.width / 2;
-            entry.diffY = entryObj.height / 2;
+            entry.diffX = entryObj.data.width / 2;
+            entry.diffY = entryObj.data.height / 2;
         }
 
         entry.link = document.createElementNS(svgNS, 'a');
-        entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.url);
-        entry.link.setAttribute('target', entryObj.target);
+        if (!!entryObj.data.url) {
+            entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.data.url);
+            entry.link.setAttribute('href', entryObj.data.url);
+        }
+        entry.link.setAttribute('style', `padding: 10px; background-color:${entryObj.bgColor}; border: 1px solid black`);
         entry.link.addEventListener('mouseover', mouseOverHandler, true);
         entry.link.addEventListener('mouseout', mouseOutHandler, true);
 
         entry.link.appendChild(entry.element);
 
-        if (typeof entryObj.tooltip != 'undefined') {
+        if (typeof entryObj.value != 'undefined') {
             entry.tooltip = true;
-            entry.tooltipLabel = settings.tooltipFontToUpperCase ? entryObj.tooltip.toUpperCase() : entryObj.tooltip;;
+            entry.tooltipLabel = settings.tooltipFontToUpperCase ? entryObj.value.toUpperCase() : entryObj.value;;
         } else {
             entry.tooltip = false;
         }
@@ -248,7 +251,7 @@ export function SVG3DTagCloud(element, params) {
 
             entryHolder.push(entry);
 
-            if (typeof settings.entries[i - 1].tooltip != 'undefined') {
+            if (typeof settings.entries[i - 1].value != 'undefined') {
                 Tooltip = true;
             }
         }
@@ -468,7 +471,6 @@ export function SVG3DTagCloud(element, params) {
         if (entry.vectorPosition.z < 0) {
             mouseReact = false;
             highlightEntry(entry);
-
             if (entry.tooltip) {
                 showTooltip(entry);
             }
