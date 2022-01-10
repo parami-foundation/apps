@@ -23,7 +23,7 @@ const Tags: React.FC = () => {
         opacityOut: 0.05,
         opacitySpeed: 6,
         fov: 800,
-        speed: 1,
+        speed: 0.5,
         fontFamly: 'Oswald, Arial, sans-serif',
         fontSize: '15',
         fontColor: '#d4380d',

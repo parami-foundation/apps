@@ -12,7 +12,8 @@ export function SVG3DTagCloud(element, params) {
         opacityOut: 0.05,
         opacitySpeed: 6,
         fov: 800,
-        speed: 2,
+        speed: 1,
+        maxSpeed: 1,
         fontFamily: 'Arial, sans-serif',
         fontSize: '15',
         fontColor: '#fff',
@@ -43,9 +44,10 @@ export function SVG3DTagCloud(element, params) {
         return false;
 
     //---
-    let isMobile = true;
+    let isMobile = false;
     let touchStartPos = { x: 0, y: 0 };
     let touchMovedVector = { x: 0, y: 0 };
+    let touchTime = 0;
     let entryHolder: any[] = [];
     let tooltip;
 
@@ -216,6 +218,7 @@ export function SVG3DTagCloud(element, params) {
         entry.link.addEventListener('mouseover', mouseOverHandler, true);
         entry.link.addEventListener('mouseout', mouseOutHandler, true);
 
+
         entry.link.appendChild(entry.element);
 
         if (typeof entryObj.value != 'undefined') {
@@ -323,7 +326,7 @@ export function SVG3DTagCloud(element, params) {
     //---
 
     function render() {
-        if (isMobile) {
+        if (isMobile || Date.now() - touchTime < 2000) {
             const fx = -touchMovedVector.x;
             const fy = touchMovedVector.y;
 
@@ -335,8 +338,12 @@ export function SVG3DTagCloud(element, params) {
             position.sy = Math.sin(angleY);
             position.cy = Math.cos(angleY);
         } else {
-            const fx = speed.x * mousePos.x - settings.speed;
+            let fx = speed.x * mousePos.x - settings.speed;
+            if (fx > settings.maxSpeed) fx = settings.maxSpeed;
+            if (fx < -settings.maxSpeed) fx = -settings.maxSpeed;
             const fy = settings.speed - speed.y * mousePos.y;
+            if (fy > settings.maxSpeed) fy = settings.maxSpeed;
+            if (fy < -settings.maxSpeed) fy = -settings.maxSpeed;
 
             const angleX = fx * MATHPI180;
             const angleY = fy * MATHPI180;
@@ -424,7 +431,6 @@ export function SVG3DTagCloud(element, params) {
     //---touch event handlers
 
     function touchStartHandler(event) {
-        console.log(event)
         isMobile = true;
         //mouseReact = false;
         const touch = event.touches[0];
@@ -435,7 +441,6 @@ export function SVG3DTagCloud(element, params) {
     }
 
     function touchMoveHandler(event) {
-        console.log(event)
         const touch = event.touches[0];
         const endPosition = {
             x: touch.pageX,
@@ -449,16 +454,16 @@ export function SVG3DTagCloud(element, params) {
     }
 
     function touchEndHandler(event) {
-        console.log(event)
         touchMovedVector = { x: 0, y: 0 };
-        isMobile = true;
+        isMobile = false;
+        touchTime = Date.now();
         //mouseReact = false;
     }
 
     function touchCancelHandler(event) {
-        console.log(event)
         touchMovedVector = { x: 0, y: 0 };
-        isMobile = true;
+        isMobile = false;
+        touchTime = Date.now();
         //mouseReact = false;
     }
 
