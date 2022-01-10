@@ -142,7 +142,7 @@ export const config = {
                 // List of meta values
                 type: 'Vec<String>',
             },
-        },
+        } as any,
         swap: {
             drylyAddLiquidity: {
                 description: 'Dryly add liquidity to the pool',

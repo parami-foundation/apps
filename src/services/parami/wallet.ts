@@ -109,7 +109,7 @@ export const QueryAccountFromDid = async (did: string) => {
 
   if (!data.isEmpty) {
     const result = data.toHuman() as Object;
-    const [avatar, nickname] = await window.apiWs.rpc.did_batchGetMetadata(did, ['pic', 'name']);
+    const [avatar, nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
     return { ...result, avatar, nickname };
   }
 
@@ -372,9 +372,9 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
-  const name = await window.apiWs.tx.did.set_metadata('name', nickname);
+  const name = await window.apiWs.tx.did.setMetadata('name', nickname);
   const nameCodo = await window.apiWs.tx.magic.codo(name);
-  const avatar = await window.apiWs.tx.did.set_metadata('pic', avatarHash);
+  const avatar = await window.apiWs.tx.did.setMetadata('pic', avatarHash);
   const avatarCodo = await window.apiWs.tx.magic.codo(avatar);
 
   const batch = await window.apiWs.tx.utility.batch([
