@@ -12,11 +12,6 @@ export const GetSlotAdOf = async (did: string): Promise<any> => {
     return res;
 };
 
-export const GetUserInfo = async (did: Uint8Array) => {
-    const userInfo = await window.apiWs.query.did.metadata(did);
-    return userInfo;
-};
-
 export const GetUserTags = async (did: string) => {
     const allTags = await window.apiWs.query.tag.personasOf.entries(did);
 

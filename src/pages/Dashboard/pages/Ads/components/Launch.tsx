@@ -13,7 +13,7 @@ import { BidSlot, GetAssetInfo, GetSlotAdOf, GetSlotsOf, GetValueOf } from '@/se
 import { fromHexString } from '@/utils/hexcode';
 import config from '@/config/config';
 import { formatBalance } from '@polkadot/util';
-import { GetUserInfo } from '@/services/parami/ads';
+import { GetUserInfo } from '@/services/parami/nft';
 
 const { Dragger } = Upload;
 
@@ -38,7 +38,8 @@ const Avatar: React.FC<{
     const [avatar, setAvatar] = useState<string>();
 
     const getInfo = async () => {
-        const info = await GetUserInfo(fromHexString(did) as Uint8Array);
+        //TODO: check it
+        const info = await GetUserInfo(did);
 
         if (info['avatar'].indexOf('ipfs://') > -1) {
             const hash = info['avatar'].substring(7);
@@ -157,7 +158,7 @@ const Add: React.FC<{
     const queryDid = async () => {
         const didHexString = didToHex(did as string);
 
-        GetUserInfo(fromHexString(didHexString) as Uint8Array).then(async (res: any) => {
+        GetUserInfo(didHexString).then(async (res: any) => {
             if (res.isEmpty) {
                 message.error(
                     intl.formatMessage({

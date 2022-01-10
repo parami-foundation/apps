@@ -4,7 +4,8 @@ const instanceKeyring = new Keyring({ type: 'sr25519' });
 
 export const GetUserInfo = async (did: string) => {
   const userInfo = await window.apiWs.query.did.metadata(did);
-  return userInfo;
+  const [avatar, nickname] = await window.apiWs.rpc.did_batchGetMetadata(did, ['pic', 'name']);
+  return { ...userInfo, avatar, nickname };
 };
 
 export const BuyToken = async (assetId: string, amount: string, maxCurrency: string, password: string, keystore: string) => {
