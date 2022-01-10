@@ -94,152 +94,195 @@ export const config = {
             "newControllerAccount": "Option<AccountId>"
         }
     },
-    "rpc": {
-        swap: {
-            drylyAddLiquidity: {
-                description: "Dryly add liquidity to the pool",
+    rpc: {
+        did: {
+            getMetadata: {
+                description: 'Get metadata of a DID',
                 params: [
                     {
-                        // Token ID
-                        name: 'token_id',
-                        type: 'u64'
+                        // DID
+                        name: 'did',
+                        type: 'H160',
                     },
                     {
-                        //  AD3 
-                        name: 'currency',
-                        type: 'String'
-                    },
-                    {
-                        //  max_tokens=  0
-                        name: 'max_tokens',
-                        type: 'String'
+                        // Meta key
+                        name: 'key',
+                        type: 'String',
                     },
                     {
                         // RPC ignore
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
-                // Token ID, Token Balance, LP Token ID, LP* Balance
-                type: '(u64, String, u64, String)',
+                // Meta value
+                type: 'String',
             },
-            drylyRemoveLiquidity: {
-                description: "Dryly remove liquidity from the pool",
+            batchGetMetadata: {
+                description: 'Get metadata of a DID',
+                params: [
+                    {
+                        // DID
+                        name: 'did',
+                        type: 'H160',
+                    },
+                    {
+                        // List of meta keys
+                        name: 'keys',
+                        type: 'Vec<String>',
+                    },
+                    {
+                        // RPC ignore
+                        name: 'at',
+                        type: 'Hash',
+                        isOptional: true,
+                    },
+                ],
+                // List of meta values
+                type: 'Vec<String>',
+            },
+        },
+        swap: {
+            drylyAddLiquidity: {
+                description: 'Dryly add liquidity to the pool',
                 params: [
                     {
                         // Token ID
                         name: 'token_id',
-                        type: 'u64'
+                        type: 'u64',
                     },
                     {
-                        //  LP* Balance
-                        name: 'liquidity',
-                        type: 'String'
+                        //  AD3
+                        name: 'currency',
+                        type: 'String',
+                    },
+                    {
+                        //  max_tokens=  0
+                        name: 'max_tokens',
+                        type: 'String',
+                    },
+                    {
+                        // RPC ignore
+                        name: 'at',
+                        type: 'Hash',
+                        isOptional: true,
+                    },
+                ],
+                // Token Balance, LP* Balance
+                type: '(String, String)',
+            },
+            drylyRemoveLiquidity: {
+                description: 'Dryly remove liquidity from the pool',
+                params: [
+                    {
+                        // Token ID
+                        name: 'lp_token_id',
+                        type: 'u64',
                     },
                     {
                         // RPC igonre
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
-                // Token ID, Token Balance, LP Token ID, AD3 Balance
-                type: '(u64, String, u64, String)',
+                // Token ID, LP* Balance, Token Balance, AD3 Balance
+                type: '(u64, String, String, String)',
             },
             drylyBuyTokens: {
-                description: "Dryly buy tokens from the pool",
+                description: 'Dryly buy tokens from the pool',
                 params: [
                     {
                         // Token ID
                         name: 'token_id',
-                        type: 'u64'
+                        type: 'u64',
                     },
                     {
                         // Token amount
                         name: 'tokens',
-                        type: 'String'
+                        type: 'String',
                     },
                     {
                         // RPC igonre
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
-                //  AD3 needed
+                // AD3 needed
                 type: 'String',
             },
             drylySellTokens: {
-                description: "Dryly sell tokens to the pool",
+                description: 'Dryly sell tokens to the pool',
                 params: [
                     {
                         // Token ID
                         name: 'token_id',
-                        type: 'u64'
+                        type: 'u64',
                     },
                     {
                         //  Token amount
                         name: 'tokens',
-                        type: 'String'
+                        type: 'String',
                     },
                     {
                         // RPC igonre
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
                 //  AD3 Balance
                 type: 'String',
             },
             drylySellCurrency: {
-                description: "Dryly sell currency to the pool",
+                description: 'Dryly sell currency to the pool',
                 params: [
                     {
                         // Token ID
                         name: 'token_id',
-                        type: 'u64'
+                        type: 'u64',
                     },
                     {
-                        //  AD3 
+                        //  AD3
                         name: 'currency',
-                        type: 'String'
+                        type: 'String',
                     },
                     {
                         // RPC igonre
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
-                //  Token 
+                //  Token
                 type: 'String',
             },
             drylyBuyCurrency: {
-                description: "Dryly buy currency from the pool",
+                description: 'Dryly buy currency from the pool',
                 params: [
                     {
                         // Token ID
                         name: 'token_id',
-                        type: 'u64'
+                        type: 'u64',
                     },
                     {
-                        //  AD3 
+                        //  AD3
                         name: 'currency',
-                        type: 'String'
+                        type: 'String',
                     },
                     {
                         // RPC igonre
                         name: 'at',
                         type: 'Hash',
-                        isOptional: true
-                    }
+                        isOptional: true,
+                    },
                 ],
-                //  Token 
+                //  Token
                 type: 'String',
             },
         },
-    }
+    },
 };
 export default config;
