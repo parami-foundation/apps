@@ -112,8 +112,10 @@ const RecoverDeposit: React.FC<{
     if (passwd === '' || controllerUserAddress === '') {
       return;
     }
-    pendingStatus();
-  }, [passwd, controllerUserAddress]);
+    if (apiWs) {
+      pendingStatus();
+    }
+  }, [passwd, controllerUserAddress, apiWs]);
 
   return (
     <>

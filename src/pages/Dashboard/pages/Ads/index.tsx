@@ -1,6 +1,7 @@
 import { IsAdvertiser } from '@/services/parami/dashboard';
 import { Alert } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useModel } from 'umi';
 import Become from './become';
 import Control from './control';
 
@@ -20,6 +21,7 @@ const Message: React.FC<{
 );
 
 const Ads: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [advertisers, setAdvertisers] = useState<boolean>(false);
     const [errorState, setErrorState] = useState<API.Error>({});
 
@@ -36,8 +38,10 @@ const Ads: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchStatus();
-    }, []);
+        if (apiWs) {
+            fetchStatus();
+        }
+    }, [apiWs]);
 
     return (
         <>

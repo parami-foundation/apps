@@ -253,7 +253,9 @@ const InitialDeposit: React.FC<{
   };
 
   useEffect(() => {
-    listenBalance();
+    if (apiWs) {
+      listenBalance();
+    }
   }, [apiWs]);
 
   useEffect(() => {
@@ -278,14 +280,16 @@ const InitialDeposit: React.FC<{
   }, [password, controllerUserAddress, controllerKeystore]);
 
   useEffect(() => {
-    if (controllerBalance >= FloatStringToBigInt('1', 18)) {
-      setLoading(true);
-      if (unsub !== null) {
-        unsub();
+    if (apiWs) {
+      if (controllerBalance >= FloatStringToBigInt('1', 18)) {
+        setLoading(true);
+        if (unsub !== null) {
+          unsub();
+        }
+        createAccount();
       }
-      createAccount();
     }
-  }, [controllerBalance]);
+  }, [controllerBalance, apiWs]);
 
   return (
     <>

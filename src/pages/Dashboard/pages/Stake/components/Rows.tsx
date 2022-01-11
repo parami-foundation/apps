@@ -11,6 +11,7 @@ import { getIncentiveId, tryParseTick } from '../api/parami/util';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 
 const Rows = ({ row }: { row: any; }) => {
+    const apiWs = useModel('apiWs');
     const {
         account,
         provider,
@@ -67,16 +68,18 @@ const Rows = ({ row }: { row: any; }) => {
     };
 
     useEffect(() => {
-        if (!provider || !signer) return;
-        try {
-            const lpContract = new ethers.Contract(row.lpAddress, LP_ABI, provider);
-            const lpContract_rw = lpContract.connect(signer);
-            setLPContract(lpContract_rw);
-        } catch (e) {
-            console.log(e)
+        if (apiWs) {
+            if (!provider || !signer) return;
+            try {
+                const lpContract = new ethers.Contract(row.lpAddress, LP_ABI, provider);
+                const lpContract_rw = lpContract.connect(signer);
+                setLPContract(lpContract_rw);
+            } catch (e) {
+                console.log(e)
+            }
+            initToken();
         }
-        initToken();
-    }, [chainId, provider, signer]);
+    }, [chainId, provider, signer, apiWs]);
 
     const onApprove = useCallback(async () => {
         if (!LPContract) return;
@@ -151,7 +154,7 @@ const Rows = ({ row }: { row: any; }) => {
     ];
 
 
-    async function getStakeStatus(){
+    async function getStakeStatus() {
         const balanceKinds: BigNumber = await LPContract?.balanceOf(account);
         console.log(balanceKinds);
         if (!balanceKinds) return;
@@ -240,8 +243,10 @@ const Rows = ({ row }: { row: any; }) => {
         if (!LPContract || account === '' || ticks.length < 3) {
             return;
         }
-        getStakeStatus();
-    }, [LPContract, account, blockNumber, ticks]);
+        if (apiWs) {
+            getStakeStatus();
+        }
+    }, [LPContract, account, blockNumber, ticks, apiWs]);
     // approve NFT
     const handleApprove = useCallback(async () => {
         try {

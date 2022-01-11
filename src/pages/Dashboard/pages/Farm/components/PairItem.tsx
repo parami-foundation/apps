@@ -17,6 +17,7 @@ const ICON_AD3 = '/images/logo-round-core.svg';
 
 const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
     { logo: string, pair: Pair, positions: any, poolAddress: string, apy: string[], liquidity: bigint, }) => {
+    const apiWs = useModel('apiWs');
     const {
         account,
         provider,
@@ -57,11 +58,15 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         setToken0(newToken);
         setToken1(newCoin);
     };
+
     useEffect(() => {
         if (!signer) return;
-        initToken();
+        if (apiWs) {
+            initToken();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chainId, provider, signer]);
+
     useEffect(() => {
         if (Token0 && Token1) {
             const tmpTicks: any[] = [];
@@ -77,7 +82,8 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
             setTicks(tmpTicks);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Token0, Token1])
+    }, [Token0, Token1]);
+
     useEffect(() => {
         if (poolAddress === '0x0000000000000000000000000000000000000000' || poolAddress === '') {
             setIncentiveKeys([]);
@@ -95,7 +101,8 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         }
         setIncentiveKeys(tmp);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [poolAddress, chainId, pair])
+    }, [poolAddress, chainId, pair]);
+
     const getUnstaked = useCallback(async () => {
         if (positions.length === 0 || Ticks.length === 0) return;
         // console.log('positions', positions);
@@ -122,6 +129,7 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         setUnStakedLPs(liquid);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [positions, chainId, Ticks]);
+
     const getStaked = useCallback(async () => {
         if (!StakeContract) {
             console.log('stakeContract is null');
@@ -168,6 +176,7 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         setStakedLPs(stakes);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [IncentiveKeys, StakeContract, Ticks, account, blockNumber]);
+
     const updateReward = useCallback(async () => {
         const promises = StakedLPs.map(async (stakedLP) => {
             const res = await StakeContract?.getAccruedRewardInfo(IncentiveKeys[stakedLP.incentiveIndex], stakedLP.tokenId);
@@ -180,24 +189,33 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         setRewards(rewards);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [StakedLPs, StakeContract, IncentiveKeys]);
+
     useEffect(() => {
         if (!StakeContract) return;
         if (StakedLPs.length === 0) return;
-        updateReward();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [blockNumber, StakeContract, StakedLPs]);
-    useEffect(() => {
-        if (positions.length > 0) {
-            getUnstaked();
-        } else {
-            setUnStakedLPs([]);
+        if (apiWs) {
+            updateReward();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [positions, Ticks]);
+    }, [blockNumber, StakeContract, StakedLPs, apiWs]);
+
     useEffect(() => {
-        getStaked();
+        if (apiWs) {
+            if (positions.length > 0) {
+                getUnstaked();
+            } else {
+                setUnStakedLPs([]);
+            }
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [StakeContract, Ticks, IncentiveKeys, blockNumber]);
+    }, [positions, Ticks, apiWs]);
+
+    useEffect(() => {
+        if (apiWs) {
+            getStaked();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [StakeContract, Ticks, IncentiveKeys, blockNumber, apiWs]);
 
     return (
         <Badge.Ribbon

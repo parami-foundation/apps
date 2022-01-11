@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Alert, Button, PageHeader, Statistic } from 'antd';
@@ -27,6 +27,7 @@ const Message: React.FC<{
 const did = localStorage.getItem('dashboardDid') as string;
 
 const Control: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [createModal, setCreateModal] = useState<boolean>(false);
     const [adsList, setAdsList] = useState<any[]>([]);
@@ -59,8 +60,10 @@ const Control: React.FC = () => {
     }
 
     useEffect(() => {
-        getAdsList();
-    }, []);
+        if (apiWs) {
+            getAdsList();
+        }
+    }, [apiWs]);
 
     return (
         <>

@@ -1,6 +1,6 @@
 import { Button, Input, Image } from 'antd';
 import React from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import { useState, useEffect } from 'react';
 import { GetUserInfo } from '@/services/parami/nft';
@@ -14,6 +14,7 @@ const SelectAsset: React.FC<{
     setToken: React.Dispatch<React.SetStateAction<Record<string, number>>>,
     AD3Balance: any
 }> = ({ setStep, setToken, AD3Balance }) => {
+    const apiWs = useModel('apiWs');
     const [keyword, setKeyword] = useState<string>();//TODO: fixit
     const [assetsBalance, setAssetsBalance] = useState<any[]>([]);
     const currentAccount = localStorage.getItem('stashUserAddress');
@@ -62,8 +63,10 @@ const SelectAsset: React.FC<{
     };
 
     useEffect(() => {
-        updateAssetsInfo()
-    }, []);
+        if (apiWs) {
+            updateAssetsInfo();
+        }
+    }, [apiWs]);
 
     return (
         <>

@@ -4,7 +4,6 @@ import { useIntl, history, useModel } from 'umi';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import access from '@/access';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import SelectAccount from './components/SelectAccount';
@@ -19,11 +18,6 @@ const Index: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const intl = useIntl();
-
-    const initial = () => {
-        if (access().canUser) {
-        }
-    };
 
     const updateAssetsInfo = async () => {
         if (!apiWs) {
@@ -79,10 +73,6 @@ const Index: React.FC = () => {
             }
         }
     };
-
-    useEffect(() => {
-        initial();
-    }, []);
 
     useEffect(() => {
         if (apiWs) {

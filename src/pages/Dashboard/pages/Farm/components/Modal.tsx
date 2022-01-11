@@ -15,6 +15,7 @@ const AddModal: React.FC<{
     const intl = useIntl();
     const [APYIndex, setAPYIndex] = React.useState(0);
     const { Title } = Typography;
+
     useEffect(() => {
         if (currentPrice) {
             for (let i = 0; i < pair.incentives.length; i++) {
@@ -26,6 +27,7 @@ const AddModal: React.FC<{
             }
         }
     }, [currentPrice]);
+
     const marks = {
         0: '100%',
         1: '150%',

@@ -19,6 +19,7 @@ const Rows: React.FC<{
     poolAddress: string;
     apys: string[]
 }> = ({ collapse, stakedLPs, unstakedLPs, rewards, pair, poolAddress, apys }) => {
+    const apiWs = useModel('apiWs');
     const {
         StakeContract,
         FactoryContract
@@ -99,6 +100,7 @@ const Rows: React.FC<{
             setPendingClaim(pendingClaim)
         }
     }, [StakeContract, account, pair.incentives, pendingClaim, poolAddress, chainId]);
+
     const getAd3CoinPrice = useCallback(async () => {
         if (!FactoryContract) return;
         const res = await getAd3Price(FactoryContract, pair.coinAddress);
@@ -106,9 +108,13 @@ const Rows: React.FC<{
 
         setCurrentPrice(BigInt(FloatStringToBigInt(res?.toSignificant() || '0', 18)));//todo: check decimals
     }, [FactoryContract]);
+
     useEffect(() => {
-        getAd3CoinPrice();
-    }, [FactoryContract]);
+        if (apiWs) {
+            getAd3CoinPrice();
+        }
+    }, [FactoryContract, apiWs]);
+
     return (
         <>
             <div

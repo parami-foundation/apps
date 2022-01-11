@@ -44,7 +44,6 @@ const Tags: React.FC = () => {
     };
 
     useEffect(() => {
-        console.log(allTagsArr)
         if (allTagsArr) {
             try {
                 SVG3DTagCloud(document.getElementById('tagcloud'), settings);

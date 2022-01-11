@@ -2,12 +2,13 @@
 import RightContent from '@/components/RightContent';
 import ProLayout from '@ant-design/pro-layout';
 import React, { useState } from 'react';
-import { history } from 'umi';
+import { history, useModel } from 'umi';
 import routes from './routes';
 import { useEffect } from 'react';
 import { web3Enable } from '@polkadot/extension-dapp';
 
 const Layout: React.FC = (props) => {
+    const apiWs = useModel('apiWs');
     const [pathname, setPathname] = useState('');
 
     const init = async () => {
@@ -15,10 +16,12 @@ const Layout: React.FC = (props) => {
     }
 
     useEffect(() => {
-        init();
-        const path = window.location.pathname;
-        setPathname(path);
-    }, [])
+        if (apiWs) {
+            init();
+            const path = window.location.pathname;
+            setPathname(path);
+        }
+    }, [apiWs]);
 
     return (
         <ProLayout

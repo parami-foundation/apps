@@ -19,6 +19,7 @@ import ERC20_ABI from './abi/ERC20.json';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
 
 const Farm: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [loading, setLoading] = useState<boolean>(false);
     const [Postitions, setPostitions] = useState<any[]>([]);
     const [isApprovedAll, setIsApproveAll] = useState(true);
@@ -116,9 +117,11 @@ const Farm: React.FC = () => {
     }
 
     useEffect(() => {
-        getLPBalance();
+        if (apiWs) {
+            getLPBalance();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chainId, signer, Pools]);
+    }, [chainId, signer, Pools, apiWs]);
 
     //update AD3 price && set pools
     const getPoolsAndPrice = useCallback(async () => {
@@ -142,9 +145,11 @@ const Farm: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        getPoolsAndPrice();
+        if (apiWs) {
+            getPoolsAndPrice();
+        }
         setLoading(false);
-    }, [FactoryContract, chainId, Pools, getPoolsAndPrice]);
+    }, [FactoryContract, chainId, Pools, getPoolsAndPrice, apiWs]);
 
     //update liquidities from 
     async function getPositions() {
@@ -177,11 +182,11 @@ const Farm: React.FC = () => {
     };
 
     useEffect(() => {
-        if (LPContract) {
+        if (LPContract && apiWs) {
             getPositions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, blockNumber])
+    }, [LPContract, blockNumber, apiWs]);
 
     //update APY
     const updateApy = useCallback(async () => {
@@ -240,9 +245,10 @@ const Farm: React.FC = () => {
 
     useEffect(() => {
         if (!StakeContract || Pools.length === 0) return;
-        updateApy();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [StakeContract, Pools]);
+        if (apiWs) {
+            updateApy();
+        }
+    }, [StakeContract, Pools, apiWs]);
 
     const onApprove = useCallback(async () => {
         if (!LPContract || !StakeContract) return;
@@ -284,9 +290,11 @@ const Farm: React.FC = () => {
     }, [LPContract, StakeContract, account]);
 
     useEffect(() => {
-        getIsApprovedAll();
+        if (apiWs) {
+            getIsApprovedAll();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, account, StakeContract]);
+    }, [LPContract, account, StakeContract, apiWs]);
 
     return (
         <>

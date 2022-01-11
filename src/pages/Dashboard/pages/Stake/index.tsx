@@ -24,6 +24,7 @@ const ICON_USDC = '/images/crypto/usdc-circle.svg';
 const { Title } = Typography;
 
 const Stake: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [AD3Price, setAD3Price] = useState('0');
     const [AD3Supply, setSupply] = useState(BigInt(0));
     const [apys, setApys] = useState<any[]>([]);
@@ -48,6 +49,7 @@ const Stake: React.FC = () => {
         await tx.wait();
         setAd3Approved(true);
     };
+
     useEffect(() => {
         if (Ad3Contract) {
             Ad3Contract.totalSupply().then(res => {
@@ -56,16 +58,21 @@ const Stake: React.FC = () => {
                 setSupply(res);
             })
         }
-    }, [Ad3Contract])
+    }, [Ad3Contract]);
+
     async function updatePrice() {
         if (FactoryContract) {
             const price = await getAd3EthPrice(FactoryContract);
             setAD3Price(price.toSignificant());
         }
-    }
+    };
+
     useEffect(() => {
-        updatePrice();
-    }, [FactoryContract]);
+        if (apiWs) {
+            updatePrice();
+        }
+    }, [FactoryContract, apiWs]);
+
     const fetchIncentive = useCallback(async () => {
         const pools = pairsData;
         if (pools.length) {
@@ -100,8 +107,10 @@ const Stake: React.FC = () => {
     useEffect(() => {
         if (!StakeContract) return;
         console.log(account)
-        fetchIncentive();
-    }, [StakeContract]);
+        if (apiWs) {
+            fetchIncentive();
+        }
+    }, [StakeContract, apiWs]);
 
     const columns = [
         {

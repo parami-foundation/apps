@@ -3,16 +3,20 @@ import type { DualAxesConfig } from '@ant-design/charts';
 import { DualAxes } from '@ant-design/charts';
 import { getChartsData } from '@/services/subquery/subquery';
 import { useEffect } from 'react';
+import { useModel } from 'umi';
 
 const Chart: React.FC<{
     adData: any,
 }> = ({ adData }) => {
+    const apiWs = useModel('apiWs');
     const [data, setData] = React.useState<any[]>([])
     const budget = BigInt(adData?.budget.replaceAll(',', ''));
 
     useEffect(() => {
-        getChartsData(adData?.id, budget).then(res => setData(res));
-    }, [adData, budget]);
+        if (apiWs) {
+            getChartsData(adData?.id, budget).then(res => setData(res));
+        }
+    }, [adData, budget, apiWs]);
 
     const config: DualAxesConfig = {
         data: [data, data],

@@ -26,6 +26,7 @@ const Withdraw: React.FC<{
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ setLoading, setStep }) => {
+    const apiWs = useModel('apiWs');
     const { account, chainName, provider, signer } = useModel('metaMask');
     const { DepositNonce,
         SubBridgeEvents,
@@ -100,8 +101,10 @@ const Withdraw: React.FC<{
 
     useEffect(() => {
         if (!account || !Ad3Contract) return;
-        getBalance();
-    }, [signer, provider, Ad3Contract, account]);
+        if (apiWs) {
+            getBalance();
+        }
+    }, [signer, provider, Ad3Contract, account, apiWs]);
 
     return (
         <>

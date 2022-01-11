@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Col, Input, InputNumber, message, Row, Alert, Upload } from 'antd';
@@ -35,6 +35,7 @@ const Message: React.FC<{
 const Avatar: React.FC<{
     did: string,
 }> = ({ did }) => {
+    const apiWs = useModel('apiWs');
     const [avatar, setAvatar] = useState<string>();
 
     const getInfo = async () => {
@@ -49,8 +50,10 @@ const Avatar: React.FC<{
     }
 
     useEffect(() => {
-        getInfo();
-    }, [])
+        if (apiWs) {
+            getInfo();
+        }
+    }, [apiWs]);
 
     return (
         <>
@@ -430,6 +433,7 @@ const Launch: React.FC<{
     adItem: any,
     setLaunchModal: React.Dispatch<React.SetStateAction<boolean>>,
 }> = ({ adItem, setLaunchModal }) => {
+    const apiWs = useState('apiWs');
     const [tab, setTab] = useState('list');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [slotsOf, setSlotsOf] = useState<any>({});
@@ -449,8 +453,10 @@ const Launch: React.FC<{
     const intl = useIntl();
 
     useEffect(() => {
-        getSlotsAdOf(adItem.id);
-    }, []);
+        if (apiWs) {
+            getSlotsAdOf(adItem.id);
+        }
+    }, [apiWs]);
 
     return (
         <>

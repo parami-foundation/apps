@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, Timeline, Alert, Tooltip } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import classNames from 'classnames';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
@@ -150,6 +150,7 @@ const Receive: React.FC<{
 };
 
 const Record: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [tab, setTab] = useState<string>('all');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [allData, setAllData] = useState<AssetTransaction[]>([]);
@@ -171,8 +172,10 @@ const Record: React.FC = () => {
     };
 
     useEffect(() => {
-        getRecord();
-    }, []);
+        if (apiWs) {
+            getRecord();
+        }
+    }, [apiWs]);
 
     return (
         <>

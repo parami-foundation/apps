@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Tooltip, Typography, message, notification, Alert } from 'antd';
-import { useIntl, history } from 'umi';
+import { useIntl, history, useModel } from 'umi';
 import styles from '../style.less';
 import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/wallet';
 import config from '@/config/config';
@@ -20,6 +20,7 @@ const Confirm: React.FC<{
   userAddress: string;
   keystore: string;
 }> = ({ setStep, number, token, address, userAddress, keystore }) => {
+  const apiWs = useModel('apiWs');
   const [submitting, setSubmitting] = useState(false);
   const [fee, setFee] = useState<any>(null);
   const [errorState, setErrorState] = useState<API.Error>({});
@@ -106,8 +107,10 @@ const Confirm: React.FC<{
   };
 
   useEffect(() => {
-    partialFee();
-  }, []);
+    if (apiWs) {
+      partialFee();
+    }
+  }, [apiWs]);
 
   const Message: React.FC<{
     content: string;
