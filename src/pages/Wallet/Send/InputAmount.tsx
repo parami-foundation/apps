@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { Image, Button, Input } from 'antd';
-import { useIntl, history } from 'umi';
+import { useIntl, history, useModel } from 'umi';
 import styles from '../style.less';
 import { RightOutlined } from '@ant-design/icons';
 import { GetUserBalance } from '@/services/parami/wallet';
@@ -16,6 +16,7 @@ const InputAmount: React.FC<{
   setToken: React.Dispatch<React.SetStateAction<any>>;
   stashUserAddress: string;
 }> = ({ setStep, number, setNumber, token, stashUserAddress }) => {
+  const apiWs = useModel('apiWs');
   const [submitting, setSubmitting] = useState(false);
   const [freeBalance, setFreeBalance] = useState<string>('0');
   const intl = useIntl();
@@ -40,8 +41,10 @@ const InputAmount: React.FC<{
   };
 
   useEffect(() => {
-    getBalance();
-  }, []);
+    if (apiWs) {
+      getBalance();
+    }
+  }, [apiWs]);
 
   return (
     <>

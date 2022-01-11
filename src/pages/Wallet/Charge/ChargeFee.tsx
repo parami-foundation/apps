@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Input, message, notification, Tooltip } from 'antd';
-import { useIntl, history } from 'umi';
+import { useIntl, history, useModel } from 'umi';
 import QRCode from 'qrcode.react';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -26,6 +26,7 @@ const Message: React.FC<{
 );
 
 const ChargeFee: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [number, setNumber] = useState<string>('0');
     const [FreeBalance, setFreeBalance] = useState<any>('');
@@ -107,9 +108,11 @@ const ChargeFee: React.FC = () => {
     };
 
     useEffect(() => {
-        getBalance();
-        partialFee();
-    }, []);
+        if (apiWs) {
+            getBalance();
+            partialFee();
+        }
+    }, [apiWs]);
 
     return (
         <>

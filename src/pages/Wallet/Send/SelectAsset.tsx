@@ -143,7 +143,7 @@ const SelectAsset: React.FC<{
             </div>
             <Button
                 block
-                type="text"
+                type="default"
                 shape="round"
                 size="large"
                 className={styles.button}

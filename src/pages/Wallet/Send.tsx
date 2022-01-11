@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { Alert, Card, Typography } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import InputAmount from './Send/InputAmount';
@@ -13,6 +13,7 @@ import { GetUserBalance } from '@/services/parami/wallet';
 const { Title } = Typography;
 
 const Send: React.FC = () => {
+  const apiWs = useModel('apiWs');
   const [step, setStep] = useState<string>('InputAmount');
   const [number, setNumber] = useState<string>('0');
   const [token, setToken] = useState<any>({});
@@ -48,8 +49,10 @@ const Send: React.FC = () => {
   };
 
   useEffect(() => {
-    getBalance();
-  }, []);
+    if (apiWs) {
+      getBalance();
+    }
+  }, [apiWs]);
 
   const Message: React.FC<{
     content: string;

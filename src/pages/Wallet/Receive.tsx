@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Card, Typography } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import FromQRCode from './Receive/FromQRCode';
@@ -10,6 +10,7 @@ import { hexToDid } from '@/utils/common';
 const { Title } = Typography;
 
 const Receive: React.FC = () => {
+  const apiWs = useModel('apiWs');
   const [FreeBalance, setFreeBalance] = useState<any>(null);
   const [errorState, setErrorState] = useState<API.Error>({});
 
@@ -33,8 +34,10 @@ const Receive: React.FC = () => {
   };
 
   useEffect(() => {
-    getBalance();
-  }, []);
+    if (apiWs) {
+      getBalance();
+    }
+  }, [apiWs]);
 
   const Message: React.FC<{
     content: string;
