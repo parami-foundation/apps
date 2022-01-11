@@ -43,7 +43,7 @@ const NotSupport: React.FC<{
                                 )}
                             </>
                         }
-                        title="Not support"
+                        title="Not Supported"
                         subTitle={intl.formatMessage({
                             id: 'error.broswer.notSupport'
                         })}
