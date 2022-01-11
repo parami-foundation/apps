@@ -238,7 +238,7 @@ const Explorer: React.FC = () => {
                     </>
                 )}
                 {errorState.Message && <Message content={errorState.Message} />}
-                {!KOL && access.canUser && (
+                {!KOL && access.canUser && did !== hexToDid(selfDid) && (
                     <div
                         className={styles.pageContainer}
                         style={{

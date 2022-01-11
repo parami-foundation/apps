@@ -195,7 +195,7 @@ export function SVG3DTagCloud(element, params) {
             entry.element.setAttribute('font-style', entryObj.fontStyle || settings.fontStyle);
             entry.element.setAttribute('font-stretch', entryObj.fontStretch || settings.fontStretch);
             entry.element.setAttribute('text-anchor', 'middle');
-            entry.element.textContent = (entryObj.value ? '' : '❗') + ' ' + entryObj.data.label + (entryObj.value ? ' ' + `(${entryObj.value})` : '');
+            entry.element.textContent = (entryObj.value ? '' : '👉') + ' ' + entryObj.data.label + (entryObj.value ? ' ' + `(${entryObj.value})` : '');
         } else if (typeof entryObj.data.image != 'undefined') {
             entry.element = document.createElementNS(svgNS, 'image');
             entry.element.setAttribute('x', 0);
@@ -341,7 +341,7 @@ export function SVG3DTagCloud(element, params) {
             let fx = speed.x * mousePos.x - settings.speed;
             if (fx > settings.maxSpeed) fx = settings.maxSpeed;
             if (fx < -settings.maxSpeed) fx = -settings.maxSpeed;
-            const fy = settings.speed - speed.y * mousePos.y;
+            let fy = settings.speed - speed.y * mousePos.y;
             if (fy > settings.maxSpeed) fy = settings.maxSpeed;
             if (fy < -settings.maxSpeed) fy = -settings.maxSpeed;
 
