@@ -123,11 +123,7 @@ const Add: React.FC = () => {
                 if (!!balance && balance > 0 && !assets[assetsID].name.endsWith('LP*')) {
                     let icon: any;
                     const did = await OwnerDidOfNft(assetsID);
-                    const res = await GetUserInfo(did);
-                    const info = res.toHuman();
-                    if (!info) {
-                        return;
-                    }
+                    const info = await GetUserInfo(did);
                     if (info['avatar'].indexOf('ipfs://') > -1) {
                         const hash = info['avatar'].substring(7);
                         icon = config.ipfs.endpoint + hash;

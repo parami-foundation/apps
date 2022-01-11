@@ -128,7 +128,7 @@ const Explorer: React.FC = () => {
         try {
             const didHexString = didToHex(did);
             const userData = await GetUserInfo(didHexString);
-            if (userData.isEmpty) {
+            if (!userData) {
                 message.error(
                     intl.formatMessage({
                         id: 'error.account.notFound',
@@ -137,35 +137,34 @@ const Explorer: React.FC = () => {
                 history.goBack();
                 return;
             };
-            const userInfo = userData.toHuman() as any;
-            setUser(userInfo);
+            setUser(userData);
 
-            if (userInfo['avatar'].indexOf('ipfs://') > -1) {
-                const hash = userInfo['avatar'].substring(7);
+            if (userData['avatar'].indexOf('ipfs://') > -1) {
+                const hash = userData['avatar'].substring(7);
                 const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
                 if (response?.status === 200) {
                     setAvatar(window.URL.createObjectURL(data));
                 }
             };
-            document.title = `${userInfo?.nickname || did} - Para Metaverse Identity`;
-            if (userInfo.nft !== null) {
-                const assetData = await GetAssetInfo(userInfo.nft);
+            document.title = `${userData?.nickname || did} - Para Metaverse Identity`;
+            if (userData.nft !== null) {
+                const assetData = await GetAssetInfo(userData.nft);
                 if (assetData.isEmpty) {
                     setKOL(false);
                     return;
                 }
                 const assetInfo = assetData.toHuman() as any;
                 setAsset(assetInfo);
-                const value = await GetValueOf(userInfo.nft, parseAmount('1'));
+                const value = await GetValueOf(userData.nft, parseAmount('1'));
                 setAssetPrice(value.toString());
 
-                const assetDetail = await GetAssetDetail(userInfo.nft);
+                const assetDetail = await GetAssetDetail(userData.nft);
                 setDetail(assetDetail);
 
                 const supply: string = assetDetail.unwrap().supply.toString();
                 setTotalSupply(BigInt(supply));
 
-                const members = await GetAssetsHolders(userInfo?.nft);
+                const members = await GetAssetsHolders(userData?.nft);
                 setMember(members);
             } else {
                 setKOL(false);

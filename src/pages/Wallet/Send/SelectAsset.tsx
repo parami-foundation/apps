@@ -24,12 +24,8 @@ const SelectAsset: React.FC<{
                 const { balance }: any = await window.apiWs.query.assets.account(Number(assetsID), currentAccount);
                 if (!!balance && balance > 0 && !assets[assetsID].name.endsWith('LP*')) {
                     const did = await OwnerDidOfNft(assetsID);
-                    const res = await GetUserInfo(did);
+                    const info = await GetUserInfo(did);
                     let icon: any;
-                    const info = res.toHuman();
-                    if (!info) {
-                        return;
-                    }
                     if (info['avatar'].indexOf('ipfs://') > -1) {
                         const hash = info['avatar'].substring(7);
                         icon = config.ipfs.endpoint + hash;

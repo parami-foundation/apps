@@ -37,12 +37,8 @@ export default () => {
                 const did = await OwnerDidOfNft(assetId);
                 const kol = await GetUserInfo(did);
                 let icon: any;
-                const info = kol.toHuman();
-                if (!info) {
-                    return;
-                }
-                if (info['avatar'].indexOf('ipfs://') > -1) {
-                    const hash = info['avatar'].substring(7);
+                if (kol['avatar'].indexOf('ipfs://') > -1) {
+                    const hash = kol['avatar'].substring(7);
                     const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
                     if (response.status === 200) {
                         icon = window.URL.createObjectURL(data);

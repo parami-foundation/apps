@@ -22,11 +22,7 @@ const Dashboard: React.FC = () => {
     const init = async () => {
         const res = await GetUserInfo(did);
 
-        if (res.isEmpty) {
-            return;
-        }
-        const user = res.toHuman() as any;
-        if (user.nft !== null) {
+        if (res.nft !== null) {
             setKOL(true);
         };
 
@@ -41,7 +37,6 @@ const Dashboard: React.FC = () => {
     }
 
     useEffect(() => {
-        console.log(link)
         if (KOL) {
             history.push(`/${hexToDid(did)}`);
         }
