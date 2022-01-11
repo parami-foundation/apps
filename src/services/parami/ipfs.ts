@@ -28,7 +28,7 @@ export const uploadAvatar = async (hash: string, password: string, keystore: str
     }
 
     const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-    const avatar = window.apiWs.tx.did.setAvatar(hash);
+    const avatar = window.apiWs.tx.did.setMetadata('pic', hash);
     const codo = window.apiWs.tx.magic.codo(avatar);
     await codo.signAndSend(payUser, errCb);
 };

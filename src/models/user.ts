@@ -8,17 +8,17 @@ export default () => {
     const [nickname, setNickname] = useState<string>('Nickname');
     const [avatar, setAvatar] = useState<string>();
 
-    const did = localStorage.getItem('did') as string;
+    const did = localStorage.getItem('did');
 
     const getUserInfo = async () => {
-        if (!apiWs) {
+        if (!apiWs || !did) {
             return;
         }
 
         await apiWs.query.did.metadata(did, async (res) => {
             let info = res.toHuman();
-            const [avatar, nickname] = await window.apiWs.rpc.did_batchGetMetadata(did, ['pic', 'name']);
-            info = { ...info, avatar, nickname };
+            const [Avatar, Nickname] = await apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
+            info = { ...info, Avatar, Nickname };
             if (!info) {
                 return;
             }

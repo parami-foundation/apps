@@ -5,6 +5,7 @@ export const config = {
     },
     "main": {
         "socketServer": "wss://rpc.parami.io/ws",
+        // "socketServer": "ws://localhost:9944",
         "subqueryServer": "https://graph.parami.io/subsquery",
         "tagMapConfig": "https://wallet.parami.io/tagmap.json",
     },
@@ -23,7 +24,8 @@ export const config = {
         },
         "discord": {
             "clientId": "928193512619536465",
-            "redirectUri": "https://wallet.parami.io/create/discord",
+            // "redirectUri": "https://wallet.parami.io/create/discord",
+            "redirectUri": "http://localhost:8000/create/discord",
         },
     },
     "page": {

@@ -12,9 +12,11 @@ const DiscordLoginButton: React.FC<{
     scope?: string;
 }> = ({ dataOnauth, clientId, scope = 'identify', redirectUri }) => {
     const handleMessage = (event: MessageEvent) => {
-        const url = new URL(event.data);
-        const ticket = qs.parse(url.hash.substring(1));
-        dataOnauth(ticket);
+        if (!event.data.target) {
+            const url = new URL(event.data);
+            const ticket = qs.parse(url.hash.substring(1));
+            dataOnauth(ticket);
+        }
     };
 
     const params: {
@@ -35,7 +37,7 @@ const DiscordLoginButton: React.FC<{
 
     const onClick = () => {
         window.open(`https://discord.com/api/oauth2/authorize?response_type=token&client_id=${clientId}&scope=${scope}&redirect_uri=${RedirectUri}`, 'discordLogin', 'height=700,width=500');
-        window.addEventListener('message', handleMessage, { once: true });
+        window.addEventListener('message', handleMessage, false);
     }
 
     return (
