@@ -5,8 +5,8 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
-    const [nickname, setNickname] = useState<string>('Nickname');
-    const [avatar, setAvatar] = useState<string>();
+    const [Nickname, setNickname] = useState<string>('Nickname');
+    const [Avatar, setAvatar] = useState<any>();
 
     const did = localStorage.getItem('dashboardDid');
 
@@ -16,13 +16,12 @@ export default () => {
         }
         await apiWs.query.did.metadata(did, async (res) => {
             let info = res.toHuman();
-            const [Avatar, Nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
-            info = { ...info, Avatar, Nickname };
+            const [avatar, nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
+            info = { ...info, avatar, nickname };
             if (!info) {
                 return;
             }
             setNickname(info.nickname);
-
             if (info.avatar.indexOf('ipfs://') > -1) {
                 const hash = info.avatar.substring(7);
 
@@ -41,8 +40,8 @@ export default () => {
     }, [apiWs]);
 
     return {
-        nickname,
-        avatar,
+        nickname: Nickname,
+        avatar: Avatar,
         setNickname,
         setAvatar,
     }

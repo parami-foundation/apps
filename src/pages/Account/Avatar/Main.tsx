@@ -1,7 +1,7 @@
 import config from '@/config/config';
 import { b64toBlob } from '@/utils/common';
 import React, { useState } from 'react';
-import { useIntl, history } from 'umi';
+import { useIntl, history, useModel } from 'umi';
 import generateRoundAvatar from '@/utils/encode';
 import { Button, message, Spin, Upload } from 'antd';
 import { uploadAvatar, uploadIPFS } from '@/services/parami/ipfs';
@@ -16,6 +16,7 @@ const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 const Main: React.FC<{
     setModalVisable: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setModalVisable }) => {
+    const { setAvatar } = useModel('user');
     const [password, setPassword] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
     const [File, setFile] = useState<Blob>();
@@ -33,6 +34,7 @@ const Main: React.FC<{
                 .then(async (img) => {
                     const file = (img as string).substring(22);
                     setFile(b64toBlob(file, 'image/png'));
+                    setAvatar(window.URL.createObjectURL(b64toBlob(file, 'image/png')));
                     setSecModal(true);
                 });
         }

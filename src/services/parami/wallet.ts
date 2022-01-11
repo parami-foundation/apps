@@ -337,7 +337,7 @@ export const setNickName = async (nickname: string, password: string, keystore: 
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
-  const name = await window.apiWs.tx.did.setNickname(nickname);
+  const name = await window.apiWs.tx.did.setMetadata('name', nickname);
   const codo = await window.apiWs.tx.magic.codo(name);
 
   await subCallback(codo, payUser);
