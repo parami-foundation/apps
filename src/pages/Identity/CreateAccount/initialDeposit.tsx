@@ -280,16 +280,14 @@ const InitialDeposit: React.FC<{
   }, [password, controllerUserAddress, controllerKeystore]);
 
   useEffect(() => {
-    if (apiWs) {
-      if (controllerBalance >= FloatStringToBigInt('1', 18)) {
-        setLoading(true);
-        if (unsub !== null) {
-          unsub();
-        }
-        createAccount();
+    if (controllerBalance >= FloatStringToBigInt('1', 18)) {
+      setLoading(true);
+      if (unsub !== null) {
+        unsub();
       }
+      createAccount();
     }
-  }, [controllerBalance, apiWs]);
+  }, [controllerBalance]);
 
   return (
     <>

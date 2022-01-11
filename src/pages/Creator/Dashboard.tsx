@@ -108,6 +108,7 @@ const Dashboard: React.FC = () => {
                                 <Create
                                     deposit={deposit}
                                     reach={reach}
+                                    setKOL={setKOL}
                                 />
                             </Badge.Ribbon>
                         </Card>

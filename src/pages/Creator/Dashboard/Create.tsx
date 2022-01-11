@@ -15,9 +15,10 @@ const { Title } = Typography;
 const keystore = localStorage.getItem('controllerKeystore');
 
 const Create: React.FC<{
-    deposit: string,
-    reach: boolean,
-}> = ({ deposit, reach }) => {
+    deposit: string;
+    reach: boolean;
+    setKOL: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ deposit, reach, setKOL }) => {
     const [step, setStep] = useState<string>('before');
     const [submitting, setSubmitting] = useState(false);
     const [secModal, setSecModal] = useState(false);
@@ -35,6 +36,7 @@ const Create: React.FC<{
                 message.success(intl.formatMessage({
                     id: 'creator.create.congratulate',
                 }));
+                setKOL(true);
                 history.replace(config.page.creatorPage);
                 setSubmitting(false);
             } catch (e: any) {
