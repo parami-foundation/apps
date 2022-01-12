@@ -117,11 +117,9 @@ const Farm: React.FC = () => {
     }
 
     useEffect(() => {
-        if (apiWs) {
-            getLPBalance();
-        }
+        getLPBalance();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chainId, signer, Pools, apiWs]);
+    }, [chainId, signer, Pools]);
 
     //update AD3 price && set pools
     const getPoolsAndPrice = useCallback(async () => {
@@ -145,11 +143,9 @@ const Farm: React.FC = () => {
 
     useEffect(() => {
         setLoading(true);
-        if (apiWs) {
-            getPoolsAndPrice();
-        }
+        getPoolsAndPrice();
         setLoading(false);
-    }, [FactoryContract, chainId, Pools, getPoolsAndPrice, apiWs]);
+    }, [FactoryContract, chainId, Pools, getPoolsAndPrice]);
 
     //update liquidities from 
     async function getPositions() {
@@ -182,11 +178,11 @@ const Farm: React.FC = () => {
     };
 
     useEffect(() => {
-        if (LPContract && apiWs) {
+        if (LPContract) {
             getPositions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, blockNumber, apiWs]);
+    }, [LPContract, blockNumber]);
 
     //update APY
     const updateApy = useCallback(async () => {
@@ -245,10 +241,8 @@ const Farm: React.FC = () => {
 
     useEffect(() => {
         if (!StakeContract || Pools.length === 0) return;
-        if (apiWs) {
-            updateApy();
-        }
-    }, [StakeContract, Pools, apiWs]);
+        updateApy();
+    }, [StakeContract, Pools]);
 
     const onApprove = useCallback(async () => {
         if (!LPContract || !StakeContract) return;
@@ -290,11 +284,9 @@ const Farm: React.FC = () => {
     }, [LPContract, StakeContract, account]);
 
     useEffect(() => {
-        if (apiWs) {
-            getIsApprovedAll();
-        }
+        getIsApprovedAll();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, account, StakeContract, apiWs]);
+    }, [LPContract, account, StakeContract]);
 
     return (
         <>

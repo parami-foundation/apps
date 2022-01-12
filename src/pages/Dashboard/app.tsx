@@ -16,12 +16,10 @@ const Layout: React.FC = (props) => {
     }
 
     useEffect(() => {
-        if (apiWs) {
-            init();
-            const path = window.location.pathname;
-            setPathname(path);
-        }
-    }, [apiWs]);
+        init();
+        const path = window.location.pathname;
+        setPathname(path);
+    }, []);
 
     return (
         <ProLayout

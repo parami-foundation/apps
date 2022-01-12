@@ -167,6 +167,13 @@ const Advertisement: React.FC<{
                                     opacity: guide ? 1 : 0,
                                     zIndex: guide ? 3 : -1,
                                 }}
+                                onClick={() => {
+                                    if (sign) {
+                                        setSecModal(true);
+                                    } else {
+                                        gotoAdPage();
+                                    }
+                                }}
                             >
                                 <div className={style.guideClickFinger} />
                                 <div className={style.guideClickText}>

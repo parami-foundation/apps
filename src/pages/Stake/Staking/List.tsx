@@ -8,7 +8,7 @@ const List: React.FC = () => {
 
     return (
         <>
-            <div className={style.stake}>
+            <div className={style.stakeListContainer}>
 
             </div>
         </>
