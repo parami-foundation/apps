@@ -340,7 +340,7 @@ const Farm: React.FC = () => {
                                     </div>
                                 </div>
                                 <div className={style.stakeContainer}>
-                                    {Apys.length > 0 && Balances.length > 0 && Pairs.map((pair: Pair, index: number) => {
+                                    {Apys.length > 0 && Balances.length > 0 && Pairs.map((pair: Farm.Pair, index: number) => {
                                         return <PairItem
                                             logo={'/images/crypto/' + pair.coin.toLowerCase() + '-circle.svg'}
                                             apy={Apys[index]}

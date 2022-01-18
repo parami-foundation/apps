@@ -1,11 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
-import { Card } from 'antd';
+import { Button, Card } from 'antd';
 import classNames from 'classnames';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import Add from './Staking/Add';
 import Redeem from './Staking/Redeem';
+import List from './Staking/List';
 
 const Staking: React.FC = () => {
     const [tab, setTab] = useState<string>('add');
@@ -16,6 +17,19 @@ const Staking: React.FC = () => {
         <>
             <div className={styles.mainContainer}>
                 <div className={styles.pageContainer}>
+                    <Button
+                        block
+                        type='primary'
+                        shape='round'
+                        size='large'
+                    >
+                        {intl.formatMessage({
+                            id: 'stake.add',
+                            defaultMessage: 'Add',
+                        })}
+                    </Button>
+                    <List />
+
                     <Card
                         className={styles.card}
                         bodyStyle={{

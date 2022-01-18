@@ -1,7 +1,7 @@
 import detectEthereumProvider from '@metamask/detect-provider';
 import { ethers } from 'ethers';
 import { useState, useCallback, useEffect } from 'react'
-import { defaultChainId } from '@/pages/Dashboard/pages/Stake/config';
+import { defaultChainId } from '@/pages/Dashboard/pages/Farm/config';
 
 import { message } from 'antd';
 import ethNet from '@/config/ethNet';

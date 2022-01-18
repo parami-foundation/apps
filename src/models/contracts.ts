@@ -6,7 +6,7 @@ import AD3Abi from '@/pages/Dashboard/pages/Farm/abi/ERC20.json'
 import WETHAbi from '@/pages/Dashboard/pages/Farm/abi/WETH.json'
 import StakeManagerAbi from '@/pages/Dashboard/pages/Farm/abi/Ad3StakeManager.json'
 import { abi as IUniswapV3FactoryABI } from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json";
-import LP_ABI from '@/pages/Dashboard/pages/Stake/abi/ERC721-ABI.json';
+import LP_ABI from '@/pages/Dashboard/pages/Farm/abi/ERC721-ABI.json';
 import BRIDGE_ABI from '@/pages/Dashboard/pages/Bridge/abi/Bridge.json';
 import { useModel } from 'umi';
 

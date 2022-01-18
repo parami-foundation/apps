@@ -146,11 +146,6 @@
         access: 'canDashboard',
       },
       {
-        path: '/dashboard/stake',
-        name: 'Stake',
-        component: './Dashboard/pages/Stake',
-      },
-      {
         path: '/dashboard/farm',
         name: 'Farm',
         component: './Dashboard/pages/Farm',

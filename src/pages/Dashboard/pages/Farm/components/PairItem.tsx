@@ -9,14 +9,20 @@ import { FeeAmount } from '@uniswap/v3-sdk';
 import type { BigNumber } from 'ethers';
 import { ethers } from 'ethers';
 import { Token } from '@uniswap/sdk-core';
-import ERC20_ABI from '@/pages/Dashboard/pages/Stake/abi/ERC20.json';
+import ERC20_ABI from '@/pages/Dashboard/pages/Farm/abi/ERC20.json';
 import { getIncentiveId, tryParseTick } from '../api/parami/util';
 import { CompareArray } from '@/utils/common';
 import { formatBalance } from '@polkadot/util';
 const ICON_AD3 = '/images/logo-round-core.svg';
 
-const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
-    { logo: string, pair: Pair, positions: any, poolAddress: string, apy: string[], liquidity: bigint, }) => {
+const PairItem: React.FC<{
+    logo: string;
+    pair: Farm.Pair;
+    positions: any;
+    poolAddress: string;
+    apy: string[];
+    liquidity: bigint;
+}> = ({ logo, pair, positions, poolAddress, apy, liquidity }) => {
     const apiWs = useModel('apiWs');
     const {
         account,
@@ -29,8 +35,8 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
         StakeContract
     } = useModel('contracts');
     const [Collapse, setCollapse] = useState<boolean>(false);
-    const [UnStakedLPs, setUnStakedLPs] = useState<Liquid[]>([]);
-    const [StakedLPs, setStakedLPs] = useState<Liquid[]>([]);
+    const [UnStakedLPs, setUnStakedLPs] = useState<Farm.Liquid[]>([]);
+    const [StakedLPs, setStakedLPs] = useState<Farm.Liquid[]>([]);
     const [Rewards, setRewards] = useState<any[]>([]);
     const [IncentiveKeys, setIncentiveKeys] = useState<any[]>([]);
     const [Ticks, setTicks] = useState<any[]>([]);
@@ -171,7 +177,7 @@ const PairItem = ({ logo, pair, positions, poolAddress, apy, liquidity }:
             }
             return undefined;
         })
-        const stakes: Liquid[] = (await Promise.all(stakesPromises)).filter((e) => { return e !== undefined }) as Liquid[];
+        const stakes: Farm.Liquid[] = (await Promise.all(stakesPromises)).filter((e) => { return e !== undefined }) as Farm.Liquid[];
         if (CompareArray(stakes, StakedLPs)) return;
         setStakedLPs(stakes);
         // eslint-disable-next-line react-hooks/exhaustive-deps

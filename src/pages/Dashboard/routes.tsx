@@ -30,12 +30,6 @@ export default {
                 component: './Bridge',
             },
             {
-                path: '/dashboard/stake',
-                name: 'Stake',
-                icon: <GoldOutlined />,
-                component: './Stake',
-            },
-            {
                 path: '/dashboard/farm',
                 name: 'Farm',
                 icon: <GoldOutlined />,

@@ -1,5 +1,5 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
+import { FloatStringToBigInt } from '@/utils/format';
 import { LinkOutlined } from '@ant-design/icons';
 import { formatBalance } from '@polkadot/util';
 import { Button, Divider, Space, Image } from 'antd';
@@ -12,10 +12,10 @@ import AddModal from './Modal';
 
 const Rows: React.FC<{
     collapse: boolean;
-    stakedLPs: Liquid[];
-    unstakedLPs: Liquid[];
+    stakedLPs: Farm.Liquid[];
+    unstakedLPs: Farm.Liquid[];
     rewards: any[];
-    pair: Pair;
+    pair: Farm.Pair;
     poolAddress: string;
     apys: string[]
 }> = ({ collapse, stakedLPs, unstakedLPs, rewards, pair, poolAddress, apys }) => {
@@ -32,7 +32,7 @@ const Rows: React.FC<{
     const [pendingStake, setPendingStake] = useState<(true | false)[]>([]);
     const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([]);
     const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([]);
-    const [currentPrice, setCurrentPrice] = useState<BigInt>(BigInt(0));
+    const [currentPrice, setCurrentPrice] = useState<bigint>(BigInt(0));
     const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);
@@ -156,7 +156,6 @@ const Rows: React.FC<{
                     </div>
                     {(
                         <div className={style.nftList}>
-
                             {
                                 stakedLPs.filter((item) => { return item != undefined }).map(item => {
                                     return (
@@ -326,7 +325,11 @@ const Rows: React.FC<{
                 visable={AddModalShow}
                 title={'Add Liquidity'}
                 content={
-                    <AddModal setVisiable={setAddModalShow} pair={pair} price={currentPrice} />
+                    <AddModal
+                        setVisiable={setAddModalShow}
+                        pair={pair}
+                        currentPrice={currentPrice}
+                    />
                 }
                 footer={false}
                 close={() => setAddModalShow(false)}

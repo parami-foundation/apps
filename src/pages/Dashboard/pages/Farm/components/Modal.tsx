@@ -7,7 +7,9 @@ import { contractAddresses } from '../config';
 import { FloatStringToBigInt } from '@/utils/format';
 
 const AddModal: React.FC<{
-    pair: Pair, setVisiable: React.Dispatch<React.SetStateAction<boolean>>, currentPrice: bigint
+    pair: Farm.Pair;
+    setVisiable: React.Dispatch<React.SetStateAction<boolean>>;
+    currentPrice: bigint;
 }> = ({ pair, setVisiable, currentPrice }) => {
     const {
         chainId,
