@@ -1,6 +1,5 @@
-import SmallModal from '@/components/ParamiModal/SmallModal';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { InfoCircleOutlined, RightOutlined } from '@ant-design/icons';
+import { RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
@@ -21,8 +20,6 @@ const SelectAssets: React.FC<{
     assetsBalance: any[],
     setTokenBalance: React.Dispatch<React.SetStateAction<any>>,
 }> = ({ setToken, setSelectModal, assetsBalance, setTokenBalance }) => {
-    const [keyword, setKeyword] = useState<string>();
-
     const intl = useIntl();
 
     const handleSelect = async (item: any) => {
@@ -33,7 +30,7 @@ const SelectAssets: React.FC<{
 
     return (
         <div className={styles.selectAssets}>
-            <div className={styles.searchBar}>
+            {/* <div className={styles.searchBar}>
                 <Input
                     autoFocus
                     size='large'
@@ -41,7 +38,7 @@ const SelectAssets: React.FC<{
                     onChange={(e) => (setKeyword(e.target.value))}
                     placeholder={'0'}
                 />
-            </div>
+            </div> */}
             <div className={styles.assetsList}>
                 <div className={styles.title}>
                     <span>
@@ -93,7 +90,6 @@ const Add: React.FC = () => {
     const [token, setToken] = useState<Record<string, string>>({});
     const [secModal, setSecModal] = useState(false);
     const [password, setPassword] = useState('');
-    const [infoModal, setInfoModal] = useState(false);
     const [selectModal, setSelectModal] = useState(false);
     const [assetsBalance, setAssetsBalance] = useState<any[]>([]);
     const currentAccount = localStorage.getItem('stashUserAddress');
@@ -175,24 +171,6 @@ const Add: React.FC = () => {
     return (
         <>
             <div className={styles.mining}>
-                <div className={styles.header}>
-                    <span className={styles.title}>
-                        {intl.formatMessage({
-                            id: 'miner.add.flowability.title',
-                        })}
-                    </span>
-                    <div className={styles.buttons}>
-                        <Button
-                            type='primary'
-                            shape='circle'
-                            size='large'
-                            icon={<InfoCircleOutlined />}
-                            onClick={() => {
-                                setInfoModal(true);
-                            }}
-                        />
-                    </div>
-                </div>
                 <div className={styles.field}>
                     <div className={styles.label}>
                         {intl.formatMessage({
@@ -353,27 +331,6 @@ const Add: React.FC = () => {
                     </Button>
                 </div>
             </div>
-            <SmallModal
-                visable={infoModal}
-                content={intl.formatMessage({
-                    id: 'miner.add.information',
-                })}
-                footer={
-                    <Button
-                        block
-                        type='primary'
-                        size='large'
-                        shape='round'
-                        onClick={() => {
-                            setInfoModal(false);
-                        }}
-                    >
-                        {intl.formatMessage({
-                            id: 'common.confirm',
-                        })}
-                    </Button>
-                }
-            />
             <BigModal
                 visable={selectModal}
                 title={

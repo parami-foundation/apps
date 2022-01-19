@@ -1,7 +1,7 @@
 import React from 'react';
 import { useIntl } from 'umi';
 import style from '../style.less';
-import { Divider, Space, Image, Button } from 'antd';
+import { Divider, Space, Button } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 
 const Rows: React.FC<{

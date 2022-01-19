@@ -1,69 +1,81 @@
 import React from 'react';
 import { useState } from 'react';
-import { Button, Card } from 'antd';
-import classNames from 'classnames';
+import { Button, Typography, Image } from 'antd';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
+import style from './style.less';
 import Add from './Staking/Add';
-import Redeem from './Staking/Redeem';
 import List from './Staking/List';
+import BigModal from '@/components/ParamiModal/BigModal';
 
 const Staking: React.FC = () => {
-    const [tab, setTab] = useState<string>('add');
+    const [addModal, setAddModal] = useState<boolean>(false);
 
     const intl = useIntl();
+    const { Title } = Typography;
 
     return (
         <>
-            <div className={styles.mainContainer}>
+            <div className={styles.mainTopContainer}>
                 <div className={styles.pageContainer}>
-                    <Button
-                        block
-                        type='primary'
-                        shape='round'
-                        size='large'
-                    >
-                        {intl.formatMessage({
-                            id: 'stake.add',
-                            defaultMessage: 'Add',
-                        })}
-                    </Button>
-                    <List />
-
-                    <Card
-                        className={styles.card}
-                        bodyStyle={{
-                            padding: 0,
-                            width: '100%',
-                        }}
-                    >
-                        <div className={styles.tabSelector}>
-                            <div
-                                className={classNames(styles.tabItem, tab === 'add' ? '' : styles.inactive)}
-                                onClick={() => setTab('add')}
+                    <div className={style.headerContainer}>
+                        <div className={style.titleContainer}>
+                            <Title
+                                level={2}
+                                className={style.sectionTitle}
                             >
+                                <Image
+                                    src='/images/icon/stake.svg'
+                                    className={style.sectionIcon}
+                                    preview={false}
+                                />
                                 {intl.formatMessage({
-                                    id: 'miner.mining.add',
+                                    id: 'stake.title',
+                                    defaultMessage: 'Staking'
                                 })}
-                            </div>
-                            <div
-                                className={classNames(styles.tabItem, tab === 'redeem' ? '' : styles.inactive)}
-                                onClick={() => setTab('redeem')}
-                            >
-                                {intl.formatMessage({
-                                    id: 'miner.mining.redeem',
-                                })}
-                            </div>
+                            </Title>
                         </div>
-                        {tab === "add" && (
-                            <Add />
-                        )}
-                        {tab === "redeem" && (
-                            <Redeem />
-                        )}
-                    </Card>
+                        <div className={style.subtitle}>
+                            {intl.formatMessage({
+                                id: 'stake.subtitle',
+                                defaultMessage: 'Stake your Parami tokens with a AD3',
+                            })}
+                        </div>
+                        <div className={style.addNewStake}>
+                            <Button
+                                block
+                                type='primary'
+                                shape='round'
+                                size='large'
+                                className={style.stakeButton}
+                                onClick={() => { setAddModal(true) }}
+                            >
+                                {intl.formatMessage({
+                                    id: 'stake.add',
+                                    defaultMessage: 'Stake My Tokens',
+                                })}
+                            </Button>
+                        </div>
+                    </div>
+                    <List />
                 </div>
             </div>
+
+            <BigModal
+                visable={addModal}
+                title={
+                    intl.formatMessage({
+                        id: 'stake.add.selectAToken',
+                        defaultMessage: 'Select a Token',
+                    })
+                }
+                content={<Add />}
+                footer={false}
+                close={() => { setAddModal(false) }}
+                bodyStyle={{
+                    padding: 0
+                }}
+            />
         </>
     )
 }
