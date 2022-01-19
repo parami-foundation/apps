@@ -302,7 +302,7 @@ const Advertisement: React.FC<{
                 >
                     {intl.formatMessage({
                         id: 'creator.explorer.advertisement.share',
-                    }, { token: asset?.symbol })}
+                    }, { token: `$${asset?.symbol}` })}
                 </Button>
                 <Button
                     type='primary'

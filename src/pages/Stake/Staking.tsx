@@ -38,7 +38,7 @@ const Staking: React.FC = () => {
                         <div className={style.subtitle}>
                             {intl.formatMessage({
                                 id: 'stake.subtitle',
-                                defaultMessage: 'Stake your Parami tokens with a AD3',
+                                defaultMessage: 'Stake your Parami tokens with AD3',
                             })}
                         </div>
                         <div className={style.addNewStake}>

@@ -109,7 +109,7 @@ export const QueryAccountFromDid = async (did: string) => {
 
   if (!data.isEmpty) {
     const result = data.toHuman() as Object;
-    const [avatar, nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
+    const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
     return { ...result, avatar, nickname };
   }
 

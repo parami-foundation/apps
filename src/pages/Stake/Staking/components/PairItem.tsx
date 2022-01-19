@@ -8,8 +8,9 @@ const ICON_AD3 = '/images/logo-round-core.svg';
 
 const PairItem: React.FC<{
     logo: string;
-}> = ({ logo }) => {
-    const [Collapse, setCollapse] = useState<boolean>(true);
+    asset: any;
+}> = ({ logo, asset }) => {
+    const [Collapse, setCollapse] = useState<boolean>(false);
 
     return (
         <>
@@ -39,13 +40,13 @@ const PairItem: React.FC<{
                                 </div>
                                 <div className={style.tokenNameAndRate}>
                                     <div className={style.tokenName}>
-                                        ETH-AD3
+                                        {asset?.symbol}-AD3
                                     </div>
                                 </div>
                             </div>
                             <div className={style.tokenLiquidity}>
                                 <div className={style.title}>
-                                    Total Liquidity(AD3)
+                                    Total Liquidity({asset?.symbol})
                                 </div>
                                 <div className={style.value}>
                                     21.321
