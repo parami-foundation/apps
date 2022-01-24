@@ -1,4 +1,3 @@
-import MyAvatar from '@/components/Avatar/MyAvatar';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LinkBlockChain } from '@/services/parami/linker';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';

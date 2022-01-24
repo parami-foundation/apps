@@ -1,10 +1,10 @@
 {
-  "name": "Wallet",
-  "short_name": "Wallet",
+  "name": "Parami Apps",
+  "short_name": "Apps",
   "display": "standalone",
   "start_url": "./?utm_source=homescreen",
-  "theme_color": "#002140",
-  "background_color": "#001529",
+  "theme_color": "#ff5b00",
+  "background_color": "#ff5b00",
   "icons": [
     {
       "src": "icons/icon-192x192.png",

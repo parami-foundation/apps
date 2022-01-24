@@ -6,51 +6,50 @@ import { useEffect } from 'react';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import { GetUserInfo } from '@/services/parami/nft';
 import config from '@/config/config';
+import { CalculateLPReward, GetAccountLPs, GetLPLiquidity } from '@/services/parami/swap';
 
 const List: React.FC = () => {
     const apiWs = useModel('apiWs');
-    const [assets, setAssets] = useState<any[]>([]);
+    const [LPs, setLPs] = useState<any[]>([]);
 
-    const currentAccount = localStorage.getItem('stashUserAddress');
+    const currentAccount = localStorage.getItem('stashUserAddress') as string;
 
     const getTokenList = async () => {
         if (!apiWs) {
             return;
         }
-        const allEntries = await apiWs.query.assets.metadata.entries();
-        const tmpAssets = {};
-        for (let i = 0; i < allEntries.length; i++) {
-            const [key, value] = allEntries[i];
-            const shortKey = key.toHuman();
-            if (!!shortKey) {
-                const id = shortKey[0].replaceAll(',', '');
-                tmpAssets[id] = value.toHuman();
-            }
+        const LPTokens = await GetAccountLPs(currentAccount);
 
-            const data: any[] = [];
-            if (!!tmpAssets) {
-                for (const assetsID in tmpAssets) {
-                    const { balance }: any = await apiWs.query.assets.account(Number(assetsID), currentAccount);
-                    if (!!balance && balance > 0) {
-                        let icon: any;
-                        const did = await OwnerDidOfNft(assetsID);
-                        const info = await GetUserInfo(did);
-                        if (info['avatar'].indexOf('ipfs://') > -1) {
-                            const hash = info['avatar'].substring(7);
-                            icon = config.ipfs.endpoint + hash;
-                        };
-                        data.push({
-                            id: assetsID,
-                            token: tmpAssets[assetsID].name,
-                            symbol: tmpAssets[assetsID].symbol,
-                            balance: balance.toString(),
-                            icon,
-                        });
-                    }
-                }
-                setAssets(data);
+        const LPList: Map<string, any> = new Map();
+        LPTokens.map(async (tokenId) => {
+            const tokenInfo: any = tokenId[0].toHuman();
+            const LPTokenId = tokenInfo[1];
+            const LPInfo: any = await GetLPLiquidity(LPTokenId);
+            LPInfo['lpId'] = LPTokenId;
+            const reward = await CalculateLPReward(LPTokenId);
+            LPInfo['reward'] = reward;
+
+            let icon: any;
+            const did = await OwnerDidOfNft(LPInfo.tokenId);
+            const info = await GetUserInfo(did);
+            if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
+                const hash = info?.avatar.substring(7);
+                icon = config.ipfs.endpoint + hash;
+            };
+            const tokenMatadata = await (await apiWs.query.assets.metadata(Number(LPInfo.tokenId))).toHuman();
+            if (!LPList[LPInfo.tokenId]) {
+                LPList.set(LPInfo.tokenId, {
+                    id: LPInfo.tokenId,
+                    name: tokenMatadata.name,
+                    symbol: tokenMatadata.symbol,
+                    icon,
+                    nfts: [],
+                });
             }
-        }
+            LPList.get(LPInfo.tokenId).nfts.push(LPInfo);
+            console.log(LPList.get(LPInfo.tokenId))
+            setLPs([...LPList?.values()]);
+        });
     }
 
     useEffect(() => {
@@ -62,10 +61,10 @@ const List: React.FC = () => {
     return (
         <>
             <div className={style.stakeListContainer}>
-                {assets.map((item: any) => (
+                {LPs.map((lp: any) => (
                     <PairItem
-                        logo={item.icon}
-                        asset={item}
+                        logo={lp.icon}
+                        lp={lp}
                     />
                 ))}
             </div>

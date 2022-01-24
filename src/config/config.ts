@@ -4,7 +4,8 @@ export const config = {
         "adEarnUpTo": "500000000000000000000",
     },
     "main": {
-        "socketServer": "wss://rpc.parami.io/ws",
+        // "socketServer": "wss://rpc.parami.io/ws",
+        "socketServer": "ws://localhost:9944",
         "subqueryServer": "https://graph.parami.io/subsquery",
         "tagMapConfig": "https://wallet.parami.io/tagmap.json",
     },
@@ -271,6 +272,24 @@ export const config = {
                         //  AD3
                         name: 'currency',
                         type: 'String',
+                    },
+                    {
+                        // RPC igonre
+                        name: 'at',
+                        type: 'Hash',
+                        isOptional: true,
+                    },
+                ],
+                //  Token
+                type: 'String',
+            },
+            calculateReward: {
+                description: 'Calculate staking reward',
+                params: [
+                    {
+                        // Token ID
+                        name: 'lp_token_id',
+                        type: 'u64',
                     },
                     {
                         // RPC igonre

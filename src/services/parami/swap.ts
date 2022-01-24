@@ -1,5 +1,6 @@
 import { Keyring } from '@polkadot/api';
-import { DecodeKeystoreWithPwd, errCb } from './wallet';
+import { subCallback } from './subscription';
+import { DecodeKeystoreWithPwd } from './wallet';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -11,21 +12,24 @@ export const AddLiquidity = async (assetId: string, amount: string, LP: string, 
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ddl = await window.apiWs.query.system.number();
+	console.log(assetId)
 	const addLiquidity = window.apiWs.tx.swap.addLiquidity(assetId, amount, LP, token, ddl.toNumber() + 5);
 	const codo = window.apiWs.tx.magic.codo(addLiquidity);
-	await codo.signAndSend(payUser, errCb);
+	const events = await subCallback(codo, payUser);
+	return events;
 };
 
-export const RemoveLiquidity = async (assetId: string, amount: string, LP: string, token: string, password: string, keystore: string) => {
+export const RemoveLiquidity = async (lpTokenId: string, minCurrency: string, minTokens: string, password: string, keystore: string) => {
 	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
 		throw new Error('Wrong password');
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ddl = await window.apiWs.query.system.number();
-	const removeLiquidity = window.apiWs.tx.swap.removeLiquidity(assetId, amount, LP, token, ddl.toNumber() + 5);
+	const removeLiquidity = window.apiWs.tx.swap.removeLiquidity(lpTokenId, minCurrency, minTokens, ddl.toNumber() + 5);
 	const codo = window.apiWs.tx.magic.codo(removeLiquidity);
-	await codo.signAndSend(payUser, errCb);
+	const events = await subCallback(codo, payUser);
+	return events;
 };
 
 export const DrylyAddLiquidity = async (assetId: string, amount: string) => {
@@ -33,8 +37,34 @@ export const DrylyAddLiquidity = async (assetId: string, amount: string) => {
 	return value.toHuman();
 };
 
-export const DrylyRemoveLiquidity = async (assetId: string, amount: string): Promise<string> => {
-	const tokenId = 4294967295 - Number(assetId);
-	const value = await (window.apiWs.rpc as any).swap.drylyRemoveLiquidity(tokenId, amount);
+export const DrylyRemoveLiquidity = async (lpTokenId: string): Promise<string> => {
+	const value = await (window.apiWs.rpc as any).swap.drylyRemoveLiquidity(lpTokenId);
 	return value.toHuman();
+};
+
+export const GetAccountLPs = async (account: string) => {
+	const LPs = await window.apiWs.query.swap.account.entries(account);
+	return LPs;
+};
+
+export const GetLPLiquidity = async (LPTokenId: string) => {
+	const LPInfo = await window.apiWs.query.swap.liquidity(LPTokenId);
+	return LPInfo.toHuman();
+};
+
+export const CalculateLPReward = async (LPTokenId: string) => {
+	const reward = await (window.apiWs.rpc as any).swap.calculateReward(LPTokenId);
+	return reward.toHuman();
+};
+
+export const ClaimLPReward = async (LPTokenId: string, password: string, keystore: string) => {
+	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+		throw new Error('Wrong password');
+	}
+	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+	const getReward = window.apiWs.tx.swap.acquireReward(LPTokenId);
+	const codo = window.apiWs.tx.magic.codo(getReward);
+	const events = await subCallback(codo, payUser);
+	return events;
 };

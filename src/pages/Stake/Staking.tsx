@@ -69,7 +69,7 @@ const Staking: React.FC = () => {
                         defaultMessage: 'Select a Token',
                     })
                 }
-                content={<Add />}
+                content={<Add setAddModal={setAddModal} />}
                 footer={false}
                 close={() => { setAddModal(false) }}
                 bodyStyle={{

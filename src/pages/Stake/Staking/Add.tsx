@@ -1,6 +1,6 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import { RightOutlined } from '@ant-design/icons';
-import { Button, Input, Image } from 'antd';
+import { Button, Input, Image, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
@@ -83,7 +83,9 @@ const SelectAssets: React.FC<{
     )
 };
 
-const Add: React.FC = () => {
+const Add: React.FC<{
+    setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setAddModal }) => {
     const apiWs = useModel('apiWs');
     const [submitting, setSubmitting] = useState(false);
     const [number, setNumber] = useState<string>('0');
@@ -120,8 +122,8 @@ const Add: React.FC = () => {
                     let icon: any;
                     const did = await OwnerDidOfNft(assetsID);
                     const info = await GetUserInfo(did);
-                    if (info['avatar'].indexOf('ipfs://') > -1) {
-                        const hash = info['avatar'].substring(7);
+                    if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
+                        const hash = info?.avatar.substring(7);
                         icon = config.ipfs.endpoint + hash;
                     };
                     data.push({
@@ -156,9 +158,15 @@ const Add: React.FC = () => {
 
     const handleSubmit = async () => {
         setSubmitting(true);
-        await AddLiquidity(tokenAmount[0], FloatStringToBigInt(number, 18).toString(), tokenAmount[3], tokenAmount[1], password, controllerKeystore as string).then(() => {
-            setSubmitting(false);
-        });
+        try {
+            await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], password, controllerKeystore as string).then(() => {
+                setSubmitting(false);
+            });
+        } catch (e: any) {
+            message.error(e);
+        }
+        setSubmitting(false);
+        setAddModal(false);
     };
 
     useEffect(() => {
@@ -292,7 +300,7 @@ const Add: React.FC = () => {
                                     color: 'green',
                                 }}
                             >
-                                <Token value={tokenAmount[1]} symbol={token.symbol} />
+                                <Token value={tokenAmount[0]} symbol={token.symbol} />
                             </span>
                         </div>
                         <div className={styles.field}>
@@ -307,7 +315,7 @@ const Add: React.FC = () => {
                                     color: 'green',
                                 }}
                             >
-                                <Token value={tokenAmount[3]} />
+                                <Token value={tokenAmount[1]} />
                             </span>
                         </div>
                     </div>

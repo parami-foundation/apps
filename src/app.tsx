@@ -102,7 +102,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     },
     headerTheme: "light",
     headerHeight: 70,
-    // 自定义 403 页面
     unAccessible: <NoFoundPage />,
     ...initialState?.settings,
   };
