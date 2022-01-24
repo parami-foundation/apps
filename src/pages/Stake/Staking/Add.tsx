@@ -274,6 +274,7 @@ const Add: React.FC<{
                                     setTokenAmount(res);
                                 });
                             }}
+                            disabled={!tokenBalance}
                         >
                             {intl.formatMessage({
                                 id: 'miner.all',
