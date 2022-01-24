@@ -9,7 +9,7 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
-    const [first, setFirst] = useState((new Date()).getTime());
+    const [first] = useState((new Date()).getTime());
     const [assets, setAssets] = useState<Map<string, any>>(new Map());
     const [assetsArr, setAssetsArr] = useState<any[]>([]);
 

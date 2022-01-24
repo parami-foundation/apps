@@ -135,7 +135,7 @@ const Support: React.FC<{
                                     autoFocus
                                     size="large"
                                     placeholder={intl.formatMessage({
-                                        id: 'miner.add.number.placeholder',
+                                        id: 'stake.add.number.placeholder',
                                     })}
                                     bordered={false}
                                     className={`${style.input} bigInput`}

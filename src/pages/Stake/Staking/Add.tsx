@@ -43,12 +43,12 @@ const SelectAssets: React.FC<{
                 <div className={styles.title}>
                     <span>
                         {intl.formatMessage({
-                            id: 'miner.add.name',
+                            id: 'stake.add.name',
                         })}
                     </span>
                     <span>
                         {intl.formatMessage({
-                            id: 'miner.add.availableBalance',
+                            id: 'stake.add.availableBalance',
                         })}
                     </span>
                 </div>
@@ -162,6 +162,7 @@ const Add: React.FC<{
             await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], password, controllerKeystore as string).then(() => {
                 setSubmitting(false);
             });
+            window.location.reload();
         } catch (e: any) {
             message.error(e);
         }
@@ -182,7 +183,7 @@ const Add: React.FC<{
                 <div className={styles.field}>
                     <div className={styles.label}>
                         {intl.formatMessage({
-                            id: 'miner.add.selectAssets',
+                            id: 'stake.add.selectAssets',
                         })}
                     </div>
                     <div
@@ -208,7 +209,7 @@ const Add: React.FC<{
                             {!token.token && (
                                 <span className={styles.name}>
                                     {intl.formatMessage({
-                                        id: 'miner.add.pleaseSelect',
+                                        id: 'stake.add.pleaseSelect',
                                     })}
                                 </span>
                             )}
@@ -237,12 +238,12 @@ const Add: React.FC<{
                     >
                         <span>
                             {intl.formatMessage({
-                                id: 'miner.add.number.label',
+                                id: 'stake.add.number.label',
                             })}
                         </span>
                         <span>
                             {intl.formatMessage({
-                                id: 'miner.add.number.available',
+                                id: 'stake.add.number.available',
                             })}:<AD3 value={ad3Balance} />
                         </span>
                     </div>
@@ -277,7 +278,7 @@ const Add: React.FC<{
                             disabled={!tokenBalance}
                         >
                             {intl.formatMessage({
-                                id: 'miner.all',
+                                id: 'stake.all',
                             })}
                         </Button>
                     </div>
@@ -285,14 +286,14 @@ const Add: React.FC<{
                 <div className={styles.field}>
                     <div className={styles.label}>
                         {intl.formatMessage({
-                            id: 'miner.add.overview',
+                            id: 'stake.add.overview',
                         })}
                     </div>
                     <div className={styles.listBtn}>
                         <div className={styles.field}>
                             <span className={styles.title}>
                                 {intl.formatMessage({
-                                    id: 'miner.add.tokenAmount',
+                                    id: 'stake.add.tokenAmount',
                                 })}
                             </span>
                             <span
@@ -307,7 +308,7 @@ const Add: React.FC<{
                         <div className={styles.field}>
                             <span className={styles.title}>
                                 {intl.formatMessage({
-                                    id: 'miner.add.lptokenAmount',
+                                    id: 'stake.add.lptokenAmount',
                                 })}
                             </span>
                             <span
@@ -335,7 +336,7 @@ const Add: React.FC<{
                         }}
                     >
                         {intl.formatMessage({
-                            id: 'miner.add.title',
+                            id: 'stake.add.title',
                         })}
                     </Button>
                 </div>
@@ -344,7 +345,7 @@ const Add: React.FC<{
                 visable={selectModal}
                 title={
                     intl.formatMessage({
-                        id: 'miner.add.selectAssetsPool',
+                        id: 'stake.add.selectAssets',
                     })
                 }
                 content={

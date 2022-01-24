@@ -33,13 +33,8 @@ const Rows: React.FC<{
 
     const handleUnstake = async () => {
         try {
-            console.log(nftItem)
-            DrylyRemoveLiquidity(nftItem?.lpId).then(async (res: any) => {
-                console.log(res);
-                await RemoveLiquidity(nftItem?.lpId, res[1], res[0], password, controllerKeystore as string).then(() => {
-                    setSubmitting(false);
-                });
-            });
+            const token = await DrylyRemoveLiquidity(nftItem?.lpId);
+            await RemoveLiquidity(nftItem?.lpId, token[1], token[0], password, controllerKeystore as string);
             window.location.reload();
         } catch (e: any) {
             message.error(e);

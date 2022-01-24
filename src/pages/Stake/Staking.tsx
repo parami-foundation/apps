@@ -21,7 +21,7 @@ const Staking: React.FC = () => {
                     <div className={style.headerContainer}>
                         <div className={style.titleContainer}>
                             <Title
-                                level={2}
+                                level={1}
                                 className={style.sectionTitle}
                             >
                                 <Image
@@ -31,14 +31,12 @@ const Staking: React.FC = () => {
                                 />
                                 {intl.formatMessage({
                                     id: 'stake.title',
-                                    defaultMessage: 'Staking'
                                 })}
                             </Title>
                         </div>
                         <div className={style.subtitle}>
                             {intl.formatMessage({
                                 id: 'stake.subtitle',
-                                defaultMessage: 'Stake your Parami tokens with AD3',
                             })}
                         </div>
                         <div className={style.addNewStake}>
@@ -52,7 +50,6 @@ const Staking: React.FC = () => {
                             >
                                 {intl.formatMessage({
                                     id: 'stake.add',
-                                    defaultMessage: 'Stake My Tokens',
                                 })}
                             </Button>
                         </div>
@@ -65,8 +62,7 @@ const Staking: React.FC = () => {
                 visable={addModal}
                 title={
                     intl.formatMessage({
-                        id: 'stake.add.selectAToken',
-                        defaultMessage: 'Select a Token',
+                        id: 'stake.add',
                     })
                 }
                 content={<Add setAddModal={setAddModal} />}

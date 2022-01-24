@@ -70,7 +70,7 @@ const InputAmount: React.FC<{
         }}
       >
         {intl.formatMessage({
-          id: 'miner.all',
+          id: 'stake.all',
         })}
       </Button>
       <div className={styles.selectAssets} onClick={() => setStep('SelectAsset')}>

@@ -9,7 +9,7 @@ import modal from './en-US/modal';
 import account from './en-US/account';
 import creator from './en-US/creator';
 import index from './en-US/index';
-import miner from './en-US/miner';
+import stake from './en-US/stake';
 import record from './en-US/record';
 import social from './en-US/social';
 import wallet from './en-US/wallet';
@@ -35,7 +35,7 @@ export default {
   ...account,
   ...creator,
   ...index,
-  ...miner,
+  ...stake,
   ...record,
   ...social,
   ...wallet,

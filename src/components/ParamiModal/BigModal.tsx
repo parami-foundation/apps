@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import React from 'react';
 import { Button, Modal, Typography } from 'antd';
-
 import styles from './style.less';
 import { CloseOutlined } from '@ant-design/icons';
 
@@ -19,7 +18,10 @@ const BigModal: React.FC<{
         <Modal
             title={
                 <>
-                    <Title level={3}>
+                    <Title
+                        level={3}
+                        className={styles.title}
+                    >
                         {title}
                     </Title>
                 </>
