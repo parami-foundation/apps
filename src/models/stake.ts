@@ -1,4 +1,5 @@
 import { config } from "@/config/config";
+import { GetAvatar } from "@/services/parami/api";
 import { GetUserInfo } from "@/services/parami/nft";
 import { CalculateLPReward } from "@/services/parami/swap";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
@@ -7,7 +8,6 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
-    const [LPList] = useState<Map<string, any>>(new Map());
     const [LPs, setLPs] = useState<Map<string, any>>(new Map());
     const [LPsArr, setLPsArr] = useState<any[]>([]);
 
@@ -17,41 +17,49 @@ export default () => {
         if (!apiWs) {
             return;
         }
-        await apiWs.query.swap.account.entries(currentAccount, async (LPTokens) => {
-            for (const tokenId in LPTokens) {
-                const tokenInfo: any = LPTokens[tokenId][0].toHuman();
-                const LPTokenId = tokenInfo[1];
-                await apiWs.query.swap.liquidity(LPTokenId, async (LPInfoData) => {
-                    const LPInfo = LPInfoData.toHuman();
-                    if (!!LPInfo) {
-                        LPInfo['lpId'] = LPTokenId;
-                        const reward = await CalculateLPReward(LPTokenId);
-                        LPInfo['reward'] = reward;
+        const allLPs: Map<string, any> = new Map();
+        const LPTokens: any = await apiWs.query.swap.account.entries(currentAccount);
+        for (const tokenId in LPTokens) {
+            const tokenInfo: any = LPTokens[tokenId][0].toHuman();
+            const LPTokenId = tokenInfo[1];
+            await apiWs.query.swap.liquidity(LPTokenId, async (LPInfoData: any) => {
+                const LPInfo = LPInfoData.toHuman();
+                if (!!LPInfo) {
+                    LPInfo['lpId'] = LPTokenId;
+                    const reward = await CalculateLPReward(LPTokenId);
+                    LPInfo['reward'] = reward;
 
-                        let icon: any;
-                        const did = await OwnerDidOfNft(LPInfo.tokenId);
-                        const info = await GetUserInfo(did);
-                        if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
-                            const hash = info?.avatar.substring(7);
-                            icon = config.ipfs.endpoint + hash;
-                        };
-                        const tokenMatadata = await (await apiWs.query.assets.metadata(Number(LPInfo.tokenId))).toHuman();
-                        if (!LPList[LPInfo.tokenId]) {
-                            LPList.set(LPInfo.tokenId, {
+                    const did = await OwnerDidOfNft(LPInfo.tokenId);
+                    const kol = await GetUserInfo(did);
+                    let icon: any;
+                    if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {
+                        const hash = kol?.avatar.substring(7);
+                        const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+                        if (response.status === 200) {
+                            icon = window.URL.createObjectURL(data);
+                        }
+                    }
+
+                    await apiWs.query.assets.metadata(Number(LPInfo.tokenId), async (tokenMetadata: any) => {
+                        const tokenMeta = tokenMetadata.toHuman();
+                        if (!allLPs[LPInfo.tokenId]) {
+                            allLPs.set(LPInfo.tokenId, {
                                 id: LPInfo.tokenId,
-                                name: tokenMatadata.name,
-                                symbol: tokenMatadata.symbol,
+                                name: tokenMeta.name,
+                                symbol: tokenMeta.symbol,
                                 icon,
                                 nfts: [],
                             });
                         }
-                        LPList.get(LPInfo.tokenId).nfts.push(LPInfo);
-                        setLPs(LPList);
-                        setLPsArr([...LPList?.values()]);
-                    }
-                });
-            }
-        });
+                        allLPs.get(LPInfo.tokenId).nfts.push(LPInfo);
+                        setLPs(allLPs);
+                        setLPsArr([...allLPs?.values()]);
+                    });
+                }
+            });
+        }
+        setLPs(allLPs);
+        setLPsArr([...allLPs?.values()]);
     }
 
     useEffect(() => {
@@ -60,5 +68,9 @@ export default () => {
         }
     }, [apiWs]);
 
-    return { LPs, LPsArr };
+    return {
+        LPs,
+        LPsArr,
+        getTokenList,
+    }
 }

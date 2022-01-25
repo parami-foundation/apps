@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import style from '../style.less';
 import { Divider, Space, Button, message } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ const Rows: React.FC<{
     collapse: boolean;
     nfts: any[];
 }> = ({ collapse, nfts }) => {
+    const { getTokenList } = useModel('stake');
     const [claimSecModal, setClaimSecModal] = useState(false);
     const [unstakeSecModal, setUnstakeSecModal] = useState(false);
     const [password, setPassword] = useState('');
@@ -24,7 +25,7 @@ const Rows: React.FC<{
     const handleClaim = async () => {
         try {
             await ClaimLPReward(nftItem?.lpId, password, controllerKeystore);
-            window.location.reload();
+            getTokenList();
         } catch (e: any) {
             message.error(e);
         }
@@ -35,7 +36,7 @@ const Rows: React.FC<{
         try {
             const token = await DrylyRemoveLiquidity(nftItem?.lpId);
             await RemoveLiquidity(nftItem?.lpId, token[1], token[0], password, controllerKeystore as string);
-            window.location.reload();
+            getTokenList();
         } catch (e: any) {
             message.error(e);
         }

@@ -5,7 +5,7 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
-    const [first, setFirst] = useState((new Date()).getTime());
+    const [first] = useState((new Date()).getTime());
     const [tags, setTags] = useState<Map<string, any>>(new Map());
     const [tagsArr, setTagsArr] = useState<any[]>([]);
     const [guideTagsArr, setGuideTagsArr] = useState<any[]>([]);

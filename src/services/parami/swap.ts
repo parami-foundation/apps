@@ -12,7 +12,6 @@ export const AddLiquidity = async (assetId: string, amount: string, LP: string, 
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ddl = await window.apiWs.query.system.number();
-	console.log(assetId)
 	const addLiquidity = window.apiWs.tx.swap.addLiquidity(assetId, amount, LP, token, ddl.toNumber() + 5);
 	const codo = window.apiWs.tx.magic.codo(addLiquidity);
 	const events = await subCallback(codo, payUser);

@@ -87,6 +87,7 @@ const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setAddModal }) => {
     const apiWs = useModel('apiWs');
+    const { getTokenList } = useModel('stake');
     const [submitting, setSubmitting] = useState(false);
     const [number, setNumber] = useState<string>('0');
     const [token, setToken] = useState<Record<string, string>>({});
@@ -162,7 +163,7 @@ const Add: React.FC<{
             await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], password, controllerKeystore as string).then(() => {
                 setSubmitting(false);
             });
-            window.location.reload();
+            getTokenList();
         } catch (e: any) {
             message.error(e);
         }
