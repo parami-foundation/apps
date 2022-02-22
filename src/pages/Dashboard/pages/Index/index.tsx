@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button, notification, Spin, Typography } from 'antd';
+import { Button, notification } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import styles from '@/pages/dashboard.less';
@@ -8,8 +8,6 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import SelectAccount from './components/SelectAccount';
 import config from '@/config/config';
-
-const { Title } = Typography;
 
 const Index: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -83,59 +81,62 @@ const Index: React.FC = () => {
     return (
         <>
             <div className={styles.mainIndexContainer}>
-                <div className={style.indexContainer}>
-                    <div className={style.bodyContainer}>
-                        <div className={style.innerWrapper}>
-                            <Spin
-                                spinning={loading}
+                <div className={styles.background} />
+                <div className={styles.logoMark} />
+                <div className={styles.pageContainer}>
+                    <div className={style.firstPage}>
+                        <div className={style.slogan}>
+                            <div className={style.slogan}>
+                                {intl.formatMessage({
+                                    id: 'dashboard.index.title',
+                                })}
+                            </div>
+                        </div>
+                        <div className={style.buttons}>
+                            <Button
+                                block
+                                size='large'
+                                type='primary'
+                                shape='round'
+                                className={style.button}
+                                onClick={() => {
+                                    history.push(config.page.homePage);
+                                }}
                             >
-                                <Title
-                                    level={2}
-                                    style={{
-                                        fontWeight: 'bold',
-                                        textAlign: 'center',
-                                    }}
-                                >
+                                <div className={style.title}>
                                     {intl.formatMessage({
-                                        id: 'dashboard.index.title',
+                                        id: 'dashboard.index.createAccount',
                                     })}
-                                </Title>
-                                <span className={style.subTitle}>
+                                </div>
+                                <span className={style.desc}>
                                     {intl.formatMessage({
-                                        id: 'dashboard.index.subtitle',
+                                        id: 'dashboard.index.createAccount.desc',
                                     })}
                                 </span>
-                                <div className={style.buttons}>
-                                    <Button
-                                        type="primary"
-                                        shape="round"
-                                        size="large"
-                                        className={style.button}
-                                        onClick={() => { history.push(config.page.homePage) }}
-                                    >
-                                        {intl.formatMessage({
-                                            id: 'dashboard.index.createAccount',
-                                        })}
-                                    </Button>
-                                    <span className={style.or}>
-                                        {intl.formatMessage({
-                                            id: 'index.or',
-                                        })}
-                                    </span>
-                                    <Button
-                                        shape="round"
-                                        size="large"
-                                        className={style.button}
-                                        onClick={() => {
-                                            checkExtension();
-                                        }}
-                                    >
-                                        {intl.formatMessage({
-                                            id: 'dashboard.index.selectAccount',
-                                        })}
-                                    </Button>
+                            </Button>
+                            <Button
+                                block
+                                ghost
+                                size='large'
+                                type='link'
+                                shape='round'
+                                className={`${style.button} ${style.buttonImport}`}
+                                loading={loading}
+                                onClick={() => {
+                                    checkExtension();
+                                }}
+                            >
+                                <div className={style.title}>
+                                    {intl.formatMessage({
+                                        id: 'dashboard.index.selectAccount',
+                                    })}
                                 </div>
-                            </Spin>
+                                <span className={style.desc}>
+                                    {intl.formatMessage({
+                                        id: 'dashboard.index.selectAccount.desc',
+                                    })}
+                                </span>
+                            </Button>
                         </div>
                     </div>
                 </div>

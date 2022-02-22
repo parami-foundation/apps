@@ -9,6 +9,8 @@ export default {
                 name: 'Index',
                 component: './Index',
                 hideInMenu: true,
+                headerRender: false,
+                footerRender: false,
                 menuRender: false,
             },
             {

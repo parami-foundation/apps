@@ -4,8 +4,8 @@ export const config = {
         "adEarnUpTo": "500000000000000000000",
     },
     "main": {
-        // "socketServer": "wss://rpc.parami.io/ws",
-        "socketServer": "ws://localhost:9944",
+        "socketServer": "wss://rpc.parami.io/ws",
+        // "socketServer": "ws://localhost:9944",
         "subqueryServer": "https://graph.parami.io/subsquery",
         "tagMapConfig": "https://wallet.parami.io/tagmap.json",
     },

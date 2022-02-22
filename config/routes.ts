@@ -130,6 +130,8 @@
         name: 'Index',
         component: './Dashboard/pages/Index',
         hideInMenu: true,
+        headerRender: false,
+        footerRender: false,
         menuRender: false,
       },
       {

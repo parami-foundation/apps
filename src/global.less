@@ -55,8 +55,9 @@ ol {
   display: flex;
   height: 100%;
   padding: 22px !important;
+  align-items: center;
   justify-content: center;
-  max-width: 200px;
+  max-width: 180px;
 
   img {
     width: 100% !important;
@@ -234,6 +235,12 @@ ol {
 
 .ant-modal-footer .ant-btn + .ant-btn:not(.ant-dropdown-trigger) {
   margin-left: unset;
+}
+
+.ant-layout-sider-collapsed {
+  .ant-pro-sider-menu {
+    padding: 0 !important;
+  }
 }
 
 @media (max-width: @screen-xs) {
