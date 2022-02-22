@@ -17,7 +17,7 @@ const hasValidDocumentElementRatio =
         390 / 664, // 12, 12 Pro, 13, 13 Pro (Tab Bar)
         428 / 745, // 12 Pro Max, 13 Pro Max (Single Tab)
         428 / 746, // 12 Pro Max, 13 Pro Max (Tab Bar)
-        375 / 812, // X, Xs, 11 Pro (chrome simulator)
+        390 / 844, // (chrome simulator)
     ].some(ratio =>
         ratio === document.documentElement.clientWidth /
         document.documentElement.clientHeight

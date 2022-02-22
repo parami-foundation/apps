@@ -3,13 +3,16 @@
     path: '/',
     name: 'index',
     hideInMenu: true,
+    headerRender: false,
+    footerRender: false,
     component: './Index',
   },
   {
     path: '/create',
     name: 'create',
     hideInMenu: true,
-    hideChildrenInMenu: true,
+    headerRender: false,
+    footerRender: false,
     routes: [
       {
         path: '/create',
@@ -30,6 +33,8 @@
     path: '/recover',
     name: 'recover',
     hideInMenu: true,
+    headerRender: false,
+    footerRender: false,
     component: './Identity/RecoverAccount',
   },
   {

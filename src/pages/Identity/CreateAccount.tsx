@@ -159,7 +159,9 @@ const CreateAccount: React.FC<{
       )}
       {!minimal && (
         <>
-          <div className={styles.mainBgContainer}>
+          <div className={styles.mainContainer}>
+            <div className={styles.background} />
+            <div className={styles.logoMark} />
             <div className={styles.pageContainer}>
               {step === -1 &&
                 <NotSupport

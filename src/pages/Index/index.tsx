@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
-import { Button, Card, Divider, Typography } from 'antd';
+import { Button } from 'antd';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import config from '@/config/config';
 import access from '@/access';
-
-const { Title } = Typography;
 
 const Index: React.FC = () => {
     const intl = useIntl();
@@ -23,60 +21,80 @@ const Index: React.FC = () => {
 
     return (
         <>
-            {window.matchMedia('(display-mode: standalone)').matches}
-            <div className={styles.mainBgContainer}>
+            <div className={styles.mainContainer}>
+                <div className={styles.background} />
+                <div className={styles.logoMark} />
                 <div className={styles.pageContainer}>
-                    <Card className={style.indexCard}>
-                        <Title
-                            level={2}
-                            style={{
-                                fontWeight: 'bold',
-                                textAlign: 'center'
-                            }}
-                        >
+                    <div className={style.firstPage}>
+                        <div className={style.slogan}>
                             {intl.formatMessage({
-                                id: 'index.title',
+                                id: 'index.slogan',
+                            }, {
+                                title: (<span>Para Meta</span>),
                             })}
-                        </Title>
-                        <span
-                            className={style.subTitle}
-                        >
-                            {intl.formatMessage({
-                                id: 'index.subtitle',
-                            })}
-                        </span>
-                        <Divider />
+                        </div>
                         <div className={style.buttons}>
                             <Button
                                 block
-                                type="primary"
-                                shape="round"
-                                size="large"
+                                size='large'
+                                type='primary'
+                                shape='round'
                                 className={style.button}
-                                onClick={() => history.push(config.page.createPage)}
+                                onClick={() => {
+                                    history.push(config.page.createPage);
+                                }}
                             >
-                                {intl.formatMessage({
-                                    id: 'index.createAccount',
-                                })}
+                                <div className={style.title}>
+                                    {intl.formatMessage({
+                                        id: 'index.createAccount',
+                                    })}
+                                </div>
+                                <span className={style.desc}>
+                                    {intl.formatMessage({
+                                        id: 'index.createAccount.desc',
+                                    })}
+                                </span>
                             </Button>
-                            <span className={style.or}>
-                                {intl.formatMessage({
-                                    id: 'index.or',
-                                })}
-                            </span>
                             <Button
                                 block
-                                shape="round"
-                                size="large"
-                                className={style.button}
-                                onClick={() => history.push(config.page.dashboard.homePage)}
+                                ghost
+                                size='large'
+                                type='link'
+                                shape='round'
+                                className={`${style.button} ${style.buttonImport}`}
+                                onClick={() => {
+                                    history.push(config.page.recoverPage);
+                                }}
                             >
-                                {intl.formatMessage({
-                                    id: 'index.dashboard',
-                                })}
+                                <div className={style.title}>
+                                    {intl.formatMessage({
+                                        id: 'index.importAccount',
+                                    })}
+                                </div>
+                                <span className={style.desc}>
+                                    {intl.formatMessage({
+                                        id: 'index.importAccount.desc',
+                                    })}
+                                </span>
                             </Button>
                         </div>
-                    </Card>
+                    </div>
+                    <div className={style.introContainer}>
+                        <div className={style.title}>
+                            {intl.formatMessage({
+                                id: 'index.intro.title',
+                            })}
+                        </div>
+                        <img
+                            src={'/images/models/overview.svg'}
+                            className={style.introImage}
+                        />
+                        <p>
+                            {intl.formatMessage({
+                                id: 'index.intro.content',
+                            })}
+                        </p>
+                    </div>
                 </div>
             </div>
         </>

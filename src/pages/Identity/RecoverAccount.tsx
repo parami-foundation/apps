@@ -76,7 +76,9 @@ const RecoverAccount: React.FC = () => {
 
   return (
     <>
-      <div className={styles.mainBgContainer}>
+      <div className={styles.mainContainer}>
+        <div className={styles.background} />
+        <div className={styles.logoMark} />
         <div className={styles.pageContainer}>
           {step === -1 &&
             <NotSupport />

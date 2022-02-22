@@ -1,20 +1,51 @@
-.indexCard {
-    overflow: hidden;
-    border: 2px solid rgba(244,245,246,1);
-    width: 100%;
-    padding: 35px;
-    margin-bottom: 30px;
-    background-image: url('/images/logo-core-colored.svg');
-    background-repeat: no-repeat;
-    background-size: initial;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+.firstPage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
 }
 
-.subTitle {
-    display: block;
-    font-size: 18px;
-    font-weight: 500;
+.slogan {
+    font-size: 2.5rem;
+    font-weight: bold;
     text-align: center;
+    margin-bottom: 30px;
+
+    span {
+        color: #ff5b00;
+    }
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+
+        .title {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .desc {
+            font-size: 1rem;
+            font-size: 300;
+            opacity: 0.5;
+        }
+    }
+
+    .buttonImport {
+        border: 2px solid #ff5b00;
+    }
 }
 
 .buttons {
@@ -40,8 +71,33 @@
     }
 }
 
-@media (max-width: 767px) {
-    .subTitle {
-        font-size: 15px;
+.introContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+
+    .title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        margin-bottom: 2rem;
+    }
+
+    .introImage {
+        width: 100%;
+    }
+
+    p {
+        text-align: center;
+    }
+}
+
+@media (min-width: 767px) {
+    .logoMark {
+        display: none;
     }
 }
