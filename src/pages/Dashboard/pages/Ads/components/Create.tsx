@@ -248,7 +248,6 @@ const Create: React.FC<{
                     </div>
                     <div className={styles.value}>
                         <InputNumber
-                            value={0}
                             className={styles.withAfterInput}
                             placeholder="0.00"
                             size='large'
