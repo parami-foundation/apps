@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
         };
 
         const kolDeposit = await GetKolDeposit(did)
-        if (!kolDeposit.isEmpty) {
+        if (!!kolDeposit) {
             const value = BigInt(kolDeposit.toString());
             setDeposit(value.toString());
             if (value >= parseAmount('1000')) {

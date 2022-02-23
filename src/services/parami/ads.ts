@@ -1,5 +1,11 @@
+import { GetPreferedNFT } from "./nft";
+
 export const GetSlotAdOf = async (did: string): Promise<any> => {
-    const slot = await window.apiWs.query.ad.slotOf(did);
+    const id = await GetPreferedNFT(did);
+    if (id.isEmpty) {
+        return null;
+    }
+    const slot = await window.apiWs.query.ad.slotOf(id.toHuman());
     if (slot.isEmpty) {
         return null;
     }

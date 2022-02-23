@@ -8,7 +8,7 @@ import style from './style.less';
 import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams } from 'umi';
 import { hexToDid, didToHex, parseAmount, checkInIAP } from '@/utils/common';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetUserInfo, GetValueOf } from '@/services/parami/nft';
+import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaStore, GetPreferedNFT, GetUserInfo, GetValueOf } from '@/services/parami/nft';
 import { Alert, message, Image } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
@@ -139,32 +139,34 @@ const Explorer: React.FC = () => {
             };
             setUser(userData);
 
-            if (userData['avatar'].indexOf('ipfs://') > -1) {
-                const hash = userData['avatar'].substring(7);
+            if (userData?.avatar.indexOf('ipfs://') > -1) {
+                const hash = userData?.avatar.substring(7);
                 const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
                 if (response?.status === 200) {
                     setAvatar(window.URL.createObjectURL(data));
                 }
             };
             document.title = `${userData?.nickname || did} - Para Metaverse Identity`;
-            if (userData.nft !== null) {
-                const assetData = await GetAssetInfo(userData.nft);
+            const nftID = await GetPreferedNFT(didHexString);
+            const nftInfo: any = await GetNFTMetaStore(nftID.toHuman() as string);
+            if (!nftInfo.isEmpty) {
+                const assetData = await GetAssetInfo(nftInfo?.tokenAssetId as string);
                 if (assetData.isEmpty) {
                     setKOL(false);
                     return;
                 }
                 const assetInfo = assetData.toHuman() as any;
                 setAsset(assetInfo);
-                const value = await GetValueOf(userData.nft, parseAmount('1'));
+                const value = await GetValueOf(nftInfo?.tokenAssetId, parseAmount('1'));
                 setAssetPrice(value.toString());
 
-                const assetDetail = await GetAssetDetail(userData.nft);
+                const assetDetail = await GetAssetDetail(nftInfo?.tokenAssetId);
                 setDetail(assetDetail);
 
                 const supply: string = assetDetail.unwrap().supply.toString();
                 setTotalSupply(BigInt(supply));
 
-                const members = await GetAssetsHolders(userData?.nft);
+                const members = await GetAssetsHolders(nftInfo?.tokenAssetId);
                 setMember(members);
             } else {
                 setKOL(false);
@@ -221,7 +223,7 @@ const Explorer: React.FC = () => {
                             className={style.loading}
                             style={{
                                 opacity: loading ? 1 : 0,
-                                zIndex: loading ? 10 : -1,
+                                zIndex: loading ? 15 : -1,
                                 height: bodyHeight,
                             }}
                         >

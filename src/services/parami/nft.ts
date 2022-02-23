@@ -4,7 +4,7 @@ const instanceKeyring = new Keyring({ type: 'sr25519' });
 
 export const GetUserInfo = async (did: string) => {
   const userInfo = await window.apiWs.query.did.metadata(did);
-  const [avatar, nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
+  const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
 
   if (userInfo.isEmpty) {
     return null;
@@ -69,8 +69,22 @@ export const GetAssetBalance = async (assetId: string, address: string): Promise
   return '0';
 };
 
+export const GetPreferedNFT = async (did: string) => {
+  const id = await window.apiWs.query.nft.preferredNft(did);
+  return id;
+};
+
+export const GetNFTMetaStore = async (id: string) => {
+  const nftInfo = await window.apiWs.query.nft.nftMetaStore(id);
+  return nftInfo;
+};
+
 export const GetKolDeposit = async (did: string) => {
-  const deposit = await window.apiWs.query.nft.deposit(did);
+  const id = await GetPreferedNFT(did);
+  if (id.isEmpty) {
+    return null;
+  }
+  const deposit = await window.apiWs.query.nft.deposit(id);
   return deposit;
 };
 

@@ -10,10 +10,9 @@ import { didToHex, formatWithoutUint, hexToDid, parseAmount } from '@/utils/comm
 import loadImg from '@/utils/decode';
 import Marquee from 'react-fast-marquee';
 import { BidSlot, GetAssetInfo, GetSlotAdOf, GetSlotsOf, GetValueOf } from '@/services/parami/dashboard';
-import { fromHexString } from '@/utils/hexcode';
 import config from '@/config/config';
 import { formatBalance } from '@polkadot/util';
-import { GetUserInfo } from '@/services/parami/nft';
+import { GetNFTMetaStore, GetUserInfo } from '@/services/parami/nft';
 
 const { Dragger } = Upload;
 
@@ -42,8 +41,8 @@ const Avatar: React.FC<{
         //TODO: check it
         const info = await GetUserInfo(did);
 
-        if (info['avatar'].indexOf('ipfs://') > -1) {
-            const hash = info['avatar'].substring(7);
+        if (info?.avatar?.indexOf('ipfs://') > -1) {
+            const hash = info?.avatar?.substring(7);
 
             setAvatar(config.ipfs.endpoint + hash)
         }
@@ -92,10 +91,11 @@ const List: React.FC<{
                 </div>
             )}
             <Row gutter={[16, 16]}>
-                {slotsOf.length && slotsOf?.map((did) =>
-                (
-                    <Avatar did={did} />
-                )
+                {slotsOf.length && slotsOf?.map((id) => {
+                    GetNFTMetaStore(id).then((res) => (
+                        <Avatar did={res?.owner} />
+                    ))
+                }
                 )}
             </Row>
         </div>
