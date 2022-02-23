@@ -148,6 +148,10 @@ const Explorer: React.FC = () => {
             };
             document.title = `${userData?.nickname || did} - Para Metaverse Identity`;
             const nftID = await GetPreferedNFT(didHexString);
+            if (nftID.isEmpty) {
+                setKOL(false);
+                return;
+            }
             const nftInfo: any = await GetNFTMetaStore(nftID.toHuman() as string);
             if (!nftInfo.isEmpty) {
                 const assetData = await GetAssetInfo(nftInfo?.tokenAssetId as string);
@@ -200,7 +204,7 @@ const Explorer: React.FC = () => {
     return (
         <>
             <div
-                className={styles.mainContainer}
+                className={styles.mainTopContainer}
             >
                 {KOL && (
                     <>
