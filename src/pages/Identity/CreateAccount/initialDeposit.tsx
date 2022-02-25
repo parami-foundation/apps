@@ -222,7 +222,6 @@ const InitialDeposit: React.FC<{
     if (!apiWs) {
       return;
     }
-    console.log(controllerUserAddress);
     if (!!controllerUserAddress) {
       let free: any;
       unsub = await apiWs.query.system.account(controllerUserAddress, (info) => {

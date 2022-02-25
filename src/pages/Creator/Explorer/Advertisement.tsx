@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Alert, Button, Card, Image, message, Space, Tag } from 'antd';
 import React, { useState } from 'react';
 import Marquee from 'react-fast-marquee';

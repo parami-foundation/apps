@@ -84,7 +84,7 @@ export const GetKolDeposit = async (did: string) => {
   if (id.isEmpty) {
     return null;
   }
-  const deposit = await window.apiWs.query.nft.deposit(id);
+  const deposit = await window.apiWs.query.nft.deposit(id.toHuman());
   return deposit;
 };
 

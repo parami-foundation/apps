@@ -33,7 +33,7 @@ const RecoverAccount: React.FC = () => {
   const MagicUserAddress = localStorage.getItem('magicUserAddress') as string;
 
   const isRecoverLink = async () => {
-    if (mnemonicHash !== undefined || mnemonicHash !== '') {
+    if (!!mnemonicHash) {
       setMagicMnemonic(mnemonicHash.replace(/%20/g, ' '));
       setStep(2);
     }

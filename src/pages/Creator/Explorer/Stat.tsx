@@ -14,7 +14,7 @@ const Stat: React.FC<{
     totalSupply: bigint;
     viewer: any;
     member: any;
-}> = ({ asset, assetPrice, totalSupply, viewer, member }) => {
+}> = ({ asset, assetPrice, totalSupply, member }) => {
     const intl = useIntl();
 
     return (
@@ -39,7 +39,15 @@ const Stat: React.FC<{
                 }}
             >
                 <div className={style.stat}>
-                    <Row gutter={[16, 16]}>
+                    <Row
+                        gutter={[16, 16]}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                        }}
+                    >
                         <Col xs={12} sm={12} md={8} lg={8} xl={4}>
                             <Statistic
                                 title={'1 ' + asset?.symbol}
@@ -78,14 +86,14 @@ const Stat: React.FC<{
                                 value={member?.length}
                             />
                         </Col>
-                        <Col xs={12} sm={12} md={8} lg={8} xl={4}>
+                        {/* <Col xs={12} sm={12} md={8} lg={8} xl={4}>
                             <Statistic
                                 title={intl.formatMessage({
                                     id: 'creator.explorer.totalViewers',
                                 })}
                                 value={viewer}
                             />
-                        </Col>
+                        </Col> */}
                     </Row>
                 </div>
             </Card>
