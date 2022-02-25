@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useIntl, history } from 'umi';
+import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
 import { Typography, Image, Card, Button, Tooltip, message } from 'antd';
@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { guid } from '@/utils/common';
-import config from '@/config/config';
 
 const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 

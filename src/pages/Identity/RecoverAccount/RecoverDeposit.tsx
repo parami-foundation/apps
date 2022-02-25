@@ -37,6 +37,7 @@ const RecoverDeposit: React.FC<{
   const [modalVisable, setModalVisable] = useState(false);
   const [secModal, setSecModal] = useState(false);
   const [Password, setPassword] = useState('');
+  const [magicBalance, setMagicBalance] = useState<bigint>(BigInt(0));
 
   const passwd = password || Password
 
@@ -52,39 +53,32 @@ const RecoverDeposit: React.FC<{
   const intl = useIntl();
   const mutex = new Mutex();
 
-  const listenController = () => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        if (!apiWs) {
-          return;
+  const listenBalance = async () => {
+    if (!apiWs) {
+      return;
+    }
+    if (!!magicUserAddress) {
+      let free: any;
+      await apiWs.query.system.account(magicUserAddress, (info) => {
+        const data: any = info.data;
+        if (free && free !== `${data.free}`) {
+          notification.success({
+            message: 'Changes in Magic Balance',
+            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
+          })
         }
-        if (!!magicUserAddress) {
-          let free: any;
-          await apiWs.query.system.account(magicUserAddress, (info) => {
-            const data: any = info.data;
-            if (free && free !== `${data.free}`) {
-              notification.success({
-                message: 'Changes in Magic Balance',
-                description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
-              })
-            }
-            free = `${data.free}`;
-            if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
-              resolve(data.free);
-            }
-          });
+        free = `${data.free}`;
+        if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
+          setMagicBalance(data.free);
         }
-      } catch (e: any) {
-        reject(e);
-      }
-    });
+      });
+    }
   }
 
   const pendingStatus = async () => {
     const release = await mutex.acquire();
-    const free: any = await listenController();
 
-    if (BigInt(free) < FloatStringToBigInt('0.0005', 18)) {
+    if (BigInt(magicBalance) < FloatStringToBigInt('0.0005', 18)) {
       release();
       return;
     }
@@ -112,10 +106,16 @@ const RecoverDeposit: React.FC<{
     if (passwd === '' || controllerUserAddress === '') {
       return;
     }
-    if (apiWs) {
-      pendingStatus();
+    if (apiWs && magicUserAddress) {
+      listenBalance();
     }
   }, [passwd, controllerUserAddress, apiWs]);
+
+  useEffect(() => {
+    if (apiWs && magicUserAddress) {
+      pendingStatus();
+    }
+  }, [apiWs, magicUserAddress, magicBalance]);
 
   return (
     <>

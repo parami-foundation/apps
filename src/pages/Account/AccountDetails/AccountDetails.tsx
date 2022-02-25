@@ -81,7 +81,7 @@ const AccountDetails: React.FC = () => {
                                 {hexToDid(did)}
                             </span>
                             <CopyToClipboard
-                                text={did}
+                                text={hexToDid(did)}
                                 onCopy={() => {
                                     message.success(
                                         intl.formatMessage({
