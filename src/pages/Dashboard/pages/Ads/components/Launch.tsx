@@ -58,7 +58,7 @@ const Avatar: React.FC<{
         <>
             <Col xs={12} sm={12} md={12} lg={6} xl={6}
                 onClick={() => {
-                    window.open(`https://wallet.parami.io/creator/${did}`);
+                    window.open(`https://app.parami.io/creator/${did}`);
                 }}
             >
                 <div className={style.avatar}>

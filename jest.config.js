@@ -1,5 +1,5 @@
 module.exports = {
-  testURL: 'https://wallet.parami.io',
+  testURL: 'https://app.parami.io',
   testEnvironment: './tests/PuppeteerEnvironment',
   verbose: false,
   setupFilesAfterEnv: ['./tests/setupTests.js'],

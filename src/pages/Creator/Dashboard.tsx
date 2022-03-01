@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
 
     const did = localStorage.getItem('did') as string;
 
-    const link = `https://wallet.parami.io/${hexToDid(did)}`;
+    const link = `https://app.parami.io/${hexToDid(did)}`;
 
     const intl = useIntl();
 

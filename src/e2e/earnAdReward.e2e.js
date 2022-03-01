@@ -1,7 +1,7 @@
 import { ApiPromise, Keyring, WsProvider } from "@polkadot/api";
 import config from "../config/config";
-const KOL_URL = 'https://wallet.parami.io/did:ad3:2BNi8qXrGFBLWLJcGyaNg9yyGmWE?referrer=0x549e237e4154630d1467a3250b7ad118f216ea27';
-const HOME_URL = 'https://wallet.parami.io/';
+const KOL_URL = 'https://app.parami.io/did:ad3:2BNi8qXrGFBLWLJcGyaNg9yyGmWE?referrer=0x549e237e4154630d1467a3250b7ad118f216ea27';
+const HOME_URL = 'https://app.parami.io/';
 
 beforeAll(async () => {
     await page.goto(HOME_URL);
@@ -31,7 +31,7 @@ describe('get Ad reward', () => {
     it('got recovery link', async () => {
         const recoveryLinkElement = await page.waitForSelector('input.ant-input-lg');
         const recoveryLink = await recoveryLinkElement.evaluate(el => el.value);
-        expect(recoveryLink.indexOf('https://wallet.parami.io/recover/#') > -1).toBe(true);
+        expect(recoveryLink.indexOf('https://app.parami.io/recover/#') > -1).toBe(true);
         const confirmBtn = await page.waitForSelector('.ant-btn-primary');
         await confirmBtn.click();
     })
