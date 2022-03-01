@@ -12,10 +12,9 @@ import { guid } from '@/utils/common';
 const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
 const Security: React.FC = () => {
-    const passphrase = localStorage.getItem('passphrase');
     const stamp = localStorage.getItem('stamp') as string;
 
-    const [passphraseEnable, setPassphraseEnable] = useState<string>(passphrase || 'disable');
+    const [passphraseEnable, setPassphraseEnable] = useState<string>();
     const [password, setPassword] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
     const [changePassword, setChangePassword] = useState<boolean>(true);
@@ -45,7 +44,6 @@ const Security: React.FC = () => {
                 return;
             }
             localStorage.setItem('controllerKeystore', encodedMnemonic);
-            localStorage.setItem('passphrase', 'disable');
             setPassphraseEnable('disable');
             message.success(intl.formatMessage({
                 id: 'profile.security.passphrase.changeSuccess',
@@ -67,7 +65,6 @@ const Security: React.FC = () => {
                 return;
             }
             localStorage.setItem('controllerKeystore', encodedMnemonic);
-            localStorage.setItem('passphrase', 'enable');
             setPassphraseEnable('enable');
             message.success(intl.formatMessage({
                 id: 'profile.security.passphrase.changeSuccess',
@@ -96,7 +93,13 @@ const Security: React.FC = () => {
         }
     }
 
-    useEffect(() => { }, [passphrase, decoded, stamp]);
+    useEffect(() => {
+        if (!!stamp) {
+            setPassphraseEnable('disable');
+        } else {
+            setPassphraseEnable('enable');
+        }
+    }, [stamp, decoded, stamp]);
 
     return (
         <>

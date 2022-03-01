@@ -48,7 +48,7 @@ const RecoverDeposit: React.FC<{
     setStep(1);
   }
 
-  const MagicKeystore = magicKeystore || localStorage.getItem('magicKeystore') as string;
+  const MagicKeystore = magicKeystore || sessionStorage.getItem('magicKeystore') as string;
 
   const intl = useIntl();
   const mutex = new Mutex();

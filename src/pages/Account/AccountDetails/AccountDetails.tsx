@@ -56,7 +56,7 @@ const AccountDetails: React.FC = () => {
                         </div>
                         <div className={style.idCody}>
                             <span className={style.text}>
-                                {nickname || 'Nickname'}
+                                {nickname.toString() || 'Nickname'}
                             </span>
                             <Button
                                 size='middle'

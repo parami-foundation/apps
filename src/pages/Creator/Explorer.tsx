@@ -13,7 +13,7 @@ import { Alert, message, Image } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
-import { getAdViewerCounts } from '@/services/subquery/subquery';
+import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
 import CreateAccount from '../Identity/CreateAccount';
 import { GetAdRemain } from '../../services/parami/nft';
@@ -51,10 +51,10 @@ const Explorer: React.FC = () => {
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [notAccess, setNotAccess] = useState<boolean>(false);
     const [notSysBroswer, setNotSysBroswer] = useState<boolean>(false);
-
     const [adData, setAdData] = useState<any>({});
     const [ad, setAd] = useState<Type.AdInfo>(null);
     const [viewer, setViewer] = useState<any>();
+    const [referer, setRefererr] = useState<any>();
     const [member, setMember] = useState<any>();
     const [remain, setRemain] = useState<any>();
 
@@ -97,6 +97,9 @@ const Explorer: React.FC = () => {
 
             const viewers = await getAdViewerCounts(data?.id);
             setViewer(viewers);
+
+            const referers = await getAdvertisementRefererCounts(data?.id);
+            setRefererr(referers);
 
             const res = await fetch(config.ipfs.endpoint + hash);
             const adJson: Type.AdInfo = await res.json();
@@ -270,6 +273,7 @@ const Explorer: React.FC = () => {
                         <Advertisement
                             ad={ad}
                             viewer={viewer}
+                            referer={referer}
                             asset={asset}
                             avatar={avatar}
                             did={did}

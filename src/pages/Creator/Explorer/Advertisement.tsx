@@ -22,13 +22,14 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 const Advertisement: React.FC<{
     ad: Type.AdInfo;
     viewer: any;
+    referer: any;
     asset: any;
     avatar: string;
     did: string;
     adData: any;
     remain: bigint;
     loading: boolean;
-}> = ({ ad, viewer, asset, avatar, did, adData, remain, loading }) => {
+}> = ({ ad, viewer, referer, asset, avatar, did, adData, remain, loading }) => {
     const [infoModal, setInfoModal] = useState(false);
     const [chartModal, setChartModal] = useState(false);
     const [password, setPassword] = useState('');
@@ -139,6 +140,21 @@ const Advertisement: React.FC<{
                 <div className={style.advertisement}>
                     <div className={style.cover}>
                         <div className={style.viewer}>
+                            <Tag
+                                icon={<ShareAltOutlined />}
+                                color="rgba(0,0,0,.5)"
+                                style={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: 15,
+                                    padding: 5,
+                                }}
+                                onClick={() => { setChartModal(true) }}
+                            >
+                                {referer}
+                            </Tag>
                             <Tag
                                 icon={<EyeFilled />}
                                 color="rgba(0,0,0,.5)"

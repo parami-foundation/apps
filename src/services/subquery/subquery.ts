@@ -10,11 +10,13 @@ export type AssetTransaction = {
     toDid: string
     amount: string
     timestampInSecond: number
-}
+};
+
 function formatTimestamp(timestamp: number): string {
     const date = new Date(timestamp);
     return date.toLocaleString();
-}
+};
+
 export const doGraghQuery = async (query: string) => {
     const obj: any = {};
     obj.operationName = null;
@@ -120,6 +122,7 @@ export const getChartsData = async (ADid: string, budget: bigint) => {
     console.log(data);
     return data;
 };
+
 export const getAdViewerCounts = async (ADid: string) => {
     //{"data":{"advertisementRewards":{"totalCount":1}}}
     const query = `query{
@@ -130,6 +133,24 @@ export const getAdViewerCounts = async (ADid: string) => {
                 }
             }
         ){
+            totalCount
+        }
+    }`;
+    const res = await doGraghQuery(query);
+    const data = await res.json();
+    return data.data.advertisementRewards.totalCount as number;
+};
+
+export const getAdvertisementRefererCounts = async (ADid: string) => {
+    const query = `query{
+        advertisementRewards(filter:{
+        id:{
+            equalTo:"${ADid}"
+        }
+        refererDid:{
+            notEqualTo:""
+        }
+        }){
             totalCount
         }
     }`;
