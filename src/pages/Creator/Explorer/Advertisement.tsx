@@ -30,10 +30,10 @@ const Advertisement: React.FC<{
     remain: bigint;
     loading: boolean;
 }> = ({ ad, viewer, referer, asset, avatar, did, adData, remain, loading }) => {
-    const [infoModal, setInfoModal] = useState(false);
-    const [chartModal, setChartModal] = useState(false);
-    const [password, setPassword] = useState('');
-    const [secModal, setSecModal] = useState(false);
+    const [infoModal, setInfoModal] = useState<boolean>(false);
+    const [chartModal, setChartModal] = useState<boolean>(false);
+    const [password, setPassword] = useState<string>('');
+    const [secModal, setSecModal] = useState<boolean>(false);
     const [guide, setGuide] = useState<boolean>(true);
 
     const intl = useIntl();

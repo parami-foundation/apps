@@ -6,7 +6,7 @@ export default () => {
     const { blockNumber } = useModel('blockNumber');
     const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
     const [lastNumber, setLastNumber] = useState<any>(0);
-    const platforms = ['Telegram', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
+    const platforms = ['Telegram', 'Discord', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
     const did = localStorage.getItem('did') as string;
 
