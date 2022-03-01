@@ -13,6 +13,7 @@ export default {
     'social.blockchain.manual': 'Manual',
     'social.blockchain.walletconnet': 'Wallet Connect',
     'social.blockchain.tokenpocket': 'Token Pocket',
+    'social.blockchain.solana': 'Solana',
     'social.sns.profileURL': 'Profile Address',
     'social.bind.sns.title': 'Bind {platform}',
     'social.sns.username': 'Username',

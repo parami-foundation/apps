@@ -1,5 +1,6 @@
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LinkBlockChain } from '@/services/parami/linker';
+import { solanaSignMessage } from '@/services/solana/solana';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
 import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
 import { hexToDid } from '@/utils/common';
@@ -74,6 +75,25 @@ const BindModal: React.FC<{
                     setLoading(false);
                     return;
                 }
+            case 'solana':
+                try {
+                    const { account, signedMsg }: any = await solanaSignMessage(origin);
+                    notification.info({
+                        message: 'Got an signed message',
+                        description: `0x00${signedMsg}`,
+                        duration: 2
+                    })
+                    await LinkBlockChain(blockchain, account, `0x00${signedMsg}`, password, controllerKeystore);
+                    setBindModal(false);
+                    setLoading(false);
+                } catch (e: any) {
+                    setErrorState({
+                        Type: 'chain error',
+                        Message: e.message,
+                    });
+                    setLoading(false);
+                    return;
+                }
             case 'tokenpocket':
                 try {
                     let res: {
@@ -107,7 +127,7 @@ const BindModal: React.FC<{
                     return;
                 };
                 if (blockchain === 'Polkadot' || blockchain === 'Solana') {
-                    Signed = `0x00${signed.substring(2)}`;
+                    Signed = `0x00${signed}`;
                 };
                 try {
                     await LinkBlockChain(blockchain, address, Signed, password, controllerKeystore);
@@ -163,6 +183,7 @@ const BindModal: React.FC<{
                                 size='large'
                                 shape='round'
                                 className={style.iconButton}
+                                icon={<img src={'/images/sns/walletconnect-white.svg'} />}
                                 style={{
                                     backgroundColor: '#3B99FC',
                                 }}
@@ -207,7 +228,7 @@ const BindModal: React.FC<{
                             </div>
                         </>
                     )}
-                    {(blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') && (
+                    {blockchain === 'Solana' && (
                         <>
                             <Button
                                 block
@@ -215,6 +236,60 @@ const BindModal: React.FC<{
                                 size='large'
                                 shape='round'
                                 className={style.iconButton}
+                                icon={<img src={'/images/crypto/solana-sol-logo.svg'} />}
+                                style={{
+                                    backgroundColor: '#512da8',
+                                }}
+                                onClick={() => {
+                                    setType('solana');
+                                    setSecModal(true);
+                                }}
+                            >
+                                {intl.formatMessage({
+                                    id: 'social.blockchain.solana',
+                                })}
+                            </Button>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    width: '100%',
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                }}
+                                onClick={() => {
+                                    setCollapse(!collapse);
+                                }}
+                            >
+                                <Divider>
+                                    {intl.formatMessage({
+                                        id: 'social.blockchain.manual',
+                                    })}
+                                    <Button
+                                        type="link"
+                                        icon={
+                                            <DownOutlined
+                                                rotate={!collapse ? 0 : -180}
+                                                className={style.expandButtonIcon}
+                                            />
+                                        }
+                                        onClick={() => {
+                                            setCollapse(!collapse);
+                                        }}
+                                    />
+                                </Divider>
+                            </div>
+                        </>
+                    )}
+                    {(blockchain === 'Polkadot' || blockchain === 'Tron') && (
+                        <>
+                            <Button
+                                block
+                                type='primary'
+                                size='large'
+                                shape='round'
+                                className={style.iconButton}
+                                icon={<img src={'/images/sns/tokenpocket-white.svg'} />}
                                 style={{
                                     backgroundColor: '#2980FE',
                                 }}

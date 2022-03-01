@@ -41,7 +41,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         </Title>
         <div className={styles.account}>
           <span className={styles.nickname}>
-            {nickname || 'Nickname'}
+            {nickname.toString() || 'Nickname'}
           </span>
           <Did did={did} />
         </div>

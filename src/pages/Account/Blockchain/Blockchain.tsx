@@ -168,20 +168,39 @@ const Blockchain: React.FC = () => {
                             <span className={style.label}>SOL</span>
                         </div>
                         <div className={style.button}>
-                            <Button
-                                disabled
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setBindModal(true);
-                                    setBlockchain('Solana');
-                                }}
+                            <Spin
+                                indicator={
+                                    <LoadingOutlined spin />
+                                }
+                                spinning={!Object.keys(linkedInfo).length}
                             >
-                                {intl.formatMessage({
-                                    id: 'social.coming',
-                                })}
-                            </Button>
+                                <Button
+                                    disabled={null !== linkedInfo.Solana}
+                                    size='large'
+                                    shape='round'
+                                    type='primary'
+                                    onClick={() => {
+                                        setBindModal(true);
+                                        setBlockchain('Solana');
+                                    }}
+                                >
+                                    {!linkedInfo.Solana &&
+                                        intl.formatMessage({
+                                            id: 'social.bind',
+                                        })
+                                    }
+                                    {linkedInfo.Solana === 'linked' &&
+                                        intl.formatMessage({
+                                            id: 'social.binded',
+                                        })
+                                    }
+                                    {linkedInfo.Solana === 'verifing' &&
+                                        intl.formatMessage({
+                                            id: 'social.verifing',
+                                        })
+                                    }
+                                </Button>
+                            </Spin>
                         </div>
                     </div>
                     <div className={style.field}>

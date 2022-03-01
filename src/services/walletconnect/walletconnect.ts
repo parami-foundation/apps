@@ -6,7 +6,6 @@ export async function signPersonalMessage(message: string) {
     infuraId: "774b1e4252de48c3997d66ac5f5078d8",
   });
   try {
-
     await provider.enable();
     //  Wrap with Web3Provider from ethers.js
     const web3Provider = new providers.Web3Provider(provider);
