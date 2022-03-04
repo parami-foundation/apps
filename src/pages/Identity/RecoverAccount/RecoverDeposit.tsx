@@ -13,7 +13,7 @@ import { ChangeController, GetRecoveryFee } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { Mutex } from 'async-mutex';
 import { formatBalance } from '@polkadot/util';
-import { FloatStringToBigInt } from '@/utils/format';
+import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
@@ -38,6 +38,7 @@ const RecoverDeposit: React.FC<{
   const [secModal, setSecModal] = useState(false);
   const [Password, setPassword] = useState('');
   const [magicBalance, setMagicBalance] = useState<bigint>(BigInt(0));
+  const [RecoveryFee, setRecoveryFee] = useState<string>();
 
   const passwd = password || Password
 
@@ -76,9 +77,13 @@ const RecoverDeposit: React.FC<{
   }
 
   const pendingStatus = async () => {
+    if (!apiWs || !RecoveryFee) {
+      return;
+    }
+
     const release = await mutex.acquire();
 
-    if (BigInt(magicBalance) < FloatStringToBigInt('0.0005', 18)) {
+    if (BigInt(magicBalance) < FloatStringToBigInt(RecoveryFee, 18)) {
       release();
       return;
     }
@@ -100,8 +105,8 @@ const RecoverDeposit: React.FC<{
   }
 
   const getRecoveryFee = async () => {
-    const fee = await GetRecoveryFee(ControllerUserAddress);
-    console.log(fee);
+    const fee = await GetRecoveryFee(MagicUserAddress, ControllerUserAddress);
+    setRecoveryFee(BigIntToFloatString(BigInt(fee), 18));
   };
 
   useEffect(() => {
@@ -121,7 +126,7 @@ const RecoverDeposit: React.FC<{
       getRecoveryFee();
       pendingStatus();
     }
-  }, [apiWs, magicUserAddress, magicBalance]);
+  }, [apiWs, magicUserAddress, magicBalance, RecoveryFee]);
 
   return (
     <>
@@ -142,7 +147,7 @@ const RecoverDeposit: React.FC<{
           {intl.formatMessage({
             id: 'identity.recoverDeposit.description',
           }, {
-            ad3: (<strong>0.0005 $AD3</strong>)
+            ad3: (<strong><AD3 value={FloatStringToBigInt(RecoveryFee as string, 18).toString()} /></strong>)
           })}
         </p>
         <Divider />
@@ -234,7 +239,7 @@ const RecoverDeposit: React.FC<{
                 id: 'identity.initialDeposit.minCharge',
               })}
             </span>
-            <span className={style.value}><AD3 value={FloatStringToBigInt('0.0005', 18).toString()} /></span>
+            <span className={style.value}><AD3 value={FloatStringToBigInt(RecoveryFee as string, 18).toString()} /></span>
           </div>
           <a
             style={{

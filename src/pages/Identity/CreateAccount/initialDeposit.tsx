@@ -300,7 +300,7 @@ const InitialDeposit: React.FC<{
         message: 'Sorry, your credit is running low',
         description: `Please make sure to recharge ${ExistentialDeposit} $AD3 at least`,
         duration: null,
-      })
+      });
     }
   }, [controllerBalance, ExistentialDeposit]);
 
@@ -495,7 +495,7 @@ const InitialDeposit: React.FC<{
                 {intl.formatMessage({
                   id: 'identity.initialDeposit.description',
                 }, {
-                  ad3: (<strong>{ExistentialDeposit} $AD3</strong>)
+                  ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></strong>)
                 })}
               </p>
               <Divider />

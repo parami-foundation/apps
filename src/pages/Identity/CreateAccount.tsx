@@ -56,12 +56,12 @@ const CreateAccount: React.FC<{
   useEffect(() => {
     if (!apiWs) {
       return;
-    }
+    };
     if (access.canUser) {
       history.push(config.page.walletPage);
       return;
-    }
-    if (MagicUserAddress === null || magicMnemonic === '') {
+    };
+    if (MagicUserAddress === null && magicMnemonic === '') {
       createMagicAccount();
     };
 

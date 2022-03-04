@@ -299,9 +299,10 @@ export const ChangeController = async (password: string, magicKeystore: string, 
   return await subCallback(ex, sender);
 };
 
-export const GetRecoveryFee = async (newControllerUserAddress: string) => {
-  const ex = window.apiWs.tx.magic.changeController(newControllerUserAddress);
-  return ex;
+export const GetRecoveryFee = async (magicUserAddress: string, newControllerUserAddress: string) => {
+  const ex = await window.apiWs.tx.magic.changeController(newControllerUserAddress);
+  const info = await ex.paymentInfo(magicUserAddress);
+  return info.partialFee.toString();
 };
 
 export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
