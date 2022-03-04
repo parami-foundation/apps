@@ -134,7 +134,7 @@ const Explorer: React.FC = () => {
             if (!userData) {
                 message.error(
                     intl.formatMessage({
-                        id: 'error.account.notFound',
+                        id: 'error.identity.notFound',
                     }),
                 );
                 history.goBack();
@@ -327,7 +327,7 @@ const Explorer: React.FC = () => {
             <BigModal
                 visable={notAccess}
                 title={intl.formatMessage({
-                    id: 'error.account.notUser',
+                    id: 'error.identity.notUser',
                 })}
                 content={
                     <>

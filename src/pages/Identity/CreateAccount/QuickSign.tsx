@@ -48,12 +48,12 @@ const QuickSign: React.FC<{
                             className={style.title}
                         >
                             {intl.formatMessage({
-                                id: 'account.quicksign.title',
+                                id: 'identity.quicksign.title',
                             })}
                         </Title>
                         <p className={style.description}>
                             {intl.formatMessage({
-                                id: 'account.quicksign.description',
+                                id: 'identity.quicksign.description',
                             })}
                         </p>
                         <Divider />
@@ -81,7 +81,7 @@ const QuickSign: React.FC<{
                                 onClick={() => setStep(2)}
                             >
                                 {intl.formatMessage({
-                                    id: 'account.quicksign.manual',
+                                    id: 'identity.quicksign.manual',
                                 })}
                             </Button>
                             <Button
@@ -102,7 +102,7 @@ const QuickSign: React.FC<{
                                 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'account.beforeStart.licDesc',
+                                    id: 'identity.beforeStart.licDesc',
                                 })}
                             </small>
                         </div>
@@ -133,7 +133,7 @@ const QuickSign: React.FC<{
                         }}
                     >
                         {intl.formatMessage({
-                            id: 'account.beforeStart.licDesc',
+                            id: 'identity.beforeStart.licDesc',
                         })}
                     </small>
                 </Spin>

@@ -17,7 +17,7 @@ const SelectAccount: React.FC<{
             const existAccounts = await GetStableAccount(currentAccount?.address);
             if (!existAccounts) {
                 message.error(intl.formatMessage({
-                    id: 'error.account.notFound',
+                    id: 'error.identity.notFound',
                 }));
                 return;
             }
@@ -33,13 +33,13 @@ const SelectAccount: React.FC<{
                 return;
             } else {
                 message.error(intl.formatMessage({
-                    id: 'error.account.notFound',
+                    id: 'error.identity.notFound',
                 }))
             }
         } catch (e: any) {
             message.error(e.message);
             message.error(intl.formatMessage({
-                id: 'error.account.notFound',
+                id: 'error.identity.notFound',
             }));
             return;
         }

@@ -55,12 +55,12 @@ const BeforeStart: React.FC<{
             className={style.title}
           >
             {intl.formatMessage({
-              id: 'account.beforeStart.title',
+              id: 'identity.beforeStart.title',
             })}
           </Title>
           <p className={style.description}>
             {intl.formatMessage({
-              id: 'account.beforeStart.description',
+              id: 'identity.beforeStart.description',
             })}
           </p>
           <Divider />
@@ -74,7 +74,7 @@ const BeforeStart: React.FC<{
               onClick={() => { onClick() }}
             >
               {intl.formatMessage({
-                id: 'account.beforeStart.agree',
+                id: 'identity.beforeStart.agree',
               })}
             </Button>
             <Button
@@ -95,7 +95,7 @@ const BeforeStart: React.FC<{
               }}
             >
               {intl.formatMessage({
-                id: 'account.beforeStart.licDesc',
+                id: 'identity.beforeStart.licDesc',
               })}
             </small>
           </div>
@@ -112,7 +112,7 @@ const BeforeStart: React.FC<{
               onClick={() => { onClick() }}
             >
               {intl.formatMessage({
-                id: 'account.beforeStart.agree',
+                id: 'identity.beforeStart.agree',
               })}
             </Button>
           </div>
@@ -124,7 +124,7 @@ const BeforeStart: React.FC<{
             }}
           >
             {intl.formatMessage({
-              id: 'account.beforeStart.licDesc',
+              id: 'identity.beforeStart.licDesc',
             })}
           </small>
         </>

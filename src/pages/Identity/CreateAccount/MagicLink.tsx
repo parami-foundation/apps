@@ -29,7 +29,7 @@ const MagicLink: React.FC<{
     setSubmitting(true);
 
     const messageContent = `${intl.formatMessage({
-      id: 'account.magicLink.sendMessage',
+      id: 'identity.magicLink.sendMessage',
     }, {
       link: recoverWithLink,
     })}`;
@@ -80,12 +80,12 @@ const MagicLink: React.FC<{
             className={style.title}
           >
             {intl.formatMessage({
-              id: 'account.magicLink.title',
+              id: 'identity.magicLink.title',
             })}
           </Title>
           <p className={style.description}>
             {intl.formatMessage({
-              id: 'account.magicLink.description',
+              id: 'identity.magicLink.description',
             })}
           </p>
           <Divider />
@@ -120,7 +120,7 @@ const MagicLink: React.FC<{
                 icon={<CopyOutlined />}
               >
                 {intl.formatMessage({
-                  id: 'account.magicLink.copyMagicLink',
+                  id: 'identity.magicLink.copyMagicLink',
                 })}
               </Button>
             </CopyToClipboard>
@@ -139,7 +139,7 @@ const MagicLink: React.FC<{
             </Button>
             <span>
               {intl.formatMessage({
-                id: 'account.alreadyCreate',
+                id: 'identity.alreadyCreate',
               })}
             </span>
             <a
@@ -150,7 +150,7 @@ const MagicLink: React.FC<{
               onClick={() => history.push(config.page.recoverPage)}
             >
               {intl.formatMessage({
-                id: 'account.recoverAccount',
+                id: 'identity.recoverAccount',
               })}
             </a>
           </div>

@@ -58,8 +58,7 @@ const ExportController: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.export.title',
-                    defaultMessage: 'Export'
+                    id: 'account.export.title',
                 })}
             </Title>
             <div className={style.export}>
@@ -73,8 +72,7 @@ const ExportController: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.export.exportController',
-                                defaultMessage: 'Export Controller'
+                                id: 'account.export.exportController',
                             })}
                         </div>
                         <div className={style.button}>
@@ -104,8 +102,7 @@ const ExportController: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.export.exportAll',
-                                defaultMessage: 'Export All'
+                                id: 'account.export.exportAll',
                             })}
                         </div>
                         <div className={style.button}>
@@ -116,7 +113,6 @@ const ExportController: React.FC = () => {
                             >
                                 {intl.formatMessage({
                                     id: 'common.export',
-                                    defaultMessage: 'Export'
                                 })}
                             </Button>
                         </div>

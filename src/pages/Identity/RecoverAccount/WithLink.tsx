@@ -60,7 +60,7 @@ const WithLink: React.FC<{
       if (didData === null) {
         message.error(
           intl.formatMessage({
-            id: 'error.account.notFound',
+            id: 'error.identity.notFound',
           }),
         );
         history.push(config.page.homePage);
@@ -160,19 +160,19 @@ const WithLink: React.FC<{
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'account.withLink.title',
+            id: 'identity.withLink.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'account.withLink.description',
+            id: 'identity.withLink.description',
           })}
         </p>
         <Divider />
         <div className={style.field}>
           <Title level={4}>
             {intl.formatMessage({
-              id: 'account.withLink.subtitle',
+              id: 'identity.withLink.subtitle',
             })}
           </Title>
           <Input
@@ -186,7 +186,7 @@ const WithLink: React.FC<{
         <div className={style.field}>
           <Title level={4}>
             {intl.formatMessage({
-              id: 'account.withLink.setPassword',
+              id: 'identity.withLink.setPassword',
             })}
           </Title>
           <div className={style.codeInput}>
@@ -231,7 +231,7 @@ const WithLink: React.FC<{
             onClick={() => GeneratePassword()}
           >
             {intl.formatMessage({
-              id: 'account.withLink.generatePassword',
+              id: 'identity.withLink.generatePassword',
             })}
           </Button>
           <Button

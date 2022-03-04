@@ -9,7 +9,7 @@ const UnAccessible: React.FC = () => {
     <Result
       status="403"
       title={intl.formatMessage({
-        id: 'error.account.notUser',
+        id: 'error.identity.notUser',
       })}
       subTitle={intl.formatMessage({
         id: 'error.unAccessible.subTitle',

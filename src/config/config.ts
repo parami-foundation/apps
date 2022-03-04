@@ -1,11 +1,15 @@
+const isDev: boolean = true;
 export const config = {
     "const": {
-        "minimalCharge": "1000000000000000000",
+        "minimalCharge": "100000000000000000",
         "adEarnUpTo": "500000000000000000000",
     },
-    "main": {
+    "main": isDev ? {
+        "socketServer": "wss://staging.parami.io/ws",
+        "subqueryServer": "https://staging.parami.io/graph/",
+        "tagMapConfig": "http://localhost:8000/tagmap.json",
+    } : {
         "socketServer": "wss://rpc.parami.io/ws",
-        // "socketServer": "ws://localhost:9944",
         "subqueryServer": "https://graph.parami.io/subsquery",
         "tagMapConfig": "https://app.parami.io/tagmap.json",
     },
@@ -24,7 +28,7 @@ export const config = {
         },
         "discord": {
             "clientId": "928193512619536465",
-            "redirectUri": "https://app.parami.io/create/discord",
+            "redirectUri": isDev ? "http://localhost:8000/create/discord" : "https://app.parami.io/create/discord",
         },
     },
     "page": {

@@ -32,8 +32,7 @@ const AccountDetails: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.accountDetails.title',
-                    defaultMessage: 'Account Details'
+                    id: 'account.accountDetails.title',
                 })}
             </Title>
             <Card
@@ -50,8 +49,7 @@ const AccountDetails: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.accountDetails.nickname',
-                                defaultMessage: 'Nickname'
+                                id: 'account.accountDetails.nickname',
                             })}
                         </div>
                         <div className={style.idCody}>
@@ -72,8 +70,7 @@ const AccountDetails: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.accountDetails.DID',
-                                defaultMessage: 'DID'
+                                id: 'account.accountDetails.DID',
                             })}
                         </div>
                         <div className={style.idCody}>
@@ -102,8 +99,7 @@ const AccountDetails: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.accountDetails.walletBalance',
-                                defaultMessage: 'Wallet Balance'
+                                id: 'account.accountDetails.walletBalance',
                             })}
                         </div>
                         <div className={style.value}>
@@ -114,14 +110,12 @@ const AccountDetails: React.FC = () => {
                         <div className={style.field}>
                             <div className={style.title}>
                                 {intl.formatMessage({
-                                    id: 'profile.accountDetails.reservedBalance',
-                                    defaultMessage: 'Reserved balance'
+                                    id: 'account.accountDetails.reservedBalance',
                                 })}
                                 <Tooltip
                                     placement="top"
                                     title={intl.formatMessage({
-                                        id: 'profile.accountDetails.reservedBalance.tip',
-                                        defaultMessage: 'Up to 0.01 AD3 is reserved to cover the cost of transactions.'
+                                        id: 'account.accountDetails.reservedBalance.tip',
                                     })}
                                 >
                                     <ExclamationCircleOutlined className={style.infoIcon} />
@@ -134,14 +128,12 @@ const AccountDetails: React.FC = () => {
                         <div className={style.field}>
                             <div className={style.title}>
                                 {intl.formatMessage({
-                                    id: 'profile.accountDetails.availableBalance',
-                                    defaultMessage: 'Available balance'
+                                    id: 'account.accountDetails.availableBalance',
                                 })}
                                 <Tooltip
                                     placement="top"
                                     title={intl.formatMessage({
-                                        id: 'profile.accountDetails.availableBalance.tip',
-                                        defaultMessage: 'This is your spendable Parami balance, and can be used or transferred immediately.'
+                                        id: 'account.accountDetails.availableBalance.tip',
                                     })}
                                 >
                                     <ExclamationCircleOutlined className={style.infoIcon} />
@@ -154,14 +146,12 @@ const AccountDetails: React.FC = () => {
                         <div className={style.field}>
                             <div className={style.title}>
                                 {intl.formatMessage({
-                                    id: 'profile.accountDetails.gasBalance',
-                                    defaultMessage: 'Gas balance'
+                                    id: 'account.accountDetails.gasBalance',
                                 })}
                                 <Tooltip
                                     placement="top"
                                     title={intl.formatMessage({
-                                        id: 'profile.accountDetails.gasBalance.tip',
-                                        defaultMessage: 'Gas balance tip'
+                                        id: 'account.accountDetails.gasBalance.tip',
                                     })}
                                 >
                                     <ExclamationCircleOutlined className={style.infoIcon} />

@@ -39,8 +39,7 @@ const SNS: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.sns.title',
-                    defaultMessage: 'SNS'
+                    id: 'account.sns.title',
                 })}
             </Title>
             <div className={style.bind}>

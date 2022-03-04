@@ -6,7 +6,7 @@ import menu from './en-US/menu';
 import pwa from './en-US/pwa';
 import modal from './en-US/modal';
 
-import account from './en-US/account';
+import identity from './en-US/identity';
 import creator from './en-US/creator';
 import index from './en-US/index';
 import stake from './en-US/stake';
@@ -32,7 +32,7 @@ export default {
   ...common,
   ...error,
 
-  ...account,
+  ...identity,
   ...creator,
   ...index,
   ...stake,

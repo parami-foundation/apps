@@ -165,7 +165,7 @@ const Add: React.FC<{
             if (res.isEmpty) {
                 message.error(
                     intl.formatMessage({
-                        id: 'error.account.notFound',
+                        id: 'error.identity.notFound',
                     }),
                 );
                 return;
@@ -181,7 +181,7 @@ const Add: React.FC<{
                 } else {
                     message.error(
                         intl.formatMessage({
-                            id: 'error.account.notKOL',
+                            id: 'error.identity.notKOL',
                         }),
                     );
                     return;

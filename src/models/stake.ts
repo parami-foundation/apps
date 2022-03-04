@@ -11,10 +11,10 @@ export default () => {
     const [LPs, setLPs] = useState<Map<string, any>>(new Map());
     const [LPsArr, setLPsArr] = useState<any[]>([]);
 
-    const currentAccount = localStorage.getItem('stashUserAddress') as string;
+    const currentAccount = localStorage.getItem('stashUserAddress');
 
     const getTokenList = async () => {
-        if (!apiWs) {
+        if (!apiWs || !currentAccount) {
             return;
         }
         const allLPs: Map<string, any> = new Map();
@@ -63,10 +63,10 @@ export default () => {
     }
 
     useEffect(() => {
-        if (apiWs) {
+        if (apiWs && currentAccount) {
             getTokenList();
         }
-    }, [apiWs]);
+    }, [apiWs, currentAccount]);
 
     return {
         LPs,

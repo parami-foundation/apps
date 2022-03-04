@@ -26,8 +26,7 @@ const Avatar: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.avatar.title',
-                    defaultMessage: 'Avatar'
+                    id: 'account.avatar.title',
                 })}
             </Title>
             <Title
@@ -35,14 +34,12 @@ const Avatar: React.FC = () => {
                 className={style.sectionSubtitle}
             >
                 {intl.formatMessage({
-                    id: 'profile.avatar.subtitle',
-                    defaultMessage: 'Identification'
+                    id: 'account.avatar.subtitle',
                 })}
                 <Tooltip
                     placement="top"
                     title={intl.formatMessage({
-                        id: 'profile.avatar.subtitle.tip',
-                        defaultMessage: 'The picture you uploaded will be added with did information, and then you can use this picture as an identification avatar.'
+                        id: 'account.avatar.subtitle.tip',
                     })}
                 >
                     <ExclamationCircleOutlined className={style.infoIcon} />

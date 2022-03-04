@@ -68,12 +68,12 @@ const ConfirmPassword: React.FC<{
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'account.confirmPassword.title',
+            id: 'identity.confirmPassword.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'account.confirmPassword.description',
+            id: 'identity.confirmPassword.description',
           })}
         </p>
         <Divider />
@@ -124,7 +124,7 @@ const ConfirmPassword: React.FC<{
           </Button>
           <span>
             {intl.formatMessage({
-              id: 'account.alreadyCreate',
+              id: 'identity.alreadyCreate',
             })}
           </span>
           <a
@@ -135,7 +135,7 @@ const ConfirmPassword: React.FC<{
             onClick={() => history.push(config.page.recoverPage)}
           >
             {intl.formatMessage({
-              id: 'account.recoverAccount',
+              id: 'identity.recoverAccount',
             })}
           </a>
         </div>

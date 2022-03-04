@@ -299,6 +299,11 @@ export const ChangeController = async (password: string, magicKeystore: string, 
   return await subCallback(ex, sender);
 };
 
+export const GetRecoveryFee = async (newControllerUserAddress: string) => {
+  const ex = window.apiWs.tx.magic.changeController(newControllerUserAddress);
+  return ex;
+};
+
 export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
   const oldControllerAddress = await window.apiWs.query.magic.controllerAccountOf(
     magicUserAddress,
@@ -384,4 +389,9 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
 
   const events = await subCallback(batch, payUser);
   return events;
+};
+
+export const GetExistentialDeposit = async () => {
+  const existentialDeposit = await window.apiWs.consts.balances.existentialDeposit;
+  return existentialDeposit.toString();
 };

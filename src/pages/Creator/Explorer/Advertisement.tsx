@@ -93,7 +93,7 @@ const Advertisement: React.FC<{
     };
 
     const gotoAdPage = async () => {
-        window.open(`${ad?.link}&stamp=${stamp}&t=${Date.now()}`);
+        window.open(`${ad?.link}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}`);
     };
 
     const sponsoredBy = hexToDid(adData?.creator).substring(8);
@@ -103,6 +103,7 @@ const Advertisement: React.FC<{
     }, [handleStamp]);
 
     useEffect(() => {
+        { console.log(ad) }
         if (!loading) {
             setTimeout(() => {
                 setGuide(false);

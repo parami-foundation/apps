@@ -46,8 +46,7 @@ const Security: React.FC = () => {
             localStorage.setItem('controllerKeystore', encodedMnemonic);
             setPassphraseEnable('disable');
             message.success(intl.formatMessage({
-                id: 'profile.security.passphrase.changeSuccess',
-                defaultMessage: 'Modified successfully',
+                id: 'account.security.passphrase.changeSuccess',
             }));
             window.location.reload();
         } else {
@@ -67,8 +66,7 @@ const Security: React.FC = () => {
             localStorage.setItem('controllerKeystore', encodedMnemonic);
             setPassphraseEnable('enable');
             message.success(intl.formatMessage({
-                id: 'profile.security.passphrase.changeSuccess',
-                defaultMessage: 'Modified successfully',
+                id: 'account.security.passphrase.changeSuccess',
             }));
             window.location.reload();
         }
@@ -113,8 +111,7 @@ const Security: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.security.title',
-                    defaultMessage: 'Security'
+                    id: 'account.security.title',
                 })}
             </Title>
             <Title
@@ -122,14 +119,12 @@ const Security: React.FC = () => {
                 className={style.sectionSubtitle}
             >
                 {intl.formatMessage({
-                    id: 'profile.security.subtitle',
-                    defaultMessage: 'Most Secure (Recommended)'
+                    id: 'account.security.subtitle',
                 })}
                 <Tooltip
                     placement="top"
                     title={intl.formatMessage({
-                        id: 'profile.security.subtitle.tip',
-                        defaultMessage: 'Passphrases can be secure if used correctly (they must be written down and stored safely).'
+                        id: 'account.security.subtitle.tip',
                     })}
                 >
                     <ExclamationCircleOutlined className={style.infoIcon} />
@@ -146,8 +141,7 @@ const Security: React.FC = () => {
                     <div className={style.field}>
                         <div className={style.title}>
                             {intl.formatMessage({
-                                id: 'profile.security.passphrase',
-                                defaultMessage: 'Passphrase'
+                                id: 'account.security.passphrase',
                             })}
                         </div>
                         <div className={style.button}>

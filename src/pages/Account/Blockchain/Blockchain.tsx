@@ -39,8 +39,7 @@ const Blockchain: React.FC = () => {
                     preview={false}
                 />
                 {intl.formatMessage({
-                    id: 'profile.blockchain.title',
-                    defaultMessage: 'Blockchain'
+                    id: 'account.blockchain.title',
                 })}
             </Title>
             <div className={style.bind}>

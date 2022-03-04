@@ -14,6 +14,7 @@ import {
   BatchNicknameAndAvatar,
   CreateDid,
   CreateStableAccount,
+  GetExistentialDeposit,
   GetStableAccount,
   QueryDid,
 } from '@/services/parami/wallet';
@@ -23,7 +24,7 @@ import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
 import { uploadIPFS } from '@/services/parami/ipfs';
 import { b64toBlob } from '@/utils/common';
-import { FloatStringToBigInt } from '@/utils/format';
+import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
@@ -65,6 +66,7 @@ const InitialDeposit: React.FC<{
   const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
   const [avatarNicknameData, setAvatarNicknameData] = useState<any>();
   const [DID, setDID] = useState<string>();
+  const [ExistentialDeposit, setExistentialDeposit] = useState<string>();
 
   const intl = useIntl();
 
@@ -146,6 +148,7 @@ const InitialDeposit: React.FC<{
                 setAvatarNicknameData(events);
               } catch (e: any) {
                 console.log(e);
+                goto();
               }
             });
         } else {
@@ -252,8 +255,14 @@ const InitialDeposit: React.FC<{
     }
   };
 
+  const getExistentialDeposit = async () => {
+    const existentialDeposit = await GetExistentialDeposit();
+    setExistentialDeposit(BigIntToFloatString(BigInt(existentialDeposit) + FloatStringToBigInt(`${(0.02 * 3).toString()}`, 18), 18));
+  };
+
   useEffect(() => {
     if (apiWs && controllerUserAddress) {
+      getExistentialDeposit();
       listenBalance();
     }
   }, [apiWs, controllerUserAddress]);
@@ -280,14 +289,20 @@ const InitialDeposit: React.FC<{
   }, [password, controllerUserAddress, controllerKeystore]);
 
   useEffect(() => {
-    if (controllerBalance >= FloatStringToBigInt('1', 18)) {
+    if (!!ExistentialDeposit && controllerBalance >= FloatStringToBigInt(ExistentialDeposit, 18)) {
       setLoading(true);
       if (unsub !== null) {
         unsub();
       }
       createAccount();
+    } else if (!!ExistentialDeposit && controllerBalance > 0 && controllerBalance < FloatStringToBigInt(ExistentialDeposit, 18)) {
+      notification.error({
+        message: 'Sorry, your credit is running low',
+        description: `Please make sure to recharge ${ExistentialDeposit} $AD3 at least`,
+        duration: null,
+      })
     }
-  }, [controllerBalance]);
+  }, [controllerBalance, ExistentialDeposit]);
 
   return (
     <>
@@ -337,7 +352,7 @@ const InitialDeposit: React.FC<{
                 }}
               >
                 {intl.formatMessage({
-                  id: 'account.restart',
+                  id: 'identity.restart',
                 })}
               </a>
             </>
@@ -353,12 +368,12 @@ const InitialDeposit: React.FC<{
                 className={style.title}
               >
                 {intl.formatMessage({
-                  id: 'account.magicLink.lastStep',
+                  id: 'identity.magicLink.lastStep',
                 })}
               </Title>
               <p className={style.description}>
                 {intl.formatMessage({
-                  id: 'account.magicLink.description',
+                  id: 'identity.magicLink.description',
                 })}
               </p>
               <Divider />
@@ -393,7 +408,7 @@ const InitialDeposit: React.FC<{
                     icon={<CopyOutlined />}
                   >
                     {intl.formatMessage({
-                      id: 'account.magicLink.copyMagicLink',
+                      id: 'identity.magicLink.copyMagicLink',
                     })}
                   </Button>
                 </CopyToClipboard>
@@ -405,7 +420,7 @@ const InitialDeposit: React.FC<{
                   className={style.button}
                   onClick={async () => {
                     const messageContent = `${intl.formatMessage({
-                      id: 'account.magicLink.sendMessage',
+                      id: 'identity.magicLink.sendMessage',
                     }, {
                       link: magicLink,
                     })}`;
@@ -473,14 +488,14 @@ const InitialDeposit: React.FC<{
                 className={style.title}
               >
                 {intl.formatMessage({
-                  id: 'account.initialDeposit.title',
+                  id: 'identity.initialDeposit.title',
                 })}
               </Title>
               <p className={style.description}>
                 {intl.formatMessage({
-                  id: 'account.initialDeposit.description',
+                  id: 'identity.initialDeposit.description',
                 }, {
-                  ad3: (<strong>1 $AD3</strong>)
+                  ad3: (<strong>{ExistentialDeposit} $AD3</strong>)
                 })}
               </p>
               <Divider />
@@ -491,7 +506,7 @@ const InitialDeposit: React.FC<{
                 }}
               >
                 {intl.formatMessage({
-                  id: 'account.initialDeposit.whereToBuy',
+                  id: 'identity.initialDeposit.whereToBuy',
                 })}
               </Button>
               <div className={style.listBtn}>
@@ -513,7 +528,7 @@ const InitialDeposit: React.FC<{
                   >
                     <span className={style.title}>
                       {intl.formatMessage({
-                        id: 'account.initialDeposit.chargeAddress',
+                        id: 'identity.initialDeposit.chargeAddress',
                       })}
                     </span>
                     <span className={style.value}>
@@ -559,13 +574,13 @@ const InitialDeposit: React.FC<{
                 <div className={style.field}>
                   <span className={style.title}>
                     {intl.formatMessage({
-                      id: 'account.initialDeposit.status',
+                      id: 'identity.initialDeposit.status',
                     })}
                   </span>
                   <span className={style.value}>
                     <Tag color="processing" icon={<SyncOutlined spin />}>
                       {intl.formatMessage({
-                        id: 'account.initialDeposit.status.pending',
+                        id: 'identity.initialDeposit.status.pending',
                       })}
                     </Tag>
                   </span>
@@ -573,10 +588,10 @@ const InitialDeposit: React.FC<{
                 <div className={style.field}>
                   <span className={style.title}>
                     {intl.formatMessage({
-                      id: 'account.initialDeposit.minCharge',
+                      id: 'identity.initialDeposit.minCharge',
                     })}
                   </span>
-                  <span className={style.value}><AD3 value={config.const.minimalCharge} /></span>
+                  <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
                 </div>
               </div>
               <a
@@ -591,13 +606,13 @@ const InitialDeposit: React.FC<{
                 }}
               >
                 {intl.formatMessage({
-                  id: 'account.restart',
+                  id: 'identity.restart',
                 })}
               </a>
               <div className={style.socialButtons}>
                 <Divider>
                   {intl.formatMessage({
-                    id: 'account.beforeStart.faucet',
+                    id: 'identity.beforeStart.faucet',
                   })}
                 </Divider>
                 <TelegramLoginButton
@@ -615,7 +630,7 @@ const InitialDeposit: React.FC<{
           <BigModal
             visable={modalVisable}
             title={intl.formatMessage({
-              id: 'account.initialDeposit.buyAD3',
+              id: 'identity.initialDeposit.buyAD3',
             })}
             content={
               <>

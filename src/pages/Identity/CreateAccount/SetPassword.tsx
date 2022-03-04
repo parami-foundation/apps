@@ -105,12 +105,12 @@ const SetPassword: React.FC<{
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'account.setPassword.title',
+            id: 'identity.setPassword.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'account.setPassword.description',
+            id: 'identity.setPassword.description',
           })}
         </p>
         <Divider />
@@ -161,7 +161,7 @@ const SetPassword: React.FC<{
           </Button>
           <span>
             {intl.formatMessage({
-              id: 'account.alreadyCreate',
+              id: 'identity.alreadyCreate',
             })}
           </span>
           <a
@@ -172,7 +172,7 @@ const SetPassword: React.FC<{
             onClick={() => history.push(config.page.recoverPage)}
           >
             {intl.formatMessage({
-              id: 'account.recoverAccount',
+              id: 'identity.recoverAccount',
             })}
           </a>
         </div>

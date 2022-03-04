@@ -16,4 +16,5 @@ export default {
     'common.uploading': 'Uploading',
     'common.submitting': 'Submitting',
     'common.account': 'Account',
+    'common.export': 'Export',
 };

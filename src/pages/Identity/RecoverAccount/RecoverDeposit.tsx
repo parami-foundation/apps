@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
-import { ChangeController } from '@/services/parami/wallet';
+import { ChangeController, GetRecoveryFee } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { Mutex } from 'async-mutex';
 import { formatBalance } from '@polkadot/util';
@@ -99,6 +99,11 @@ const RecoverDeposit: React.FC<{
     }
   }
 
+  const getRecoveryFee = async () => {
+    const fee = await GetRecoveryFee(ControllerUserAddress);
+    console.log(fee);
+  };
+
   useEffect(() => {
     if (passwd === '') {
       setSecModal(true);
@@ -113,6 +118,7 @@ const RecoverDeposit: React.FC<{
 
   useEffect(() => {
     if (apiWs && magicUserAddress) {
+      getRecoveryFee();
       pendingStatus();
     }
   }, [apiWs, magicUserAddress, magicBalance]);
@@ -129,12 +135,12 @@ const RecoverDeposit: React.FC<{
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'account.recoverDeposit.title',
+            id: 'identity.recoverDeposit.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'account.recoverDeposit.description',
+            id: 'identity.recoverDeposit.description',
           }, {
             ad3: (<strong>0.0005 $AD3</strong>)
           })}
@@ -147,7 +153,7 @@ const RecoverDeposit: React.FC<{
           }}
         >
           {intl.formatMessage({
-            id: 'account.initialDeposit.whereToBuy',
+            id: 'identity.initialDeposit.whereToBuy',
           })}
         </Button>
         <div className={style.listBtn}>
@@ -169,7 +175,7 @@ const RecoverDeposit: React.FC<{
             >
               <span className={style.title}>
                 {intl.formatMessage({
-                  id: 'account.recoverDeposit.magicAddress',
+                  id: 'identity.recoverDeposit.magicAddress',
                 })}
               </span>
               <span className={style.value}>
@@ -211,13 +217,13 @@ const RecoverDeposit: React.FC<{
           <div className={style.field}>
             <span className={style.title}>
               {intl.formatMessage({
-                id: 'account.initialDeposit.status',
+                id: 'identity.initialDeposit.status',
               })}
             </span>
             <span className={style.value}>
               <Tag color="processing" icon={<SyncOutlined spin />}>
                 {intl.formatMessage({
-                  id: 'account.initialDeposit.status.pending',
+                  id: 'identity.initialDeposit.status.pending',
                 })}
               </Tag>
             </span>
@@ -225,7 +231,7 @@ const RecoverDeposit: React.FC<{
           <div className={style.field}>
             <span className={style.title}>
               {intl.formatMessage({
-                id: 'account.initialDeposit.minCharge',
+                id: 'identity.initialDeposit.minCharge',
               })}
             </span>
             <span className={style.value}><AD3 value={FloatStringToBigInt('0.0005', 18).toString()} /></span>
@@ -242,7 +248,7 @@ const RecoverDeposit: React.FC<{
             }}
           >
             {intl.formatMessage({
-              id: 'account.restart',
+              id: 'identity.restart',
             })}
           </a>
         </div>
@@ -250,7 +256,7 @@ const RecoverDeposit: React.FC<{
       <BigModal
         visable={modalVisable}
         title={intl.formatMessage({
-          id: 'account.initialDeposit.buyAD3',
+          id: 'identity.initialDeposit.buyAD3',
         })}
         content={
           <>
