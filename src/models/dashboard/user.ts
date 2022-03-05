@@ -16,7 +16,7 @@ export default () => {
         }
         await apiWs.query.did.metadata(did, async (res) => {
             let info = res.toHuman();
-            const [avatar, nickname] = await window.apiWs.rpc.did.batchGetMetadata(did, ['pic', 'name']);
+            const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
             info = { ...info, avatar, nickname };
             if (!info) {
                 return;

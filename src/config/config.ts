@@ -1,4 +1,5 @@
-const isDev: boolean = true;
+const isDev: boolean = false;
+
 export const config = {
     "const": {
         "minimalCharge": "100000000000000000",

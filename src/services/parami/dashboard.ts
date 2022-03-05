@@ -2,11 +2,11 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import { errCb } from './wallet';
 
 export const BecomeAdvertiser = async (deposit: string, account: any) => {
-    const injector = await web3FromSource(identity.meta.source);
+    const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.advertiser.deposit(deposit);
     const ex = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(identity.address, { signer: injector.signer }, errCb);
+    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
     return hash
 };
 
@@ -42,20 +42,20 @@ export const GetTagsOf = async (ad: Uint8Array): Promise<any> => {
 
 export const CreateAds = async (budget: string, tags: any[], metadata: string, rewardRate: string, lifetime: number, account: any) => {
     const ddl = await window.apiWs.query.system.number();
-    const injector = await web3FromSource(identity.meta.source);
+    const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl));
     const ex = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(identity.address, { signer: injector.signer }, errCb);
+    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
     return hash
 };
 
 export const CreateTag = async (tag: string, account: any): Promise<any> => {
-    const injector = await web3FromSource(identity.meta.source);
+    const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.tag.create(tag);
     const ex = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(identity.address, { signer: injector.signer }, errCb);
+    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
     return hash
 };
 
@@ -65,11 +65,11 @@ export const ExistTag = async (tag: string): Promise<any> => {
 };
 
 export const BidSlot = async (adId: string, kolDid: string, amount: string, account: any) => {
-    const injector = await web3FromSource(identity.meta.source);
+    const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.ad.bid(adId, kolDid, amount);
     const ex = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(identity.address, { signer: injector.signer }, errCb);
+    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
     return hash
 };
 

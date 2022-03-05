@@ -67,7 +67,7 @@ export const subCallback = (call: SubmittableExtrinsic<"promise", any>, payUser:
 
 export const subWeb3Callback = (call: SubmittableExtrinsic<"promise", any>, injector: InjectedExtension, account: any) => {
     return new Promise(async (resolve, reject) => {
-        await call.signAndSend(identity.address, { signer: injector.signer }, ({ events = [], status, dispatchError }: any) => {
+        await call.signAndSend(account.address, { signer: injector.signer }, ({ events = [], status, dispatchError }: any) => {
             if (dispatchError) {
                 if (dispatchError.isModule) {
                     // for module errors, we have the section indexed, lookup
