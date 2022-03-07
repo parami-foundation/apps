@@ -92,7 +92,7 @@ const WithLink: React.FC<{
         magicMnemonic,
       );
       setMagicKeystore(magicData?.keystore as string);
-      sessionStorage.setItem('magicKeystore', magicData?.keystore as string);
+      localStorage.setItem('magicKeystore', magicData?.keystore as string);
 
       // New Controller
       const controllerMnemonic = mnemonicGenerate(12);

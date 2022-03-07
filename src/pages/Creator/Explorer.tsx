@@ -192,7 +192,7 @@ const Explorer: React.FC = () => {
     };
 
     useEffect(() => {
-        sessionStorage.setItem('redirect', window.location.href);
+        localStorage.setItem('redirect', window.location.href);
         if (!checkInIAP()) {
             setNotSysBroswer(true);
         };

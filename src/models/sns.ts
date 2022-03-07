@@ -1,3 +1,4 @@
+import { notification } from "antd";
 import { useEffect, useState } from "react";
 import { useModel } from "umi";
 
@@ -9,6 +10,8 @@ export default () => {
     const platforms = ['Telegram', 'Discord', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
     const did = localStorage.getItem('did') as string;
+
+    const tmpList: Record<string, any> = {};
 
     const getLinkedInfo = async () => {
         if (!apiWs) {
@@ -33,6 +36,19 @@ export default () => {
             data[platforms[i]] = status[i];
         }
         setLinkedInfo(data);
+
+        platforms.forEach(platform => {
+            if (data[platform] === 'verifing') {
+                tmpList[platform] = 'verifing';
+            }
+            if (!!tmpList[platform] && tmpList[platform] === 'verifing' && data[platform] !== 'verifing') {
+                notification.error({
+                    message: 'Binding failed',
+                    description: `${platform} binding failed`,
+                });
+                tmpList[platform] = null;
+            }
+        });
     }
 
     useEffect(() => {

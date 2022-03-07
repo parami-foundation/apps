@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, SyncOutlined } from '@ant-design/icons';
-import { ChangeController, GetRecoveryFee } from '@/services/parami/wallet';
+import { ChangeController, GetRecoveryFee, GetStableAccount } from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { Mutex } from 'async-mutex';
 import { formatBalance } from '@polkadot/util';
@@ -20,9 +20,9 @@ const { Title } = Typography;
 
 const goto = () => {
   setTimeout(() => {
-    const redirect = sessionStorage.getItem('redirect');
+    const redirect = localStorage.getItem('redirect');
     window.location.href = redirect || config.page.walletPage;
-    sessionStorage.removeItem('redirect');
+    localStorage.removeItem('redirect');
   }, 10);
 };
 
@@ -49,7 +49,7 @@ const RecoverDeposit: React.FC<{
     setStep(1);
   }
 
-  const MagicKeystore = magicKeystore || sessionStorage.getItem('magicKeystore') as string;
+  const MagicKeystore = magicKeystore || localStorage.getItem('magicKeystore') as string;
 
   const intl = useIntl();
   const mutex = new Mutex();
@@ -89,17 +89,28 @@ const RecoverDeposit: React.FC<{
     }
 
     try {
-      const events: any = await ChangeController(
-        passwd,
-        MagicKeystore,
-        ControllerUserAddress,
-      );
-      console.log(events)
-      const stashUserAddress = events['magic']['Changed'][0][0];
-      localStorage.setItem('stashUserAddress', stashUserAddress);
-      goto();
-      return;
+      const existAccounts = await GetStableAccount(controllerUserAddress);
+
+      if (!existAccounts?.stashAccount) {
+        const events: any = await ChangeController(
+          passwd,
+          MagicKeystore,
+          ControllerUserAddress,
+        );
+        console.log(events)
+        const stashUserAddress = events['magic']['Changed'][0][0];
+        localStorage.setItem('stashUserAddress', stashUserAddress);
+        localStorage.removeItem('magicKeystore');
+        goto();
+        return;
+      } else {
+        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
+        localStorage.removeItem('magicKeystore');
+        goto();
+        return;
+      }
     } catch (e: any) {
+      console.log(e);
       message.error(e.message);
     }
   }

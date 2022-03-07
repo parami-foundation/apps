@@ -35,9 +35,9 @@ const { TextArea } = Input;
 
 const goto = () => {
   setTimeout(() => {
-    const redirect = sessionStorage.getItem('redirect');
+    const redirect = localStorage.getItem('redirect');
     window.location.href = redirect || config.page.walletPage;
-    sessionStorage.removeItem('redirect');
+    localStorage.removeItem('redirect');
   }, 10);
 };
 
