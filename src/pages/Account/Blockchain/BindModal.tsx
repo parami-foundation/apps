@@ -59,13 +59,15 @@ const BindModal: React.FC<{
             case 'walletconnect':
                 try {
                     const { account, signedMsg } = await signPersonalMessage(origin);
-                    notification.info({
-                        message: 'Got an signed message',
-                        description: signedMsg,
-                        duration: 2
-                    })
-                    await LinkBlockChain(blockchain, account, signedMsg, password, controllerKeystore);
-                    setBindModal(false);
+                    if (!!account && !!signedMsg) {
+                        notification.info({
+                            message: 'Got an signed message',
+                            description: signedMsg,
+                            duration: 2
+                        });
+                        await LinkBlockChain(blockchain, account, signedMsg, password, controllerKeystore);
+                        setBindModal(false);
+                    }
                     setLoading(false);
                 } catch (e: any) {
                     setErrorState({
@@ -78,13 +80,15 @@ const BindModal: React.FC<{
             case 'solana':
                 try {
                     const { account, signedMsg }: any = await solanaSignMessage(origin);
-                    notification.info({
-                        message: 'Got an signed message',
-                        description: `0x00${signedMsg}`,
-                        duration: 2
-                    })
-                    await LinkBlockChain(blockchain, account, `0x00${signedMsg}`, password, controllerKeystore);
-                    setBindModal(false);
+                    if (!!account && !!signedMsg) {
+                        notification.info({
+                            message: 'Got an signed message',
+                            description: `0x00${signedMsg}`,
+                            duration: 2
+                        })
+                        await LinkBlockChain(blockchain, account, `0x00${signedMsg}`, password, controllerKeystore);
+                        setBindModal(false);
+                    }
                     setLoading(false);
                 } catch (e: any) {
                     setErrorState({

@@ -2,7 +2,7 @@ import { Badge, Card, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import Create from './Dashboard/Create';
 import styles from '@/pages/wallet.less';
-import { GetKolDeposit, GetPreferedNFT } from '@/services/parami/nft';
+import { GetKolDeposit, GetNFTMetaStore, GetPreferedNFT } from '@/services/parami/nft';
 import { parseAmount, hexToDid } from '@/utils/common';
 import { useIntl, useModel, history } from 'umi';
 import copy from 'copy-to-clipboard';
@@ -22,7 +22,9 @@ const Dashboard: React.FC = () => {
     const init = async () => {
         const nftID = await GetPreferedNFT(did);
 
-        if (!nftID.isEmpty) {
+        const info: any = await GetNFTMetaStore(nftID.toHuman() as string);
+
+        if (!nftID.isEmpty && !info.isEmpty && info?.toHuman()?.minted) {
             setKOL(true);
             return;
         };

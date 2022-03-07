@@ -27,7 +27,7 @@
     "0x8f54e49d11ae58a541fe46d6c859e3cfb4cee18a29038b83f3bc43498657110d": {
         "label": "Solana",
         "guide": false,
-        "url": null
+        "url": "/profile?type=blockchain&from=Solana"
     },
     "0x40c8253a3fccae698a831d727547de3f8e7d961d3aabcb3b817c060cb40968eb": {
         "label": "DeFi",
@@ -42,7 +42,7 @@
     "0x0eedaeff323cd259b94326f5d591af9c4ddc4ed638abbf87678ecfdc5f9fefb6": {
         "label": "Discord",
         "guide": true,
-        "url": ""
+        "url": "/profile?type=sns&from=Discord"
     },
     "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": {
         "label": "Twitter",
