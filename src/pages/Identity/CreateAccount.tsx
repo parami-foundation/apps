@@ -61,6 +61,10 @@ const CreateAccount: React.FC<{
       history.push(config.page.walletPage);
       return;
     };
+
+    // Tag create account process
+    localStorage.setItem('process', 'createAccount');
+
     if (MagicUserAddress === null && magicMnemonic === '') {
       createMagicAccount();
     };

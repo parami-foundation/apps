@@ -25,8 +25,12 @@ export async function getInitialState(): Promise<{
   collapsed?: boolean | undefined;
   settings?: Partial<LayoutSettings>;
 }> {
-  if (access().canPreDid && window.location.toString().indexOf('create') < 0) {
+  const process = localStorage.getItem('process');
+  if (access().canPreDid && window.location.toString().indexOf('create') < 0 && process === 'createAccount') {
     window.location.href = config.page.createPage;
+  };
+  if (access().canPreDid && window.location.toString().indexOf('create') < 0 && process === 'recoverAccount') {
+    window.location.href = config.page.recoverPage;
   };
 
   return {

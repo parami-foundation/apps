@@ -50,6 +50,9 @@ const RecoverAccount: React.FC = () => {
       return;
     }
 
+    // Tag recover account process
+    localStorage.setItem('process', 'recoverAccount');
+
     if (!!ExistPassword) {
       setPassword(ExistPassword);
     };
