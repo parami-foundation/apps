@@ -149,6 +149,7 @@ const InitialDeposit: React.FC<{
               } catch (e: any) {
                 console.log(e);
                 goto();
+                localStorage.removeItem('process');
               }
             });
         } else {
@@ -270,10 +271,12 @@ const InitialDeposit: React.FC<{
   useEffect(() => {
     if (!!avatarNicknameData && !!qsTicket) {
       goto();
+      localStorage.removeItem('process');
       return;
     }
     if (!qsTicket && !!DID) {
       goto();
+      localStorage.removeItem('process');
       return;
     }
   }, [avatarNicknameData, qsTicket, DID]);
@@ -438,6 +441,7 @@ const InitialDeposit: React.FC<{
                       }
                     }
                     goto();
+                    localStorage.removeItem('process');
                   }}
                 >
                   {intl.formatMessage({

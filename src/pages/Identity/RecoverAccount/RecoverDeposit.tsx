@@ -101,11 +101,13 @@ const RecoverDeposit: React.FC<{
         const stashUserAddress = events['magic']['Changed'][0][0];
         localStorage.setItem('stashUserAddress', stashUserAddress);
         localStorage.removeItem('magicKeystore');
+        localStorage.removeItem('process');
         goto();
         return;
       } else {
         localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
         localStorage.removeItem('magicKeystore');
+        localStorage.removeItem('process');
         goto();
         return;
       }
