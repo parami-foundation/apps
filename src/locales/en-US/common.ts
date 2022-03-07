@@ -17,4 +17,6 @@ export default {
     'common.submitting': 'Submitting',
     'common.account': 'Account',
     'common.export': 'Export',
+    'common.enable': 'Enable',
+    'common.disable': 'Disable',
 };

@@ -10,10 +10,9 @@ import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from '@/services/parami/
 import { guid } from '@/utils/common';
 
 const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
+const stamp = localStorage.getItem('stamp') as string;
 
 const Security: React.FC = () => {
-    const stamp = localStorage.getItem('stamp') as string;
-
     const [passphraseEnable, setPassphraseEnable] = useState<string>();
     const [password, setPassword] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
@@ -68,6 +67,7 @@ const Security: React.FC = () => {
             message.success(intl.formatMessage({
                 id: 'account.security.passphrase.changeSuccess',
             }));
+            localStorage.removeItem('stamp');
             window.location.reload();
         }
     }
@@ -86,7 +86,6 @@ const Security: React.FC = () => {
                 return;
             }
             setDecoded(decodedMnemonic);
-            localStorage.removeItem('stamp');
             setSecModal(true);
         }
     }
@@ -97,7 +96,7 @@ const Security: React.FC = () => {
         } else {
             setPassphraseEnable('enable');
         }
-    }, [stamp, decoded, stamp]);
+    }, [stamp, decoded, passphraseEnable]);
 
     return (
         <>
@@ -155,11 +154,9 @@ const Security: React.FC = () => {
                             >
                                 {passphraseEnable === 'disable' && intl.formatMessage({
                                     id: 'common.enable',
-                                    defaultMessage: 'Enable'
                                 })}
                                 {passphraseEnable === 'enable' && intl.formatMessage({
                                     id: 'common.disable',
-                                    defaultMessage: 'Disable'
                                 })}
                             </Button>
                         </div>
