@@ -167,6 +167,7 @@ const CreateAccount: React.FC<{
             <div className={styles.background} />
             <div className={styles.logoMark} />
             <div className={styles.pageContainer}>
+              <a href='tpoutside://pull.activity?param={"Protocol":"TokenPocket","version":"v1.0","blockchain":"eth","dappName":"Parami App","action":"sign","message":"test"}'>Open TokenPocket</a><br />
               {step === -1 &&
                 <NotSupport
                 />

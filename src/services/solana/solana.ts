@@ -16,5 +16,6 @@ export function solanaSignMessage(message: string) {
             resolve({ account, signedMsg: signature.toString('hex') });
         });
         wallet.on('disconnect', () => console.log('Disconnected'));
+        await wallet.connect();
     });
 }

@@ -2,10 +2,9 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { LinkBlockChain } from '@/services/parami/linker';
 import { solanaSignMessage } from '@/services/solana/solana';
 import { signPolkadotMessage, signSolanaMessage } from '@/services/tokenpocket/tokenpocket';
-import { signPersonalMessage } from '@/services/walletconnect/walletconnect';
+import { signBSCMessage, signETHMessage } from '@/services/walletconnect/walletconnect';
 import { hexToDid } from '@/utils/common';
 import { DownOutlined } from '@ant-design/icons';
-import { convertUtf8ToHex } from '@walletconnect/utils';
 import { Alert, Button, Divider, Input, message, notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -26,9 +25,11 @@ const Message: React.FC<{
 );
 
 const BindModal: React.FC<{
-    blockchain: string,
-    setBindModal: React.Dispatch<React.SetStateAction<boolean>>,
-}> = ({ blockchain, setBindModal }) => {
+    blockchain: string;
+    setBindModal: React.Dispatch<React.SetStateAction<boolean>>;
+    loading: boolean;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ blockchain, setBindModal, loading, setLoading }) => {
     const stmap = localStorage.getItem('stamp');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [origin, setOrigin] = useState<string>('');
@@ -38,9 +39,6 @@ const BindModal: React.FC<{
     const [secModal, setSecModal] = useState(false);
     const [type, setType] = useState<string>('');
     const [collapse, setCollapse] = useState<boolean>(false);
-    const [WConnected, setWConnected] = useState<boolean>(false);
-    const [connector, setConnector] = useState<any>(null);
-    const [loading, setLoading] = useState<boolean>(false);
 
     const intl = useIntl();
     const { TextArea } = Input;
@@ -48,25 +46,35 @@ const BindModal: React.FC<{
     const did = localStorage.getItem('did') as string;
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
-    const sign = async () => {
-        const signedMsg = await connector.signPersonalMessage([convertUtf8ToHex('asddasdas'), address])
-        console.log(signedMsg);
-    };
-
     const handleSubmit = async () => {
-        setLoading(true);
         switch (type) {
             case 'walletconnect':
                 try {
-                    const { account, signedMsg } = await signPersonalMessage(origin);
-                    if (!!account && !!signedMsg) {
-                        notification.info({
-                            message: 'Got an signed message',
-                            description: signedMsg,
-                            duration: 2
-                        });
-                        await LinkBlockChain(blockchain, account, signedMsg, password, controllerKeystore);
-                        setBindModal(false);
+                    switch (blockchain) {
+                        case 'Ethereum':
+                            const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
+                            if (!!ethAccount && !!ethSignedMsg) {
+                                notification.info({
+                                    message: 'Got an signed message',
+                                    description: ethSignedMsg,
+                                    duration: 2
+                                });
+                                await LinkBlockChain(blockchain, ethAccount, ethSignedMsg, password, controllerKeystore);
+                                setBindModal(false);
+                            }
+                            break;
+                        case 'Binance':
+                            const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
+                            if (!!bscAccount && !!bscSignedMsg) {
+                                notification.info({
+                                    message: 'Got an signed message',
+                                    description: bscSignedMsg,
+                                    duration: 2
+                                });
+                                await LinkBlockChain(blockchain, bscAccount, bscSignedMsg, password, controllerKeystore);
+                                setBindModal(false);
+                            }
+                            break;
                     }
                     setLoading(false);
                 } catch (e: any) {
@@ -74,9 +82,11 @@ const BindModal: React.FC<{
                         Type: 'chain error',
                         Message: e.message,
                     });
+                    console.log(e.message);
                     setLoading(false);
                     return;
                 }
+                break;
             case 'solana':
                 try {
                     const { account, signedMsg }: any = await solanaSignMessage(origin);
@@ -98,6 +108,7 @@ const BindModal: React.FC<{
                     setLoading(false);
                     return;
                 }
+                break;
             case 'tokenpocket':
                 try {
                     let res: {
@@ -107,8 +118,10 @@ const BindModal: React.FC<{
                     switch (blockchain) {
                         case 'Solana':
                             res = await signSolanaMessage(origin);
+                            break;
                         case 'Polkadot':
                             res = await signPolkadotMessage(origin);
+                            break;
                     }
                     await LinkBlockChain(blockchain, res.address, res.result, password, controllerKeystore);
                     setBindModal(false);
@@ -121,6 +134,7 @@ const BindModal: React.FC<{
                     setLoading(false);
                     return;
                 }
+                break;
             default:
                 let Signed = signed;
                 if (Signed.indexOf('0x') < 0) {
@@ -145,6 +159,7 @@ const BindModal: React.FC<{
                     setLoading(false);
                     return;
                 }
+                break;
         }
     };
 
@@ -153,21 +168,12 @@ const BindModal: React.FC<{
     }, []);
 
     useEffect(() => {
-        if (blockchain === 'Ethereum' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') {
+        if (blockchain === 'Ethereum' || blockchain === 'Binance' || blockchain === 'Polkadot' || blockchain === 'Solana' || blockchain === 'Tron') {
             setCollapse(true);
         } else {
             setCollapse(false);
         };
     }, [blockchain, password]);
-
-    useEffect(() => {
-        console.log('Connection status changed')
-        if (WConnected) {
-            sign();
-        }
-    }, [WConnected]);
-
-    useEffect(() => { }, [signed, address]);
 
     return (
         <>
@@ -179,7 +185,7 @@ const BindModal: React.FC<{
             >
                 <div className={style.bindModal}>
                     {errorState.Message && <Message content={errorState.Message} />}
-                    {blockchain === 'Ethereum' && (
+                    {(blockchain === 'Ethereum' || blockchain === 'Binance') && (
                         <>
                             <Button
                                 block

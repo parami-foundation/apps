@@ -136,13 +136,15 @@
     "redux-persist": "^6.0.0",
     "styled-components": "^5.3.3",
     "throttle-typescript": "^1.1.0",
+    "tp-js-sdk": "^3.7.1",
     "umi": "^3.5.20",
     "umi-request": "^1.4.0",
     "umi-serve": "^1.9.10",
     "use-persisted-state": "^0.3.3",
     "vconsole": "^3.10.1",
     "web3": "^1.6.1",
-    "web3-eth": "^1.6.1"
+    "web3-eth": "^1.6.1",
+    "web3modal": "^1.9.5"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.5",

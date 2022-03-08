@@ -118,6 +118,7 @@ const BindModal: React.FC<{
                     setLoading(false);
                     return;
                 }
+                break;
         }
     };
 

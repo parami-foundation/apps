@@ -12,6 +12,7 @@ const Blockchain: React.FC = () => {
     const linkedInfo = useModel('sns');
     const [bindModal, setBindModal] = useState<boolean>(false);
     const [blockchain, setBlockchain] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     const intl = useIntl();
 
@@ -97,72 +98,6 @@ const Blockchain: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/crypto/bitcoin-btc-logo.svg" />
-                            <span className={style.label}>BTC</span>
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                disabled
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setBindModal(true);
-                                    setBlockchain('Bitcoin');
-                                }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'social.coming',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                    <div className={style.field}>
-                        <div className={style.title}>
-                            <img className={style.icon} src="/images/crypto/binance-bsc-logo.svg" />
-                            <span className={style.label}>BSC</span>
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                disabled
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setBindModal(true);
-                                    setBlockchain('Binance');
-                                }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'social.coming',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                    <div className={style.field}>
-                        <div className={style.title}>
-                            <img className={style.icon} src="/images/crypto/eos-eos-logo.svg" />
-                            <span className={style.label}>EOS</span>
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                disabled
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setBindModal(true);
-                                    setBlockchain('Eosio');
-                                }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'social.coming',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                    <div className={style.field}>
-                        <div className={style.title}>
                             <img className={style.icon} src="/images/crypto/solana-sol-logo.svg" />
                             <span className={style.label}>SOL</span>
                         </div>
@@ -200,6 +135,91 @@ const Blockchain: React.FC = () => {
                                     }
                                 </Button>
                             </Spin>
+                        </div>
+                    </div>
+                    <div className={style.field}>
+                        <div className={style.title}>
+                            <img className={style.icon} src="/images/crypto/binance-bsc-logo.svg" />
+                            <span className={style.label}>BSC</span>
+                        </div>
+                        <div className={style.button}>
+                            <Spin
+                                indicator={
+                                    <LoadingOutlined spin />
+                                }
+                                spinning={!Object.keys(linkedInfo).length}
+                            >
+                                <Button
+                                    disabled={null !== linkedInfo.Binance}
+                                    size='large'
+                                    shape='round'
+                                    type='primary'
+                                    onClick={() => {
+                                        setBindModal(true);
+                                        setBlockchain('Binance');
+                                    }}
+                                >
+                                    {!linkedInfo.Binance &&
+                                        intl.formatMessage({
+                                            id: 'social.bind',
+                                        })
+                                    }
+                                    {linkedInfo.Binance === 'linked' &&
+                                        intl.formatMessage({
+                                            id: 'social.binded',
+                                        })
+                                    }
+                                    {linkedInfo.Binance === 'verifing' &&
+                                        intl.formatMessage({
+                                            id: 'social.verifing',
+                                        })
+                                    }
+                                </Button>
+                            </Spin>
+                        </div>
+                    </div>
+                    <div className={style.field}>
+                        <div className={style.title}>
+                            <img className={style.icon} src="/images/crypto/bitcoin-btc-logo.svg" />
+                            <span className={style.label}>BTC</span>
+                        </div>
+                        <div className={style.button}>
+                            <Button
+                                disabled
+                                size='large'
+                                shape='round'
+                                type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Bitcoin');
+                                }}
+                            >
+                                {intl.formatMessage({
+                                    id: 'social.coming',
+                                })}
+                            </Button>
+                        </div>
+                    </div>
+                    <div className={style.field}>
+                        <div className={style.title}>
+                            <img className={style.icon} src="/images/crypto/eos-eos-logo.svg" />
+                            <span className={style.label}>EOS</span>
+                        </div>
+                        <div className={style.button}>
+                            <Button
+                                disabled
+                                size='large'
+                                shape='round'
+                                type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setBlockchain('Eosio');
+                                }}
+                            >
+                                {intl.formatMessage({
+                                    id: 'social.coming',
+                                })}
+                            </Button>
                         </div>
                     </div>
                     <div className={style.field}>
@@ -282,6 +302,8 @@ const Blockchain: React.FC = () => {
                     <BindModal
                         blockchain={blockchain}
                         setBindModal={setBindModal}
+                        loading={loading}
+                        setLoading={setLoading}
                     />}
                 close={() => {
                     setBindModal(false);

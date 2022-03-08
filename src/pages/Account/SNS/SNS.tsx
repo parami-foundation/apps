@@ -97,28 +97,6 @@ const SNS: React.FC = () => {
                     </div>
                     <div className={style.field}>
                         <div className={style.title}>
-                            <img className={style.icon} src="/images/sns/twitter.svg" />
-                            <span className={style.label}>Twitter</span>
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                disabled
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setBindModal(true);
-                                    setPlatform('Twitter');
-                                }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'social.coming',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                    <div className={style.field}>
-                        <div className={style.title}>
                             <img className={style.icon} src="/images/sns/discord.svg" />
                             <span className={style.label}>Discord</span>
                         </div>
@@ -156,6 +134,28 @@ const SNS: React.FC = () => {
                                     }
                                 </Button>
                             </Spin>
+                        </div>
+                    </div>
+                    <div className={style.field}>
+                        <div className={style.title}>
+                            <img className={style.icon} src="/images/sns/twitter.svg" />
+                            <span className={style.label}>Twitter</span>
+                        </div>
+                        <div className={style.button}>
+                            <Button
+                                disabled
+                                size='large'
+                                shape='round'
+                                type='primary'
+                                onClick={() => {
+                                    setBindModal(true);
+                                    setPlatform('Twitter');
+                                }}
+                            >
+                                {intl.formatMessage({
+                                    id: 'social.coming',
+                                })}
+                            </Button>
                         </div>
                     </div>
                     <div className={style.field}>

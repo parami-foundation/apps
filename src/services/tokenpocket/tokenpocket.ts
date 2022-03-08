@@ -5,7 +5,7 @@ import { toHexString } from '@/utils/hexcode';
 
 export const signSolanaMessage = async (message: string) => {
     const adapter = new TokenPocketWalletAdapter({});
-    adapter.connect();
+    await adapter.connect();
     const publicKey = adapter.publicKey?.toBase58();
 
     const encodedMessage = new TextEncoder().encode(message);
