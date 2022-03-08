@@ -65,7 +65,7 @@ const CreateAccount: React.FC<{
     // Tag create account process
     localStorage.setItem('process', 'createAccount');
 
-    if (MagicUserAddress === null && magicMnemonic === '') {
+    if (MagicUserAddress === null || magicMnemonic === '' && ControllerKeystore === null) {
       createMagicAccount();
     };
 
