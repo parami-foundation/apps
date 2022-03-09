@@ -33,7 +33,7 @@ export default () => {
           nonce: `${info.nonce}`,
         });
         free = `${data.free}`;
-        if (free < FloatStringToBigInt('0.2', 18)) {
+        if (free < FloatStringToBigInt('0.02', 18)) {
           notification.warning({
             message: 'Low Gas Balance',
             description: 'Please top up your gas balance',

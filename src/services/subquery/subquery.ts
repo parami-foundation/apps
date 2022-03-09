@@ -1,4 +1,5 @@
 import config from '@/config/config';
+import { notification } from 'antd';
 
 const endpoints = config.main.subqueryServer;
 
@@ -38,6 +39,17 @@ export const OwnerDidOfNft = async (nftId: any) => {
         }
     }`;
     const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+        notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+        });
+        return;
+    }
+
     const data = await res.json();
     return data.data.asset.ownerDid;
 };
@@ -64,6 +76,17 @@ export const AdvertisementRewards = async (ADid: string) => {
         }
     }`;
     const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+        notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+        });
+        return;
+    }
+
     const data = await res.json();
     return data.data.advertisementRewards.nodes as any[];
 };
@@ -88,6 +111,17 @@ export const AssetTransactionHistory = async (did: string) => {
         }
     }`;
     const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+        notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+        });
+        return;
+    }
+
     const data = await res.json();
     console.log(data.data.assetTransactions.nodes);
     return data.data.assetTransactions.nodes as AssetTransaction[];
@@ -95,6 +129,11 @@ export const AssetTransactionHistory = async (did: string) => {
 
 export const getChartsData = async (ADid: string, budget: bigint) => {
     const result = await AdvertisementRewards(ADid);
+
+    if (!result) {
+        return;
+    }
+
     const tmp = { time: '', budget: 0, viewer: 0 };
     const data: any[] = [];
     const time: number[] = [];
@@ -119,7 +158,6 @@ export const getChartsData = async (ADid: string, budget: bigint) => {
             index++;
         }
     }
-    console.log(data);
     return data;
 };
 
@@ -137,6 +175,17 @@ export const getAdViewerCounts = async (ADid: string) => {
         }
     }`;
     const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+        notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+        });
+        return;
+    }
+
     const data = await res.json();
     return data.data.advertisementRewards.totalCount as number;
 };
@@ -155,6 +204,17 @@ export const getAdvertisementRefererCounts = async (ADid: string) => {
         }
     }`;
     const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+        notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+        });
+        return;
+    }
+
     const data = await res.json();
     return data.data.advertisementRewards.totalCount as number;
 };

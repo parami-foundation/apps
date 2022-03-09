@@ -210,7 +210,7 @@ export function SVG3DTagCloud(element, params) {
         }
 
         entry.link = document.createElementNS(svgNS, 'a');
-        if (!!entryObj.data.url) {
+        if (!entryObj.value && !!entryObj.data.url) {
             entry.link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', entryObj.data.url);
             entry.link.setAttribute('href', entryObj.data.url);
         }

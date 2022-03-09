@@ -7,11 +7,11 @@ export default () => {
     const { blockNumber } = useModel('blockNumber');
     const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
     const [lastNumber, setLastNumber] = useState<any>(0);
+    const [tmpList, setTmpList] = useState<Record<string, any>>({});
+
     const platforms = ['Telegram', 'Discord', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
     const did = localStorage.getItem('did') as string;
-
-    const tmpList: Record<string, any> = {};
 
     const getLinkedInfo = async () => {
         if (!apiWs) {
@@ -34,21 +34,25 @@ export default () => {
         const status = await Promise.all(promises);
         for (let i = 0; i < platforms.length; i++) {
             data[platforms[i]] = status[i];
+
+            if (!!tmpList[platforms[i]] && tmpList[platforms[i]] === 'verifing' && data[platforms[i]] !== 'verifing') {
+                notification.error({
+                    message: 'Binding failed',
+                    description: `${platforms[i]} binding failed`,
+                    duration: null,
+                });
+                tmpList[platforms[i]] = null;
+            }
         }
         setLinkedInfo(data);
+        setTmpList(tmpList);
 
         platforms.forEach(platform => {
             if (data[platform] === 'verifing') {
                 tmpList[platform] = 'verifing';
             }
-            if (!!tmpList[platform] && tmpList[platform] === 'verifing' && data[platform] !== 'verifing') {
-                notification.error({
-                    message: 'Binding failed',
-                    description: `${platform} binding failed`,
-                });
-                tmpList[platform] = null;
-            }
         });
+        setTmpList(tmpList);
     }
 
     useEffect(() => {

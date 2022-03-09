@@ -56,12 +56,10 @@ const Tags: React.FC = () => {
     function onfocus() {
         const body = document.querySelector("body") as HTMLBodyElement;
         body.style.overflow = "hidden";
-        console.log("focus")
     }
     function onblur() {
         const body = document.querySelector("body") as HTMLBodyElement;
         body.style.overflow = "auto";
-        console.log("blur")
     }
     return (
         <>
@@ -79,8 +77,14 @@ const Tags: React.FC = () => {
                         id: 'wallet.tags.title',
                     })}
                 </Title>
-                <div id='tagcloud' tabIndex={0} onFocus={onfocus}
-                    onBlur={onblur}><svg /></div>
+                <div
+                    id='tagcloud'
+                    tabIndex={0}
+                    onFocus={onfocus}
+                    onBlur={onblur}
+                >
+                    <svg />
+                </div>
             </Card>
         </>
     )

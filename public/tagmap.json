@@ -47,11 +47,11 @@
     "0x54f6e35eca13f716ddadfa05f99802104692ba0457bbba5799760f1c2111a1cf": {
         "label": "Twitter",
         "guide": true,
-        "url": ""
+        "url": null
     },
     "0xb9b3f06f07466242fe6bb8eda23994818e34fcb8dcd26882ecc1c33497155f95": {
         "label": "Kusama",
         "guide": true,
-        "url": ""
+        "url": null
     }
 }
