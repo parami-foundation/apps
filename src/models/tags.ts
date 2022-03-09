@@ -36,6 +36,17 @@ export default () => {
         const guide: Map<string, any> = new Map();
 
         GetTagsMap().then(({ response, data: Data }) => {
+
+            // Network exception
+            if (!response) {
+                notification.error({
+                    message: 'Network exception',
+                    description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+                    duration: null,
+                });
+                return;
+            }
+
             if (response?.status === 200) {
                 Object.keys(Data).map((item) => {
                     if (Data[item].guide) {

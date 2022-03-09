@@ -81,6 +81,16 @@ const InitialDeposit: React.FC<{
         wallet: controllerUserAddress,
       });
 
+      // Network exception
+      if (!Resp) {
+        notification.error({
+          message: 'Network exception',
+          description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+          duration: null,
+        });
+        return;
+      };
+
       if (Resp?.status === 200) {
         notification.success({
           message: 'Airdrop Success',
@@ -135,10 +145,31 @@ const InitialDeposit: React.FC<{
       wallet: controllerUserAddress,
     });
 
+    // Network exception
+    if (!response) {
+      notification.error({
+        message: 'Network exception',
+        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+        duration: null,
+      });
+      return;
+    };
+
     if (response?.status === 204) {
       try {
         if (data?.nickname && data?.avatar) {
-          const { data: file } = await GetAvatar(data?.avatar);
+          const { response: Resp, data: file } = await GetAvatar(data?.avatar);
+
+          // Network exception
+          if (!Resp) {
+            notification.error({
+              message: 'Network exception',
+              description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+              duration: null,
+            });
+            return;
+          }
+
           generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);

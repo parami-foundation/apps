@@ -9,6 +9,7 @@ import { access } from '@/access';
 import type { VoidFn } from '@polkadot/api/types';
 import type { ApiPromise } from '@polkadot/api';
 import NoFoundPage from './pages/404';
+import { initWebSocket } from './utils/websocket';
 
 declare global {
   interface Window {
@@ -25,6 +26,8 @@ export async function getInitialState(): Promise<{
   collapsed?: boolean | undefined;
   settings?: Partial<LayoutSettings>;
 }> {
+  await initWebSocket(config.main.socketServer);
+
   const process = localStorage.getItem('process');
   if (access().canPreDid && window.location.toString().indexOf('create') < 0 && process === 'createAccount') {
     window.location.href = config.page.createPage;
@@ -45,11 +48,12 @@ export const request: RequestConfig = {
 
     if (!response) {
       notification.error({
-        description: 'An exception has occurred in your network. Cannot connect to the server',
         message: 'Network exception',
+        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+        duration: null,
       });
     }
-    throw error;
+    throw new Error('Network exception');
   },
 };
 

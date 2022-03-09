@@ -9,7 +9,7 @@ import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams } from 'umi';
 import { hexToDid, didToHex, parseAmount, checkInIAP } from '@/utils/common';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaStore, GetPreferedNFT, GetUserInfo, GetValueOf } from '@/services/parami/nft';
-import { Alert, message, Image } from 'antd';
+import { Alert, message, Image, notification } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
@@ -145,6 +145,17 @@ const Explorer: React.FC = () => {
             if (userData?.avatar.indexOf('ipfs://') > -1) {
                 const hash = userData?.avatar.substring(7);
                 const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+
+                // Network exception
+                if (!response) {
+                    notification.error({
+                        message: 'Network exception',
+                        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+                        duration: null,
+                    });
+                    return;
+                }
+
                 if (response?.status === 200) {
                     setAvatar(window.URL.createObjectURL(data));
                 }

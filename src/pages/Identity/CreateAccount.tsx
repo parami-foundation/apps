@@ -57,6 +57,7 @@ const CreateAccount: React.FC<{
     if (!apiWs) {
       return;
     };
+
     if (access.canUser) {
       history.push(config.page.walletPage);
       return;
@@ -65,7 +66,7 @@ const CreateAccount: React.FC<{
     // Tag create account process
     localStorage.setItem('process', 'createAccount');
 
-    if (MagicUserAddress === null || magicMnemonic === '' && ControllerKeystore === null) {
+    if ((MagicUserAddress === null || magicMnemonic === '') && ControllerKeystore === null) {
       createMagicAccount();
     };
 
@@ -167,7 +168,6 @@ const CreateAccount: React.FC<{
             <div className={styles.background} />
             <div className={styles.logoMark} />
             <div className={styles.pageContainer}>
-              <a href='tpoutside://pull.activity?param={"Protocol":"TokenPocket","version":"v1.0","blockchain":"eth","dappName":"Parami App","action":"sign","message":"test"}'>Open TokenPocket</a><br />
               {step === -1 &&
                 <NotSupport
                 />
