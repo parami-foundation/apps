@@ -163,6 +163,15 @@
     ],
   },
   {
+    path: '/square',
+    name: 'square',
+    icon: 'NotificationOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Square/Index',
+    hideInMenu: true,
+  },
+  {
     path: '/did:kol',
     hideInMenu: true,
     exact: true,

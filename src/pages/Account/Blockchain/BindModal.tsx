@@ -47,6 +47,7 @@ const BindModal: React.FC<{
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     const handleSubmit = async () => {
+        setLoading(true);
         switch (type) {
             case 'walletconnect':
                 try {
@@ -82,7 +83,6 @@ const BindModal: React.FC<{
                         Type: 'chain error',
                         Message: e.message,
                     });
-                    console.log(e.message);
                     setLoading(false);
                     return;
                 }

@@ -14,6 +14,8 @@ export default {
   'menu.creator': 'Creator',
   'menu.creator.did': 'Creator Home',
   'menu.staking': 'Staking',
+  'menu.square': 'Square',
+  'menu.square.following': 'Following',
   'menu.dashboard': 'Dashboard',
   'menu.dashboard.did': 'DID',
   'menu.dashboard.ads': 'Ads',

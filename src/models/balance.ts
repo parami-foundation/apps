@@ -1,4 +1,3 @@
-import { FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import { notification } from 'antd';
 import { useState, useEffect } from 'react';
@@ -33,13 +32,6 @@ export default () => {
           nonce: `${info.nonce}`,
         });
         free = `${data.free}`;
-        if (free < FloatStringToBigInt('0.02', 18)) {
-          notification.warning({
-            message: 'Low Gas Balance',
-            description: 'Please top up your gas balance',
-            duration: 5,
-          })
-        }
       });
     }
 

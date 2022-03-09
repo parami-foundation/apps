@@ -123,7 +123,6 @@ export const AssetTransactionHistory = async (did: string) => {
     }
 
     const data = await res.json();
-    console.log(data.data.assetTransactions.nodes);
     return data.data.assetTransactions.nodes as AssetTransaction[];
 };
 
