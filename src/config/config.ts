@@ -1,9 +1,11 @@
+const isDev: boolean = true;
+
 export const config = {
     "const": {
         "minimalCharge": "100000000000000000",
         "adEarnUpTo": "500000000000000000000",
     },
-    "main": process.env.NODE_ENV === 'development' ? {
+    "main": isDev ? {
         "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
@@ -25,7 +27,7 @@ export const config = {
     },
     "airdropService": {
         "telegram": {
-            "botName": process.env.NODE_ENV === 'development' ? "ParamiCommunityBot" : "paramiofficialbot",
+            "botName": isDev ? "ParamiCommunityBot" : "paramiofficialbot",
         },
         "discord": {
             "clientId": "928193512619536465",

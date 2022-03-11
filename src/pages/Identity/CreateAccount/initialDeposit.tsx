@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Button, Card, Divider, Input, message, notification, Spin, Steps, Tag, Typography } from 'antd';
-import { useIntl, history } from 'umi';
+import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';

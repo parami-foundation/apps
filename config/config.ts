@@ -49,9 +49,9 @@ export default defineConfig({
     basePath: '/',
   },
   // Fast Refresh
-  //fastRefresh: {},
+  fastRefresh: {},
   nodeModulesTransform: { type: 'none' },
-  //mfsu: {},
+  mfsu: {},
   webpack5: {},
   exportStatic: {},
   chainWebpack(config) {
