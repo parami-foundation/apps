@@ -58,13 +58,16 @@ const QuickSign: React.FC<{
                         </p>
                         <Divider />
                         <TelegramLoginButton
-                            dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                            dataOnauth={(response) => {
+                                response.bot = config.airdropService.telegram.botName;
+                                handleQuickCreate(response, 'Telegram')
+                            }}
                             botName={config.airdropService.telegram.botName}
                         />
                         <DiscordLoginButton
                             dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
                             clientId={config.airdropService.discord.clientId}
-                            redirectUri={config.airdropService.discord.redirectUri}
+                            redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
                         />
                         <Divider>
                             {intl.formatMessage({
@@ -117,7 +120,10 @@ const QuickSign: React.FC<{
                     spinning={loading}
                 >
                     <TelegramLoginButton
-                        dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                        dataOnauth={(response) => {
+                            response.bot = config.airdropService.telegram.botName;
+                            handleQuickCreate(response, 'Telegram');
+                        }}
                         botName={config.airdropService.telegram.botName}
                     />
                     <DiscordLoginButton

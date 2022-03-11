@@ -18,8 +18,7 @@ const request = extend({
 /** Login with Airdrop POST /feed */
 // OK:200, Ticket Err:401, Airdroped:403, Site Err:400
 export async function LoginWithAirdrop(body: API.AirdropLogin, options?: { [key: string]: any }) {
-    const airdrop = 'https://airdrop.parami.io';
-    return request(`${airdrop}/feed`, {
+    return request(`${config.main.airdropServer}/feed`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -33,8 +32,7 @@ export async function LoginWithAirdrop(body: API.AirdropLogin, options?: { [key:
 /** Login with Airdrop POST /link */
 // OK:204, Ticket Err:401, Airdroped:403, Site Err:400
 export async function LinkWithAirdrop(body: API.AirdropLink, options?: { [key: string]: any }) {
-    const airdrop = 'https://airdrop.parami.io';
-    return request(`${airdrop}/link`, {
+    return request(`${config.main.airdropServer}/link`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

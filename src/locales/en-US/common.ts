@@ -1,5 +1,5 @@
 export default {
-    'common.copyright.produced': 'Copyright © Parami Foundation. All Rights Reserved',
+    'common.copyright.produced': 'Made with ❤️ by Parami Foundation',
     'common.confirm': 'Confirm',
     'common.cancel': 'Cancel',
     'common.copy': 'Copy',

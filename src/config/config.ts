@@ -1,18 +1,18 @@
-const isDev: boolean = true;
-
 export const config = {
     "const": {
         "minimalCharge": "100000000000000000",
         "adEarnUpTo": "500000000000000000000",
     },
-    "main": isDev ? {
+    "main": process.env.NODE_ENV === 'development' ? {
         "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
-        "tagMapConfig": "http://localhost:8000/tagmap.json",
+        "tagMapConfig": "/tagmap.json",
+        "airdropServer": "https://airdrop.parami.io",
     } : {
         "socketServer": "wss://rpc.parami.io/ws",
         "subqueryServer": "https://graph.parami.io/subsquery",
-        "tagMapConfig": "https://app.parami.io/tagmap.json",
+        "tagMapConfig": "/tagmap.json",
+        "airdropServer": "https://staging.parami.io/airdrop",
     },
     "ipfs": {
         "upload": "https://ipfs.parami.io/api/v0/add?stream-channels=true",
@@ -25,11 +25,11 @@ export const config = {
     },
     "airdropService": {
         "telegram": {
-            "botName": "paramiofficialbot",
+            "botName": process.env.NODE_ENV === 'development' ? "ParamiCommunityBot" : "paramiofficialbot",
         },
         "discord": {
             "clientId": "928193512619536465",
-            "redirectUri": isDev ? "http://localhost:8000/create/discord" : "https://app.parami.io/create/discord",
+            "redirectUri": "/create/discord",
         },
     },
     "page": {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Button, Card, Divider, Input, message, notification, Spin, Steps, Tag, Typography } from 'antd';
-import { useIntl, useModel } from 'umi';
+import { useIntl, history } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -651,13 +651,16 @@ const InitialDeposit: React.FC<{
                   })}
                 </Divider>
                 <TelegramLoginButton
-                  dataOnauth={(response) => { handleQuickCreate(response, 'Telegram') }}
+                  dataOnauth={(response) => {
+                    response.bot = config.airdropService.telegram.botName;
+                    handleQuickCreate(response, 'Telegram')
+                  }}
                   botName={config.airdropService.telegram.botName}
                 />
                 <DiscordLoginButton
                   dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
                   clientId={config.airdropService.discord.clientId}
-                  redirectUri={config.airdropService.discord.redirectUri}
+                  redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
                 />
               </div>
             </Spin>

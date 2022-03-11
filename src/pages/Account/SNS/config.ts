@@ -1,5 +1,7 @@
+import Config from '@/config/config';
+
 export const config = {
     "validator": {
-        "paramiCommunity": "https://airdrop.parami.io/validator",
+        "paramiCommunity": `${Config.main.airdropServer}/validator`,
     }
 }
