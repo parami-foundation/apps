@@ -9,12 +9,12 @@ export const config = {
         "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
-        "airdropServer": "https://airdrop.parami.io",
+        "airdropServer": "https://staging.parami.io/airdrop",
     } : {
         "socketServer": "wss://rpc.parami.io/ws",
-        "subqueryServer": "https://graph.parami.io/subsquery",
+        "subqueryServer": "https://graph.parami.io/",
         "tagMapConfig": "/tagmap.json",
-        "airdropServer": "https://staging.parami.io/airdrop",
+        "airdropServer": "https://airdrop.parami.io",
     },
     "ipfs": {
         "upload": "https://ipfs.parami.io/api/v0/add?stream-channels=true",

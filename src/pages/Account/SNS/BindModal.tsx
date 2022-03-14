@@ -32,6 +32,7 @@ const BindModal: React.FC<{
     const [secModal, setSecModal] = useState<boolean>(false);
     const [Password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
+    const [stampMode, setStampMode] = useState<boolean>(false);
 
     const intl = useIntl();
 
@@ -95,6 +96,11 @@ const BindModal: React.FC<{
         switch (platform) {
             case 'Discord':
                 await handleStamp();
+                break;
+            case 'Telegram':
+                if (stampMode) {
+                    await handleStamp();
+                }
                 break;
             default:
                 if (profileURL === '') {
@@ -183,6 +189,18 @@ const BindModal: React.FC<{
                                     })}
                                 </Button>
                             </div>
+                            <Button
+                                block
+                                size='large'
+                                type='primary'
+                                shape='round'
+                                onClick={() => {
+                                    setSecModal(true);
+                                    setStampMode(true);
+                                }}
+                            >
+                                Parami Community
+                            </Button>
                         </>
                     )}
                     {platform === 'Twitter' && (
@@ -226,7 +244,10 @@ const BindModal: React.FC<{
                                     size='large'
                                     type='primary'
                                     shape='round'
-                                    onClick={() => { setSecModal(true) }}
+                                    onClick={() => {
+                                        setSecModal(true);
+                                        setStampMode(false);
+                                    }}
                                     disabled={!profileURL}
                                 >
                                     {intl.formatMessage({
@@ -244,7 +265,10 @@ const BindModal: React.FC<{
                                     size='large'
                                     type='primary'
                                     shape='round'
-                                    onClick={() => { setSecModal(true) }}
+                                    onClick={() => {
+                                        setSecModal(true);
+                                        setStampMode(true);
+                                    }}
                                 >
                                     Parami Community
                                 </Button>
