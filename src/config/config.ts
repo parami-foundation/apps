@@ -1,4 +1,4 @@
-const isDev: boolean = true;
+const isDev: boolean = false;
 
 export const config = {
     "const": {

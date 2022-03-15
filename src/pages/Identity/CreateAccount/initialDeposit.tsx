@@ -74,10 +74,11 @@ const InitialDeposit: React.FC<{
     setLoading(true);
     setQsPlatform(platform);
     setQsTicket(response);
+
     try {
       const { response: Resp, data } = await LoginWithAirdrop({
         ticket: response,
-        site: platform,
+        site: qsPlatform || platform,
         wallet: controllerUserAddress,
       });
 
@@ -102,7 +103,7 @@ const InitialDeposit: React.FC<{
       if (Resp?.status === 401) {
         notification.error({
           message: 'Abnormal account',
-          description: `No profile picture or username. Please check your ${qsPlatform} privacy setting, or verify by making a deposit instead.`,
+          description: `No profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead.`,
           duration: null,
         })
         setLoading(false);
@@ -111,7 +112,7 @@ const InitialDeposit: React.FC<{
       if (Resp?.status === 409) {
         notification.error({
           message: 'Airdroped',
-          description: `Your ${qsPlatform} account has participated in airdrop. Please try to deposit manually.`,
+          description: `Your ${qsPlatform || platform} account has participated in airdrop. Please try to deposit manually.`,
           duration: null,
         })
         setLoading(false);
@@ -242,6 +243,8 @@ const InitialDeposit: React.FC<{
     }
     setStep(6);
 
+    console.log(airdropData)
+
     if (minimal) {
       await minimalSubmit(airdropData, did);
       return;
@@ -310,7 +313,7 @@ const InitialDeposit: React.FC<{
       localStorage.removeItem('process');
       return;
     }
-  }, [avatarNicknameData, qsTicket, DID]);
+  }, [avatarNicknameData, qsTicket, qsPlatform, DID]);
 
   useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
@@ -371,6 +374,7 @@ const InitialDeposit: React.FC<{
                 spinning={miniLoading}
                 style={{
                   background: 'rgba(255,255,255,.7)',
+                  padding: 30,
                 }}
               />
               <a
@@ -510,7 +514,8 @@ const InitialDeposit: React.FC<{
               spinning={loading}
               wrapperClassName={styles.pageContainer}
               style={{
-                background: 'rgba(255,255,255,.7)'
+                background: 'rgba(255,255,255,.7)',
+                padding: 30,
               }}
             >
               <img src={'/images/icon/transaction.svg'} className={style.topIcon} />
@@ -653,12 +658,14 @@ const InitialDeposit: React.FC<{
                 <TelegramLoginButton
                   dataOnauth={(response) => {
                     response.bot = config.airdropService.telegram.botName;
-                    handleQuickCreate(response, 'Telegram')
+                    handleQuickCreate(response, 'Telegram');
                   }}
                   botName={config.airdropService.telegram.botName}
                 />
                 <DiscordLoginButton
-                  dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+                  dataOnauth={(response) => {
+                    handleQuickCreate(response, 'Discord')
+                  }}
                   clientId={config.airdropService.discord.clientId}
                   redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
                 />

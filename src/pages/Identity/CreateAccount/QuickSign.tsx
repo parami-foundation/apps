@@ -60,7 +60,7 @@ const QuickSign: React.FC<{
                         <TelegramLoginButton
                             dataOnauth={(response) => {
                                 response.bot = config.airdropService.telegram.botName;
-                                handleQuickCreate(response, 'Telegram')
+                                handleQuickCreate(response, 'Telegram');
                             }}
                             botName={config.airdropService.telegram.botName}
                         />
