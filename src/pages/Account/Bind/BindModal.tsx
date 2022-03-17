@@ -200,6 +200,7 @@ const BindModal: React.FC<{
                         await defaultBlockChain();
                         break;
                 }
+                break;
             case 'Binance':
                 switch (wallet) {
                     case 'walletconnect':
@@ -214,6 +215,7 @@ const BindModal: React.FC<{
                                 await LinkBlockChain(bindPlatform, bscAccount, bscSignedMsg, Password, controllerKeystore);
                                 setBindModal(false);
                             }
+                            setLoading(false);
                         } catch (e: any) {
                             setErrorState({
                                 Type: 'chain error',
@@ -226,6 +228,7 @@ const BindModal: React.FC<{
                         await defaultBlockChain();
                         break;
                 }
+                break;
             case 'Solana':
                 switch (wallet) {
                     case 'sollet':
@@ -488,7 +491,7 @@ const BindModal: React.FC<{
                                 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'social.blockchain.solana',
+                                    id: 'social.blockchain.sollet',
                                 })}
                             </Button>
                             <div
