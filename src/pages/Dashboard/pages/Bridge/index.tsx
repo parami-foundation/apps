@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { Image, Spin, Steps, Typography } from 'antd';
-import SelectWallet from './components/selectWallet';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import classNames from 'classnames';
@@ -9,15 +8,13 @@ import Deposit from './deposit';
 import Withdraw from './withdraw';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
 import { LoadingOutlined } from '@ant-design/icons';
+import SelectWallet from '../../components/SelectWallet';
 
 const Bridge: React.FC = () => {
+    const { Account } = useModel('web3');
     const [tab, setTab] = useState<string>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
-
-    const {
-        account,
-    } = useModel("metaMask");
 
     const intl = useIntl();
 
@@ -26,7 +23,7 @@ const Bridge: React.FC = () => {
 
     return (
         <>
-            {account ? (
+            {Account ? (
                 <Spin
                     tip={
                         [tab === 'deposit' && (

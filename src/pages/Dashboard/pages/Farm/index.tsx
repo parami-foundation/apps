@@ -5,7 +5,6 @@ import style from './style.less';
 import { Button, Typography, Spin, notification } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
-import SelectWallet from '../Bridge/components/selectWallet';
 import type { BigNumber } from 'ethers';
 import { ethers } from 'ethers';
 import { getAd3Price } from './api/uniswap/pool';
@@ -17,9 +16,9 @@ import { BigIntToFloatString } from '@/utils/format';
 import PairItem from './components/PairItem';
 import ERC20_ABI from './abi/ERC20.json';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
+import SelectWallet from '../../components/SelectWallet';
 
 const Farm: React.FC = () => {
-    const apiWs = useModel('apiWs');
     const [loading, setLoading] = useState<boolean>(false);
     const [Postitions, setPostitions] = useState<any[]>([]);
     const [isApprovedAll, setIsApproveAll] = useState(true);
@@ -37,11 +36,11 @@ const Farm: React.FC = () => {
     const { Title } = Typography;
 
     const {
-        account,
-        chainId,
-        blockNumber,
-        signer
-    } = useModel("metaMask");
+        Account,
+        ChainId,
+        BlockNumber,
+        Signer,
+    } = useModel("web3");
 
     const {
         Ad3Contract,
@@ -56,11 +55,11 @@ const Farm: React.FC = () => {
     //     await tx.wait();
     //     setAd3Approved(true);
     // };
-    //check chainId
+    //check ChainId
 
     useEffect(() => {
-        console.log('chainId', chainId);
-        if (chainId !== 1 && chainId !== 4) {
+        console.log('ChainId', ChainId);
+        if (ChainId !== 1 && ChainId !== 4) {
             notification.error({
                 message: 'Unsupported Chain',
                 description: 'This feature is only supported on mainnet and rinkeby',
@@ -69,21 +68,21 @@ const Farm: React.FC = () => {
             setWalletReady(false);
             return;
         }
-        if (account && account !== '') {
+        if (Account && Account !== '') {
             setWalletReady(true);
         }
-    }, [chainId, account]);
+    }, [ChainId, Account]);
 
     useEffect(() => {
-        if (chainId !== 1 && chainId !== 4) {
+        if (ChainId !== 1 && ChainId !== 4) {
             return;
         }
         const p: any[] = [];
         for (let i = 0; i < pairsData.length; i++) {
-            p.push({ ...pairsData[i], coinAddress: pairsData[i].coinAddresses[chainId] });
+            p.push({ ...pairsData[i], coinAddress: pairsData[i].coinAddresses[ChainId] });
         }
         setPairs(p);
-    }, [chainId]);
+    }, [ChainId]);
 
     //get total supply
     useEffect(() => {
@@ -97,13 +96,13 @@ const Farm: React.FC = () => {
 
     //get LPContract's balance
     async function getLPBalance() {
-        if (chainId !== 1 && chainId !== 4) {
+        if (ChainId !== 1 && ChainId !== 4) {
             return;
         }
-        if (signer && Pools.length > 0) {
-            const eth_rw = new ethers.Contract(contractAddresses.weth[chainId], ERC20_ABI, signer);
-            const usdt_rw = new ethers.Contract(contractAddresses.usdt[chainId], ERC20_ABI, signer);
-            const usdc_rw = new ethers.Contract(contractAddresses.usdc[chainId], ERC20_ABI, signer);
+        if (Signer && Pools.length > 0) {
+            const eth_rw = new ethers.Contract(contractAddresses.weth[ChainId], ERC20_ABI, Signer);
+            const usdt_rw = new ethers.Contract(contractAddresses.usdt[ChainId], ERC20_ABI, Signer);
+            const usdc_rw = new ethers.Contract(contractAddresses.usdc[ChainId], ERC20_ABI, Signer);
             const erc20Array = [eth_rw, usdt_rw, usdc_rw];
             const balancePromises = erc20Array.map(async (erc20, index) => {
                 return await erc20.balanceOf(Pools[index]);
@@ -119,44 +118,44 @@ const Farm: React.FC = () => {
     useEffect(() => {
         getLPBalance();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chainId, signer, Pools]);
+    }, [ChainId, Signer, Pools]);
 
     //update AD3 price && set pools
     const getPoolsAndPrice = useCallback(async () => {
-        if (FactoryContract && chainId !== undefined) {
-            if (chainId !== 1 && chainId !== 4) {
+        if (FactoryContract && ChainId !== undefined) {
+            if (ChainId !== 1 && ChainId !== 4) {
                 return;
             }
             const promises = pairsData.map(async (pair) => {
-                return await FactoryContract.getPool(pair.coinAddresses[chainId], contractAddresses.ad3[chainId], FeeAmount.MEDIUM)
+                return await FactoryContract.getPool(pair.coinAddresses[ChainId], contractAddresses.ad3[ChainId], FeeAmount.MEDIUM)
             });
             const pools = await Promise.all(promises);
             if (!CompareArray(pools, Pools)) {
                 setPools(pools);
             }
-            const res = await getAd3Price(FactoryContract, pairsData[1].coinAddresses[chainId]);//USDT
+            const res = await getAd3Price(FactoryContract, pairsData[1].coinAddresses[ChainId]);//USDT
             if (res) {
                 setAD3Price(res.toSignificant())
             }
         }
-    }, [FactoryContract, Pools, chainId]);
+    }, [FactoryContract, Pools, ChainId]);
 
     useEffect(() => {
         setLoading(true);
         getPoolsAndPrice();
         setLoading(false);
-    }, [FactoryContract, chainId, Pools, getPoolsAndPrice]);
+    }, [FactoryContract, ChainId, Pools, getPoolsAndPrice]);
 
     //update liquidities from 
     async function getPositions() {
-        const balanceKinds: BigNumber = await LPContract?.balanceOf(account);
+        const balanceKinds: BigNumber = await LPContract?.balanceOf(Account);
         if (!balanceKinds) return;
         const tokenIndexArray: number[] = [];
         for (let i = 0; i < balanceKinds.toNumber(); i++) {
             tokenIndexArray.push(i);
         }
         const tokenIdPromises = tokenIndexArray.map(async (i) => {
-            const tokenId = await LPContract?.tokenOfOwnerByIndex(account, i);
+            const tokenId = await LPContract?.tokenOfOwnerByIndex(Account, i);
             if (parseInt(tokenId) == NaN) {
                 return -1;
             }
@@ -182,7 +181,7 @@ const Farm: React.FC = () => {
             getPositions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, blockNumber]);
+    }, [LPContract, BlockNumber]);
 
     //update APY
     const updateApy = useCallback(async () => {
@@ -191,7 +190,7 @@ const Farm: React.FC = () => {
             for (let i = 0; i < pairsData.length; i++) {
                 const promises = pairsData[i].incentives.map(async (incentive) => {
                     const incentiveKey = {
-                        rewardToken: contractAddresses.ad3[chainId],
+                        rewardToken: contractAddresses.ad3[ChainId],
                         pool: Pools[i],
                         startTime: incentive.startTime,
                         endTime: incentive.endTime,
@@ -213,7 +212,7 @@ const Farm: React.FC = () => {
             // const promises = pairsData.map(async (pair: any, index: number) => {
             //     // console.log(encode)
             //     const incentiveKey = {
-            //         rewardToken: contractAddresses.ad3[chainId],
+            //         rewardToken: contractAddresses.ad3[ChainId],
             //         pool: Pools[index],
             //         startTime: pair.incentives[2].startTime,
             //         endTime: pair.incentives[2].endTime,
@@ -237,7 +236,7 @@ const Farm: React.FC = () => {
             console.log('newApys', allApys);
             setApys(allApys);
         }
-    }, [StakeContract, Pools, chainId]);
+    }, [StakeContract, Pools, ChainId]);
 
     useEffect(() => {
         if (!StakeContract || Pools.length === 0) return;
@@ -277,16 +276,16 @@ const Farm: React.FC = () => {
     const getIsApprovedAll = useCallback(async () => {
         if (!LPContract || !StakeContract) return;
         setLoading(true);
-        const allowance = await LPContract?.isApprovedForAll(account, StakeContract?.address)
+        const allowance = await LPContract?.isApprovedForAll(Account, StakeContract?.address)
         console.log('allowance', allowance);
         setIsApproveAll(allowance);
         setLoading(false);
-    }, [LPContract, StakeContract, account]);
+    }, [LPContract, StakeContract, Account]);
 
     useEffect(() => {
         getIsApprovedAll();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [LPContract, account, StakeContract]);
+    }, [LPContract, Account, StakeContract]);
 
     return (
         <>

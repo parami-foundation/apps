@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { Pool } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
-import { abi as IUniswapV3PoolABI } from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
+import IUniswapV3PoolABI from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
 import { contractAddresses } from "../../config";
 interface Immutables {
     factory: string;
@@ -71,7 +71,7 @@ async function GetPool(uniswapFactory: ethers.Contract, provider: ethers.provide
     console.log(poolAddress);
     const poolContract = new ethers.Contract(
         poolAddress,
-        IUniswapV3PoolABI,
+        IUniswapV3PoolABI.abi,
         provider
     );
     const [immutables, state] = await Promise.all([

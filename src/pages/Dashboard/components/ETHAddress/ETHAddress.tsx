@@ -4,11 +4,11 @@ import { Image } from 'antd';
 import { useModel } from 'umi';
 
 const ETHAddress: React.FC = () => {
-    const { account } = useModel('metaMask');
+    const { Account } = useModel('web3');
 
     return (
         <>
-            {account && (
+            {Account && (
                 <div className={style.addressContainer}>
                     <div className={style.ethLogo}>
                         <Image
@@ -23,7 +23,7 @@ const ETHAddress: React.FC = () => {
                             Current Address:
                         </span>
                         <span className={style.address}>
-                            {account}
+                            {Account}
                         </span>
                     </div>
                 </div>

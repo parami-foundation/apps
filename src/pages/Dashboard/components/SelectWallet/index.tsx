@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
-import { useIntl } from 'umi';
+import React from 'react';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Card, Typography, Divider, Button } from 'antd';
-import BigModal from '@/components/ParamiModal/BigModal';
-import MetaMask, { MetamaskModal } from './metamask';
+import { RightOutlined } from '@ant-design/icons';
+import { FaWallet } from 'react-icons/fa';
 
 const SelectWallet: React.FC = () => {
-    const [waitingModal, setWaitingModal] = useState<boolean>(false);
-    const [walletType, setWalletType] = useState<string>('');
-
+    const { connect } = useModel('web3');
     const intl = useIntl();
 
     const { Title } = Typography;
@@ -35,10 +33,20 @@ const SelectWallet: React.FC = () => {
                             })}
                         </Title>
                         <div className={style.appList}>
-                            <MetaMask
-                                setWaitingModal={setWaitingModal}
-                                setWalletType={setWalletType}
-                            />
+                            <div
+                                className={style.appItem}
+                                onClick={async () => {
+                                    await connect();
+                                }}
+                            >
+                                <div className={style.info}>
+                                    <span className={style.name}>
+                                        <FaWallet className={style.icon} />
+                                        Connect Wallet
+                                    </span>
+                                </div>
+                                <RightOutlined className={style.rightArrow} />
+                            </div>
                         </div>
                         <Divider />
                         <div className={style.getWallet}>
@@ -59,14 +67,6 @@ const SelectWallet: React.FC = () => {
                     </Card>
                 </div>
             </div>
-            <BigModal
-                visable={waitingModal}
-                title={walletType}
-                content={walletType === 'Metamask' && (
-                    <MetamaskModal />
-                )}
-                footer={false}
-            />
         </>
     )
 }

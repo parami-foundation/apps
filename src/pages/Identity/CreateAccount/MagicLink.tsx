@@ -99,7 +99,12 @@ const MagicLink: React.FC<{
               )
             }
           >
-            <Input size="large" bordered value={recoverWithLink} readOnly />
+            <Input
+              size="large"
+              bordered
+              value={!magicMnemonic ? '' : recoverWithLink}
+              readOnly
+            />
           </CopyToClipboard>
           <div className={style.buttons}>
             <CopyToClipboard
@@ -131,6 +136,7 @@ const MagicLink: React.FC<{
               size="large"
               className={style.button}
               onClick={() => handleSubmit()}
+              disabled={!magicMnemonic}
               loading={submitting}
             >
               {intl.formatMessage({

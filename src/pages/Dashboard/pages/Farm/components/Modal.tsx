@@ -12,8 +12,8 @@ const AddModal: React.FC<{
     currentPrice: bigint;
 }> = ({ pair, setVisiable, currentPrice }) => {
     const {
-        chainId,
-    } = useModel("metaMask");
+        ChainId,
+    } = useModel('web3');
     const intl = useIntl();
     const [APYIndex, setAPYIndex] = React.useState(0);
     const { Title } = Typography;
@@ -176,7 +176,7 @@ const AddModal: React.FC<{
                             window.open(
                                 `https://app.uniswap.org/#/add/${pair.coin === 'ETH'
                                     ? 'ETH'
-                                    : pair.coinAddress}/${contractAddresses.ad3[chainId]}/3000`
+                                    : pair.coinAddress}/${contractAddresses.ad3[ChainId]}/3000`
                             )
                         }}
                     >

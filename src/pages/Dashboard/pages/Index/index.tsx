@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Button, notification } from 'antd';
+import { Button, notification, Spin } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import styles from '@/pages/dashboard.less';
@@ -8,12 +8,13 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import SelectAccount from './components/SelectAccount';
 import config from '@/config/config';
+import { LoadingOutlined } from '@ant-design/icons';
 
 const Index: React.FC = () => {
     const apiWs = useModel('apiWs');
     const [selectModal, setSelectModal] = useState<boolean>(false);
     const [accounts, setAccounts] = useState<any[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const intl = useIntl();
 
@@ -114,29 +115,39 @@ const Index: React.FC = () => {
                                     })}
                                 </span>
                             </Button>
-                            <Button
-                                block
-                                ghost
-                                size='large'
-                                type='link'
-                                shape='round'
-                                className={`${style.button} ${style.buttonImport}`}
-                                loading={loading}
-                                onClick={() => {
-                                    checkExtension();
+                            <Spin
+                                indicator={
+                                    <LoadingOutlined spin />
+                                }
+                                style={{
+                                    width: '100%',
                                 }}
+                                wrapperClassName={style.spinWrapper}
+                                spinning={loading}
                             >
-                                <div className={style.title}>
-                                    {intl.formatMessage({
-                                        id: 'dashboard.index.selectAccount',
-                                    })}
-                                </div>
-                                <span className={style.desc}>
-                                    {intl.formatMessage({
-                                        id: 'dashboard.index.selectAccount.desc',
-                                    })}
-                                </span>
-                            </Button>
+                                <Button
+                                    block
+                                    ghost
+                                    size='large'
+                                    type='link'
+                                    shape='round'
+                                    className={`${style.button} ${style.buttonImport}`}
+                                    onClick={() => {
+                                        checkExtension();
+                                    }}
+                                >
+                                    <div className={style.title}>
+                                        {intl.formatMessage({
+                                            id: 'dashboard.index.selectAccount',
+                                        })}
+                                    </div>
+                                    <span className={style.desc}>
+                                        {intl.formatMessage({
+                                            id: 'dashboard.index.selectAccount.desc',
+                                        })}
+                                    </span>
+                                </Button>
+                            </Spin>
                         </div>
                     </div>
                 </div>

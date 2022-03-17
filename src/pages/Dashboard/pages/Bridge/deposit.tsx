@@ -30,7 +30,12 @@ const Deposit: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ setLoading, setStep }) => {
     const apiWs = useModel('apiWs');
-    const { account, chainName, provider, signer } = useModel('metaMask');
+    const {
+        Account,
+        ChainName,
+        Provider,
+        Signer,
+    } = useModel('web3');
     const { Events,
         SubParamiEvents } = useModel('dashboard.paramiEvents');
     const { stash } = useModel('dashboard.balance');
@@ -75,9 +80,9 @@ const Deposit: React.FC<{
     }, [Events, txNonce, waitingParami]);
 
     const getBalance = async () => {
-        if (!provider || !signer) return;
+        if (!Provider || !Signer) return;
         try {
-            const balance = await Ad3Contract?.balanceOf(account);
+            const balance = await Ad3Contract?.balanceOf(Account);
             setFreeBalance(BigNumber.from(balance).toString());
         } catch (e: any) {
             console.log(e.message);
@@ -85,7 +90,7 @@ const Deposit: React.FC<{
     };
 
     const handleSubmit = async () => {
-        if (!provider || !signer) return;
+        if (!Provider || !Signer) return;
         setLoading(true);
 
         let recipient: string = destinationAddress;
@@ -95,7 +100,7 @@ const Deposit: React.FC<{
                 if (!user) {
                     return;
                 }
-                recipient = user.account;
+                recipient = user.Account;
             } catch (e: any) {
                 message.error(e.message);
             }
@@ -156,11 +161,11 @@ const Deposit: React.FC<{
     }
 
     useEffect(() => {
-        if (!account || !Ad3Contract) return;
+        if (!Account || !Ad3Contract) return;
         if (apiWs) {
             getBalance();
         }
-    }, [signer, provider, Ad3Contract, account, apiWs]);
+    }, [Signer, Provider, Ad3Contract, Account, apiWs]);
 
     return (
         <>
@@ -179,7 +184,7 @@ const Deposit: React.FC<{
                             preview={false}
                             className={style.chainIcon}
                         />
-                        <span className={style.chainDetailsChainName}>{chainName}</span>
+                        <span className={style.chainDetailsChainName}>{ChainName}</span>
                     </div>
                     <div className={style.balanceDetails}>
                         <span className={style.balanceDetailsLabel}>

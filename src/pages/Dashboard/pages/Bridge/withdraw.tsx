@@ -27,7 +27,12 @@ const Withdraw: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<number>>;
 }> = ({ setLoading, setStep }) => {
     const apiWs = useModel('apiWs');
-    const { account, chainName, provider, signer } = useModel('metaMask');
+    const {
+        Account,
+        ChainName,
+        Provider,
+        Signer,
+    } = useModel('web3');
     const { DepositNonce,
         SubBridgeEvents,
         UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
@@ -74,9 +79,9 @@ const Withdraw: React.FC<{
     }
 
     const getBalance = async () => {
-        if (!provider || !signer) return;
+        if (!Provider || !Signer) return;
         try {
-            const balance = await Ad3Contract?.balanceOf(account);
+            const balance = await Ad3Contract?.balanceOf(Account);
             setFreeBalance(BigNumber.from(balance).toString());
         } catch (e: any) {
             console.log(e.message);
@@ -100,11 +105,11 @@ const Withdraw: React.FC<{
     }, [BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce]);
 
     useEffect(() => {
-        if (!account || !Ad3Contract) return;
+        if (!Account || !Ad3Contract) return;
         if (apiWs) {
             getBalance();
         }
-    }, [signer, provider, Ad3Contract, account, apiWs]);
+    }, [Signer, Provider, Ad3Contract, Account, apiWs]);
 
     return (
         <>
@@ -190,7 +195,7 @@ const Withdraw: React.FC<{
                         preview={false}
                         className={style.chainIcon}
                     />
-                    <span className={style.chainDetailsChainName}>{chainName}</span>
+                    <span className={style.chainDetailsChainName}>{ChainName}</span>
                 </div>
                 <div className={style.balanceDetails}>
                     <span className={style.balanceDetailsLabel}>
@@ -230,7 +235,7 @@ const Withdraw: React.FC<{
                     type='default'
                     size='small'
                     onClick={() => {
-                        setDestinationAddress(account);
+                        setDestinationAddress(Account);
                     }}
                 >
                     {intl.formatMessage({

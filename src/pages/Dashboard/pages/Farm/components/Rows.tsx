@@ -25,9 +25,9 @@ const Rows: React.FC<{
         FactoryContract
     } = useModel('contracts');
     const {
-        account,
-        chainId
-    } = useModel('metaMask');
+        Account,
+        ChainId,
+    } = useModel('web3');
     const [AddModalShow, setAddModalShow] = useState<boolean>(false);
     const [pendingStake, setPendingStake] = useState<(true | false)[]>([]);
     const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([]);
@@ -38,7 +38,7 @@ const Rows: React.FC<{
         setPendingStake(pendingStake);
         console.log(`handle Stake ${tokenId}`);
         const incentiveKey = {
-            rewardToken: contractAddresses.ad3[chainId],
+            rewardToken: contractAddresses.ad3[ChainId],
             pool: poolAddress,
             startTime: pair.incentives[incentiveIndex].startTime,
             endTime: pair.incentives[incentiveIndex].endTime,
@@ -53,7 +53,7 @@ const Rows: React.FC<{
             pendingStake[tokenId] = false
             setPendingStake(pendingStake)
         }
-    }, [StakeContract, chainId, pair.incentives, pendingStake, poolAddress]);
+    }, [StakeContract, ChainId, pair.incentives, pendingStake, poolAddress]);
 
     const handleUnstake = useCallback(
         async (tokenId, incentiveIndex) => {
@@ -61,14 +61,14 @@ const Rows: React.FC<{
             pendingUnstake[tokenId] = true
             setPendingUnstake(pendingUnstake)
             const incentiveKey = {
-                rewardToken: contractAddresses.ad3[chainId],
+                rewardToken: contractAddresses.ad3[ChainId],
                 pool: poolAddress,
                 startTime: pair.incentives[incentiveIndex].startTime,
                 endTime: pair.incentives[incentiveIndex].endTime,
             }
             try {
                 //unstake
-                await StakeContract?.unstakeToken(incentiveKey, tokenId, account)
+                await StakeContract?.unstakeToken(incentiveKey, tokenId, Account)
                 pendingUnstake[tokenId] = false
                 setPendingUnstake(pendingUnstake)
             } catch (e) {
@@ -77,7 +77,7 @@ const Rows: React.FC<{
                 setPendingUnstake(pendingUnstake)
             }
         },
-        [StakeContract, account, chainId, pair.incentives, pendingUnstake, poolAddress]
+        [StakeContract, Account, ChainId, pair.incentives, pendingUnstake, poolAddress]
     )
 
     const handleClaim = useCallback(async (tokenId, amount, incentiveIndex) => {
@@ -85,13 +85,13 @@ const Rows: React.FC<{
         setPendingClaim(pendingClaim)
         console.log('handleclaim', tokenId, amount, incentiveIndex)
         const incentiveKey = {
-            rewardToken: contractAddresses.ad3[chainId],
+            rewardToken: contractAddresses.ad3[ChainId],
             pool: poolAddress,
             startTime: pair.incentives[incentiveIndex].startTime,
             endTime: pair.incentives[incentiveIndex].endTime,
         }
         try {
-            await StakeContract?.claimReward(incentiveKey, tokenId, account, amount);
+            await StakeContract?.claimReward(incentiveKey, tokenId, Account, amount);
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         } catch (e) {
@@ -99,7 +99,7 @@ const Rows: React.FC<{
             pendingClaim[tokenId] = false
             setPendingClaim(pendingClaim)
         }
-    }, [StakeContract, account, pair.incentives, pendingClaim, poolAddress, chainId]);
+    }, [StakeContract, Account, pair.incentives, pendingClaim, poolAddress, ChainId]);
 
     const getAd3CoinPrice = useCallback(async () => {
         if (!FactoryContract) return;

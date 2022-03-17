@@ -24,13 +24,14 @@ const PairItem: React.FC<{
     liquidity: bigint;
 }> = ({ logo, pair, positions, poolAddress, apy, liquidity }) => {
     const apiWs = useModel('apiWs');
+
     const {
-        account,
-        provider,
-        signer,
-        chainId,
-        blockNumber,
-    } = useModel("metaMask");
+        Account,
+        Provider,
+        ChainId,
+        BlockNumber,
+        Signer,
+    } = useModel("web3");
     const {
         StakeContract
     } = useModel('contracts');
@@ -43,13 +44,13 @@ const PairItem: React.FC<{
     const [Token0, setToken0] = useState<Token | undefined>(undefined);
     const [Token1, setToken1] = useState<Token | undefined>(undefined);
     const getToken = async (address: string) => {
-        if (chainId !== 1 && chainId !== 4 || !signer) return undefined
-        const erc20_rw = new ethers.Contract(address, ERC20_ABI, signer);
+        if (ChainId !== 1 && ChainId !== 4 || !Signer) return undefined
+        const erc20_rw = new ethers.Contract(address, ERC20_ABI, Signer);
         const name = await erc20_rw.name();
         const symbol = await erc20_rw.symbol();
         const decimals = await erc20_rw.decimals();
         return new Token(
-            chainId,
+            ChainId,
             address,
             decimals,
             symbol,
@@ -58,7 +59,7 @@ const PairItem: React.FC<{
     };
 
     const initToken = async () => {
-        const newToken = await getToken(contractAddresses.ad3[chainId]);
+        const newToken = await getToken(contractAddresses.ad3[ChainId]);
         const newCoin = await getToken(pair.coinAddress);
         console.log(newToken, newCoin);
         setToken0(newToken);
@@ -66,12 +67,14 @@ const PairItem: React.FC<{
     };
 
     useEffect(() => {
-        if (!signer) return;
+        console.log(Signer)
+        if (!Signer) return;
         if (apiWs) {
+            console.log('test')
             initToken();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [chainId, provider, signer]);
+    }, [ChainId, Provider, Signer]);
 
     useEffect(() => {
         if (Token0 && Token1) {
@@ -99,7 +102,7 @@ const PairItem: React.FC<{
         const tmp: any[] = [];
         for (let i = 0; i < pair.incentives.length; i++) {
             tmp.push({
-                rewardToken: contractAddresses.ad3[chainId],
+                rewardToken: contractAddresses.ad3[ChainId],
                 pool: poolAddress,
                 startTime: pair.incentives[i].startTime,
                 endTime: pair.incentives[i].endTime,
@@ -107,12 +110,12 @@ const PairItem: React.FC<{
         }
         setIncentiveKeys(tmp);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [poolAddress, chainId, pair]);
+    }, [poolAddress, ChainId, pair]);
 
     const getUnstaked = useCallback(async () => {
         if (positions.length === 0 || Ticks.length === 0) return;
         // console.log('positions', positions);
-        const array = [pair.coinAddress.toLowerCase(), contractAddresses.ad3[chainId].toLowerCase()];
+        const array = [pair.coinAddress.toLowerCase(), contractAddresses.ad3[ChainId].toLowerCase()];
         const liquid: any[] = [];
         for (let i = 0; i < positions.length; i++) {
             if (positions[i].fee === FeeAmount.MEDIUM && positions[i].liquidity.toString() !== '0' && array.includes(positions[i].token0.toLowerCase()) && array.includes(positions[i].token1.toLowerCase())) {
@@ -134,7 +137,7 @@ const PairItem: React.FC<{
         // console.log('unstaked', liquid);
         setUnStakedLPs(liquid);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [positions, chainId, Ticks]);
+    }, [positions, ChainId, Ticks]);
 
     const getStaked = useCallback(async () => {
         if (!StakeContract) {
@@ -146,14 +149,14 @@ const PairItem: React.FC<{
             return;
         }
         if (Ticks.length === 0) return;
-        const tokenCountFromStakeManager = await StakeContract?.getUserTokenIdCount(account);
+        const tokenCountFromStakeManager = await StakeContract?.getUserTokenIdCount(Account);
         console.log('tokenCountFromStakeManager', tokenCountFromStakeManager);
         const indexies: number[] = [];
         for (let i = 0; i < tokenCountFromStakeManager; i++) {
             indexies.push(i);
         }
         const tokenIdsPromises = indexies.map(async (tokenId) => {
-            return await StakeContract['getTokenId(address,uint256)'](account, tokenId);
+            return await StakeContract['getTokenId(address,uint256)'](Account, tokenId);
         })
         const tokenIds = await Promise.all(tokenIdsPromises);
         const stakesPromises = tokenIds.map(async (tokenId: BigNumber) => {
@@ -181,7 +184,7 @@ const PairItem: React.FC<{
         if (CompareArray(stakes, StakedLPs)) return;
         setStakedLPs(stakes);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [IncentiveKeys, StakeContract, Ticks, account, blockNumber]);
+    }, [IncentiveKeys, StakeContract, Ticks, Account, BlockNumber]);
 
     const updateReward = useCallback(async () => {
         const promises = StakedLPs.map(async (stakedLP) => {
@@ -203,7 +206,7 @@ const PairItem: React.FC<{
             updateReward();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [blockNumber, StakeContract, StakedLPs, apiWs]);
+    }, [BlockNumber, StakeContract, StakedLPs, apiWs]);
 
     useEffect(() => {
         if (apiWs) {
@@ -221,7 +224,7 @@ const PairItem: React.FC<{
             getStaked();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [StakeContract, Ticks, IncentiveKeys, blockNumber, apiWs]);
+    }, [StakeContract, Ticks, IncentiveKeys, BlockNumber, apiWs]);
 
     return (
         <Badge.Ribbon

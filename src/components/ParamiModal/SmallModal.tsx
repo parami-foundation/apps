@@ -4,7 +4,6 @@ import { Modal } from 'antd';
 
 import styles from './style.less';
 
-
 const SmallModal: React.FC<{
     visable: boolean,
     content: ReactNode,
