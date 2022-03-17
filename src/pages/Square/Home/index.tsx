@@ -20,12 +20,8 @@ const Home: React.FC = () => {
         <div className={styles.mainTopContainer}>
             <div className={style.squareContainer}>
                 <div className={style.pageHeader}>
-                    <img
-                        src={"/images/icon/square.svg"}
-                        className={style.pageHeaderIcon}
-                    />
                     {intl.formatMessage({
-                        id: 'wallet.square.title',
+                        id: 'square.title',
                         defaultMessage: 'Square',
                     })}
                 </div>
@@ -44,7 +40,7 @@ const Home: React.FC = () => {
                             <Avatar
                                 size="large"
                                 className={style.avatar}
-                                src={'/images/logo-square-core.svg'}
+                                src={'/images/demo/demo.png'}
                                 alt="avatar"
                             />
                             <div className={style.mask} />
@@ -52,6 +48,105 @@ const Home: React.FC = () => {
                                 className={style.background}
                                 style={{
                                     backgroundImage: 'url(https://ipfs.parami.io/ipfs/QmYor8dfYFZEw1mknsh32LUA1rLCPhTUyHYeNH28mmKN6B)',
+                                }}
+                            />
+                            <div className={style.tokenName}>$AD3</div>
+                            <div className={style.info}>
+                                <div className={style.tokenPrice}>
+                                    <DollarOutlined className={style.tokenPriceIcon} />
+                                    30 $AD3
+                                </div>
+                                <div className={style.tokenOwner}>
+                                    Hikaru Nakamura
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                    <Col xs={12} sm={12} md={8} lg={6} xl={6}>
+                        <div
+                            className={style.card}
+                            ref={cardRef}
+                            style={{
+                                height: cardWidth * 16 / 9,
+                            }}
+                        >
+                            <Avatar
+                                size="large"
+                                className={style.avatar}
+                                src={'/images/demo/demo1.jpg'}
+                                alt="avatar"
+                            />
+                            <div className={style.mask} />
+                            <div
+                                className={style.background}
+                                style={{
+                                    backgroundImage: 'url(/images/demo/bg1.jpg)',
+                                }}
+                            />
+                            <div className={style.tokenName}>$AD3</div>
+                            <div className={style.info}>
+                                <div className={style.tokenPrice}>
+                                    <DollarOutlined className={style.tokenPriceIcon} />
+                                    30 $AD3
+                                </div>
+                                <div className={style.tokenOwner}>
+                                    Hikaru Nakamura
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                    <Col xs={12} sm={12} md={8} lg={6} xl={6}>
+                        <div
+                            className={style.card}
+                            ref={cardRef}
+                            style={{
+                                height: cardWidth * 16 / 9,
+                            }}
+                        >
+                            <Avatar
+                                size="large"
+                                className={style.avatar}
+                                src={'/images/demo/demo4.jpg'}
+                                alt="avatar"
+                            />
+                            <div className={style.mask} />
+                            <div
+                                className={style.background}
+                                style={{
+                                    backgroundImage: 'url(/images/demo/bg2.jpg)',
+                                }}
+                            />
+                            <div className={style.tokenName}>$AD3</div>
+                            <div className={style.info}>
+                                <div className={style.tokenPrice}>
+                                    <DollarOutlined className={style.tokenPriceIcon} />
+                                    30 $AD3
+                                </div>
+                                <div className={style.tokenOwner}>
+                                    Hikaru Nakamura
+                                </div>
+                            </div>
+                        </div>
+                    </Col>
+                    <Col xs={12} sm={12} md={8} lg={6} xl={6}>
+                        <div
+                            className={style.card}
+                            ref={cardRef}
+                            style={{
+                                height: cardWidth * 16 / 9,
+                            }}
+                        >
+                            <Avatar
+                                size="large"
+                                className={style.avatar}
+                                src={'/images/demo/demo2.png'}
+                                alt="avatar"
+                            />
+                            <div className={style.mask} />
+                            <div
+                                className={style.background}
+                                style={{
+                                    backgroundImage: 'url(/images/demo/bg3.jpg)',
                                 }}
                             />
                             <div className={style.tokenName}>$AD3</div>

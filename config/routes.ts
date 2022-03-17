@@ -170,6 +170,8 @@
     hideChildrenInMenu: true,
     component: './Square/Index',
     hideInMenu: true,
+    headerRender: false,
+    footerRender: false,
   },
   {
     path: '/did:kol',

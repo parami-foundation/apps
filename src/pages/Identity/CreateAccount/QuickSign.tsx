@@ -129,7 +129,7 @@ const QuickSign: React.FC<{
                     <DiscordLoginButton
                         dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
                         clientId={config.airdropService.discord.clientId}
-                        redirectUri={config.airdropService.discord.redirectUri}
+                        redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
                     />
                     <small
                         style={{

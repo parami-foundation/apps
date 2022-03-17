@@ -13,55 +13,42 @@ const providerOptions = {
 };
 
 export async function signETHMessage(msg: string) {
+  const web3Modal = new Web3Modal({
+    cacheProvider: true,
+    providerOptions,
+  });
   try {
-    const web3Modal = new Web3Modal({
-      network: 'rinkeby', // optional
-      cacheProvider: false, // optional
-      providerOptions // required
-    });
     const provider = await web3Modal.connect();
-    await provider.enable();
-    //  Wrap with Web3Provider from ethers.js
     const web3Provider = new providers.Web3Provider(provider);
     const signer = web3Provider.getSigner();
     const account = await signer.getAddress();
-    console.log(account);
     const signedMsg = await signer.signMessage(msg);
-    console.log(signedMsg);
-    // Send JSON RPC requests
-    //const result = await provider.request(payload: RequestArguments);
+    web3Modal.clearCachedProvider();
     return { account, signedMsg };
   } catch (e: any) {
     console.log(e);
     message.error(e.message);
     return { account: "", signedMsg: "" };
   }
-  // Close provider session
 }
 
 export async function signBSCMessage(msg: string) {
+  const web3Modal = new Web3Modal({
+    network: 'binance',
+    cacheProvider: true,
+    providerOptions,
+  });
   try {
-    const web3Modal = new Web3Modal({
-      network: 'binance', // optional
-      cacheProvider: false, // optional
-      providerOptions // required
-    });
     const provider = await web3Modal.connect();
-    await provider.enable();
-    //  Wrap with Web3Provider from ethers.js
     const web3Provider = new providers.Web3Provider(provider);
     const signer = web3Provider.getSigner();
     const account = await signer.getAddress();
-    console.log(account);
     const signedMsg = await signer.signMessage(msg);
-    console.log(signedMsg);
-    // Send JSON RPC requests
-    //const result = await provider.request(payload: RequestArguments);
+    web3Modal.clearCachedProvider();
     return { account, signedMsg };
   } catch (e: any) {
     console.log(e);
     message.error(e.message);
     return { account: "", signedMsg: "" };
   }
-  // Close provider session
 }

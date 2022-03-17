@@ -1,0 +1,136 @@
+.followContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-top: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    max-width: 1200px;
+
+    .pageHeader {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        text-align: left;
+        font-size: 2rem;
+        font-weight: 900;
+
+        .pageHeaderIcon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+    }
+
+    .followList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        
+        &:not(:first-child) {
+            margin-top: 2rem;
+        }
+
+        .subTitle {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            text-align: left;
+            font-size: 1.2rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .badgeContainer {
+            width: 100%;
+        }
+
+        .followItem {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0.8rem 0.8rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 32px;
+
+            &:not(:last-child) {
+                margin-bottom: 1rem;
+            }
+
+            .baseInfo {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .avatar {
+                width: 40px;
+                margin-right: 10px;
+                border-radius: 100%;
+            }
+
+            .followName {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                width: 100%;
+                text-align: left;
+
+                .tokenName {
+                    font-size: 1rem;
+                    font-weight: 900;
+                }
+
+                .kolName {
+                    font-size: 0.8rem;
+                    font-weight: 400;
+                    color: rgba(0, 0, 0, 0.5);
+                }
+            }
+
+            .followValue {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-end;
+                text-align: right;
+
+                .value {
+                    background-color: rgba(0, 0, 0, 0.1);
+                    color: #ff5b00;
+                    padding: 0.3rem 1rem;
+                    border-radius: 30px;
+                    font-weight: 900;
+                }
+            }
+
+            .followOnlyValue {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-end;
+                text-align: right;
+
+                .value {
+                    background-color: rgba(0, 0, 0, 0.1);
+                    color: rgba(0, 0, 0, 0.3);
+                    padding: 0.3rem 1rem;
+                    border-radius: 30px;
+                }
+            }
+        }
+    }
+}

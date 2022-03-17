@@ -313,7 +313,7 @@ const InitialDeposit: React.FC<{
       localStorage.removeItem('process');
       return;
     }
-  }, [avatarNicknameData, qsTicket, qsPlatform, DID]);
+  }, [avatarNicknameData, qsTicket, DID]);
 
   useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
