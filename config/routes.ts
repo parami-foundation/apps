@@ -81,6 +81,7 @@
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Stake/Staking',
+    hideInMenu: true,
   },
   {
     path: '/profile',

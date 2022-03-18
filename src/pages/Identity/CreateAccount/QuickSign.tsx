@@ -6,6 +6,7 @@ import style from '../style.less';
 import TelegramLoginButton from 'react-telegram-login';
 import config from '@/config/config';
 import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
+import { ArrowRightOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -40,11 +41,6 @@ const QuickSign: React.FC<{
                     >
                         <img src={'/images/icon/option.svg'} className={style.topIcon} />
                         <Title
-                            level={2}
-                            style={{
-                                fontWeight: 'bold',
-                                textAlign: 'center',
-                            }}
                             className={style.title}
                         >
                             {intl.formatMessage({
@@ -53,9 +49,27 @@ const QuickSign: React.FC<{
                         </Title>
                         <p className={style.description}>
                             {intl.formatMessage({
-                                id: 'identity.quicksign.description',
+                                id: 'identity.quicksign.description1',
                             })}
                         </p>
+                        <p className={style.description}>
+                            {intl.formatMessage({
+                                id: 'identity.quicksign.description2',
+                            })}
+                        </p>
+                        <Button
+                            type='link'
+                            size='large'
+                            className={style.link}
+                            icon={<ArrowRightOutlined />}
+                            onClick={() => {
+                                window.open('http://parami.io', '_blank');
+                            }}
+                        >
+                            {intl.formatMessage({
+                                id: 'identity.quicksign.learnMore',
+                            })}
+                        </Button>
                         <Divider />
                         <TelegramLoginButton
                             dataOnauth={(response) => {

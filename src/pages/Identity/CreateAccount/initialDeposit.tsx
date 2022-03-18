@@ -398,11 +398,6 @@ const InitialDeposit: React.FC<{
           {!miniLoading && (
             <>
               <Title
-                level={2}
-                style={{
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}
                 className={style.title}
               >
                 {intl.formatMessage({
@@ -520,11 +515,6 @@ const InitialDeposit: React.FC<{
             >
               <img src={'/images/icon/transaction.svg'} className={style.topIcon} />
               <Title
-                level={2}
-                style={{
-                  fontWeight: 'bold',
-                  textAlign: 'center',
-                }}
                 className={style.title}
               >
                 {intl.formatMessage({

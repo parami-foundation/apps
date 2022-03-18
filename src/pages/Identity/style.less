@@ -21,6 +21,10 @@
   margin-top: 20px;
   margin-bottom: 20px;
   text-align: center;
+  font-weight: 900 !important;
+  color: rgb(36, 39, 42);
+  font-size: calc(30px + 8 * ((100vw - 300px) / 1300)) !important;
+  overflow-wrap: break-word;
 }
 
 .listBtn {
@@ -47,32 +51,71 @@
       margin: 0;
       color: #272729;
       font-weight: 900;
+      font-size: 1rem !important;
     }
 
     .value {
       color: #272729;
-      font-weight: 600;
+      font-weight: 900;
       font-size: 16px;
       text-align: right;
     }
 
     :global(.ant-input) {
-      background-color: rgba(30, 30, 30, 1) !important;
-      color: #fff !important;
+      background-color: rgba(255, 91, 0, 0.2) !important;
+      color: #c64700 !important;
       word-break: break-all;
       padding: 15px;
       font-size: 14px;
       line-height: 16px;
+      font-weight: 900;
     }
   }
 }
 
 .description {
-  color: rgb(114, 114, 122);
   line-height: 150%;
-  font-size: 14px;
+  margin: 25px 0px;
+  font-size: 16px;
+  color: rgb(114, 114, 122);
   font-weight: 400;
-  text-align: center;
+}
+
+.magicLinkContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: rgba(0, 0, 0, 0.07) 0 45px 56px, rgba(0, 0, 0, 0.043) 0 10.0513px 12.5083px, rgba(0, 0, 0, 0.027) 0 2.99255px 3.72406px;
+  border-radius: 8px;
+  padding: 15px;
+
+  .magicLinkInput {
+    line-height: 2rem;
+    font-weight: 900;
+    background-color: rgba(255, 91, 0, 0.2) !important;
+    color: #c64700 !important;
+  }
+
+  .copyButton {
+    color: #ff5b00;
+    border-color: rgb(240, 240, 241);
+    background: rgb(240, 240, 241);
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 12px 6px;
+    text-transform: none;
+    box-shadow: unset;
+    font-weight: 900;
+  }
+
+  .magicLinkSpinWrapper {
+    width: 100%;
+  }
 }
 
 .buttons {
@@ -92,6 +135,10 @@
     padding: 12px 6px;
     text-transform: none;
   }
+}
+
+.link {
+  font-weight: 500;
 }
 
 .codeInput {

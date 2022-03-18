@@ -54,10 +54,12 @@ const CreateAccount: React.FC<{
   const access = useAccess();
 
   useEffect(() => {
+    // Wait for chain to be ready
     if (!apiWs) {
       return;
     };
 
+    // Check if user is already logged in
     if (access.canUser) {
       history.push(config.page.walletPage);
       return;
@@ -66,14 +68,17 @@ const CreateAccount: React.FC<{
     // Tag create account process
     localStorage.setItem('process', 'createAccount');
 
+    // Check if user has already created a magic account
     if ((MagicUserAddress === null || magicMnemonic === '') && ControllerKeystore === null) {
       createMagicAccount();
     };
 
+    // Check if user has already created a password
     if (!!ExistPassword) {
       setPassword(ExistPassword);
     };
 
+    // Check if user has already created a controller account
     if (!!ControllerUserAddress && !!ControllerKeystore && !!MagicUserAddress) {
       setControllerUserAddress(ControllerUserAddress);
       setControllerKeystore(ControllerKeystore);
@@ -82,6 +87,7 @@ const CreateAccount: React.FC<{
       return;
     };
 
+    // In minimal mode
     if (minimal && !!ControllerUserAddress && !!ControllerKeystore && !Did) {
       localStorage.clear();
       setStep(1);
@@ -89,6 +95,7 @@ const CreateAccount: React.FC<{
     };
   }, [apiWs]);
 
+  // Check support browser
   useEffect(() => {
     if (inapp.isInApp) {
       setStep(-1);

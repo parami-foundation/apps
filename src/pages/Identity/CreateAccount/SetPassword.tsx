@@ -97,11 +97,6 @@ const SetPassword: React.FC<{
       <Card className={styles.card}>
         <img src={'/images/icon/password.svg'} className={style.topIcon} />
         <Title
-          level={2}
-          style={{
-            fontWeight: 'bold',
-            textAlign: 'center',
-          }}
           className={style.title}
         >
           {intl.formatMessage({

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
-import { Button, Card, Divider, Input, message, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, Spin, Typography } from 'antd';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
 import config from '@/config/config';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { CopyOutlined } from '@ant-design/icons';
+import { CopyOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 
 const { Title } = Typography;
@@ -18,12 +18,14 @@ const MagicLink: React.FC<{
   setMagicLink?: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ setStep, minimal, magicMnemonic, setMagicLink }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [copied, setCopied] = useState<boolean>(false);
 
   const recoverWithLink = `${window.location.origin}/recover/#${encodeURI(
     magicMnemonic as string,
   )}`;
 
   const intl = useIntl();
+  const { TextArea } = Input;
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -43,15 +45,7 @@ const MagicLink: React.FC<{
     setSubmitting(false);
 
     if (navigator.canShare && navigator.canShare(shareData)) {
-      try {
-        await navigator.share(shareData);
-      } catch (e) {
-        message.error(intl.formatMessage({
-          id: 'error.share.failed',
-        }));
-
-        return;
-      }
+      await navigator.share(shareData);
     }
 
     setStep(3);
@@ -72,11 +66,6 @@ const MagicLink: React.FC<{
         <Card className={styles.card}>
           <img src={'/images/icon/link.svg'} className={style.topIcon} />
           <Title
-            level={2}
-            style={{
-              fontWeight: 'bold',
-              textAlign: 'center',
-            }}
             className={style.title}
           >
             {intl.formatMessage({
@@ -86,49 +75,73 @@ const MagicLink: React.FC<{
           <p className={style.description}>
             {intl.formatMessage({
               id: 'identity.magicLink.description',
+            }, {
+              strong: <strong>{intl.formatMessage({ id: 'identity.magicLink.description.strong' })}</strong>
             })}
           </p>
           <Divider />
-          <CopyToClipboard
-            text={recoverWithLink}
-            onCopy={() =>
-              message.success(
-                intl.formatMessage({
-                  id: 'common.copied',
-                }),
-              )
-            }
-          >
-            <Input
-              size="large"
-              bordered
-              value={!magicMnemonic ? '' : recoverWithLink}
-              readOnly
-            />
-          </CopyToClipboard>
-          <div className={style.buttons}>
-            <CopyToClipboard
-              text={recoverWithLink}
-              onCopy={() =>
-                message.success(
-                  intl.formatMessage({
-                    id: 'common.copied',
-                  }),
-                )
-              }
+          <div className={style.magicLinkContainer}>
+            <Spin
+              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+              spinning={!magicMnemonic}
+              wrapperClassName={style.magicLinkSpinWrapper}
+              tip={intl.formatMessage({
+                id: 'identity.magicLink.placeholder',
+              })}
             >
-              <Button
-                block
-                shape="round"
-                size="large"
-                className={style.button}
-                icon={<CopyOutlined />}
+              <CopyToClipboard
+                text={recoverWithLink}
+                onCopy={() => {
+                  if (!!magicMnemonic) {
+                    message.success(
+                      intl.formatMessage({
+                        id: 'common.copied',
+                      }),
+                    )
+                    setCopied(true);
+                  }
+                }}
               >
-                {intl.formatMessage({
-                  id: 'identity.magicLink.copyMagicLink',
-                })}
-              </Button>
-            </CopyToClipboard>
+                <TextArea
+                  autoSize
+                  size="large"
+                  placeholder={intl.formatMessage({
+                    id: 'identity.magicLink.placeholder',
+                  })}
+                  value={!magicMnemonic ? intl.formatMessage({ id: 'identity.magicLink.placeholder' }) : recoverWithLink}
+                  readOnly
+                  className={style.magicLinkInput}
+                />
+              </CopyToClipboard>
+              <Divider />
+              <CopyToClipboard
+                text={recoverWithLink}
+                onCopy={() => {
+                  if (!!magicMnemonic) {
+                    message.success(
+                      intl.formatMessage({
+                        id: 'common.copied',
+                      }),
+                    )
+                    setCopied(true);
+                  }
+                }}
+              >
+                <Button
+                  block
+                  shape="round"
+                  size="large"
+                  className={style.copyButton}
+                  icon={<CopyOutlined />}
+                >
+                  {intl.formatMessage({
+                    id: 'identity.magicLink.copyMagicLink',
+                  })}
+                </Button>
+              </CopyToClipboard>
+            </Spin>
+          </div>
+          <div className={style.buttons}>
             <Button
               block
               type="primary"
@@ -136,7 +149,7 @@ const MagicLink: React.FC<{
               size="large"
               className={style.button}
               onClick={() => handleSubmit()}
-              disabled={!magicMnemonic}
+              disabled={!magicMnemonic || !copied}
               loading={submitting}
             >
               {intl.formatMessage({
