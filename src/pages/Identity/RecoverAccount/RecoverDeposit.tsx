@@ -189,7 +189,7 @@ const RecoverDeposit: React.FC<{
             >
               <span className={style.title}>
                 {intl.formatMessage({
-                  id: 'identity.recoverDeposit.magicAddress',
+                  id: 'identity.recoverDeposit.magicUserAddress',
                 })}
               </span>
               <span className={style.value}>

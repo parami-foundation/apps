@@ -16,9 +16,9 @@ export default {
     'error.avatar.empty': 'Please set your avatar first',
     'error.broswer.notSupport.title': 'Open this page using the system browser',
     'error.broswer.notSupport': 'Your current browser or software is not supported. Please open the link in the system browser.',
-    'error.share.failed': 'You must save your MagicLink first!',
+    'error.share.failed': 'You must save your RecoveryLink first!',
     'error.linker.Exists': 'Binded by other accounts',
     'error.balances.ExistentialDeposit': 'Sorry, your credit is running low',
-    'error.unAccessible.subTitle': 'You can use MagicLink to restore your account, or try to create one quickly?',
+    'error.unAccessible.subTitle': 'You can use RecoveryLink to restore your account, or try to create one quickly?',
     'error.sns.emptyInput': 'Please input SNS Profile URL or ID',
 };

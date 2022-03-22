@@ -47,7 +47,7 @@ const Advertisement: React.FC<{
     const scopes = scope ?? '';
     const sign = scopes.indexOf('sign') > -1;
 
-    const controllerAddress = localStorage.getItem('controllerUserAddress');
+    const controllerUserAddress = localStorage.getItem('controllerUserAddress');
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     let stamp: string = '';
@@ -61,7 +61,7 @@ const Advertisement: React.FC<{
 
         const payload = JSON.stringify({
             iss: window.location.origin,
-            sub: controllerAddress,
+            sub: controllerUserAddress,
             aud: audience,
             iat: timestamp,
             exp: timestamp + 30

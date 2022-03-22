@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styles from '@/pages/wallet.less';
 import QuickSign from './CreateAccount/QuickSign';
-import SetPassword from './CreateAccount/SetPassword';
-import ConfirmPassword from './CreateAccount/ConfirmPassword';
-import MagicLink from './CreateAccount/MagicLink';
-import InitialDeposit from './CreateAccount/initialDeposit';
+import RecoveryLink from './CreateAccount/RecoveryLink';
+import VerifyIdentity from './CreateAccount/VerifyIdentity';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
-import { CreateAccount as createAccount } from '@/services/parami/wallet';
+import { CreateAccountAddress } from '@/services/parami/Identity';
 import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
 import BeforeStart from './CreateAccount/BeforeStart';
@@ -24,11 +22,11 @@ const CreateAccount: React.FC<{
   const [password, setPassword] = useState<string>('');
   const [qsTicket, setQsTicket] = useState<any>();
   const [qsPlatform, setQsPlatform] = useState<string>();
-  const [magicLink, setMagicLink] = useState<string>('');
 
   // Controller Account
   const [controllerUserAddress, setControllerUserAddress] = useState<string>('');
   const [controllerKeystore, setControllerKeystore] = useState<string>('');
+  const [controllerMnemonic, setControllerMnemonic] = useState<string>('');
 
   // Magic Account
   const [magicMnemonic, setMagicMnemonic] = useState('');
@@ -41,17 +39,18 @@ const CreateAccount: React.FC<{
   const MagicUserAddress = localStorage.getItem('magicUserAddress') as string;
   const Did = localStorage.getItem('did') as string;
 
+  const access = useAccess();
+
+  // Magic Account
   const createMagicAccount = async () => {
     const newMnemonic = await mnemonicGenerate(12);
     setMagicMnemonic(newMnemonic);
-    const createMagicData = await createAccount(newMnemonic);
-    setMagicUserAddress(createMagicData?.userAddress as string);
+    const { address } = await CreateAccountAddress(newMnemonic);
 
-    localStorage.setItem('magicUserAddress', createMagicData?.userAddress as string);
+    setMagicUserAddress(address);
+
+    localStorage.setItem('magicUserAddress', address);
   };
-  // Magic Account
-
-  const access = useAccess();
 
   useEffect(() => {
     // Wait for chain to be ready
@@ -69,7 +68,7 @@ const CreateAccount: React.FC<{
     localStorage.setItem('process', 'createAccount');
 
     // Check if user has already created a magic account
-    if ((MagicUserAddress === null || magicMnemonic === '') && ControllerKeystore === null) {
+    if ((MagicUserAddress === null || magicMnemonic === '') && ControllerUserAddress === null) {
       createMagicAccount();
     };
 
@@ -83,7 +82,7 @@ const CreateAccount: React.FC<{
       setControllerUserAddress(ControllerUserAddress);
       setControllerKeystore(ControllerKeystore);
       setMagicUserAddress(MagicUserAddress);
-      setStep(5);
+      setStep(3);
       return;
     };
 
@@ -109,7 +108,7 @@ const CreateAccount: React.FC<{
 
   return (
     <>
-      {minimal && (
+      {minimal ? (
         <>
           {step === -1 &&
             <NotSupport
@@ -118,49 +117,40 @@ const CreateAccount: React.FC<{
           }
           {step === 0 &&
             <BeforeStart
-              setStep={setStep}
               minimal={minimal}
+              setStep={setStep}
             />
           }
           {step === 1 &&
             <QuickSign
+              minimal={minimal}
+              controllerUserAddress={ControllerUserAddress}
+              controllerKeystore={ControllerKeystore}
+              magicUserAddress={MagicUserAddress}
               setStep={setStep}
               setQsTicket={setQsTicket}
               setQsPlatform={setQsPlatform}
-              minimal={minimal}
             />
           }
           {step === 2 &&
-            <MagicLink
-              setStep={setStep}
-              magicMnemonic={magicMnemonic}
+            <RecoveryLink
               minimal={minimal}
-              setMagicLink={setMagicLink}
+              magicMnemonic={magicMnemonic}
+              controllerMnemonic={controllerMnemonic}
+              setStep={setStep}
+              setPassword={setPassword}
+              setControllerMnemonic={setControllerMnemonic}
+              setControllerKeystore={setControllerKeystore}
+              setControllerUserAddress={setControllerUserAddress}
             />
           }
           {step === 3 &&
-            <SetPassword
-              setStep={setStep}
-              password={password}
-              setPassword={setPassword}
-              setControllerUserAddress={setControllerUserAddress}
-              setControllerKeystore={setControllerKeystore}
-            />
-          }
-          {step === 4 &&
-            <ConfirmPassword
-              setStep={setStep}
-              password={password}
-            />
-          }
-          {step === 5 &&
-            <InitialDeposit
+            <VerifyIdentity
               password={password}
               minimal={minimal}
               magicUserAddress={magicUserAddress}
               qsTicket={qsTicket}
               qsPlatform={qsPlatform}
-              magicLink={magicLink}
               controllerUserAddress={controllerUserAddress}
               controllerKeystore={controllerKeystore}
               setQsTicket={setQsTicket}
@@ -168,65 +158,55 @@ const CreateAccount: React.FC<{
             />
           }
         </>
-      )}
-      {!minimal && (
-        <>
-          <div className={styles.mainContainer}>
-            <div className={styles.background} />
-            <div className={styles.logoMark} />
-            <div className={styles.pageContainer}>
-              {step === -1 &&
-                <NotSupport
-                />
-              }
-              {step === 0 &&
-                <BeforeStart
-                  setStep={setStep}
-                />
-              }
-              {step === 1 &&
-                <QuickSign
-                  setStep={setStep}
-                  setQsTicket={setQsTicket}
-                  setQsPlatform={setQsPlatform}
-                />
-              }
-              {step === 2 &&
-                <MagicLink
-                  setStep={setStep}
-                  magicMnemonic={magicMnemonic}
-                />
-              }
-              {step === 3 &&
-                <SetPassword
-                  setStep={setStep}
-                  password={password}
-                  setPassword={setPassword}
-                  setControllerUserAddress={setControllerUserAddress}
-                  setControllerKeystore={setControllerKeystore}
-                />
-              }
-              {step === 4 &&
-                <ConfirmPassword
-                  setStep={setStep}
-                  password={password}
-                />
-              }
-              {step === 5 &&
-                <InitialDeposit
-                  password={password}
-                  magicUserAddress={magicUserAddress}
-                  controllerUserAddress={controllerUserAddress}
-                  controllerKeystore={controllerKeystore}
-                  qsTicket={qsTicket}
-                  qsPlatform={qsPlatform}
-                  setQsTicket={setQsTicket}
-                  setQsPlatform={setQsPlatform}
-                />
-              }
-            </div>
+      ) : (
+        <div className={styles.mainContainer}>
+          <div className={styles.background} />
+          <div className={styles.logoMark} />
+          <div className={styles.pageContainer}>
+            {step === -1 &&
+              <NotSupport
+              />
+            }
+            {step === 0 &&
+              <BeforeStart
+                setStep={setStep}
+              />
+            }
+            {step === 1 &&
+              <QuickSign
+                controllerUserAddress={ControllerUserAddress}
+                controllerKeystore={ControllerKeystore}
+                magicUserAddress={MagicUserAddress}
+                setStep={setStep}
+                setQsTicket={setQsTicket}
+                setQsPlatform={setQsPlatform}
+              />
+            }
+            {step === 2 &&
+              <RecoveryLink
+                magicMnemonic={magicMnemonic}
+                controllerMnemonic={controllerMnemonic}
+                setStep={setStep}
+                setPassword={setPassword}
+                setControllerMnemonic={setControllerMnemonic}
+                setControllerKeystore={setControllerKeystore}
+                setControllerUserAddress={setControllerUserAddress}
+              />
+            }
+            {step === 3 &&
+              <VerifyIdentity
+                password={password}
+                magicUserAddress={magicUserAddress}
+                controllerUserAddress={controllerUserAddress}
+                controllerKeystore={controllerKeystore}
+                qsTicket={qsTicket}
+                qsPlatform={qsPlatform}
+                setQsTicket={setQsTicket}
+                setQsPlatform={setQsPlatform}
+              />
+            }
           </div>
-        </>
+        </div>
       )}
     </>
   );

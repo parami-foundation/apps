@@ -7,16 +7,20 @@ import TelegramLoginButton from 'react-telegram-login';
 import config from '@/config/config';
 import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 import { ArrowRightOutlined } from '@ant-design/icons';
+import { useEffect } from 'react';
 
 const { Title } = Typography;
 
 const QuickSign: React.FC<{
+    minimal?: boolean;
+    controllerUserAddress: string;
+    controllerKeystore: string;
+    magicUserAddress: string;
     setStep: React.Dispatch<React.SetStateAction<number>>;
     setQsTicket: React.Dispatch<any>;
     setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
-    minimal?: boolean;
-}> = ({ setStep, setQsTicket, setQsPlatform, minimal }) => {
-    const [loading, setLoading] = useState<boolean>(false);
+}> = ({ minimal, controllerUserAddress, controllerKeystore, magicUserAddress, setStep, setQsTicket, setQsPlatform }) => {
+    const [loading, setLoading] = useState<boolean>(true);
 
     const intl = useIntl();
 
@@ -28,16 +32,58 @@ const QuickSign: React.FC<{
         setLoading(false);
     };
 
+    useEffect(() => {
+        console.log(controllerUserAddress, controllerKeystore, magicUserAddress);
+        if (!controllerUserAddress || !controllerKeystore || !magicUserAddress) {
+            setLoading(false);
+        }
+    }, [controllerUserAddress, controllerKeystore, magicUserAddress]);
+
     return (
         <>
-            {!minimal && (
+            {minimal ? (
+                <Spin
+                    tip={intl.formatMessage({
+                        id: 'common.loading',
+                    })}
+                    spinning={loading}
+                >
+                    <TelegramLoginButton
+                        dataOnauth={(response) => {
+                            response.bot = config.airdropService.telegram.botName;
+                            handleQuickCreate(response, 'Telegram');
+                        }}
+                        botName={config.airdropService.telegram.botName}
+                    />
+                    <DiscordLoginButton
+                        dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+                        clientId={config.airdropService.discord.clientId}
+                        redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
+                    />
+                    <small
+                        style={{
+                            textAlign: 'center',
+                            marginTop: 20,
+                            color: 'rgb(114, 114, 122)',
+                        }}
+                    >
+                        {intl.formatMessage({
+                            id: 'identity.beforeStart.licDesc',
+                        })}
+                    </small>
+                </Spin>
+            ) : (
                 <Card className={styles.card}>
                     <Spin
+                        size='large'
                         tip={intl.formatMessage({
                             id: 'common.loading',
                         })}
                         spinning={loading}
-                        wrapperClassName={styles.pageContainer}
+                        style={{
+                            display: 'flex',
+                            maxHeight: '100%',
+                        }}
                     >
                         <img src={'/images/icon/option.svg'} className={style.topIcon} />
                         <Title
@@ -125,38 +171,6 @@ const QuickSign: React.FC<{
                         </div>
                     </Spin>
                 </Card>
-            )}
-            {minimal && (
-                <Spin
-                    tip={intl.formatMessage({
-                        id: 'common.loading',
-                    })}
-                    spinning={loading}
-                >
-                    <TelegramLoginButton
-                        dataOnauth={(response) => {
-                            response.bot = config.airdropService.telegram.botName;
-                            handleQuickCreate(response, 'Telegram');
-                        }}
-                        botName={config.airdropService.telegram.botName}
-                    />
-                    <DiscordLoginButton
-                        dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
-                        clientId={config.airdropService.discord.clientId}
-                        redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
-                    />
-                    <small
-                        style={{
-                            textAlign: 'center',
-                            marginTop: 20,
-                            color: 'rgb(114, 114, 122)',
-                        }}
-                    >
-                        {intl.formatMessage({
-                            id: 'identity.beforeStart.licDesc',
-                        })}
-                    </small>
-                </Spin>
             )}
         </>
     )

@@ -34,7 +34,7 @@ const BindModal: React.FC<{
 }> = ({ bindPlatform, setBindModal }) => {
     const stmap = localStorage.getItem('stamp');
     const did = localStorage.getItem('did') as string;
-    const controllerAddress = localStorage.getItem('controllerUserAddress');
+    const controllerUserAddress = localStorage.getItem('controllerUserAddress');
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     const [errorState, setErrorState] = useState<API.Error>({});
@@ -71,7 +71,7 @@ const BindModal: React.FC<{
 
         const payload = JSON.stringify({
             iss: window.location.origin,
-            sub: controllerAddress,
+            sub: controllerUserAddress,
             aud: audience,
             iat: timestamp,
             exp: timestamp + 30

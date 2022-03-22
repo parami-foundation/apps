@@ -2,7 +2,7 @@ export default {
   'menu.index': 'Index',
   'menu.create': 'Create Account',
   'menu.recover': 'Import Account',
-  'menu.recover.withlink': 'Restore Account via *MagicLink*',
+  'menu.recover.withlink': 'Restore Account via *RecoveryLink*',
   'menu.wallet': 'Wallet',
   'menu.wallet.send': 'Send',
   'menu.wallet.receive': 'Receive',

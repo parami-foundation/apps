@@ -181,18 +181,23 @@ export const TransferAsset = async (assetId: number, amount: string, keystore: s
   };
 };
 
-export const CreateAccount = async (mnemonic: string, password?: string) => {
-  const sp = instanceKeyring.createFromUri(mnemonic);
-
+export const CreateAccountKeystore = async (mnemonic: string, password?: string) => {
   let keystore: any = '';
   if (password) {
     keystore = EncodeKeystoreWithPwd(password, mnemonic);
   }
 
   return {
-    userAddress: sp.address,
     keystore,
   };
+};
+
+export const CreateAccountAddress = async (mnemonic: string) => {
+  const sp = instanceKeyring.createFromUri(mnemonic);
+
+  return {
+    address: sp.address,
+  }
 };
 
 export const RestoreAccount = async (password: string, mnemonic: string) => {
@@ -306,11 +311,11 @@ export const GetRecoveryFee = async (magicUserAddress: string, newControllerUser
 };
 
 export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
-  const oldControllerAddress = await window.apiWs.query.magic.controllerAccountOf(
+  const oldControllerUserAddress = await window.apiWs.query.magic.controllerAccountOf(
     magicUserAddress,
   );
 
-  return oldControllerAddress.toHuman();
+  return oldControllerUserAddress.toHuman();
 };
 
 export const GetStableAccount = async (controllerUserAddress: any) => {

@@ -12,7 +12,7 @@ export default {
     'wallet.charge.chargeAddress': 'Top-up address',
     'wallet.charge.qrcode': 'Via QRCode',
     'wallet.charge.stash': 'Via Asset Account',
-    'wallet.charge.controllerAddress': 'Control Account Address',
+    'wallet.charge.controllerUserAddress': 'Control Account Address',
     'wallet.charge.stashBalance': 'Asset Account Balance',
     'wallet.charge.fee': 'Fee',
     'wallet.assets.available': 'Available',

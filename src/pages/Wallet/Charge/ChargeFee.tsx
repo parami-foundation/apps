@@ -36,16 +36,16 @@ const ChargeFee: React.FC = () => {
     const [password, setPassword] = useState('');
     const [tab, setTab] = useState<string>('qrcode');
 
-    const controllerAddress = localStorage.getItem('controllerUserAddress');
+    const controllerUserAddress = localStorage.getItem('controllerUserAddress');
     const controllerKeystore = localStorage.getItem('controllerKeystore');
-    const stashAddress = localStorage.getItem('stashUserAddress');
+    const stashUserAddress = localStorage.getItem('stashUserAddress');
 
     const intl = useIntl();
 
     const getBalance = async () => {
         try {
             const { freeBalance }: any = await GetUserBalance(
-                stashAddress as string,
+                stashUserAddress as string,
             );
             setFreeBalance(`${freeBalance}`);
         } catch (e: any) {
@@ -59,8 +59,8 @@ const ChargeFee: React.FC = () => {
     const partialFee = async () => {
         try {
             const info = await window.apiWs.tx.balances
-                .transfer(controllerAddress as string, FloatStringToBigInt(number, 18))
-                .paymentInfo(stashAddress as string);
+                .transfer(controllerUserAddress as string, FloatStringToBigInt(number, 18))
+                .paymentInfo(stashUserAddress as string);
 
             setFee(`${info.partialFee}`);
         } catch (e: any) {
@@ -77,7 +77,7 @@ const ChargeFee: React.FC = () => {
             await Transfer(
                 number.toString(),
                 controllerKeystore as string,
-                controllerAddress as string,
+                controllerUserAddress as string,
                 password,
             );
             notification.success({
@@ -90,7 +90,7 @@ const ChargeFee: React.FC = () => {
                             {intl.formatMessage({
                                 id: 'wallet.charge.chargeAddress',
                             })}
-                            : {controllerAddress}
+                            : {controllerUserAddress}
                         </p>
                     </>
                 ),
@@ -142,10 +142,10 @@ const ChargeFee: React.FC = () => {
                 {tab === 'qrcode' && (
                     <>
                         <div className={style.qrcode}>
-                            <QRCode value={controllerAddress as string} size={200} />
+                            <QRCode value={controllerUserAddress as string} size={200} />
                         </div>
                         <CopyToClipboard
-                            text={controllerAddress as string}
+                            text={controllerUserAddress as string}
                             onCopy={() =>
                                 message.success(
                                     intl.formatMessage({
@@ -157,11 +157,11 @@ const ChargeFee: React.FC = () => {
                             <div className={style.field}>
                                 <span className={style.title}>
                                     {intl.formatMessage({
-                                        id: 'wallet.charge.controllerAddress',
+                                        id: 'wallet.charge.controllerUserAddress',
                                     })}
                                 </span>
-                                <Tooltip placement="topRight" title={controllerAddress}>
-                                    <span className={style.value}>{controllerAddress}</span>
+                                <Tooltip placement="topRight" title={controllerUserAddress}>
+                                    <span className={style.value}>{controllerUserAddress}</span>
                                 </Tooltip>
                             </div>
                         </CopyToClipboard>

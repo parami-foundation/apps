@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { Button, Card, Divider, Input, message, notification, Spin, Steps, Tag, Typography } from 'antd';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
@@ -10,16 +10,8 @@ import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
-import {
-  BatchNicknameAndAvatar,
-  CreateDid,
-  CreateStableAccount,
-  GetExistentialDeposit,
-  GetStableAccount,
-  QueryDid,
-} from '@/services/parami/wallet';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { GetAvatar, LinkWithAirdrop, LoginWithAirdrop } from '@/services/parami/api';
+import { GetAvatar, LinkAccount, LoginWithAirdrop } from '@/services/parami/api';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
 import { uploadIPFS } from '@/services/parami/ipfs';
@@ -28,6 +20,7 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
+import { BatchNicknameAndAvatar, CreateDid, CreateStableAccount, GetExistentialDeposit, GetStableAccount, QueryDid } from '@/services/parami/Identity';
 
 const { Title } = Typography;
 const { Step } = Steps;
@@ -37,40 +30,40 @@ const goto = () => {
   setTimeout(() => {
     const redirect = localStorage.getItem('redirect');
     window.location.href = redirect || config.page.walletPage;
+    localStorage.removeItem('process');
     localStorage.removeItem('redirect');
   }, 10);
 };
 
 let unsub: VoidFn | null = null;
 
-const InitialDeposit: React.FC<{
+const VerifyIdentity: React.FC<{
   password: string;
   qsTicket?: any;
   qsPlatform?: string | undefined;
   minimal?: boolean;
-  magicLink?: string;
   magicUserAddress: string;
   controllerUserAddress: string;
   controllerKeystore: string;
   setQsTicket: React.Dispatch<any>;
   setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
-}> = ({ password, qsTicket, qsPlatform, minimal, magicLink, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
+}> = ({ password, qsTicket, qsPlatform, minimal, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
   const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [secModal, setSecModal] = useState<boolean>(false);
   const [Password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [miniLoading, setMiniLoading] = useState<boolean>(true);
   const [airdropData, setAirDropData] = useState<any>(null);
   const [step, setStep] = useState<number>(3);
   const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
-  const [avatarNicknameData, setAvatarNicknameData] = useState<any>();
+  const [avatarNicknameEvents, setAvatarNicknameEvents] = useState<any>();
   const [DID, setDID] = useState<string>();
   const [ExistentialDeposit, setExistentialDeposit] = useState<string>();
 
   const intl = useIntl();
 
-  const handleQuickCreate = async (response, platform) => {
+  // Login With Airdrop
+  const loginWithAirdrop = async (response, platform) => {
     setLoading(true);
     setQsPlatform(platform);
     setQsTicket(response);
@@ -86,7 +79,7 @@ const InitialDeposit: React.FC<{
       if (!Resp) {
         notification.error({
           message: 'Network exception',
-          description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+          description: 'Unable to connect to airdrop server. Please replace the network environment, refresh and try again, or deposit manually.',
           duration: null,
         });
         return;
@@ -106,6 +99,7 @@ const InitialDeposit: React.FC<{
           description: `No profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead.`,
           duration: null,
         })
+        history.push(config.page.createPage);
         setLoading(false);
         return;
       }
@@ -133,77 +127,81 @@ const InitialDeposit: React.FC<{
         duration: null,
       })
       setLoading(false);
-      return;
     } catch (e: any) {
-      message.error(e.message);
+      notification.error({
+        message: e.message,
+        duration: null,
+      });
       setLoading(false);
     }
   };
 
-  const minimalSubmit = async (data: any, didData: any) => {
-    const { response } = await LinkWithAirdrop({
-      site: qsPlatform,
-      wallet: controllerUserAddress,
-    });
+  // Link Account 
+  const linkAccountAndSetNicknameAvatar = async (data: any, didData: any) => {
+    try {
+      const { response } = await LinkAccount({
+        site: qsPlatform,
+        wallet: controllerUserAddress,
+      });
 
-    // Network exception
-    if (!response) {
+      // Network exception
+      if (!response) {
+        notification.error({
+          message: 'Network exception',
+          description: 'Unable to complete account binding, please enter the account page to bind manually after registration.',
+          duration: null,
+        });
+        setAvatarNicknameEvents('Network exception');
+        setStep(7);
+        return;
+      };
+
+      if (response?.status === 204 && data?.nickname && data?.avatar) {
+        const { response: Resp, data: file } = await GetAvatar(data?.avatar);
+
+        // Network exception
+        if (!Resp) {
+          notification.error({
+            message: 'Network exception',
+            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+            duration: null,
+          });
+          return;
+        }
+
+        generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
+          .then(async (img) => {
+            const imgBlob = (img as string).substring(22);
+            try {
+              const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
+              const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, password, controllerKeystore);
+              setAvatarNicknameEvents(events);
+            } catch (e: any) {
+              setAvatarNicknameEvents(e.message);
+              setStep(7);
+            }
+          });
+      };
+    } catch (e: any) {
       notification.error({
-        message: 'Network exception',
-        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+        message: e.message,
         duration: null,
       });
-      return;
-    };
-
-    if (response?.status === 204) {
-      try {
-        if (data?.nickname && data?.avatar) {
-          const { response: Resp, data: file } = await GetAvatar(data?.avatar);
-
-          // Network exception
-          if (!Resp) {
-            notification.error({
-              message: 'Network exception',
-              description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-              duration: null,
-            });
-            return;
-          }
-
-          generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
-            .then(async (img) => {
-              const imgBlob = (img as string).substring(22);
-              try {
-                const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-                const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, password, controllerKeystore);
-                setAvatarNicknameData(events);
-              } catch (e: any) {
-                console.log(e);
-                goto();
-                localStorage.removeItem('process');
-              }
-            });
-        } else {
-          setAvatarNicknameData('Not have nickname or avatar');
-        }
-        setStep(7);
-      } catch (e: any) {
-        message.error(e.message);
-      }
-
-      setMiniLoading(false);
-    };
+      setStep(7);
+    }
   };
 
+  // Create Account
   const createAccount = async () => {
-    let stashUserAddress = localStorage.getItem('stashUserAddress');
+    // Create Stash process
+    let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
     let existAccounts
-    if (stashUserAddress === '' || stashUserAddress === null) {
+    if (stashUserAddress === null) {
       // Get whether all accounts exist
       existAccounts = await GetStableAccount(controllerUserAddress);
       if (!!existAccounts?.stashAccount) {
-        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount as string);
+        stashUserAddress = existAccounts?.stashAccount;
+        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount);
       } else try {
         const events: any = await CreateStableAccount(
           password,
@@ -212,18 +210,22 @@ const InitialDeposit: React.FC<{
           '0.01',
         );
         stashUserAddress = events['magic']['Created'][0][0];
-        localStorage.setItem('stashUserAddress', stashUserAddress as string);
+        localStorage.setItem('stashUserAddress', stashUserAddress);
       } catch (e: any) {
-        console.log(e.message);
+        notification.error({
+          message: e.message,
+          duration: null,
+        });
         return;
       }
     }
     setStep(5);
 
-    let did = localStorage.getItem('did');
-    if (!did || did === '') {
+    // Create DID process
+    let did = localStorage.getItem('did') as string;
+    if (did === null) {
       // Query DID
-      const didData = await QueryDid(existAccounts?.stashAccount || stashUserAddress);
+      const didData = await QueryDid(stashUserAddress);
       if (!!didData) {
         localStorage.setItem('did', didData as string);
         setDID(didData as string);
@@ -234,28 +236,26 @@ const InitialDeposit: React.FC<{
           controllerKeystore,
         );
         did = events['did']['Assigned'][0][0];
-        localStorage.setItem('did', did as string);
+        localStorage.setItem('did', did);
         setDID(did as string);
       } catch (e: any) {
-        console.log(e.message);
+        notification.error({
+          message: e.message,
+          duration: null,
+        });
         return;
       }
     }
     setStep(6);
 
-    console.log(airdropData)
-
-    if (minimal) {
-      await minimalSubmit(airdropData, did);
-      return;
-    }
     if (qsTicket) {
-      await minimalSubmit(airdropData, did);
+      await linkAccountAndSetNicknameAvatar(airdropData, did);
       return;
     }
     setStep(7);
   };
 
+  // Listen Balance Change
   const listenBalance = async () => {
     if (!apiWs) {
       return;
@@ -271,7 +271,6 @@ const InitialDeposit: React.FC<{
           })
         }
         free = `${data.free}`;
-        console.log('control free', free);
         if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
           setControllerBalance(data.free);
         }
@@ -279,17 +278,23 @@ const InitialDeposit: React.FC<{
     }
   };
 
+  // From Quick Sign
   const minimalAirdrop = async () => {
     try {
-      await handleQuickCreate(qsTicket, qsPlatform);
+      await loginWithAirdrop(qsTicket, qsPlatform);
       if (unsub === null) {
         listenBalance();
       }
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      notification.error({
+        message: e.message,
+        duration: null,
+      });
+      return;
     }
   };
 
+  // Compute Existential Deposit
   const getExistentialDeposit = async () => {
     const existentialDeposit = await GetExistentialDeposit();
     setExistentialDeposit(BigIntToFloatString(BigInt(existentialDeposit) + FloatStringToBigInt(`${(0.02 * 3).toString()}`, 18), 18));
@@ -303,17 +308,15 @@ const InitialDeposit: React.FC<{
   }, [apiWs, controllerUserAddress]);
 
   useEffect(() => {
-    if (!!avatarNicknameData && !!qsTicket) {
+    if (!!avatarNicknameEvents && !!qsTicket) {
       goto();
-      localStorage.removeItem('process');
       return;
     }
     if (!qsTicket && !!DID) {
       goto();
-      localStorage.removeItem('process');
       return;
     }
-  }, [avatarNicknameData, qsTicket, DID]);
+  }, [avatarNicknameEvents, qsTicket, DID]);
 
   useEffect(() => {
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
@@ -351,136 +354,45 @@ const InitialDeposit: React.FC<{
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
-            height: '100vh',
           }}
         >
-          {miniLoading && (
-            <>
-              <Spin
-                tip={(
-                  <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
-                    <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
-                    <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
-                    <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
-                    <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
-                    <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
-                    <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-                    <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
-                    <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
-                  </Steps>
-                )}
-                size='large'
-                indicator={(<></>)}
-                spinning={miniLoading}
-                style={{
-                  background: 'rgba(255,255,255,.7)',
-                  padding: 30,
-                }}
-              />
-              <a
-                style={{
-                  textDecoration: 'underline',
-                  color: 'rgb(114, 114, 122)',
-                  marginTop: 20,
-                }}
-                onClick={() => {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  window.location.href = window.location.href;
-                }}
-              >
-                {intl.formatMessage({
-                  id: 'identity.restart',
-                })}
-              </a>
-            </>
-          )}
-          {!miniLoading && (
-            <>
-              <Title
-                className={style.title}
-              >
-                {intl.formatMessage({
-                  id: 'identity.magicLink.lastStep',
-                })}
-              </Title>
-              <p className={style.description}>
-                {intl.formatMessage({
-                  id: 'identity.magicLink.description',
-                })}
-              </p>
-              <Divider />
-              <CopyToClipboard
-                text={magicLink as string}
-                onCopy={() => {
-                  message.success(
-                    intl.formatMessage({
-                      id: 'common.copied',
-                    }),
-                  )
-                }}
-              >
-                <TextArea size="large" bordered value={magicLink as string} readOnly />
-              </CopyToClipboard>
-              <div className={style.buttons}>
-                <CopyToClipboard
-                  text={magicLink as string}
-                  onCopy={() =>
-                    message.success(
-                      intl.formatMessage({
-                        id: 'common.copied',
-                      }),
-                    )
-                  }
-                >
-                  <Button
-                    block
-                    shape="round"
-                    size="large"
-                    className={style.button}
-                    icon={<CopyOutlined />}
-                  >
-                    {intl.formatMessage({
-                      id: 'identity.magicLink.copyMagicLink',
-                    })}
-                  </Button>
-                </CopyToClipboard>
-                <Button
-                  block
-                  type="primary"
-                  shape="round"
-                  size="large"
-                  className={style.button}
-                  onClick={async () => {
-                    const messageContent = `${intl.formatMessage({
-                      id: 'identity.magicLink.sendMessage',
-                    }, {
-                      link: magicLink,
-                    })}`;
-
-                    const shareData = {
-                      title: 'Para Metaverse Identity',
-                      text: messageContent,
-                      url: magicLink
-                    };
-                    if (navigator.canShare && navigator.canShare(shareData)) {
-                      try {
-                        await navigator.share(shareData);
-                      } catch (e) {
-                        console.log(e);
-                      }
-                    }
-                    goto();
-                    localStorage.removeItem('process');
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: 'common.confirm',
-                  })}
-                </Button>
-              </div>
-            </>
-          )}
+          <Spin
+            tip={(
+              <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
+                <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
+                <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
+                <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
+                <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
+                <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
+                <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
+                <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+                <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
+              </Steps>
+            )}
+            size='large'
+            indicator={(<></>)}
+            spinning={loading}
+            style={{
+              background: 'rgba(255,255,255,.7)',
+              padding: 30,
+            }}
+          />
+          <a
+            style={{
+              textDecoration: 'underline',
+              color: 'rgb(114, 114, 122)',
+              marginTop: 20,
+            }}
+            onClick={() => {
+              localStorage.clear();
+              sessionStorage.clear();
+              window.location.href = window.location.href;
+            }}
+          >
+            {intl.formatMessage({
+              id: 'identity.restart',
+            })}
+          </a>
         </div>
       ) : (
         <>
@@ -648,13 +560,13 @@ const InitialDeposit: React.FC<{
                 <TelegramLoginButton
                   dataOnauth={(response) => {
                     response.bot = config.airdropService.telegram.botName;
-                    handleQuickCreate(response, 'Telegram');
+                    loginWithAirdrop(response, 'Telegram');
                   }}
                   botName={config.airdropService.telegram.botName}
                 />
                 <DiscordLoginButton
                   dataOnauth={(response) => {
-                    handleQuickCreate(response, 'Discord')
+                    loginWithAirdrop(response, 'Discord')
                   }}
                   clientId={config.airdropService.discord.clientId}
                   redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
@@ -708,4 +620,4 @@ const InitialDeposit: React.FC<{
   );
 };
 
-export default InitialDeposit;
+export default VerifyIdentity;

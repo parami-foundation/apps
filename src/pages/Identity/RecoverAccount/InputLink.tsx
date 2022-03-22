@@ -27,14 +27,14 @@ const InputLink: React.FC<{
     try {
       const { userAddress: MagicUserAddress } = await QueryAccountFromMnemonic(magicMnemonic);
 
-      const oldControllerAddress: any = await QueryStableAccountByMagic(
+      const oldControllerUserAddress: any = await QueryStableAccountByMagic(
         MagicUserAddress,
       );
 
       setMagicUserAddress(MagicUserAddress);
 
       const stableAccountData = await GetStableAccount(
-        oldControllerAddress,
+        oldControllerUserAddress,
       );
 
       const didData = await QueryDid(stableAccountData?.stashAccount);

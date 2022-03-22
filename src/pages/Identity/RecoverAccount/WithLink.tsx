@@ -47,12 +47,12 @@ const WithLink: React.FC<{
     try {
       const { userAddress: MagicUserAddress } = await QueryAccountFromMnemonic(magicMnemonic);
 
-      const oldControllerAddress = await QueryStableAccountByMagic(
+      const oldControllerUserAddress = await QueryStableAccountByMagic(
         MagicUserAddress,
       );
 
       const stableAccountData = await GetStableAccount(
-        oldControllerAddress,
+        oldControllerUserAddress,
       );
 
       const didData = await QueryDid(stableAccountData?.stashAccount);
