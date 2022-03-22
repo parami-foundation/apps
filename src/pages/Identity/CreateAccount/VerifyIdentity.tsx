@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Button, Card, Divider, Input, message, notification, Spin, Steps, Tag, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, notification, Popconfirm, Spin, Steps, Tag, Typography } from 'antd';
 import { useIntl, useModel, history } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
@@ -377,22 +377,30 @@ const VerifyIdentity: React.FC<{
               padding: 30,
             }}
           />
-          <a
-            style={{
-              textDecoration: 'underline',
-              color: 'rgb(114, 114, 122)',
-              marginTop: 20,
-            }}
-            onClick={() => {
+          <Popconfirm
+            placement="top"
+            title={intl.formatMessage({
+              id: 'identity.recreate.description',
+            })}
+            onConfirm={() => {
               localStorage.clear();
               sessionStorage.clear();
-              window.location.href = window.location.href;
+              window.location.href = config.page.homePage;
             }}
+            okText="Yes"
+            cancelText="No"
           >
-            {intl.formatMessage({
-              id: 'identity.restart',
-            })}
-          </a>
+            <a
+              style={{
+                textDecoration: 'underline',
+                color: 'rgb(114, 114, 122)',
+              }}
+            >
+              {intl.formatMessage({
+                id: 'identity.recreate',
+              })}
+            </a>
+          </Popconfirm>
         </div>
       ) : (
         <>
@@ -536,21 +544,30 @@ const VerifyIdentity: React.FC<{
                   <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
                 </div>
               </div>
-              <a
-                style={{
-                  textDecoration: 'underline',
-                  color: 'rgb(114, 114, 122)',
-                }}
-                onClick={() => {
+              <Popconfirm
+                placement="top"
+                title={intl.formatMessage({
+                  id: 'identity.recreate.description',
+                })}
+                onConfirm={() => {
                   localStorage.clear();
                   sessionStorage.clear();
                   window.location.href = config.page.homePage;
                 }}
+                okText="Yes"
+                cancelText="No"
               >
-                {intl.formatMessage({
-                  id: 'identity.restart',
-                })}
-              </a>
+                <a
+                  style={{
+                    textDecoration: 'underline',
+                    color: 'rgb(114, 114, 122)',
+                  }}
+                >
+                  {intl.formatMessage({
+                    id: 'identity.recreate',
+                  })}
+                </a>
+              </Popconfirm>
               <div className={style.socialButtons}>
                 <Divider>
                   {intl.formatMessage({

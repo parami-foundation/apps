@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect } from 'react';
-import { Button, Card, Divider, Input, message, notification, Tag, Typography } from 'antd';
+import { Button, Card, Divider, Input, message, notification, Popconfirm, Tag, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
@@ -250,21 +250,30 @@ const RecoverDeposit: React.FC<{
             </span>
             <span className={style.value}><AD3 value={FloatStringToBigInt(RecoveryFee as string, 18).toString()} /></span>
           </div>
-          <a
-            style={{
-              textDecoration: 'underline',
-              color: 'rgb(114, 114, 122)',
-            }}
-            onClick={() => {
+          <Popconfirm
+            placement="top"
+            title={intl.formatMessage({
+              id: 'identity.recreate.description',
+            })}
+            onConfirm={() => {
               localStorage.clear();
               sessionStorage.clear();
               window.location.href = config.page.homePage;
             }}
+            okText="Yes"
+            cancelText="No"
           >
-            {intl.formatMessage({
-              id: 'identity.restart',
-            })}
-          </a>
+            <a
+              style={{
+                textDecoration: 'underline',
+                color: 'rgb(114, 114, 122)',
+              }}
+            >
+              {intl.formatMessage({
+                id: 'identity.recreate',
+              })}
+            </a>
+          </Popconfirm>
         </div>
       </Card>
       <BigModal

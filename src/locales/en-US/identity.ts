@@ -1,5 +1,6 @@
 export default {
-    'identity.restart': 'Recreate',
+    'identity.recreate': 'Recreate',
+    'identity.recreate.description': 'You will discard all progress and information you have created. And the transfer in progress will also be lost.',
     'identity.beforeStart.title': 'Before you start',
     'identity.beforeStart.description': 'Please set a password for your identy and make sure to note down your password and the Recovery Phrase generated.',
     'identity.beforeStart.agree': 'Agree and Continue',
