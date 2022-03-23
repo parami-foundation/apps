@@ -34,6 +34,9 @@ export const config = {
             "redirectUri": "/create/discord",
         },
     },
+    "explorer": {
+        "extrinsics": "https://block.parami.io/extrinsics/",
+    },
     "page": {
         "homePage": "/",
         "createPage": "/create",

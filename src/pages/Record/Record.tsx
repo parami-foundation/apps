@@ -11,6 +11,7 @@ import SimpleDateTime from 'react-simple-timestamp-to-date';
 import { dealWithDid, hexToDid } from '@/utils/common';
 import Token from '@/components/Token/Token';
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
+import config from '@/config/config';
 
 const Message: React.FC<{
     content: string;
@@ -47,7 +48,7 @@ const All: React.FC<{
                                         <Token value={value.amount} symbol={value.assetSymbol} />
                                     </div>
                                     <div className={style.receiver}>
-                                        hash:{value.block}
+                                        hash:<a onClick={() => { window.open(config.explorer.extrinsics + value.block, '_blank') }}>{value.block}</a>
                                     </div>
                                 </div>
                                 <div className={style.right}>
@@ -161,7 +162,7 @@ const Record: React.FC = () => {
 
     const getRecord = async () => {
         try {
-            const res = await AssetTransactionHistory(userDid);
+            const res: any = await AssetTransactionHistory(userDid);
             setAllData(res);
         } catch (e: any) {
             setErrorState({

@@ -36,7 +36,7 @@ const RecordList: React.FC = () => {
 
     const transList = async () => {
         try {
-            const res = await AssetTransactionHistory(did);
+            const res: any = await AssetTransactionHistory(did);
             setAllData(res);
         } catch (e: any) {
             setErrorState({
@@ -44,7 +44,8 @@ const RecordList: React.FC = () => {
                 Message: e.message,
             });
         };
-    }
+    };
+
     useEffect(() => {
         if (apiWs) {
             transList();
@@ -77,7 +78,7 @@ const RecordList: React.FC = () => {
                                             <Token value={value.amount} symbol={value.assetSymbol} />
                                         </div>
                                         <div className={styles.receiver}>
-                                            hash:{value.block}
+                                            hash:<a onClick={() => { window.open(config.explorer.extrinsics + value.block, '_blank') }}>{value.block}</a>
                                         </div>
                                     </div>
                                     <div className={styles.right}>
