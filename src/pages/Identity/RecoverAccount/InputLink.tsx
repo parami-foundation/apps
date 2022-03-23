@@ -58,6 +58,7 @@ const InputLink: React.FC<{
           }),
           duration: null,
         });
+        setLoading(false);
         return;
       }
 
@@ -70,6 +71,7 @@ const InputLink: React.FC<{
           }),
           duration: null,
         });
+        setLoading(false);
         return;
       }
       setDid(didData);
