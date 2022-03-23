@@ -1,7 +1,6 @@
 import { parseAmount } from "@/utils/common";
 import Keyring from "@polkadot/keyring";
-import { u8aToHex } from "@polkadot/util";
-import { decodeAddress, mnemonicGenerate } from "@polkadot/util-crypto";
+import { mnemonicGenerate } from "@polkadot/util-crypto";
 import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from "./Crypto";
 import { subCallback } from "./subscription";
 
@@ -63,19 +62,16 @@ export const QueryDid = async (address: any) => {
     return (data.toHuman() as any).toString();
 };
 
-export const CreateDid = async (address: string, password: string, keystore: string) => {
+export const CreateAccountsAndDid = async (password: string, keystore: string, magicUserAddress: string, amount: string) => {
     const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
     if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
         return;
     }
-
     const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-    const key = u8aToHex(decodeAddress(address));
-    const extrinsic = window.apiWs.tx.magic.codo(window.apiWs.tx.did.register(null));
-    payUser['Sr25519'] = key;
+    const ex = await window.apiWs.tx.magic.createAccountsAndDid(magicUserAddress, parseAmount(amount), null);
 
-    return await subCallback(extrinsic, payUser);
+    return await subCallback(ex, payUser);
 };
 
 export const GetStableAccount = async (controllerUserAddress: any) => {
@@ -89,18 +85,6 @@ export const GetStableAccount = async (controllerUserAddress: any) => {
         controllerAccount: `${JSON.parse(accountsData).controllerAccount}`,
         magicAccount: `${JSON.parse(accountsData).magicAccount}`,
     };
-};
-
-export const CreateStableAccount = async (password: string, controllerKeystore: string, magicUserAddress: string, amount: string) => {
-    const decodedMnemonic = DecodeKeystoreWithPwd(password, controllerKeystore);
-    if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-        throw new Error('Wrong Password');
-    }
-
-    const controllerAccount = instanceKeyring.createFromUri(decodedMnemonic);
-
-    const ex = await window.apiWs.tx.magic.createStableAccount(magicUserAddress, parseAmount(amount));
-    return await subCallback(ex, controllerAccount);
 };
 
 export const GetExistentialDeposit = async () => {

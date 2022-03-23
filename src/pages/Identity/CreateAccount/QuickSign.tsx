@@ -33,7 +33,6 @@ const QuickSign: React.FC<{
     };
 
     useEffect(() => {
-        console.log(controllerUserAddress, controllerKeystore, magicUserAddress);
         if (!controllerUserAddress || !controllerKeystore || !magicUserAddress) {
             setLoading(false);
         }

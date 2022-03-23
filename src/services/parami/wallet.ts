@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { decodeAddress } from '@polkadot/util-crypto';
 import { Keyring } from '@polkadot/api';
-import { u8aToHex } from '@polkadot/util';
 import CryptoJS from 'crypto-js';
 import { didToHex, parseAmount } from '@/utils/common';
 import { message, notification } from 'antd';
@@ -214,21 +211,6 @@ export const RestoreAccount = async (password: string, mnemonic: string) => {
   };
 };
 
-export const CreateDid = async (address: string, password: string, keystore: string) => {
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    return;
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const key = u8aToHex(decodeAddress(address));
-  const extrinsic = window.apiWs.tx.magic.codo(window.apiWs.tx.did.register(null));
-  payUser['Sr25519'] = key;
-
-  return await subCallback(extrinsic, payUser);
-};
-
 export const QueryDid = async (address: any) => {
   const data = await window.apiWs.query.did.didOf(address);
   if (data.isEmpty) {
@@ -249,18 +231,6 @@ export const GetUserBalance = async (address: string) => {
     totalBalance: total,
     nonce: info.nonce,
   };
-};
-
-export const CreateStableAccount = async (password: string, controllerKeystore: string, magicUserAddress: string, amount: string) => {
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, controllerKeystore);
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong Password');
-  }
-
-  const controllerAccount = instanceKeyring.createFromUri(decodedMnemonic);
-
-  const ex = await window.apiWs.tx.magic.createStableAccount(magicUserAddress, parseAmount(amount));
-  return await subCallback(ex, controllerAccount);
 };
 
 export const BatchChangeAndActiveController = async ({
@@ -331,14 +301,6 @@ export const GetStableAccount = async (controllerUserAddress: any) => {
     controllerAccount: `${JSON.parse(accountsData).controllerAccount}`,
     magicAccount: `${JSON.parse(accountsData).magicAccount}`,
   };
-};
-
-export const isSyncing = async () => {
-  // const response = await window.apiWs.rpc.system.health();
-
-  // if (response.isSyncing.valueOf()) {
-  //   throw new Error('Node is syncing');
-  // }
 };
 
 export const setNickName = async (nickname: string, password: string, keystore: string) => {

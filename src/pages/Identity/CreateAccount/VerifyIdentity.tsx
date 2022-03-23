@@ -20,7 +20,7 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
-import { BatchNicknameAndAvatar, CreateDid, CreateStableAccount, GetExistentialDeposit, GetStableAccount, QueryDid } from '@/services/parami/Identity';
+import { BatchNicknameAndAvatar, CreateAccountsAndDid, GetExistentialDeposit, GetStableAccount, QueryDid } from '@/services/parami/Identity';
 
 const { Title } = Typography;
 const { Step } = Steps;
@@ -195,49 +195,36 @@ const VerifyIdentity: React.FC<{
   const createAccount = async () => {
     // Create Stash process
     let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
+    let did = localStorage.getItem('did') as string;
+
     let existAccounts
-    if (!stashUserAddress) {
+
+    if (!stashUserAddress || !did) {
       // Get whether all accounts exist
       existAccounts = await GetStableAccount(controllerUserAddress);
       if (!!existAccounts?.stashAccount) {
         stashUserAddress = existAccounts?.stashAccount;
         localStorage.setItem('stashUserAddress', existAccounts?.stashAccount);
+
+        // Query DID
+        const didData = await QueryDid(stashUserAddress);
+        if (!!didData) {
+          localStorage.setItem('did', didData as string);
+          setDID(didData as string);
+          localStorage.setItem('did', didData as string);
+        }
       } else try {
-        const events: any = await CreateStableAccount(
+        const events: any = await CreateAccountsAndDid(
           password,
           controllerKeystore,
           magicUserAddress,
           '0.01',
         );
         stashUserAddress = events['magic']['Created'][0][0];
-        localStorage.setItem('stashUserAddress', stashUserAddress);
-      } catch (e: any) {
-        notification.error({
-          message: e.message,
-          duration: null,
-        });
-        return;
-      }
-    }
-    setStep(5);
-
-    // Create DID process
-    let did = localStorage.getItem('did') as string;
-    if (did === null) {
-      // Query DID
-      const didData = await QueryDid(stashUserAddress);
-      if (!!didData) {
-        localStorage.setItem('did', didData as string);
-        setDID(didData as string);
-      } else try {
-        const events: any = await CreateDid(
-          controllerUserAddress,
-          password,
-          controllerKeystore,
-        );
         did = events['did']['Assigned'][0][0];
-        localStorage.setItem('did', did);
         setDID(did as string);
+        localStorage.setItem('stashUserAddress', stashUserAddress);
+        localStorage.setItem('did', did);
       } catch (e: any) {
         notification.error({
           message: e.message,
@@ -246,12 +233,14 @@ const VerifyIdentity: React.FC<{
         return;
       }
     }
+
     setStep(6);
 
     if (qsTicket) {
       await linkAccountAndSetNicknameAvatar(airdropData, did);
       return;
     }
+
     setStep(7);
   };
 
