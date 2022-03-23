@@ -9,11 +9,11 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { ChangeController, GetRecoveryFee, GetStableAccount } from '@/services/parami/wallet';
 import { formatBalance } from '@polkadot/util';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';
 import type { VoidFn } from '@polkadot/api/types';
+import { ChangeController, GetRecoveryFee, GetStableAccount } from '@/services/parami/Identity';
 
 const { Title } = Typography;
 const { Step } = Steps;

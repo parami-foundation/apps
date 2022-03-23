@@ -108,6 +108,12 @@ export const GetExistentialDeposit = async () => {
     return existentialDeposit.toString();
 };
 
+export const GetRecoveryFee = async (magicUserAddress: string, newControllerUserAddress: string) => {
+    const ex = await window.apiWs.tx.magic.changeController(newControllerUserAddress);
+    const info = await ex.paymentInfo(magicUserAddress);
+    return info.partialFee.toString();
+};
+
 export const QueryAccountFromMnemonic = async (mnemonic: string) => {
     const sp = instanceKeyring.createFromUri(mnemonic);
 
@@ -136,4 +142,18 @@ export const RestoreAccount = async (password: string, mnemonic: string) => {
         userAddress: sp.address,
         keystore,
     };
+};
+
+export const ChangeController = async (password: string, magicKeystore: string, newControllerUserAddress: string) => {
+    const decodedMnemonic = DecodeKeystoreWithPwd(password, magicKeystore);
+
+    if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+        throw new Error('Wrong Password');
+    }
+
+    const sender = instanceKeyring.createFromUri(decodedMnemonic);
+    // Create a extrinsic, transferring 12345 units to Bob
+    const ex = await window.apiWs.tx.magic.changeController(newControllerUserAddress);
+
+    return await subCallback(ex, sender);
 };
