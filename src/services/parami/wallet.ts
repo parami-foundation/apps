@@ -311,15 +311,17 @@ export const GetRecoveryFee = async (magicUserAddress: string, newControllerUser
 };
 
 export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
-  const oldControllerUserAddress = await window.apiWs.query.magic.controllerAccountOf(
+  const oldControllerUserAddress = await window.apiWs.query.magic.controller(
     magicUserAddress,
   );
+
+  console.log(oldControllerUserAddress)
 
   return oldControllerUserAddress.toHuman();
 };
 
 export const GetStableAccount = async (controllerUserAddress: any) => {
-  const accountsData: any = await window.apiWs.query.magic.stableAccountOf(controllerUserAddress);
+  const accountsData: any = await window.apiWs.query.magic.metadata(controllerUserAddress);
   if (accountsData.toHuman() === null) {
     return null;
   }

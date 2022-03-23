@@ -96,7 +96,13 @@ const RecoveryLink: React.FC<{
     setSubmitting(false);
 
     if (navigator.canShare && navigator.canShare(shareData)) {
-      await navigator.share(shareData);
+      try {
+        await navigator.share(shareData);
+      } catch (e: any) {
+        notification.warning({
+          message: 'Please keep your Recovery Link safe.',
+        })
+      }
     }
 
     await createControllerUserAddress();

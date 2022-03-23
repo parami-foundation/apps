@@ -1,6 +1,7 @@
 export default {
     'error.password.empty': 'Password cannot be empty',
     'error.password.passwordNotMatch': 'Passwords do not match',
+    'error.identity.incorrectRecoveryLink': 'Incorrent RecoveryLink, please try again',
     'error.identity.notFound': 'Account not found, please try again',
     'error.amount.empty': 'Amount cannot be empty or 0',
     'error.balance.low': 'Insufficient balance ',
@@ -21,4 +22,5 @@ export default {
     'error.balances.ExistentialDeposit': 'Sorry, your credit is running low',
     'error.unAccessible.subTitle': 'You can use RecoveryLink to restore your account, or try to create one quickly?',
     'error.sns.emptyInput': 'Please input SNS Profile URL or ID',
+    'error.keyInfo.lost': 'The information stored locally is abnormal. Please try to restore your account again.'
 };

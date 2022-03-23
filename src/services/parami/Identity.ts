@@ -79,7 +79,7 @@ export const CreateDid = async (address: string, password: string, keystore: str
 };
 
 export const GetStableAccount = async (controllerUserAddress: any) => {
-    const accountsData: any = await window.apiWs.query.magic.stableAccountOf(controllerUserAddress);
+    const accountsData: any = await window.apiWs.query.magic.metadata(controllerUserAddress);
     if (accountsData.toHuman() === null) {
         return null;
     }
@@ -106,4 +106,34 @@ export const CreateStableAccount = async (password: string, controllerKeystore: 
 export const GetExistentialDeposit = async () => {
     const existentialDeposit = await window.apiWs.consts.balances.existentialDeposit;
     return existentialDeposit.toString();
+};
+
+export const QueryAccountFromMnemonic = async (mnemonic: string) => {
+    const sp = instanceKeyring.createFromUri(mnemonic);
+
+    return {
+        address: sp.address,
+    };
+};
+
+export const QueryStableAccountByMagic = async (magicUserAddress: string) => {
+    const oldControllerUserAddress = await window.apiWs.query.magic.controller(
+        magicUserAddress,
+    );
+
+    return oldControllerUserAddress.toHuman();
+};
+
+export const RestoreAccount = async (password: string, mnemonic: string) => {
+    const sp = instanceKeyring.createFromUri(mnemonic);
+    const keystore = EncodeKeystoreWithPwd(password, mnemonic);
+
+    if (keystore === '') {
+        return;
+    }
+
+    return {
+        userAddress: sp.address,
+        keystore,
+    };
 };

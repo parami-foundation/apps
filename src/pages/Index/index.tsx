@@ -55,7 +55,7 @@ const Index: React.FC = () => {
                                     })}
                                 </span>
                             </Button>
-                            {/* <Button
+                            <Button
                                 block
                                 ghost
                                 size='large'
@@ -76,7 +76,7 @@ const Index: React.FC = () => {
                                         id: 'index.importAccount.desc',
                                     })}
                                 </span>
-                            </Button> */}
+                            </Button>
                         </div>
                     </div>
                     <div className={style.introContainer}>

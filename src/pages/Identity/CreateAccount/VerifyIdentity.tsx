@@ -196,7 +196,7 @@ const VerifyIdentity: React.FC<{
     // Create Stash process
     let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
     let existAccounts
-    if (stashUserAddress === null) {
+    if (!stashUserAddress) {
       // Get whether all accounts exist
       existAccounts = await GetStableAccount(controllerUserAddress);
       if (!!existAccounts?.stashAccount) {
