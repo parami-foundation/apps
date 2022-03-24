@@ -75,7 +75,6 @@ const RecoverDeposit: React.FC<{
     let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
     // Get whether all accounts exist
     const existAccounts = await GetStableAccount(controllerUserAddress);
-    console.log(existAccounts)
     if (!!existAccounts?.stashAccount) {
       stashUserAddress = existAccounts?.stashAccount;
       localStorage.setItem('stashUserAddress', existAccounts?.stashAccount);

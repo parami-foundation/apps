@@ -13,6 +13,8 @@ export default {
     'identity.recoveryLink.placeholder': 'Gernerating your RecoveryLink...',
     'identity.recoveryLink.copyRecoveryLink': 'Copy RecoveryLink',
     'identity.recoveryLink.message': 'We have upgraded the service experience. You can use the new recoverylink to quickly recover your account for 0 fee. Please keep your new recoverylink properly.',
+    'identity.recoveryLink.verifyRecoveryLink': 'Verify RecoveryLink',
+    'identity.recoveryLink.verifyRecoveryLink.description': 'Enter the RecoveryLink to complete the setup process.',
     'identity.alreadyCreate': 'Already have an account?',
     'identity.recoverAccount': 'Recover your Para Meta Identity',
     'identity.setPassword.title': 'Set the password for your identity',

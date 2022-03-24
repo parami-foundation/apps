@@ -9,6 +9,7 @@ import { CopyOutlined, LoadingOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 import { guid } from '@/utils/common';
 import { CreateAccountAddress, CreateAccountKeystore, CreateMnemonic } from '@/services/parami/Identity';
+import BigModal from '@/components/ParamiModal/BigModal';
 
 const { Title } = Typography;
 
@@ -24,6 +25,8 @@ const RecoveryLink: React.FC<{
 }> = ({ minimal, magicMnemonic, controllerMnemonic, setStep, setPassword, setControllerMnemonic, setControllerKeystore, setControllerUserAddress }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [verifyLink, setVerifyLink] = useState<string>();
 
   const recoverWithLink = `${window.location.origin}/recover/#${encodeURI(
     magicMnemonic as string,
@@ -201,7 +204,7 @@ const RecoveryLink: React.FC<{
               shape="round"
               size="large"
               className={style.button}
-              onClick={() => handleSubmit()}
+              onClick={() => setShowModal(true)}
               disabled={!magicMnemonic || !copied}
               loading={submitting}
             >
@@ -313,7 +316,7 @@ const RecoveryLink: React.FC<{
               shape="round"
               size="large"
               className={style.button}
-              onClick={() => handleSubmit()}
+              onClick={() => setShowModal(true)}
               disabled={!magicMnemonic || !copied}
               loading={submitting}
             >
@@ -340,6 +343,47 @@ const RecoveryLink: React.FC<{
           </div>
         </Card>
       )}
+      <BigModal
+        visable={showModal}
+        title={intl.formatMessage({
+          id: 'identity.recoveryLink.verifyRecoveryLink',
+        })}
+        content={
+          <>
+            <div className={style.field}>
+              <Title level={4}>
+                {intl.formatMessage({
+                  id: 'identity.recoveryLink.verifyRecoveryLink.description',
+                })}
+              </Title>
+              <Input
+                size="large"
+                bordered
+                onChange={(e) => setVerifyLink(e.target.value)}
+                placeholder={'https://app.parami.io/recover/#...'}
+              />
+            </div>
+            <div className={style.buttons}>
+              <Button
+                block
+                type="primary"
+                shape="round"
+                size="large"
+                className={style.button}
+                disabled={verifyLink !== recoverWithLink}
+                onClick={() => handleSubmit()}
+                loading={submitting}
+              >
+                {intl.formatMessage({
+                  id: 'common.confirm',
+                })}
+              </Button>
+            </div>
+          </>
+        }
+        footer={false}
+        close={() => { setShowModal(false) }}
+      />
     </>
   );
 };
