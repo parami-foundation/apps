@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import { Alert, Button, Timeline, Tooltip, Typography } from 'antd';
-import styles from './RecordList.less';
+import styles from './style.less';
 import config from '@/config/config';
 import type { AssetTransaction } from '@/services/subquery/subquery';
 import { AssetTransactionHistory } from '@/services/subquery/subquery';
@@ -25,7 +25,7 @@ const Message: React.FC<{
     />
 );
 
-const RecordList: React.FC = () => {
+const Record: React.FC = () => {
     const apiWs = useModel('apiWs');
     const [errorState, setErrorState] = useState<API.Error>({});
     const [allData, setAllData] = useState<AssetTransaction[]>([]);
@@ -116,4 +116,4 @@ const RecordList: React.FC = () => {
     )
 }
 
-export default RecordList;
+export default Record;

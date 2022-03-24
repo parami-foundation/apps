@@ -7,11 +7,11 @@ import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import Balance from './Dashboard/Balance';
-import Assets from './Dashboard/Assets';
-import RecordList from './Dashboard/RecordList';
+import Record from './Dashboard/Record';
 import BigModal from '@/components/ParamiModal/BigModal';
 import Guide from './Dashboard/Guide';
 import Tags from './Dashboard/Tags';
+import NFTs from './Dashboard/NFTs';
 
 const Dashboard: React.FC = () => {
   const [tab, setTab] = useState<string>('balance');
@@ -43,21 +43,21 @@ const Dashboard: React.FC = () => {
                 <div
                   className={classNames(
                     styles.tabItem,
-                    tab === 'assets' ? '' : styles.inactive,
+                    tab === 'nfts' ? '' : styles.inactive,
                   )}
-                  onClick={() => setTab('assets')}
+                  onClick={() => setTab('nfts')}
                 >
                   {intl.formatMessage({
-                    id: 'wallet.dashboard.assets',
+                    id: 'wallet.dashboard.nfts',
                   })}
                 </div>
               </div>
               {tab === 'balance' && (
                 <Balance />
               )}
-              {tab === 'assets' && (
+              {tab === 'nfts' && (
                 <>
-                  <Assets />
+                  <NFTs />
                 </>
               )}
             </Card>
@@ -70,7 +70,7 @@ const Dashboard: React.FC = () => {
                 width: '100%',
               }}
             >
-              <RecordList />
+              <Record />
             </Card>
           </div>
         </div>

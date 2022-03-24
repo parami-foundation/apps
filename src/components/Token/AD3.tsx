@@ -8,7 +8,7 @@ const AD3: React.FC<{
     return (
         <>
             <div className={styles.did}>
-                {formatWithoutUint(value)}
+                {value ? formatWithoutUint(value) : '--'}
                 {/* {BigIntToFloatString(value, 18, 8)} */}
                 <span className={styles.unit}>&nbsp;$AD3</span>
             </div>

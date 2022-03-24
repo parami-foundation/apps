@@ -2,7 +2,7 @@ import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import { Badge, Image } from 'antd';
 import React from 'react';
 import { useIntl, history, useModel } from 'umi';
-import style from './Assets.less';
+import style from './style.less';
 import { hexToDid } from '@/utils/common';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';

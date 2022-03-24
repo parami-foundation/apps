@@ -5,13 +5,14 @@ import {
     SendOutlined,
     TagOutlined,
 } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Divider } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import config from '@/config/config';
-import styles from './Balance.less';
+import styles from './style.less';
 import SmallModal from '@/components/ParamiModal/SmallModal';
 import AD3 from '@/components/Token/AD3';
+import Assets from '../Assets';
 
 const Balance: React.FC = () => {
     const [tipModal, setTipModal] = useState<boolean>(false);
@@ -117,6 +118,8 @@ const Balance: React.FC = () => {
                         </small>
                     </div>
                 </div>
+                <Divider />
+                <Assets />
             </div>
             <SmallModal
                 visable={tipModal}

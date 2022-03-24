@@ -1,6 +1,6 @@
 import { Card, Typography } from 'antd';
 import React, { useEffect } from 'react';
-import styles from '../style.less';
+import styles from '../../style.less';
 import { useIntl, useModel } from 'umi';
 import { SVG3DTagCloud } from '@/utils/svg3dTagCloud';
 

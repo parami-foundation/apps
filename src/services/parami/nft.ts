@@ -1,4 +1,5 @@
 import { Keyring } from '@polkadot/api';
+import { subCallback } from './subscription';
 import { DecodeKeystoreWithPwd, errCb } from './wallet';
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -158,4 +159,21 @@ export const GetAssetsHolders = async (assetId: string) => {
 export const GetAdRemain = async (slot: any) => {
   const remainToken = await (window.apiWs.rpc as any).swap.drylySellCurrency(slot.nft, slot.remain.replace(/,/g, ''));
   return BigInt(remainToken.toHuman()) + BigInt(slot.tokens.replace(/,/g, ''));
+};
+
+// New 20220324
+
+export const Kick = async (password: string, keystore: string) => {
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  const data = await window.apiWs.tx.nft.kick();
+  const codo = window.apiWs.tx.magic.codo(data);
+
+  return await subCallback(codo, payUser);
 };

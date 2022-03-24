@@ -128,6 +128,7 @@ const SelectMode: React.FC<{
       await recoveryMagicKeystore();
 
       setStep(3);
+      return;
     } else {
       setLoading(true);
       const messageContent = `${intl.formatMessage({

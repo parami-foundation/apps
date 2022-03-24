@@ -1,6 +1,7 @@
 export default {
     'wallet.dashboard.balance': 'Balance',
     'wallet.dashboard.assets': 'Assets',
+    'wallet.dashboard.nfts': 'NFTs',
     'wallet.dashboard.stashAccount': 'Asset Account',
     'wallet.dashboard.controllerAccount': 'Control Account',
     'wallet.buy.title': 'Buy',
@@ -57,4 +58,7 @@ export default {
     'wallet.guide.welcome': 'Welcome',
     'wallet.guide.description': 'Use your telegram avatar and nickname, or you can edit it.',
     'wallet.tags.title': 'My Crypto Profile',
+    'wallet.nfts.empty': 'You do not have any NFTs',
+    'wallet.nfts.create': 'Create NFTs',
+    'wallet.nfts.import': 'Import NFTs',
 };

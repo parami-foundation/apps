@@ -2,7 +2,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { Alert, Button, Typography } from 'antd';
 import React, { useState } from 'react';
 import { useIntl } from 'umi';
-import styles from './Guide.less';
+import styles from './style.less';
 
 const { Title } = Typography;
 
