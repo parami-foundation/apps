@@ -3,7 +3,7 @@ import { providers } from 'ethers';
 import { useCallback, useEffect, useState } from "react";
 import Web3Modal from 'web3modal';
 import ethNet from "@/config/ethNet";
-import { message, notification } from 'antd';
+import { message } from 'antd';
 
 const providerOptions = {
     // Example with WalletConnect provider
@@ -77,13 +77,6 @@ export default () => {
             setNetwork(network);
             const chainId = await signer.getChainId();
             setChainId(chainId);
-            if (chainId !== 4) {
-                notification.error({
-                    message: 'Unsupported Chain',
-                    description: 'This feature is only supported on Rinkeby',
-                    duration: null
-                });
-            }
 
             provider.on('accountsChanged', function (accounts: string[]) {
                 if (accounts.length === 0) {
@@ -96,13 +89,6 @@ export default () => {
             });
             provider.on('chainChanged', (newChainId: number) => {
                 setChainId(Number(newChainId));
-                if (Number(newChainId) !== 4) {
-                    notification.error({
-                        message: 'Unsupported Chain',
-                        description: 'This feature is only supported on Rinkeby',
-                        duration: null
-                    });
-                }
                 window.location.reload();
             });
             provider.on('disconnect', (error: ProviderRpcError) => {
@@ -111,7 +97,7 @@ export default () => {
                 Provider.removeAllListeners();
             });
         } catch (e: any) {
-            message.error(e.message);
+            message.error(e.message || e);
             setNoProvider(true);
         }
     }, []);

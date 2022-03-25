@@ -1,21 +1,22 @@
-import { Button } from 'antd';
+import { Button, Col, Progress, Row } from 'antd';
 import React, { useEffect, useRef } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import style from './style.less';
 
 const NFTs: React.FC = () => {
+    const { Account, Signer, connect } = useModel('web3');
     const [coverWidth, setCoverWidth] = React.useState(0);
     const intl = useIntl();
 
-    const coverRef: any = useRef();
+    // const coverRef: any = useRef();
 
-    useEffect(() => {
-        setCoverWidth(coverRef.current.clientWidth);
-    }, [coverRef]);
+    // useEffect(() => {
+    //     setCoverWidth(coverRef.current.clientWidth);
+    // }, [coverRef]);
 
     return (
         <div className={style.nftsContainer}>
-            {/* <div className={style.noNFTs}>
+            <div className={style.noNFTs}>
                 <img
                     src={'/images/icon/query.svg'}
                     className={style.topImage}
@@ -50,6 +51,9 @@ const NFTs: React.FC = () => {
                                 shape='round'
                                 size='large'
                                 className={style.button}
+                                onClick={() => {
+                                    connect();
+                                }}
                             >
                                 {intl.formatMessage({
                                     id: 'wallet.nfts.import',
@@ -58,8 +62,8 @@ const NFTs: React.FC = () => {
                         </Col>
                     </Row>
                 </div>
-            </div> */}
-            <div className={style.nftsList}>
+            </div>
+            {/* <div className={style.nftsList}>
                 <div className={style.nftItem}>
                     <div className={style.card}>
                         <div className={style.cardWrapper}>
@@ -95,18 +99,11 @@ const NFTs: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className={style.action}>
-                                        <Button
-                                            block
-                                            type='primary'
-                                            shape='round'
-                                            size='middle'
-                                            disabled
-                                        >
-                                            {intl.formatMessage({
-                                                id: 'wallet.nfts.mint',
-                                                defaultMessage: 'Mint',
-                                            })}
-                                        </Button>
+                                        <Progress
+                                            percent={12}
+                                            strokeColor='#ff5b00'
+                                            className={style.progress}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -217,7 +214,7 @@ const NFTs: React.FC = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }

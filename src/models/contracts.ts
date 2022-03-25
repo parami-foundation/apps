@@ -38,7 +38,6 @@ export default () => {
         const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
         const weth = new ethers.Contract(contractAddresses.weth[ChainId], WETHAbi, Signer);
         const stakeManager = new ethers.Contract(contractAddresses.stake[ChainId], StakeManagerAbi, Signer);
-        console.log(IUniswapV3FactoryABI.abi)
         const factory = new ethers.Contract(contractAddresses.uniswapFactory[ChainId], IUniswapV3FactoryABI.abi, Signer);
         const lp = new ethers.Contract(contractAddresses.nonfungiblePositionManager[ChainId], LP_ABI, Signer);
         const bridge = new ethers.Contract(contractAddresses.bridge[ChainId], BRIDGE_ABI, Signer);

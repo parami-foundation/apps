@@ -58,7 +58,6 @@ const Farm: React.FC = () => {
     //check ChainId
 
     useEffect(() => {
-        console.log('ChainId', ChainId);
         if (ChainId !== 1 && ChainId !== 4) {
             notification.error({
                 message: 'Unsupported Chain',
