@@ -45,12 +45,12 @@
         display: flex;
         flex-flow: row nowrap;
         flex-wrap: wrap;
+        align-items: stretch;
         margin: 0;
         padding: 0;
         box-sizing: border-box;
 
         .nftItem {
-            margin-bottom: 32px;
             position: relative;
             width: 50%;
             padding: 10px;
@@ -62,13 +62,15 @@
                 transition: box-shadow .3s linear,transform .3s linear,border .3s linear;
                 word-break: break-word;
                 border: 2px solid transparent;
+                height: 100%;
                 cursor: pointer;
 
                 &:hover{
                     background: linear-gradient(139.76deg,#ffa842 49.65%,#ff5b00);
                     box-shadow: 0 4px 4px rgba(247,166,0,.1),0 4px 80px rgba(247,166,0,.24);
                     border: 2px solid #ff5b00;
-                    transition: border .3s ease-in-out;-webkit-transform: translateZ(0);
+                    transition: border .3s ease-in-out;
+                    -webkit-transform: translateZ(0);
                     -moz-transform: translateZ(0);
                     -ms-transform: translateZ(0);
                     -o-transform: translateZ(0);
@@ -79,6 +81,7 @@
                     overflow: hidden;
                     position: relative;
                     border-radius: 8px;
+                    height: 100%;
 
                     .cardBox {
                         display: flex;
@@ -86,6 +89,7 @@
                         border-radius: 8px;
                         overflow: hidden;
                         position: relative;
+                        height: 100%;
                         z-index: 1;
                         transition: transform .2s linear;
                         transform: translateY(0);
@@ -187,6 +191,88 @@
                             }
                         }
                     }
+                }
+            }
+        }
+
+        .unmint {
+            .card {
+                border: 2px dashed #ff5b00;
+            }
+        }
+
+        .newItem {
+            position: relative;
+            width: 50%;
+            padding: 10px;
+
+            .spinWrapper {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                height: 100%;
+                width: 100%;
+                flex: 1;
+            }
+
+            .card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                word-break: break-word;
+                height: 100%;
+                width: 100%;
+
+                .createNFT,
+                .importNFT {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    flex: 1;
+                    width: 100%;
+                    background: linear-gradient(139.76deg,#ffa842 49.65%,#ff5b00);
+                    box-shadow: 0 4px 4px rgba(247,166,0,.1),0 4px 80px rgba(247,166,0,.24);
+                    color: #fff;
+                    font-weight: 900;
+                    font-size: 1rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+
+                    .icon {
+                        font-size: 1.5rem;
+                        margin-bottom: 0.5rem;
+                    }
+
+                    &:hover {
+                        background: linear-gradient(139.76deg,#ffa842 49.65%,#ff5b00);
+                        box-shadow: 0 4px 4px rgba(247,166,0,.1),0 4px 80px rgba(247,166,0,.24);
+                        border: 2px solid #ff5b00;
+                        transition: border .3s ease-in-out;
+                        -webkit-transform: translateZ(0);
+                        -moz-transform: translateZ(0);
+                        -ms-transform: translateZ(0);
+                        -o-transform: translateZ(0);
+                        transform: translateY(0);
+                    }
+
+                    :global(.ant-btn-loading-icon) {
+                        position: absolute;
+
+                        :global(.anticon-spin) {
+                            padding-right: unset;
+                        }
+                    }
+                }
+    
+                .divider {
+                    height: 5px;
+                    width: 100%;
+                    background-color: rgba(255,255,255,.6);
                 }
             }
         }

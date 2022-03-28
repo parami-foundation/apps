@@ -48,7 +48,7 @@ const All: React.FC<{
                                         <Token value={value.amount} symbol={value.assetSymbol} />
                                     </div>
                                     <div className={style.receiver}>
-                                        hash:<a onClick={() => { window.open(config.explorer.extrinsics + value.block, '_blank') }}>{value.block}</a>
+                                        hash:<a onClick={() => { window.open(config.explorer.block + value.block, '_blank') }}>{value.block}</a>
                                     </div>
                                 </div>
                                 <div className={style.right}>
@@ -89,7 +89,7 @@ const Send: React.FC<{
                                     -<Token value={value.amount} symbol={value.assetSymbol} />
                                 </div>
                                 <div className={style.receiver}>
-                                    hash:<a onClick={() => { window.open(config.explorer.extrinsics + value.block, '_blank') }}>{value.block}</a>
+                                    hash:<a onClick={() => { window.open(config.explorer.block + value.block, '_blank') }}>{value.block}</a>
                                 </div>
                             </div>
                             <div className={style.right}>
@@ -129,7 +129,7 @@ const Receive: React.FC<{
                                     +<Token value={value.amount} symbol={value.assetSymbol} />
                                 </div>
                                 <div className={style.receiver}>
-                                    hash:<a onClick={() => { window.open(config.explorer.extrinsics + value.block, '_blank') }}>{value.block}</a>
+                                    hash:<a onClick={() => { window.open(config.explorer.block + value.block, '_blank') }}>{value.block}</a>
                                 </div>
                             </div>
                             <div className={style.right}>

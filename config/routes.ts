@@ -175,7 +175,7 @@
     footerRender: false,
   },
   {
-    path: '/did:kol',
+    path: '/did:kol/:nftid',
     hideInMenu: true,
     exact: true,
     headerRender: false,

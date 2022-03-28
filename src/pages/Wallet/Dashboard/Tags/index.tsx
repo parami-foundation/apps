@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import styles from '../../style.less';
 import { useIntl, useModel } from 'umi';
 import { SVG3DTagCloud } from '@/utils/svg3dTagCloud';
+import Skeleton from '@/components/Skeleton';
 
 const { Title } = Typography;
 
@@ -63,29 +64,35 @@ const Tags: React.FC = () => {
     }
     return (
         <>
-            <Card
-                className={styles.sideCard}
-                bodyStyle={{
-                    width: '100%',
+            <Skeleton
+                loading={!allTagsArr.length}
+                height={400}
+                styles={{
+                    marginBottom: '2rem',
                 }}
-                style={{
-                    marginBottom: 20,
-                }}
-            >
-                <Title level={4}>
-                    {intl.formatMessage({
-                        id: 'wallet.tags.title',
-                    })}
-                </Title>
-                <div
-                    id='tagcloud'
-                    tabIndex={0}
-                    onFocus={onfocus}
-                    onBlur={onblur}
-                >
-                    <svg />
-                </div>
-            </Card>
+                children={
+                    <Card
+                        className={styles.sideCard}
+                        bodyStyle={{
+                            width: '100%',
+                        }}
+                    >
+                        <Title level={4}>
+                            {intl.formatMessage({
+                                id: 'wallet.tags.title',
+                            })}
+                        </Title>
+                        <div
+                            id='tagcloud'
+                            tabIndex={0}
+                            onFocus={onfocus}
+                            onBlur={onblur}
+                        >
+                            <svg />
+                        </div>
+                    </Card>
+                }
+            />
         </>
     )
 };

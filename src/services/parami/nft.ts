@@ -89,19 +89,6 @@ export const GetKolDeposit = async (did: string) => {
   return deposit;
 };
 
-export const SupportSomeBody = async (did: string, amount: string, password: string, keystore: string) => {
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const back = window.apiWs.tx.nft.back(did, amount);
-  const codo = window.apiWs.tx.magic.codo(back);
-  await codo.signAndSend(payUser, errCb);
-};
-
 export const NftMint = async (name: string, symbol: string, password: string, keystore: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
@@ -163,7 +150,7 @@ export const GetAdRemain = async (slot: any) => {
 
 // New 20220324
 
-export const Kick = async (password: string, keystore: string) => {
+export const KickNFT = async (password: string, keystore: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -174,6 +161,63 @@ export const Kick = async (password: string, keystore: string) => {
 
   const data = await window.apiWs.tx.nft.kick();
   const codo = window.apiWs.tx.magic.codo(data);
+
+  return await subCallback(codo, payUser);
+};
+
+export const PortNFT = async (password: string, keystore: string, network: string, namespace: string, tokenID: string) => {
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  const data = await window.apiWs.tx.nft.port(network, namespace, tokenID);
+  const codo = window.apiWs.tx.magic.codo(data);
+
+  return await subCallback(codo, payUser);
+};
+
+export const Support = async (nftID: string, amount: string, password: string, keystore: string) => {
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+  const back = window.apiWs.tx.nft.back(nftID, amount);
+  const codo = window.apiWs.tx.magic.codo(back);
+
+  return await subCallback(codo, payUser);
+};
+
+export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string) => {
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+  const back = window.apiWs.tx.nft.mint(nftID, name, symbol);
+  const codo = window.apiWs.tx.magic.codo(back);
+
+  return await subCallback(codo, payUser);
+};
+
+export const ClaimNFT = async (nftID: string, password: string, keystore: string) => {
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+  const back = window.apiWs.tx.nft.claim(nftID);
+  const codo = window.apiWs.tx.magic.codo(back);
 
   return await subCallback(codo, payUser);
 };

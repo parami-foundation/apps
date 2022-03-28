@@ -36,6 +36,7 @@ export const config = {
     },
     "explorer": {
         "extrinsics": "https://block.parami.io/extrinsics/",
+        "block": "https://block.parami.io/blocks/",
     },
     "page": {
         "homePage": "/",

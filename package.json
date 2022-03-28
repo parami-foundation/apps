@@ -120,6 +120,7 @@
     "lodash.merge": "^4.6.2",
     "moment": "^2.29.1",
     "omit.js": "^2.0.2",
+    "opensea-js": "^3.0.2",
     "qrcode.react": "^1.0.1",
     "radium": "^0.26.1",
     "react": "^17.0.2",

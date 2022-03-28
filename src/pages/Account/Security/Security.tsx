@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
 import { Typography, Image, Card, Button, Tooltip, message } from 'antd';
@@ -8,11 +9,13 @@ import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { guid } from '@/utils/common';
+import Skeleton from '@/components/Skeleton';
 
 const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 const stamp = localStorage.getItem('stamp') as string;
 
 const Security: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [passphraseEnable, setPassphraseEnable] = useState<string>();
     const [password, setPassword] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
@@ -113,56 +116,63 @@ const Security: React.FC = () => {
                     id: 'account.security.title',
                 })}
             </Title>
-            <Title
-                level={5}
-                className={style.sectionSubtitle}
-            >
-                {intl.formatMessage({
-                    id: 'account.security.subtitle',
-                })}
-                <Tooltip
-                    placement="top"
-                    title={intl.formatMessage({
-                        id: 'account.security.subtitle.tip',
-                    })}
-                >
-                    <ExclamationCircleOutlined className={style.infoIcon} />
-                </Tooltip>
-            </Title>
-            <div className={style.security}>
-                <Card
-                    className={`${styles.card} ${style.securityCard}`}
-                    bodyStyle={{
-                        padding: 0,
-                        width: '100%',
-                    }}
-                >
-                    <div className={style.field}>
-                        <div className={style.title}>
+            <Skeleton
+                loading={!apiWs}
+                children={
+                    <>
+                        <Title
+                            level={5}
+                            className={style.sectionSubtitle}
+                        >
                             {intl.formatMessage({
-                                id: 'account.security.passphrase',
+                                id: 'account.security.subtitle',
                             })}
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    passphraseModeChange();
+                            <Tooltip
+                                placement="top"
+                                title={intl.formatMessage({
+                                    id: 'account.security.subtitle.tip',
+                                })}
+                            >
+                                <ExclamationCircleOutlined className={style.infoIcon} />
+                            </Tooltip>
+                        </Title>
+                        <div className={style.security}>
+                            <Card
+                                className={`${styles.card} ${style.securityCard}`}
+                                bodyStyle={{
+                                    padding: 0,
+                                    width: '100%',
                                 }}
                             >
-                                {passphraseEnable === 'disable' && intl.formatMessage({
-                                    id: 'common.enable',
-                                })}
-                                {passphraseEnable === 'enable' && intl.formatMessage({
-                                    id: 'common.disable',
-                                })}
-                            </Button>
+                                <div className={style.field}>
+                                    <div className={style.title}>
+                                        {intl.formatMessage({
+                                            id: 'account.security.passphrase',
+                                        })}
+                                    </div>
+                                    <div className={style.button}>
+                                        <Button
+                                            size='large'
+                                            shape='round'
+                                            type='primary'
+                                            onClick={() => {
+                                                passphraseModeChange();
+                                            }}
+                                        >
+                                            {passphraseEnable === 'disable' && intl.formatMessage({
+                                                id: 'common.enable',
+                                            })}
+                                            {passphraseEnable === 'enable' && intl.formatMessage({
+                                                id: 'common.disable',
+                                            })}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
                         </div>
-                    </div>
-                </Card>
-            </div>
+                    </>
+                }
+            />
             <SecurityModal
                 visable={secModal}
                 setVisable={setSecModal}

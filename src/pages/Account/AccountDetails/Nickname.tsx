@@ -4,6 +4,7 @@ import { setNickName } from '@/services/parami/wallet';
 import { Button, Input, message } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
+import { notification } from 'antd';
 
 const Nickname: React.FC<{
     nicknameModal: boolean;
@@ -24,7 +25,10 @@ const Nickname: React.FC<{
             setNicknameModal(false);
             setSpinning(false);
         } catch (e: any) {
-            message.error(e.message);
+            notification.error({
+                message: e.message,
+                duration: null,
+            });
             setSpinning(false);
         }
     };

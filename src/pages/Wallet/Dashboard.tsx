@@ -56,22 +56,13 @@ const Dashboard: React.FC = () => {
                 <Balance />
               )}
               {tab === 'nfts' && (
-                <>
-                  <NFTs />
-                </>
+                <NFTs />
               )}
             </Card>
           </div>
           <div className={style.right}>
             <Tags />
-            <Card
-              className={style.sideCard}
-              bodyStyle={{
-                width: '100%',
-              }}
-            >
-              <Record />
-            </Card>
+            <Record />
           </div>
         </div>
       </div>

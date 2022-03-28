@@ -61,4 +61,5 @@ export default {
     'wallet.nfts.empty': 'You do not have any NFTs',
     'wallet.nfts.create': 'Create NFTs',
     'wallet.nfts.import': 'Import NFTs',
+    'wallet.nfts.connect': 'Connect Wallet',
 };

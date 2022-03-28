@@ -34,6 +34,7 @@ export default () => {
             setBridgeContract(null);
             return;
         }
+
         if (!Provider || !Signer) return;
         const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
         const weth = new ethers.Contract(contractAddresses.weth[ChainId], WETHAbi, Signer);
@@ -47,6 +48,7 @@ export default () => {
         setFactoryContract(factory);
         setLPContract(lp);
         setBridgeContract(bridge);
+
         return () => {
             setAd3Contract(null);
             setWethContract(null);

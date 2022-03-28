@@ -1,6 +1,6 @@
 import { Typography, Image, Card, Button, message, Input } from 'antd';
 import React, { useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
 import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
@@ -8,8 +8,10 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import Skeleton from '@/components/Skeleton';
 
 const ExportController: React.FC = () => {
+    const apiWs = useModel('apiWs');
     const [modalVisable, setModalVisable] = useState<boolean>(false);
     const [secModal, setSecModal] = useState<boolean>(false);
     const [mnemonic, setMnemonic] = useState<string>('');
@@ -61,64 +63,45 @@ const ExportController: React.FC = () => {
                     id: 'account.export.title',
                 })}
             </Title>
-            <div className={style.export}>
-                <Card
-                    className={`${styles.card} ${style.exportCard}`}
-                    bodyStyle={{
-                        padding: 0,
-                        width: '100%',
-                    }}
-                >
-                    <div className={style.field}>
-                        <div className={style.title}>
-                            {intl.formatMessage({
-                                id: 'account.export.exportController',
-                            })}
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                size='large'
-                                shape='round'
-                                type='primary'
-                                onClick={() => {
-                                    setSecModal(true);
+            <Skeleton
+                loading={!apiWs}
+                children={
+                    <>
+                        <div className={style.export}>
+                            <Card
+                                className={`${styles.card} ${style.exportCard}`}
+                                bodyStyle={{
+                                    padding: 0,
+                                    width: '100%',
                                 }}
                             >
-                                {intl.formatMessage({
-                                    id: 'common.export',
-                                    defaultMessage: 'Export'
-                                })}
-                            </Button>
+                                <div className={style.field}>
+                                    <div className={style.title}>
+                                        {intl.formatMessage({
+                                            id: 'account.export.exportController',
+                                        })}
+                                    </div>
+                                    <div className={style.button}>
+                                        <Button
+                                            size='large'
+                                            shape='round'
+                                            type='primary'
+                                            onClick={() => {
+                                                setSecModal(true);
+                                            }}
+                                        >
+                                            {intl.formatMessage({
+                                                id: 'common.export',
+                                                defaultMessage: 'Export'
+                                            })}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </Card>
                         </div>
-                    </div>
-                </Card>
-                {/* <Card
-                    className={`${styles.card} ${style.exportCard}`}
-                    bodyStyle={{
-                        padding: 0,
-                        width: '100%',
-                    }}
-                >
-                    <div className={style.field}>
-                        <div className={style.title}>
-                            {intl.formatMessage({
-                                id: 'account.export.exportAll',
-                            })}
-                        </div>
-                        <div className={style.button}>
-                            <Button
-                                size='large'
-                                shape='round'
-                                type='primary'
-                            >
-                                {intl.formatMessage({
-                                    id: 'common.export',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                </Card> */}
-            </div>
+                    </>
+                }
+            />
 
             <BigModal
                 title={
