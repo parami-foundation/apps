@@ -6,19 +6,17 @@ import User from './Explorer/User';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import Trade from './Explorer/Trade';
-import { history, useAccess, useIntl, useParams } from 'umi';
+import { history, useAccess, useIntl, useParams, useModel } from 'umi';
 import { hexToDid, didToHex, parseAmount, checkInIAP } from '@/utils/common';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaStore, GetPreferedNFT, GetUserInfo, GetValueOf } from '@/services/parami/nft';
-import { Alert, message, Image, notification } from 'antd';
+import { Alert, message, Image, notification, Button } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
 import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
-import CreateAccount from '../Identity/CreateAccount';
 import { GetAdRemain } from '../../services/parami/nft';
 import { GetAvatar } from '@/services/parami/api';
-import { useModel } from 'umi';
 
 const Message: React.FC<{
     content: string;
@@ -86,8 +84,8 @@ const Explorer: React.FC = () => {
                 return;
             }
             const data = slot.ad;
-            setAdData(data);
             if (!data?.metadata) return;
+            setAdData(data);
 
             if (data?.metadata?.indexOf('ipfs://') < 0) {
                 return;
@@ -341,9 +339,19 @@ const Explorer: React.FC = () => {
                     id: 'error.identity.notUser',
                 })}
                 content={
-                    <>
-                        <CreateAccount minimal={true} />
-                    </>
+                    <Button
+                        type='primary'
+                        shape='round'
+                        size='large'
+                        onClick={() => {
+                            history.push(config.page.createPage);
+                        }}
+                    >
+                        {intl.formatMessage({
+                            id: 'error.identity.notUser.button',
+                            defaultMessage: 'Create a new identity',
+                        })}
+                    </Button>
                 }
                 close={undefined}
                 footer={false}

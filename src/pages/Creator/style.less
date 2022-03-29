@@ -62,6 +62,7 @@
                 color: rgb(39, 39, 41);
                 font-weight: 900;
                 margin: 0;
+                text-align: left;
             }
 
             .value {
@@ -70,6 +71,11 @@
                 align-items: center;
                 justify-content: flex-end;
                 text-align: right;
+
+                :global(.ant-input) {
+                    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+                    border-radius: 8px;
+                }
             }
 
             &:hover {

@@ -10,8 +10,7 @@ const { Title } = Typography;
 
 const BeforeStart: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;
-  minimal?: boolean;
-}> = ({ setStep, minimal }) => {
+}> = ({ setStep }) => {
   const intl = useIntl();
 
   const { query } = history.location;
@@ -42,89 +41,57 @@ const BeforeStart: React.FC<{
   }, []);
 
   return (
-    <>
-      {!minimal ? (
-        <Card className={styles.card}>
-          <img src={'/images/icon/tip.svg'} className={style.topIcon} />
-          <Title
-            className={style.title}
-          >
-            {intl.formatMessage({
-              id: 'identity.beforeStart.title',
-            })}
-          </Title>
-          <p className={style.description}>
-            {intl.formatMessage({
-              id: 'identity.beforeStart.description',
-            })}
-          </p>
-          <Divider />
-          <div className={style.buttons}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={style.button}
-              onClick={() => { onClick() }}
-            >
-              {intl.formatMessage({
-                id: 'identity.beforeStart.agree',
-              })}
-            </Button>
-            <Button
-              block
-              type="link"
-              size="large"
-              onClick={() => history.push(config.page.homePage)}
-            >
-              {intl.formatMessage({
-                id: 'common.cancel',
-              })}
-            </Button>
-            <small
-              style={{
-                textAlign: 'center',
-                marginTop: 20,
-                color: 'rgb(114, 114, 122)',
-              }}
-            >
-              {intl.formatMessage({
-                id: 'identity.beforeStart.licDesc',
-              })}
-            </small>
-          </div>
-        </Card>
-      ) : (
-        <>
-          <div className={style.buttons}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={style.button}
-              onClick={() => { onClick() }}
-            >
-              {intl.formatMessage({
-                id: 'identity.beforeStart.agree',
-              })}
-            </Button>
-          </div>
-          <small
-            style={{
-              textAlign: 'center',
-              marginTop: 20,
-              color: 'rgb(114, 114, 122)',
-            }}
-          >
-            {intl.formatMessage({
-              id: 'identity.beforeStart.licDesc',
-            })}
-          </small>
-        </>
-      )}
-    </>
+    <Card className={styles.card}>
+      <img src={'/images/icon/tip.svg'} className={style.topIcon} />
+      <Title
+        className={style.title}
+      >
+        {intl.formatMessage({
+          id: 'identity.beforeStart.title',
+        })}
+      </Title>
+      <p className={style.description}>
+        {intl.formatMessage({
+          id: 'identity.beforeStart.description',
+        })}
+      </p>
+      <Divider />
+      <div className={style.buttons}>
+        <Button
+          block
+          type="primary"
+          shape="round"
+          size="large"
+          className={style.button}
+          onClick={() => { onClick() }}
+        >
+          {intl.formatMessage({
+            id: 'identity.beforeStart.agree',
+          })}
+        </Button>
+        <Button
+          block
+          type="link"
+          size="large"
+          onClick={() => history.push(config.page.homePage)}
+        >
+          {intl.formatMessage({
+            id: 'common.cancel',
+          })}
+        </Button>
+        <small
+          style={{
+            textAlign: 'center',
+            marginTop: 20,
+            color: 'rgb(114, 114, 122)',
+          }}
+        >
+          {intl.formatMessage({
+            id: 'identity.beforeStart.licDesc',
+          })}
+        </small>
+      </div>
+    </Card>
   );
 };
 

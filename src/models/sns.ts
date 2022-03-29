@@ -37,8 +37,8 @@ export default () => {
 
             if (!!tmpList[platforms[i]] && tmpList[platforms[i]] === 'verifing' && data[platforms[i]] !== 'verifing') {
                 notification.error({
-                    message: 'Binding failed',
-                    description: `${platforms[i]} binding failed`,
+                    message: `${platforms[i]} Binding failed`,
+                    description: 'Signature error or bound by another account.',
                     duration: null,
                 });
                 tmpList[platforms[i]] = null;

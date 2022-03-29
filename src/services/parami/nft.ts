@@ -180,7 +180,7 @@ export const PortNFT = async (password: string, keystore: string, network: strin
   return await subCallback(codo, payUser);
 };
 
-export const Support = async (nftID: string, amount: string, password: string, keystore: string) => {
+export const SupportDAO = async (nftID: string, amount: string, password: string, keystore: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {

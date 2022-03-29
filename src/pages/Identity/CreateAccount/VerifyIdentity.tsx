@@ -41,13 +41,12 @@ const VerifyIdentity: React.FC<{
   password: string;
   qsTicket?: any;
   qsPlatform?: string | undefined;
-  minimal?: boolean;
   magicUserAddress: string;
   controllerUserAddress: string;
   controllerKeystore: string;
   setQsTicket: React.Dispatch<any>;
   setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
-}> = ({ password, qsTicket, qsPlatform, minimal, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
+}> = ({ password, qsTicket, qsPlatform, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
   const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [secModal, setSecModal] = useState<boolean>(false);
@@ -105,8 +104,8 @@ const VerifyIdentity: React.FC<{
       }
       if (Resp?.status === 409) {
         notification.error({
-          message: 'Airdroped',
-          description: `Your ${qsPlatform || platform} account has participated in airdrop. Please try to deposit manually.`,
+          message: 'The account has been used',
+          description: `Your ${qsPlatform || platform} account has been used. Please try to deposit manually.`,
           duration: null,
         })
         setLoading(false);
@@ -311,7 +310,7 @@ const VerifyIdentity: React.FC<{
     if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
       return;
     }
-    if (minimal || qsTicket) {
+    if (qsTicket) {
       minimalAirdrop()
       return;
     };
@@ -335,37 +334,146 @@ const VerifyIdentity: React.FC<{
 
   return (
     <>
-      {minimal ? (
-        <div
+      <Card
+        className={styles.card}
+        bodyStyle={{
+          padding: 0,
+          width: '100%'
+        }}
+      >
+        <Spin
+          size='large'
+          tip={(
+            <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
+              <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
+              <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
+              <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
+              <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
+              <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
+              <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
+              <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
+              <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
+            </Steps>
+          )}
+          indicator={(<></>)}
+          spinning={loading}
+          wrapperClassName={styles.pageContainer}
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
+            background: 'rgba(255,255,255,.7)',
+            padding: 30,
           }}
         >
-          <Spin
-            tip={(
-              <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
-                <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
-                <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
-                <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
-                <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
-                <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
-                <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-                <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
-                <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
-              </Steps>
-            )}
-            size='large'
-            indicator={(<></>)}
-            spinning={loading}
-            style={{
-              background: 'rgba(255,255,255,.7)',
-              padding: 30,
+          <img src={'/images/icon/transaction.svg'} className={style.topIcon} />
+          <Title
+            className={style.title}
+          >
+            {intl.formatMessage({
+              id: 'identity.initialDeposit.title',
+            })}
+          </Title>
+          <p className={style.description}>
+            {intl.formatMessage({
+              id: 'identity.initialDeposit.description',
+            }, {
+              ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></strong>)
+            })}
+          </p>
+          <Divider />
+          <Button
+            type="link"
+            onClick={() => {
+              setModalVisable(true);
             }}
-          />
+          >
+            {intl.formatMessage({
+              id: 'identity.initialDeposit.whereToBuy',
+            })}
+          </Button>
+          <div className={style.listBtn}>
+            <div
+              className={style.field}
+              style={{
+                flexDirection: 'column',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  marginBottom: 10,
+                }}
+              >
+                <span className={style.title}>
+                  {intl.formatMessage({
+                    id: 'identity.initialDeposit.chargeAddress',
+                  })}
+                </span>
+                <span className={style.value}>
+                  <CopyToClipboard
+                    text={controllerUserAddress}
+                    onCopy={() =>
+                      message.success(
+                        intl.formatMessage({
+                          id: 'common.copied',
+                        }),
+                      )
+                    }
+                  >
+                    <Button type="link" icon={<CopyOutlined />}>
+                      {intl.formatMessage({
+                        id: 'common.copy',
+                      })}
+                    </Button>
+                  </CopyToClipboard>
+                </span>
+              </div>
+              <CopyToClipboard
+                text={controllerUserAddress}
+                onCopy={() =>
+                  message.success(
+                    intl.formatMessage({
+                      id: 'common.copied',
+                    }),
+                  )
+                }
+              >
+                <TextArea
+                  size="small"
+                  style={{
+                    backgroundColor: '#fff',
+                  }}
+                  readOnly
+                  value={controllerUserAddress}
+                  autoSize={{ minRows: 1, maxRows: 4 }}
+                />
+              </CopyToClipboard>
+            </div>
+            <div className={style.field}>
+              <span className={style.title}>
+                {intl.formatMessage({
+                  id: 'identity.initialDeposit.status',
+                })}
+              </span>
+              <span className={style.value}>
+                <Tag color="processing" icon={<SyncOutlined spin />}>
+                  {intl.formatMessage({
+                    id: 'identity.initialDeposit.status.pending',
+                  })}
+                </Tag>
+              </span>
+            </div>
+            <div className={style.field}>
+              <span className={style.title}>
+                {intl.formatMessage({
+                  id: 'identity.initialDeposit.minCharge',
+                })}
+              </span>
+              <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
+            </div>
+          </div>
           <Popconfirm
             placement="top"
             title={intl.formatMessage({
@@ -390,238 +498,69 @@ const VerifyIdentity: React.FC<{
               })}
             </a>
           </Popconfirm>
-        </div>
-      ) : (
-        <>
-          <Card
-            className={styles.card}
-            bodyStyle={{
-              padding: 0,
-              width: '100%'
-            }}
-          >
-            <Spin
+          <div className={style.socialButtons}>
+            <Divider>
+              {intl.formatMessage({
+                id: 'identity.beforeStart.faucet',
+              })}
+            </Divider>
+            <TelegramLoginButton
+              dataOnauth={(response) => {
+                response.bot = config.airdropService.telegram.botName;
+                loginWithAirdrop(response, 'Telegram');
+              }}
+              botName={config.airdropService.telegram.botName}
+            />
+            <DiscordLoginButton
+              dataOnauth={(response) => {
+                loginWithAirdrop(response, 'Discord')
+              }}
+              clientId={config.airdropService.discord.clientId}
+              redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
+            />
+          </div>
+        </Spin>
+      </Card>
+      <BigModal
+        visable={modalVisable}
+        title={intl.formatMessage({
+          id: 'identity.initialDeposit.buyAD3',
+        })}
+        content={
+          <>
+            <div className={style.exchanges}>
+              <a href="https://www.binance.com/" target="_blank" rel="noreferrer">
+                <img src="/images/exchange/binance-logo.svg" alt="BINANCE" />
+              </a>
+              <a href="https://www.gate.io/" target="_blank" rel="noreferrer">
+                <img src="/images/exchange/gate-io-logo.svg" alt="GATE" />
+              </a>
+            </div>
+          </>
+        }
+        footer={
+          <>
+            <Button
+              block
+              shape='round'
               size='large'
-              tip={(
-                <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
-                  <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
-                  <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
-                  <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
-                  <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
-                  <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
-                  <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-                  <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
-                  <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
-                </Steps>
-              )}
-              indicator={(<></>)}
-              spinning={loading}
-              wrapperClassName={styles.pageContainer}
-              style={{
-                background: 'rgba(255,255,255,.7)',
-                padding: 30,
+              onClick={() => {
+                setModalVisable(false);
               }}
             >
-              <img src={'/images/icon/transaction.svg'} className={style.topIcon} />
-              <Title
-                className={style.title}
-              >
-                {intl.formatMessage({
-                  id: 'identity.initialDeposit.title',
-                })}
-              </Title>
-              <p className={style.description}>
-                {intl.formatMessage({
-                  id: 'identity.initialDeposit.description',
-                }, {
-                  ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></strong>)
-                })}
-              </p>
-              <Divider />
-              <Button
-                type="link"
-                onClick={() => {
-                  setModalVisable(true);
-                }}
-              >
-                {intl.formatMessage({
-                  id: 'identity.initialDeposit.whereToBuy',
-                })}
-              </Button>
-              <div className={style.listBtn}>
-                <div
-                  className={style.field}
-                  style={{
-                    flexDirection: 'column',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      marginBottom: 10,
-                    }}
-                  >
-                    <span className={style.title}>
-                      {intl.formatMessage({
-                        id: 'identity.initialDeposit.chargeAddress',
-                      })}
-                    </span>
-                    <span className={style.value}>
-                      <CopyToClipboard
-                        text={controllerUserAddress}
-                        onCopy={() =>
-                          message.success(
-                            intl.formatMessage({
-                              id: 'common.copied',
-                            }),
-                          )
-                        }
-                      >
-                        <Button type="link" icon={<CopyOutlined />}>
-                          {intl.formatMessage({
-                            id: 'common.copy',
-                          })}
-                        </Button>
-                      </CopyToClipboard>
-                    </span>
-                  </div>
-                  <CopyToClipboard
-                    text={controllerUserAddress}
-                    onCopy={() =>
-                      message.success(
-                        intl.formatMessage({
-                          id: 'common.copied',
-                        }),
-                      )
-                    }
-                  >
-                    <TextArea
-                      size="small"
-                      style={{
-                        backgroundColor: '#fff',
-                      }}
-                      readOnly
-                      value={controllerUserAddress}
-                      autoSize={{ minRows: 1, maxRows: 4 }}
-                    />
-                  </CopyToClipboard>
-                </div>
-                <div className={style.field}>
-                  <span className={style.title}>
-                    {intl.formatMessage({
-                      id: 'identity.initialDeposit.status',
-                    })}
-                  </span>
-                  <span className={style.value}>
-                    <Tag color="processing" icon={<SyncOutlined spin />}>
-                      {intl.formatMessage({
-                        id: 'identity.initialDeposit.status.pending',
-                      })}
-                    </Tag>
-                  </span>
-                </div>
-                <div className={style.field}>
-                  <span className={style.title}>
-                    {intl.formatMessage({
-                      id: 'identity.initialDeposit.minCharge',
-                    })}
-                  </span>
-                  <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
-                </div>
-              </div>
-              <Popconfirm
-                placement="top"
-                title={intl.formatMessage({
-                  id: 'identity.recreate.description',
-                })}
-                onConfirm={() => {
-                  localStorage.clear();
-                  sessionStorage.clear();
-                  window.location.href = config.page.homePage;
-                }}
-                okText="Yes"
-                cancelText="No"
-              >
-                <a
-                  style={{
-                    textDecoration: 'underline',
-                    color: 'rgb(114, 114, 122)',
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: 'identity.recreate',
-                  })}
-                </a>
-              </Popconfirm>
-              <div className={style.socialButtons}>
-                <Divider>
-                  {intl.formatMessage({
-                    id: 'identity.beforeStart.faucet',
-                  })}
-                </Divider>
-                <TelegramLoginButton
-                  dataOnauth={(response) => {
-                    response.bot = config.airdropService.telegram.botName;
-                    loginWithAirdrop(response, 'Telegram');
-                  }}
-                  botName={config.airdropService.telegram.botName}
-                />
-                <DiscordLoginButton
-                  dataOnauth={(response) => {
-                    loginWithAirdrop(response, 'Discord')
-                  }}
-                  clientId={config.airdropService.discord.clientId}
-                  redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
-                />
-              </div>
-            </Spin>
-          </Card>
-          <BigModal
-            visable={modalVisable}
-            title={intl.formatMessage({
-              id: 'identity.initialDeposit.buyAD3',
-            })}
-            content={
-              <>
-                <div className={style.exchanges}>
-                  <a href="https://www.binance.com/" target="_blank" rel="noreferrer">
-                    <img src="/images/exchange/binance-logo.svg" alt="BINANCE" />
-                  </a>
-                  <a href="https://www.gate.io/" target="_blank" rel="noreferrer">
-                    <img src="/images/exchange/gate-io-logo.svg" alt="GATE" />
-                  </a>
-                </div>
-              </>
-            }
-            footer={
-              <>
-                <Button
-                  block
-                  shape='round'
-                  size='large'
-                  onClick={() => {
-                    setModalVisable(false);
-                  }}
-                >
-                  {intl.formatMessage({
-                    id: 'common.close',
-                  })}
-                </Button>
-              </>
-            }
-          />
-          <SecurityModal
-            visable={secModal}
-            setVisable={setSecModal}
-            password={Password}
-            setPassword={setPassword}
-          />
-        </>
-      )}
+              {intl.formatMessage({
+                id: 'common.close',
+              })}
+            </Button>
+          </>
+        }
+      />
+      <SecurityModal
+        visable={secModal}
+        setVisable={setSecModal}
+        password={Password}
+        setPassword={setPassword}
+      />
     </>
   );
 };

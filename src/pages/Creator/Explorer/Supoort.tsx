@@ -6,7 +6,7 @@ import style from './style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetUserBalance } from '@/services/parami/wallet';
 import { didToHex } from '@/utils/common';
-import { SupportSomeBody } from '@/services/parami/nft';
+import { SupportDAO } from '@/services/parami/nft';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { FloatStringToBigInt } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';
@@ -56,7 +56,7 @@ const Support: React.FC<{
 
     const handleSubmit = async () => {
         const didHexString = didToHex(did);
-        await SupportSomeBody(didHexString, FloatStringToBigInt(number, 18).toString(), password, controllerKeystore);
+        await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), password, controllerKeystore);
         setModal(false);
         setSubmitting(false);
     };

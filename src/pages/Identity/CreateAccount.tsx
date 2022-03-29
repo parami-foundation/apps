@@ -14,9 +14,7 @@ import InApp from 'detect-inapp';
 
 const inapp = new InApp(navigator.userAgent || navigator.vendor || (window as any).opera);
 
-const CreateAccount: React.FC<{
-  minimal?: boolean;
-}> = ({ minimal }) => {
+const CreateAccount: React.FC = () => {
   const apiWs = useModel('apiWs');
   const [step, setStep] = useState<number>(1);
   const [password, setPassword] = useState<string>('');
@@ -87,7 +85,7 @@ const CreateAccount: React.FC<{
     };
 
     // In minimal mode
-    if (minimal && !!ControllerUserAddress && !!ControllerKeystore && !Did) {
+    if (!!ControllerUserAddress && !!ControllerKeystore && !Did) {
       localStorage.clear();
       setStep(1);
       return;
@@ -107,108 +105,54 @@ const CreateAccount: React.FC<{
   }, [step]);
 
   return (
-    <>
-      {minimal ? (
-        <>
-          {step === -1 &&
-            <NotSupport
-              minimal={minimal}
-            />
-          }
-          {step === 0 &&
-            <BeforeStart
-              minimal={minimal}
-              setStep={setStep}
-            />
-          }
-          {step === 1 &&
-            <QuickSign
-              minimal={minimal}
-              controllerUserAddress={ControllerUserAddress}
-              controllerKeystore={ControllerKeystore}
-              magicUserAddress={MagicUserAddress}
-              setStep={setStep}
-              setQsTicket={setQsTicket}
-              setQsPlatform={setQsPlatform}
-            />
-          }
-          {step === 2 &&
-            <RecoveryLink
-              minimal={minimal}
-              magicMnemonic={magicMnemonic}
-              controllerMnemonic={controllerMnemonic}
-              setStep={setStep}
-              setPassword={setPassword}
-              setControllerMnemonic={setControllerMnemonic}
-              setControllerKeystore={setControllerKeystore}
-              setControllerUserAddress={setControllerUserAddress}
-            />
-          }
-          {step === 3 &&
-            <VerifyIdentity
-              password={password}
-              minimal={minimal}
-              magicUserAddress={magicUserAddress}
-              qsTicket={qsTicket}
-              qsPlatform={qsPlatform}
-              controllerUserAddress={controllerUserAddress}
-              controllerKeystore={controllerKeystore}
-              setQsTicket={setQsTicket}
-              setQsPlatform={setQsPlatform}
-            />
-          }
-        </>
-      ) : (
-        <div className={styles.mainContainer}>
-          <div className={styles.background} />
-          <div className={styles.logoMark} />
-          <div className={styles.pageContainer}>
-            {step === -1 &&
-              <NotSupport
-              />
-            }
-            {step === 0 &&
-              <BeforeStart
-                setStep={setStep}
-              />
-            }
-            {step === 1 &&
-              <QuickSign
-                controllerUserAddress={ControllerUserAddress}
-                controllerKeystore={ControllerKeystore}
-                magicUserAddress={MagicUserAddress}
-                setStep={setStep}
-                setQsTicket={setQsTicket}
-                setQsPlatform={setQsPlatform}
-              />
-            }
-            {step === 2 &&
-              <RecoveryLink
-                magicMnemonic={magicMnemonic}
-                controllerMnemonic={controllerMnemonic}
-                setStep={setStep}
-                setPassword={setPassword}
-                setControllerMnemonic={setControllerMnemonic}
-                setControllerKeystore={setControllerKeystore}
-                setControllerUserAddress={setControllerUserAddress}
-              />
-            }
-            {step === 3 &&
-              <VerifyIdentity
-                password={password}
-                magicUserAddress={magicUserAddress}
-                controllerUserAddress={controllerUserAddress}
-                controllerKeystore={controllerKeystore}
-                qsTicket={qsTicket}
-                qsPlatform={qsPlatform}
-                setQsTicket={setQsTicket}
-                setQsPlatform={setQsPlatform}
-              />
-            }
-          </div>
-        </div>
-      )}
-    </>
+    <div className={styles.mainContainer}>
+      <div className={styles.background} />
+      <div className={styles.logoMark} />
+      <div className={styles.pageContainer}>
+        {step === -1 &&
+          <NotSupport
+          />
+        }
+        {step === 0 &&
+          <BeforeStart
+            setStep={setStep}
+          />
+        }
+        {step === 1 &&
+          <QuickSign
+            controllerUserAddress={ControllerUserAddress}
+            controllerKeystore={ControllerKeystore}
+            magicUserAddress={MagicUserAddress}
+            setStep={setStep}
+            setQsTicket={setQsTicket}
+            setQsPlatform={setQsPlatform}
+          />
+        }
+        {step === 2 &&
+          <RecoveryLink
+            magicMnemonic={magicMnemonic}
+            controllerMnemonic={controllerMnemonic}
+            setStep={setStep}
+            setPassword={setPassword}
+            setControllerMnemonic={setControllerMnemonic}
+            setControllerKeystore={setControllerKeystore}
+            setControllerUserAddress={setControllerUserAddress}
+          />
+        }
+        {step === 3 &&
+          <VerifyIdentity
+            password={password}
+            magicUserAddress={magicUserAddress}
+            controllerUserAddress={controllerUserAddress}
+            controllerKeystore={controllerKeystore}
+            qsTicket={qsTicket}
+            qsPlatform={qsPlatform}
+            setQsTicket={setQsTicket}
+            setQsPlatform={setQsPlatform}
+          />
+        }
+      </div>
+    </div>
   );
 };
 

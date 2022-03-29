@@ -126,7 +126,7 @@ const InputLink: React.FC<{
           tip={intl.formatMessage({
             id: 'common.loading',
           })}
-          spinning={loading}
+          spinning={loading || !apiWs}
           style={{
             display: 'flex',
             maxHeight: '100%',

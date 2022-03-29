@@ -14,7 +14,6 @@ import BigModal from '@/components/ParamiModal/BigModal';
 const { Title } = Typography;
 
 const RecoveryLink: React.FC<{
-  minimal?: boolean;
   magicMnemonic: string;
   controllerMnemonic: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -22,7 +21,7 @@ const RecoveryLink: React.FC<{
   setControllerMnemonic: React.Dispatch<React.SetStateAction<string>>;
   setControllerKeystore: React.Dispatch<React.SetStateAction<string>>;
   setControllerUserAddress: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ minimal, magicMnemonic, controllerMnemonic, setStep, setPassword, setControllerMnemonic, setControllerKeystore, setControllerUserAddress }) => {
+}> = ({ magicMnemonic, controllerMnemonic, setStep, setPassword, setControllerMnemonic, setControllerKeystore, setControllerUserAddress }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -119,230 +118,117 @@ const RecoveryLink: React.FC<{
 
   return (
     <>
-      {minimal ? (
-        <>
-          <Title
-            className={style.title}
+      <Card className={styles.card}>
+        <img src={'/images/icon/link.svg'} className={style.topIcon} />
+        <Title
+          className={style.title}
+        >
+          {intl.formatMessage({
+            id: 'identity.recoveryLink.title',
+          })}
+        </Title>
+        <p className={style.description}>
+          {intl.formatMessage({
+            id: 'identity.recoveryLink.description',
+          }, {
+            strong: <strong>{intl.formatMessage({ id: 'identity.recoveryLink.description.strong' })}</strong>
+          })}
+        </p>
+        <Divider />
+        <div className={style.recoveryLinkContainer}>
+          <Spin
+            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+            spinning={!magicMnemonic}
+            wrapperClassName={style.recoveryLinkSpinWrapper}
+            tip={intl.formatMessage({
+              id: 'identity.recoveryLink.placeholder',
+            })}
+          >
+            <CopyToClipboard
+              text={recoverWithLink}
+              onCopy={() => {
+                if (!!magicMnemonic) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'common.copied',
+                    }),
+                  )
+                  setCopied(true);
+                }
+              }}
+            >
+              <TextArea
+                autoSize
+                size="large"
+                placeholder={intl.formatMessage({
+                  id: 'identity.recoveryLink.placeholder',
+                })}
+                value={!magicMnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
+                readOnly
+                className={style.recoveryLinkInput}
+              />
+            </CopyToClipboard>
+            <Divider />
+            <CopyToClipboard
+              text={recoverWithLink}
+              onCopy={() => {
+                if (!!magicMnemonic) {
+                  message.success(
+                    intl.formatMessage({
+                      id: 'common.copied',
+                    }),
+                  )
+                  setCopied(true);
+                }
+              }}
+            >
+              <Button
+                block
+                shape="round"
+                size="large"
+                className={style.copyButton}
+                icon={<CopyOutlined />}
+              >
+                {intl.formatMessage({
+                  id: 'identity.recoveryLink.copyRecoveryLink',
+                })}
+              </Button>
+            </CopyToClipboard>
+          </Spin>
+        </div>
+        <div className={style.buttons}>
+          <Button
+            block
+            type="primary"
+            shape="round"
+            size="large"
+            className={style.button}
+            onClick={() => setShowModal(true)}
+            disabled={!magicMnemonic || !copied}
+            loading={submitting}
           >
             {intl.formatMessage({
-              id: 'identity.recoveryLink.title',
+              id: 'common.confirm',
             })}
-          </Title>
-          <p className={style.description}>
+          </Button>
+          <span>
             {intl.formatMessage({
-              id: 'identity.recoveryLink.description',
-            }, {
-              strong: <strong>{intl.formatMessage({ id: 'identity.recoveryLink.description.strong' })}</strong>
+              id: 'identity.alreadyCreate',
             })}
-          </p>
-          <Divider />
-          <div className={style.recoveryLinkContainer}>
-            <Spin
-              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-              spinning={!magicMnemonic}
-              wrapperClassName={style.recoveryLinkSpinWrapper}
-              tip={intl.formatMessage({
-                id: 'identity.recoveryLink.placeholder',
-              })}
-            >
-              <CopyToClipboard
-                text={recoverWithLink}
-                onCopy={() => {
-                  if (!!magicMnemonic) {
-                    message.success(
-                      intl.formatMessage({
-                        id: 'common.copied',
-                      }),
-                    )
-                    setCopied(true);
-                  }
-                }}
-              >
-                <TextArea
-                  autoSize
-                  size="large"
-                  placeholder={intl.formatMessage({
-                    id: 'identity.recoveryLink.placeholder',
-                  })}
-                  value={!magicMnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
-                  readOnly
-                  className={style.recoveryLinkInput}
-                />
-              </CopyToClipboard>
-              <Divider />
-              <CopyToClipboard
-                text={recoverWithLink}
-                onCopy={() => {
-                  if (!!magicMnemonic) {
-                    message.success(
-                      intl.formatMessage({
-                        id: 'common.copied',
-                      }),
-                    )
-                    setCopied(true);
-                  }
-                }}
-              >
-                <Button
-                  block
-                  shape="round"
-                  size="large"
-                  className={style.copyButton}
-                  icon={<CopyOutlined />}
-                >
-                  {intl.formatMessage({
-                    id: 'identity.recoveryLink.copyRecoveryLink',
-                  })}
-                </Button>
-              </CopyToClipboard>
-            </Spin>
-          </div>
-          <div className={style.buttons}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={style.button}
-              onClick={() => setShowModal(true)}
-              disabled={!magicMnemonic || !copied}
-              loading={submitting}
-            >
-              {intl.formatMessage({
-                id: 'common.confirm',
-              })}
-            </Button>
-            <span>
-              {intl.formatMessage({
-                id: 'identity.alreadyCreate',
-              })}
-            </span>
-            <a
-              style={{
-                textDecoration: 'underline',
-                color: 'rgb(114, 114, 122)',
-              }}
-              onClick={() => history.push(config.page.recoverPage)}
-            >
-              {intl.formatMessage({
-                id: 'identity.recoverAccount',
-              })}
-            </a>
-          </div>
-        </>
-      ) : (
-        <Card className={styles.card}>
-          <img src={'/images/icon/link.svg'} className={style.topIcon} />
-          <Title
-            className={style.title}
+          </span>
+          <a
+            style={{
+              textDecoration: 'underline',
+              color: 'rgb(114, 114, 122)',
+            }}
+            onClick={() => history.push(config.page.recoverPage)}
           >
             {intl.formatMessage({
-              id: 'identity.recoveryLink.title',
+              id: 'identity.recoverAccount',
             })}
-          </Title>
-          <p className={style.description}>
-            {intl.formatMessage({
-              id: 'identity.recoveryLink.description',
-            }, {
-              strong: <strong>{intl.formatMessage({ id: 'identity.recoveryLink.description.strong' })}</strong>
-            })}
-          </p>
-          <Divider />
-          <div className={style.recoveryLinkContainer}>
-            <Spin
-              indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-              spinning={!magicMnemonic}
-              wrapperClassName={style.recoveryLinkSpinWrapper}
-              tip={intl.formatMessage({
-                id: 'identity.recoveryLink.placeholder',
-              })}
-            >
-              <CopyToClipboard
-                text={recoverWithLink}
-                onCopy={() => {
-                  if (!!magicMnemonic) {
-                    message.success(
-                      intl.formatMessage({
-                        id: 'common.copied',
-                      }),
-                    )
-                    setCopied(true);
-                  }
-                }}
-              >
-                <TextArea
-                  autoSize
-                  size="large"
-                  placeholder={intl.formatMessage({
-                    id: 'identity.recoveryLink.placeholder',
-                  })}
-                  value={!magicMnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
-                  readOnly
-                  className={style.recoveryLinkInput}
-                />
-              </CopyToClipboard>
-              <Divider />
-              <CopyToClipboard
-                text={recoverWithLink}
-                onCopy={() => {
-                  if (!!magicMnemonic) {
-                    message.success(
-                      intl.formatMessage({
-                        id: 'common.copied',
-                      }),
-                    )
-                    setCopied(true);
-                  }
-                }}
-              >
-                <Button
-                  block
-                  shape="round"
-                  size="large"
-                  className={style.copyButton}
-                  icon={<CopyOutlined />}
-                >
-                  {intl.formatMessage({
-                    id: 'identity.recoveryLink.copyRecoveryLink',
-                  })}
-                </Button>
-              </CopyToClipboard>
-            </Spin>
-          </div>
-          <div className={style.buttons}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={style.button}
-              onClick={() => setShowModal(true)}
-              disabled={!magicMnemonic || !copied}
-              loading={submitting}
-            >
-              {intl.formatMessage({
-                id: 'common.confirm',
-              })}
-            </Button>
-            <span>
-              {intl.formatMessage({
-                id: 'identity.alreadyCreate',
-              })}
-            </span>
-            <a
-              style={{
-                textDecoration: 'underline',
-                color: 'rgb(114, 114, 122)',
-              }}
-              onClick={() => history.push(config.page.recoverPage)}
-            >
-              {intl.formatMessage({
-                id: 'identity.recoverAccount',
-              })}
-            </a>
-          </div>
-        </Card>
-      )}
+          </a>
+        </div>
+      </Card>
       <BigModal
         visable={showModal}
         title={intl.formatMessage({

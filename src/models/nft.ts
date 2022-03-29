@@ -1,4 +1,5 @@
 import { useModel } from 'umi';
+import { useEffect } from 'react';
 
 export default () => {
     const apiWs = useModel('apiWs');
@@ -9,6 +10,13 @@ export default () => {
         if (!apiWs) {
             return;
         }
-        const allEntries = await apiWs.query.uniques.account(currentAccount);
+        const allEntries = await apiWs.query.uniques.account.keys(currentAccount);
+        console.log(allEntries);
     }
+
+    useEffect(() => {
+        if (apiWs) {
+            getNFTs();
+        }
+    }, [apiWs]);
 }

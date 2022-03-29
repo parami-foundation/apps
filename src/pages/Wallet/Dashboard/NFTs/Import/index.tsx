@@ -1,39 +1,26 @@
 import React, { useState } from 'react';
 import style from './style.less';
-import { useIntl, useModel } from 'umi';
+import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Form, Input, Select, notification } from 'antd';
-import { SiBinance, SiEthereum } from 'react-icons/si';
-import { OriginContract, WrapContract } from '../contract/contract';
-import { contractAddresses } from '../contract/config';
+import { Button, Form, Input, notification } from 'antd';
 import { PortNFT } from '@/services/parami/nft';
+import { contractAddresses } from '../contract/config';
 
 const ImportNFTModal: React.FC<{
     setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
     password: string;
     keystore: string;
 }> = ({ setImportModal, password, keystore }) => {
-    const { Signer, ChainId, connect } = useModel('web3');
     const [loading, setLoading] = useState<boolean>(false);
 
     const intl = useIntl();
-    const { Option } = Select;
     const [form] = Form.useForm();
 
     const onFinish = async (values: any) => {
         setLoading(true);
-        if (!Signer) {
-            await connect();
-            return;
-        };
 
         try {
-            const originContract = await OriginContract(values.namespace, Signer);
-            await originContract?.approve(contractAddresses.wrap[ChainId], values.tokenID);
-            const wrapContract = await WrapContract(ChainId, Signer);
-            await wrapContract?.wrap(values.namespace, values.tokenID, null);
-
-            const events = await PortNFT(password, keystore, values.network, values.namespace, values.tokenID);
+            const events = await PortNFT(password, keystore, 'Rinkeby', contractAddresses.wrap[4], values.tokenID);
             console.log(events);
 
             setLoading(false);
@@ -58,21 +45,6 @@ const ImportNFTModal: React.FC<{
                 autoComplete="off"
             >
                 <Form.Item
-                    label="Contract"
-                    name="namespace"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input your Contract Address!',
-                        }
-                    ]}
-                >
-                    <Input
-                        size='large'
-                        placeholder="Please input your Contract Address"
-                    />
-                </Form.Item>
-                <Form.Item
                     label="Token ID"
                     name="tokenID"
                     rules={[
@@ -86,34 +58,6 @@ const ImportNFTModal: React.FC<{
                         size='large'
                         placeholder="Please input your Token ID"
                     />
-                </Form.Item>
-                <Form.Item
-                    name="network"
-                    label="Network"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please select your network!',
-                        }
-                    ]}
-                >
-                    <Select
-                        placeholder="Please select your network"
-                        size='large'
-                    >
-                        <Option value="Ethereum">
-                            <div className={style.networkSelect}>
-                                <SiEthereum className={style.icon} />
-                                Ethereum
-                            </div>
-                        </Option>
-                        <Option value="Binance">
-                            <div className={style.networkSelect}>
-                                <SiBinance className={style.icon} />
-                                Binance
-                            </div>
-                        </Option>
-                    </Select>
                 </Form.Item>
                 <Form.Item>
                     <Button
