@@ -59,7 +59,8 @@ export default {
     'wallet.guide.description': 'Use your telegram avatar and nickname, or you can edit it.',
     'wallet.tags.title': 'My Crypto Profile',
     'wallet.nfts.empty': 'You do not have any NFTs',
-    'wallet.nfts.create': 'Create NFTs',
-    'wallet.nfts.import': 'Import NFTs',
+    'wallet.nfts.create': 'Create NFT',
+    'wallet.nfts.import': 'Import NFT',
     'wallet.nfts.connect': 'Connect Wallet',
+    'wallet.nfts.mint': 'Mint NFT',
 };

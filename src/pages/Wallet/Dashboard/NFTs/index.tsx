@@ -7,16 +7,20 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { KickNFT } from '@/services/parami/nft';
 import Import from './Import';
 import Skeleton from '@/components/Skeleton';
+import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import Mint from './Mint';
 
 const NFTs: React.FC = () => {
     const apiWs = useModel('apiWs');
+    const { kickNFT, nftList } = useModel('nft');
     const [coverWidth, setCoverWidth] = useState<number>(0);
     const [importModal, setImportModal] = useState<boolean>(false);
+    const [mintModal, setMintModal] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [secModal, setSecModal] = useState(false);
     const [password, setPassword] = useState('');
-    const [NFTData, setNFTData] = useState<any[]>([]);
     const [mode, setMode] = useState<string>('create');
+    const [mintItem, setMintItem] = useState<any>({});
 
     const intl = useIntl();
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
@@ -35,6 +39,9 @@ const NFTs: React.FC = () => {
                     setImportModal(true);
                     setLoading(false);
                     break;
+                case 'mint':
+                    setMintModal(true);
+                    setLoading(false);
             }
         } catch (e: any) {
             notification.error({
@@ -46,8 +53,8 @@ const NFTs: React.FC = () => {
     };
 
     useEffect(() => {
-        if (NFTData.length) {
-            setCoverWidth(coverRef.current.clientWidth);
+        if (nftList.length) {
+            setCoverWidth(coverRef.current.clientWidth)
         }
     }, [coverRef]);
 
@@ -58,7 +65,7 @@ const NFTs: React.FC = () => {
                     loading={!apiWs}
                     height={200}
                     children={
-                        !NFTData.length ? (
+                        !nftList.length ? (
                             <div className={style.noNFTs}>
                                 <img
                                     src={'/images/icon/query.svg'}
@@ -115,161 +122,140 @@ const NFTs: React.FC = () => {
                             </div>
                         ) : (
                             <div className={style.nftsList}>
-                                <div className={`${style.nftItem} ${style.unmint}`}>
-                                    <div className={style.card}>
-                                        <div className={style.cardWrapper}>
-                                            <div className={style.cardBox}>
-                                                <div
-                                                    className={style.cover}
-                                                    ref={coverRef}
-                                                    style={{
-                                                        backgroundImage: 'url(https://manofmany.com/wp-content/uploads/2021/09/What-is-an-NFT-1.jpg)',
-                                                        height: coverWidth,
-                                                    }}
-                                                >
-                                                    <div className={style.nftID}>
-                                                        #13
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={style.filterImage}
-                                                />
-                                                <div className={style.cardDetail}>
-                                                    <h3 className={style.text}>
-                                                        MOBLAND Mystery Box
-                                                    </h3>
-                                                    <div className={style.status}>
-                                                        <div className={style.label}>
-                                                            {intl.formatMessage({
-                                                                id: 'wallet.nfts.status',
-                                                                defaultMessage: 'Status',
-                                                            })}
+                                {nftList.map((item: any) => {
+                                    if (!item.minted) {
+                                        return (
+                                            <div className={`${style.nftItem} ${style.unmint}`}>
+                                                <div className={style.card}>
+                                                    <div className={style.cardWrapper}>
+                                                        <div className={style.cardBox}>
+                                                            <div
+                                                                className={style.cover}
+                                                                ref={coverRef}
+                                                                style={{
+                                                                    backgroundImage: `url(${item?.tokenURI})`,
+                                                                    height: coverWidth,
+                                                                }}
+                                                            >
+                                                                <div className={style.nftID}>
+                                                                    #{item?.id}
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                className={style.filterImage}
+                                                            />
+                                                            <div className={style.cardDetail}>
+                                                                <h3 className={style.text}>
+                                                                    My NFT
+                                                                </h3>
+                                                                <div className={style.status}>
+                                                                    <div className={style.label}>
+                                                                        {intl.formatMessage({
+                                                                            id: 'wallet.nfts.status',
+                                                                            defaultMessage: 'Status',
+                                                                        })}
+                                                                    </div>
+                                                                    <div className={style.value}>
+                                                                        Rasing
+                                                                    </div>
+                                                                </div>
+                                                                <div className={style.action}>
+                                                                    {item?.deposit >= FloatStringToBigInt('1000', 18) ? (
+                                                                        <Button
+                                                                            block
+                                                                            type='primary'
+                                                                            shape='round'
+                                                                            size='middle'
+                                                                            onClick={() => {
+                                                                                setMintItem(item);
+                                                                                setMode('mint');
+                                                                                setSecModal(true);
+                                                                            }}
+                                                                        >
+                                                                            {intl.formatMessage({
+                                                                                id: 'wallet.nfts.mint',
+                                                                                defaultMessage: 'Mint',
+                                                                            })}
+                                                                        </Button>
+                                                                    ) : (
+                                                                        <Progress
+                                                                            percent={
+                                                                                Number(BigIntToFloatString(item?.deposit, 18)) / 1000
+                                                                            }
+                                                                            strokeColor='#ff5b00'
+                                                                            className={style.progress}
+                                                                        />
+                                                                    )}
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className={style.value}>
-                                                            Rasing
-                                                        </div>
-                                                    </div>
-                                                    <div className={style.action}>
-                                                        <Progress
-                                                            percent={12}
-                                                            strokeColor='#ff5b00'
-                                                            className={style.progress}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className={`${style.nftItem} ${style.unmint}`}>
-                                    <div className={style.card}>
-                                        <div className={style.cardWrapper}>
-                                            <div className={style.cardBox}>
-                                                <div
-                                                    className={style.cover}
-                                                    ref={coverRef}
-                                                    style={{
-                                                        backgroundImage: 'url(https://manofmany.com/wp-content/uploads/2021/09/What-is-an-NFT-1.jpg)',
-                                                        height: coverWidth,
-                                                    }}
-                                                >
-                                                    <div className={style.nftID}>
-                                                        #13
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={style.filterImage}
-                                                />
-                                                <div className={style.cardDetail}>
-                                                    <h3 className={style.text}>
-                                                        MOBLAND Mystery Box
-                                                    </h3>
-                                                    <div className={style.status}>
-                                                        <div className={style.label}>
-                                                            {intl.formatMessage({
-                                                                id: 'wallet.nfts.status',
-                                                                defaultMessage: 'Status',
-                                                            })}
-                                                        </div>
-                                                        <div className={style.value}>
-                                                            Can Mint
-                                                        </div>
-                                                    </div>
-                                                    <div className={style.action}>
-                                                        <Button
-                                                            block
-                                                            type='primary'
-                                                            shape='round'
-                                                            size='middle'
-                                                        >
-                                                            {intl.formatMessage({
-                                                                id: 'wallet.nfts.mint',
-                                                                defaultMessage: 'Mint',
-                                                            })}
-                                                        </Button>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className={style.nftItem}>
-                                    <div className={style.card}>
-                                        <div className={style.cardWrapper}>
-                                            <div className={style.cardBox}>
-                                                <div
-                                                    className={style.cover}
-                                                    ref={coverRef}
-                                                    style={{
-                                                        backgroundImage: 'url(https://manofmany.com/wp-content/uploads/2021/09/What-is-an-NFT-1.jpg)',
-                                                        height: coverWidth,
-                                                    }}
-                                                >
-                                                    <div className={style.nftID}>
-                                                        #13
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={style.filterImage}
-                                                />
-                                                <div className={style.cardDetail}>
-                                                    <h3 className={style.text}>
-                                                        MOBLAND Mystery Box
-                                                    </h3>
-                                                    <div className={style.status}>
-                                                        <div className={style.label}>
-                                                            {intl.formatMessage({
-                                                                id: 'wallet.nfts.status',
-                                                                defaultMessage: 'Status',
-                                                            })}
+                                        )
+                                    } else {
+                                        return (
+                                            <div className={style.nftItem}>
+                                                <div className={style.card}>
+                                                    <div className={style.cardWrapper}>
+                                                        <div className={style.cardBox}>
+                                                            <div
+                                                                className={style.cover}
+                                                                ref={coverRef}
+                                                                style={{
+                                                                    backgroundImage: `url(${item?.tokenURI})`,
+                                                                    height: coverWidth,
+                                                                }}
+                                                            >
+                                                                <div className={style.nftID}>
+                                                                    #{item?.id}
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                className={style.filterImage}
+                                                            />
+                                                            <div className={style.cardDetail}>
+                                                                <h3 className={style.text}>
+                                                                    {item?.name}
+                                                                </h3>
+                                                                <div className={style.status}>
+                                                                    <div className={style.label}>
+                                                                        {intl.formatMessage({
+                                                                            id: 'wallet.nfts.status',
+                                                                            defaultMessage: 'Status',
+                                                                        })}
+                                                                    </div>
+                                                                    <div className={style.value}>
+                                                                        Minted
+                                                                    </div>
+                                                                </div>
+                                                                <div className={style.action}>
+                                                                    <Button
+                                                                        block
+                                                                        type='primary'
+                                                                        shape='round'
+                                                                        size='middle'
+                                                                    >
+                                                                        {intl.formatMessage({
+                                                                            id: 'wallet.nfts.gotoNFTDAO',
+                                                                            defaultMessage: 'NFT DAO',
+                                                                        })}
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <div className={style.value}>
-                                                            Minted
-                                                        </div>
-                                                    </div>
-                                                    <div className={style.action}>
-                                                        <Button
-                                                            block
-                                                            type='primary'
-                                                            shape='round'
-                                                            size='middle'
-                                                        >
-                                                            {intl.formatMessage({
-                                                                id: 'wallet.nfts.gotoNFTDAO',
-                                                                defaultMessage: 'NFT DAO',
-                                                            })}
-                                                        </Button>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                        )
+                                    }
+                                })}
                                 <div className={style.newItem}>
                                     <div className={style.card}>
                                         <Button
                                             className={style.createNFT}
                                             loading={loading}
+                                            disabled={!!kickNFT.length}
                                             onClick={() => {
                                                 setMode('create');
                                                 setSecModal(true);
@@ -311,6 +297,14 @@ const NFTs: React.FC = () => {
                 setImportModal={setImportModal}
                 password={password}
                 keystore={controllerKeystore}
+            />
+
+            <Mint
+                mintModal={mintModal}
+                setMintModal={setMintModal}
+                password={password}
+                keystore={controllerKeystore}
+                item={mintItem}
             />
 
             <SecurityModal
