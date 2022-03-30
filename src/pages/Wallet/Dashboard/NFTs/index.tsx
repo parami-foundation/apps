@@ -1,6 +1,6 @@
 import { Button, Col, notification, Progress, Row } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { useIntl, useModel } from 'umi';
+import { useIntl, useModel, history } from 'umi';
 import style from './style.less';
 import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
@@ -9,6 +9,7 @@ import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import Mint from './Mint';
+import { hexToDid } from '@/utils/common';
 
 const NFTs: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -26,6 +27,8 @@ const NFTs: React.FC = () => {
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     const coverRef: any = useRef();
+
+    const did = localStorage.getItem('did') as string;
 
     const handleSubmit = async () => {
         setLoading(true);
@@ -235,6 +238,9 @@ const NFTs: React.FC = () => {
                                                                         type='primary'
                                                                         shape='round'
                                                                         size='middle'
+                                                                        onClick={() => {
+                                                                            history.push(`${window.location.origin}/${hexToDid(did)}/${item?.id}`);
+                                                                        }}
                                                                     >
                                                                         {intl.formatMessage({
                                                                             id: 'wallet.nfts.gotoNFTDAO',
