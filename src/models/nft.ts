@@ -1,7 +1,7 @@
 import { useModel } from 'umi';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import wrapABI from '@/pages/Wallet/Dashboard/NFTs/contract/abi/wrap.json';
+import wrapABI from '@/pages/Wallet/Dashboard/NFTs/abi/ParamiHyperlink.json';
 
 export default () => {
     const apiWs = useModel('apiWs');
