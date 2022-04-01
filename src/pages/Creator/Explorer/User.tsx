@@ -52,7 +52,7 @@ const User: React.FC<{
                             level={3}
                             className={styles.nickname}
                         >
-                            {user?.nickname}
+                            {user?.nickname.toString()}
                         </Title>
                         <Did did={didToHex(did)} />
                         {asset && (

@@ -9,10 +9,10 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { AddLiquidity, DrylyAddLiquidity } from '@/services/parami/swap';
 import config from '@/config/config';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
-import { GetUserInfo } from '@/services/parami/nft';
 import AD3 from '../../../components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import { GetUserInfo } from '@/services/parami/Info';
 
 const SelectAssets: React.FC<{
     setToken: React.Dispatch<React.SetStateAction<any>>,

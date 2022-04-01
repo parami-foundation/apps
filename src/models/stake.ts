@@ -1,11 +1,11 @@
 import { config } from "@/config/config";
 import { GetAvatar } from "@/services/parami/api";
-import { GetUserInfo } from "@/services/parami/nft";
 import { CalculateLPReward } from "@/services/parami/swap";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
 import { useEffect, useState } from "react";
 import { useModel } from "umi";
 import { notification } from 'antd';
+import { GetUserInfo } from "@/services/parami/Info";
 
 export default () => {
     const apiWs = useModel('apiWs');

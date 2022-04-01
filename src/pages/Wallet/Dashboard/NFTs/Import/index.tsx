@@ -16,10 +16,12 @@ type Erc721 = {
   name: string,
   tokenURI: string
 }
+
 type Selected = {
   tokenID: string,
   image: string
 }
+
 const columns = [
   {
     title: 'Name',
@@ -35,6 +37,7 @@ const columns = [
     }
   }
 ];
+
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
   password: string;

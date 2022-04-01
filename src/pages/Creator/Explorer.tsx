@@ -140,7 +140,7 @@ const Explorer: React.FC = () => {
             };
 
             // Set page title
-            document.title = `${userData?.nickname || did} - Para Metaverse Identity`;
+            document.title = `${userData?.nickname.toString() || did} - Para Metaverse Identity`;
 
             const nftInfoData = await GetNFTMetaData(params?.nftID);
 

@@ -3,11 +3,11 @@ import React from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import { useState, useEffect } from 'react';
-import { GetUserInfo } from '@/services/parami/nft';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import config from '@/config/config';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
+import { GetUserInfo } from '@/services/parami/Info';
 
 const SelectAsset: React.FC<{
     setStep: React.Dispatch<React.SetStateAction<string>>,

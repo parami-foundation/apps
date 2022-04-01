@@ -12,7 +12,8 @@ import Marquee from 'react-fast-marquee';
 import { BidSlot, GetAssetInfo, GetSlotAdOf, GetSlotsOf, GetValueOf } from '@/services/parami/dashboard';
 import config from '@/config/config';
 import { formatBalance } from '@polkadot/util';
-import { GetNFTMetaStore, GetUserInfo } from '@/services/parami/nft';
+import { GetUserInfo } from '@/services/parami/Info';
+import { GetNFTMetaData } from '@/services/parami/nft';
 
 const { Dragger } = Upload;
 
@@ -92,9 +93,12 @@ const List: React.FC<{
             )}
             <Row gutter={[16, 16]}>
                 {slotsOf.length && slotsOf?.map((id) => {
-                    GetNFTMetaStore(id).then((res) => (
-                        <Avatar did={res?.owner} />
-                    ))
+                    GetNFTMetaData(id).then((nftInfoData) => {
+                        const nftInfo: any = nftInfoData?.toHuman();
+                        return (
+                            <Avatar did={nftInfo?.owner} />
+                        )
+                    })
                 }
                 )}
             </Row>
