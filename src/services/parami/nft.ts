@@ -3,17 +3,6 @@ import { subCallback } from './subscription';
 import { DecodeKeystoreWithPwd, errCb } from './wallet';
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
-export const GetUserInfo = async (did: string) => {
-  const userInfo = await window.apiWs.query.did.metadata(did);
-  const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
-
-  if (userInfo.isEmpty) {
-    return null;
-  }
-  const user = userInfo.toHuman() as any;
-  return { ...user, avatar, nickname };
-};
-
 export const BuyToken = async (assetId: string, amount: string, maxCurrency: string, password: string, keystore: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
@@ -71,12 +60,12 @@ export const GetAssetBalance = async (assetId: string, address: string): Promise
 };
 
 export const GetPreferedNFT = async (did: string) => {
-  const id = await window.apiWs.query.nft.preferredNft(did);
+  const id = await window.apiWs.query.nft.preferred(did);
   return id;
 };
 
-export const GetNFTMetaStore = async (id: string) => {
-  const nftInfo = await window.apiWs.query.nft.nftMetaStore(id);
+export const GetNFTMetaData = async (id: string) => {
+  const nftInfo = await window.apiWs.query.nft.metadata(id);
   return nftInfo;
 };
 

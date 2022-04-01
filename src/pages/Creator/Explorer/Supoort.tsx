@@ -1,4 +1,4 @@
-import { Alert, Button, Card, Divider, Input, Spin, Typography } from 'antd';
+import { Button, Card, Divider, Input, notification, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
@@ -13,19 +13,6 @@ import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
 
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
-
 const Support: React.FC<{
     did: string,
     stashUserAddress: string,
@@ -34,7 +21,6 @@ const Support: React.FC<{
     const apiWs = useModel('apiWs');
     const [submitting, setSubmitting] = useState(false);
     const [modal, setModal] = useState<boolean>(false);
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [number, setNumber] = useState<string>('0');
     const [password, setPassword] = useState('');
     const [secModal, setSecModal] = useState(false);
@@ -47,10 +33,11 @@ const Support: React.FC<{
             const { freeBalance }: any = await GetUserBalance(stashUserAddress);
             setFreeBalance(`${freeBalance}`);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message,
+                duration: null,
             });
+            return;
         }
     };
 
@@ -82,7 +69,6 @@ const Support: React.FC<{
                         width: '100%',
                     }}
                 >
-                    {errorState.Message && <Message content={errorState.Message} />}
                     <div className={style.trade}>
                         <Title
                             level={3}

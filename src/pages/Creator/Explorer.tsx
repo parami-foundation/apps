@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import Advertisement from './Explorer/Advertisement';
 import Stat from './Explorer/Stat';
@@ -7,9 +6,9 @@ import styles from '@/pages/wallet.less';
 import style from './style.less';
 import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
-import { hexToDid, didToHex, parseAmount, checkInIAP } from '@/utils/common';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaStore, GetPreferedNFT, GetUserInfo, GetValueOf } from '@/services/parami/nft';
-import { Alert, message, Image, notification, Button } from 'antd';
+import { hexToDid, didToHex, parseAmount } from '@/utils/common';
+import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaData, GetPreferedNFT, GetValueOf } from '@/services/parami/nft';
+import { Image, notification, Button } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/ads';
@@ -17,38 +16,19 @@ import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/sub
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAdRemain } from '../../services/parami/nft';
 import { GetAvatar } from '@/services/parami/api';
-
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
-
-const userAgent = window.navigator.userAgent.toLowerCase();
-const ios = /iphone|ipod|ipad/.test(userAgent);
-const android = /android|adr/.test(userAgent);
+import { GetUserInfo } from '@/services/parami/Info';
 
 const Explorer: React.FC = () => {
     const apiWs = useModel('apiWs');
     const { bodyHeight } = useModel('bodyChange');
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [loading, setLoading] = useState<boolean>(true);
     const [avatar, setAvatar] = useState<string>('');
     const [KOL, setKOL] = useState<boolean>(true);
     const [user, setUser] = useState<any>();
     const [asset, setAsset] = useState<any>();
     const [assetPrice, setAssetPrice] = useState<string>('');
-    const [detail, setDetail] = useState<any>();
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [notAccess, setNotAccess] = useState<boolean>(false);
-    const [notSysBroswer, setNotSysBroswer] = useState<boolean>(false);
     const [adData, setAdData] = useState<any>({});
     const [ad, setAd] = useState<Type.AdInfo>(null);
     const [viewer, setViewer] = useState<any>();
@@ -65,11 +45,13 @@ const Explorer: React.FC = () => {
 
     const params: {
         kol: string;
+        nftID: string;
     } = useParams();
 
+    // Get DID
     const selfDid = localStorage.getItem('did') as string;
-
-    const did = !!params.kol ? 'did' + params.kol : hexToDid(selfDid);
+    const did = !!params?.kol ? 'did' + params?.kol : hexToDid(selfDid);
+    const didHex = didToHex(did);
 
     const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
@@ -77,19 +59,16 @@ const Explorer: React.FC = () => {
     const { query } = history.location;
     const { referrer } = query as { referrer: string };
 
-    const getAd = async () => {
+    // Get Advertisement Info
+    const GetADInfo = async () => {
         try {
-            const slot = await GetSlotAdOf(didToHex(did));
-            if (!slot) {
-                return;
-            }
+            const slot = await GetSlotAdOf(didHex);
+            if (!slot) return;
             const data = slot.ad;
             if (!data?.metadata) return;
             setAdData(data);
 
-            if (data?.metadata?.indexOf('ipfs://') < 0) {
-                return;
-            }
+            if (data?.metadata?.indexOf('ipfs://') < 0) return;
 
             const hash = data?.metadata?.substring(7);
 
@@ -102,9 +81,7 @@ const Explorer: React.FC = () => {
             const res = await fetch(config.ipfs.endpoint + hash);
             const adJson: Type.AdInfo = await res.json();
 
-            if (!adJson) {
-                return;
-            }
+            if (!adJson) return;
 
             adJson.link = adJson.link + '?kol=' + didToHex(did);
             if (!!referrer) {
@@ -117,31 +94,34 @@ const Explorer: React.FC = () => {
             setRemain(remainData);
 
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message,
+                duration: null,
             });
             return;
         }
     };
 
-    const init = async () => {
+    // Query user info and asset info
+    const QueryUserAndAsset = async () => {
+        setLoading(true);
         try {
-            const didHexString = didToHex(did);
-            const userData = await GetUserInfo(didHexString);
+            const userData = await GetUserInfo(didHex);
             if (!userData) {
-                message.error(
-                    intl.formatMessage({
+                notification.error({
+                    message: intl.formatMessage({
                         id: 'error.identity.notFound',
                     }),
-                );
+                    duration: null,
+                });
                 history.goBack();
                 return;
             };
             setUser(userData);
 
+            // Query user avatar
             if (userData?.avatar.indexOf('ipfs://') > -1) {
-                const hash = userData?.avatar.substring(7);
+                const hash = userData?.avatar?.substring(7);
                 const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
 
                 // Network exception
@@ -158,59 +138,102 @@ const Explorer: React.FC = () => {
                     setAvatar(window.URL.createObjectURL(data));
                 }
             };
+
+            // Set page title
             document.title = `${userData?.nickname || did} - Para Metaverse Identity`;
-            const nftID = await GetPreferedNFT(didHexString);
-            if (nftID.isEmpty) {
+
+            const nftInfoData = await GetNFTMetaData(params?.nftID);
+
+            // If don't have any nft
+            if (nftInfoData?.isEmpty) {
+                notification.error({
+                    message: intl.formatMessage({
+                        id: 'error.nft.notFound',
+                    }),
+                    duration: null,
+                })
+                history.goBack();
+                return;
+            }
+
+            const nftInfo: any = nftInfoData?.toHuman();
+
+            if (nftInfo?.owner !== didHex) {
+                notification.error({
+                    message: intl.formatMessage({
+                        id: 'error.nft.notFound',
+                    }),
+                    duration: null,
+                })
+                history.goBack();
+                return;
+            }
+
+            const assetData = await GetAssetInfo(nftInfo?.tokenAssetId as string);
+            // If don't mint any nft
+            if (assetData.isEmpty) {
                 setKOL(false);
                 return;
             }
-            const nftInfo: any = await GetNFTMetaStore(nftID.toHuman() as string);
-            if (!nftInfo.isEmpty) {
-                const assetData = await GetAssetInfo(nftInfo?.tokenAssetId as string);
-                if (assetData.isEmpty) {
-                    setKOL(false);
-                    return;
-                }
-                const assetInfo = assetData.toHuman() as any;
-                setAsset(assetInfo);
-                const value = await GetValueOf(nftInfo?.tokenAssetId, parseAmount('1'));
-                setAssetPrice(value.toString());
 
-                const assetDetail = await GetAssetDetail(nftInfo?.tokenAssetId);
-                setDetail(assetDetail);
+            const assetInfo = assetData.toHuman() as any;
+            setAsset(assetInfo);
 
-                const supply: string = assetDetail.unwrap().supply.toString();
-                setTotalSupply(BigInt(supply));
+            const value = await GetValueOf(nftInfo?.tokenAssetId, parseAmount('1'));
+            setAssetPrice(value.toString());
 
-                const members = await GetAssetsHolders(nftInfo?.tokenAssetId);
-                setMember(members);
-            } else {
-                setKOL(false);
-            };
-            await getAd();
+            const assetDetail = await GetAssetDetail(nftInfo?.tokenAssetId);
+
+            const supply: string = assetDetail.unwrap().supply.toString();
+            setTotalSupply(BigInt(supply));
+
+            const members = await GetAssetsHolders(nftInfo?.tokenAssetId);
+            setMember(members);
+
+            await GetADInfo();
+
             setTimeout(() => {
                 setLoading(false);
             }, 2000);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message,
+                duration: null,
+            });
+            return;
+        }
+    };
+
+    const QueryPreferred = async () => {
+        try {
+            const nftID = await GetPreferedNFT(didHex);
+            if (nftID.isEmpty) {
+                setKOL(false);
+                return;
+            }
+            window.location.href = `${window.location.origin}/${did}/${nftID}`;
+        } catch (e: any) {
+            notification.error({
+                message: e.message,
+                duration: null,
             });
             return;
         }
     };
 
     useEffect(() => {
-        localStorage.setItem('redirect', window.location.href);
-        if (!checkInIAP()) {
-            setNotSysBroswer(true);
+        if (apiWs && !params?.nftID) {
+            QueryPreferred();
         };
-        if (!access.canUser && checkInIAP()) {
+
+        if (!access.canUser) {
+            localStorage.setItem('redirect', window.location.href);
             setNotAccess(true);
         };
+
         if (apiWs) {
-            init();
-        }
+            QueryUserAndAsset();
+        };
     }, [apiWs]);
 
     return (
@@ -241,6 +264,7 @@ const Explorer: React.FC = () => {
                                 opacity: loading ? 1 : 0,
                                 zIndex: loading ? 15 : -1,
                                 height: bodyHeight,
+                                minHeight: '100vh',
                             }}
                         >
                             <span className={style.loadingTip}>
@@ -254,7 +278,6 @@ const Explorer: React.FC = () => {
                         </div>
                     </>
                 )}
-                {errorState.Message && <Message content={errorState.Message} />}
                 {!KOL && access.canUser && did !== hexToDid(selfDid) && (
                     <div
                         className={styles.pageContainer}
@@ -303,6 +326,7 @@ const Explorer: React.FC = () => {
                         avatar={avatar}
                         did={did}
                         user={user}
+                        nftID={params?.nftID}
                         asset={asset}
                     />
                 </div>
@@ -333,6 +357,7 @@ const Explorer: React.FC = () => {
                     )}
                 </div>
             </div>
+
             <BigModal
                 visable={notAccess}
                 title={intl.formatMessage({
@@ -340,6 +365,7 @@ const Explorer: React.FC = () => {
                 })}
                 content={
                     <Button
+                        block
                         type='primary'
                         shape='round'
                         size='large'
@@ -355,41 +381,6 @@ const Explorer: React.FC = () => {
                 }
                 close={undefined}
                 footer={false}
-            />
-            <BigModal
-                visable={notSysBroswer}
-                title={intl.formatMessage({
-                    id: 'error.broswer.notSupport.title',
-                })}
-                content={
-                    <>
-                        <div className={style.notSupport}>
-                            {ios && (
-                                <Image
-                                    src="/images/icon/safari_logo.svg"
-                                    preview={false}
-                                    className={style.icon}
-                                />
-                            )}
-                            {android && (
-                                <Image
-                                    src="/images/icon/chrome_logo.svg"
-                                    preview={false}
-                                    className={style.icon}
-                                />
-                            )}
-                            <Alert
-                                message={intl.formatMessage({
-                                    id: 'error.broswer.notSupport'
-                                })}
-                                type="error"
-                                className={style.text}
-                            />
-                        </div>
-                    </>
-                }
-                footer={false}
-                close={undefined}
             />
         </>
     )

@@ -22,5 +22,7 @@ export default {
     'error.balances.ExistentialDeposit': 'Sorry, your credit is running low',
     'error.unAccessible.subTitle': 'You can use RecoveryLink to restore your account, or try to create one quickly?',
     'error.sns.emptyInput': 'Please input SNS Profile URL or ID',
-    'error.keyInfo.lost': 'The information stored locally is abnormal. Please try to restore your account again.'
+    'error.keyInfo.lost': 'The information stored locally is abnormal. Please try to restore your account again.',
+    'error.nft.notFound': 'This KOL does not own any NFT',
+    'error.nft.notOwn': 'This NFT does not belong to this KOL',
 };

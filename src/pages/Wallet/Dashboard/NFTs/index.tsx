@@ -149,7 +149,7 @@ const NFTs: React.FC = () => {
                                                             />
                                                             <div className={style.cardDetail}>
                                                                 <h3 className={style.text}>
-                                                                    My NFT
+                                                                    {item?.name}
                                                                 </h3>
                                                                 <div className={style.status}>
                                                                     <div className={style.label}>
@@ -240,6 +240,7 @@ const NFTs: React.FC = () => {
                                                                         size='middle'
                                                                         onClick={() => {
                                                                             history.push(`${window.location.origin}/${hexToDid(did)}/${item?.id}`);
+                                                                            console.log(`${window.location.origin}/${hexToDid(did)}/${item?.id}`)
                                                                         }}
                                                                     >
                                                                         {intl.formatMessage({

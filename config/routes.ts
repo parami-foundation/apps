@@ -167,7 +167,14 @@
     footerRender: false,
   },
   {
-    path: '/did:kol/:nftid',
+    path: '/did:kol',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    component: './Creator/Explorer',
+  },
+  {
+    path: '/did:kol/:nftID',
     hideInMenu: true,
     exact: true,
     headerRender: false,

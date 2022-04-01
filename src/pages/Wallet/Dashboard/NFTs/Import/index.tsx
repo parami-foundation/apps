@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import style from './style.less';
-import {useIntl} from 'umi';
+import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import {Button, Col, Form, Image, Input, message, notification, Row, Table} from 'antd';
-import {PortNFT} from '@/services/parami/nft';
-import {contractAddresses} from '../config';
-import {useModel} from "@@/plugin-model/useModel";
-import {BigNumber, ethers} from "ethers";
+import { Button, Col, Form, Image, Input, message, notification, Row, Table } from 'antd';
+import { PortNFT } from '@/services/parami/nft';
+import { contractAddresses } from '../config';
+import { useModel } from "@@/plugin-model/useModel";
+import { BigNumber, ethers } from "ethers";
 import WrapperABI from "../abi/ParamiHyperlink.json";
-import {JsonRpcSigner} from "@ethersproject/providers";
+import { JsonRpcSigner } from "@ethersproject/providers";
 
 type Erc721 = {
   tokenId: string,
@@ -38,10 +38,10 @@ const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
   password: string;
   keystore: string;
-}> = ({setImportModal, password, keystore}) => {
+}> = ({ setImportModal, password, keystore }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
-  const [selected, setSelected] = useState<Selected>({tokenID: '', image: ''});
+  const [selected, setSelected] = useState<Selected>({ tokenID: '', image: '' });
   const {
     Account,
     Signer,
@@ -112,9 +112,9 @@ const ImportNFTModal: React.FC<{
     return data;
   };
 
-  async function importNft(){
+  async function importNft() {
     console.log(selected.tokenID)
-    return await PortNFT(password,keystore,'Ethereum',contractAddresses.wrap[1],selected.tokenID);
+    return await PortNFT(password, keystore, 'Ethereum', contractAddresses.wrap[1], selected.tokenID);
   }
   useEffect(() => {
     if (!!Account) {
@@ -133,17 +133,17 @@ const ImportNFTModal: React.FC<{
       <Col>
         <Button onClick={() => {
           setLoading(true);
-          try{
+          try {
             importNft().then(
-              ()=>{
+              () => {
                 setLoading(false);
               }
             );
-          }catch (e) {
+          } catch (e) {
             setLoading(false);
           }
         }}
-        disabled={selected.tokenID===''}
+          disabled={selected.tokenID === ''}
         >import</Button>
         <Row>
           <Table
@@ -154,7 +154,7 @@ const ImportNFTModal: React.FC<{
                     // 29 = length of "data:application/json;base64,"
                     const json = Buffer.from(record.tokenURI.substring(29), 'base64').toString('utf8');
                     const result = JSON.parse(json);
-                    setSelected({tokenID: record.tokenId.toString(), image: result.image});
+                    setSelected({ tokenID: record.tokenId.toString(), image: result.image });
                   }, // 点击行
                   onDoubleClick: event => {
                   },
@@ -189,7 +189,7 @@ const Import: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
   password: string;
   keystore: string;
-}> = ({importModal, setImportModal, password, keystore}) => {
+}> = ({ importModal, setImportModal, password, keystore }) => {
   const intl = useIntl();
 
   return (

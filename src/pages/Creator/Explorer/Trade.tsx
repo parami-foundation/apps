@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
-import { Card, Typography, Image, Button, InputNumber, Space, Alert, Spin } from 'antd';
+import { Card, Typography, Image, Button, InputNumber, Space, Spin, notification } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import AD3 from '@/components/Token/AD3';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
@@ -12,19 +12,6 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 
 const { Title } = Typography;
 
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
-
 const Trade: React.FC<{
     avatar: string;
     asset: any;
@@ -33,7 +20,6 @@ const Trade: React.FC<{
     assetPrice: string;
 }> = ({ avatar, asset, user, controllerKeystore, assetPrice }) => {
     const [submitting, setSubmitting] = useState(false);
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [mode, setMode] = useState<string>('ad3ToToken');
     const [ad3Number, setAd3Number] = useState<string>('');
     const [tokenNumber, setTokenNumber] = useState<string>('');
@@ -58,9 +44,9 @@ const Trade: React.FC<{
                     });
                     return;
                 } catch (e: any) {
-                    setErrorState({
-                        Type: 'chain error',
-                        Message: e.message,
+                    notification.error({
+                        message: e.message,
+                        duration: null,
                     });
                     return;
                 }
@@ -71,9 +57,9 @@ const Trade: React.FC<{
                     });
                     return;
                 } catch (e: any) {
-                    setErrorState({
-                        Type: 'chain error',
-                        Message: e.message,
+                    notification.error({
+                        message: e.message,
+                        duration: null,
                     });
                     return;
                 }
@@ -112,7 +98,6 @@ const Trade: React.FC<{
                                 id: 'creator.explorer.trade',
                             })}
                         </Title>
-                        {errorState.Message && <Message content={errorState.Message} />}
                         <div
                             className={style.pairCoins}
                             style={{
