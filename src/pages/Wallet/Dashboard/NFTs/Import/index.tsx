@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Col, Form, Image, notification, Row, Table } from 'antd';
+import { Button, notification } from 'antd';
 import { PortNFT } from '@/services/parami/nft';
 import { contractAddresses } from '../config';
 import { useModel } from "@@/plugin-model/useModel";
@@ -10,99 +10,57 @@ import type { BigNumber } from "ethers";
 import { ethers } from "ethers";
 import WrapperABI from "../abi/ParamiHyperlink.json";
 import type { JsonRpcSigner } from "@ethersproject/providers";
-
-type Erc721 = {
-  tokenId: string,
-  name: string,
-  tokenURI: string
-}
-
-type Selected = {
-  tokenID: string,
-  image: string
-}
-
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    width: '50%',
-  },
-  {
-    title: 'TokenId',
-    dataIndex: 'tokenId',
-    width: '50%',
-    render: (r: BigNumber) => {
-      return r.toString()
-    }
-  }
-];
+import Skeleton from '@/components/Skeleton';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
   password: string;
   keystore: string;
 }> = ({ setImportModal, password, keystore }) => {
+  const apiWs = useModel('apiWs');
   const [loading, setLoading] = useState<boolean>(true);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
-  const [selected, setSelected] = useState<Selected>({ tokenID: '', image: '' });
+  const [coverWidth, setCoverWidth] = useState<number>(0);
   const {
     Account,
     Signer,
     Provider,
     ChainId,
-    connect
   } = useModel("web3");
+
   const intl = useIntl();
-  const [form] = Form.useForm();
 
-  const onFinish = async (values: any) => {
-    setLoading(true);
+  const coverRef: any = useRef();
 
-    try {
-      const events = await PortNFT(password, keystore, 'Rinkeby', contractAddresses.wrap[4], values.tokenID);
-      console.log(events);
-      setLoading(false);
-      setImportModal(false);
-      form.resetFields();
-    } catch (e: any) {
-      notification.error({
-        message: e.message,
-      });
-      setLoading(false);
-      return;
-    }
-  };
+  const getNfts = async (signer: JsonRpcSigner) => {
+    const wrapContract = new ethers.Contract(contractAddresses.wrap[1], WrapperABI.abi, signer);
+    const balanceKinds: BigNumber = await wrapContract.balanceOf(Account);
 
-  useEffect(() => {
-    connect().then();
-  }, []);
-
-  async function getNfts(signer: JsonRpcSigner) {
-    const wrapper = new ethers.Contract(contractAddresses.wrap[1], WrapperABI.abi, signer);
-    //wrapper.connect(Signer)
-    const balanceKinds: BigNumber = await wrapper.balanceOf(Account);
-    console.log("balanceKinds", balanceKinds);
     if (!balanceKinds) {
       setLoading(false);
       return [];
     }
+
     const tokenIndexArray: number[] = [];
     for (let i = 0; i < balanceKinds.toNumber(); i++) {
       tokenIndexArray.push(i);
     }
+
     const tokenIdPromises = tokenIndexArray.map(async (i) => {
-      const tokenId = await wrapper?.tokenOfOwnerByIndex(Account, i);
+      const tokenId = await wrapContract?.tokenOfOwnerByIndex(Account, i);
+
       if (parseInt(tokenId) == NaN) {
         return -1;
       }
       return tokenId;
     });
+
     const tokenIds = await Promise.all(tokenIdPromises);
-    console.log("tokenIds", tokenIds);
+
     const positionPromises = tokenIds.map(async (tokenId) => {
-      const name = await wrapper.getOriginalName(tokenId);
-      const tokenURI = await wrapper.tokenURI(tokenId);
+      const name = await wrapContract?.getOriginalName(tokenId);
+      const tokenURI = await wrapContract?.tokenURI(tokenId);
       const token = {
         tokenId,
         name,
@@ -111,15 +69,25 @@ const ImportNFTModal: React.FC<{
       return token;
     });
     const data = await Promise.all(positionPromises);
-    console.log("data", data);
     setLoading(false);
     return data;
   };
 
-  async function importNft() {
-    console.log(selected.tokenID)
-    return await PortNFT(password, keystore, 'Ethereum', contractAddresses.wrap[1], selected.tokenID);
+  const importNft = async (tokenID: string) => {
+    setSubmitLoading(true);
+    try {
+      await PortNFT(password, keystore, 'Ethereum', contractAddresses.wrap[1], tokenID);
+      setSubmitLoading(false);
+      setImportModal(false);
+    } catch (e: any) {
+      notification.error({
+        message: intl.formatMessage({ id: e }),
+        duration: null,
+      });
+      setSubmitLoading(false);
+    }
   }
+
   useEffect(() => {
     if (!!Account) {
       if (ChainId !== 1 && ChainId !== 4) {
@@ -132,58 +100,87 @@ const ImportNFTModal: React.FC<{
     }
   }, [Account, Provider, Signer, ChainId]);
 
+  useEffect(() => {
+    if (tokenData.length) {
+      setCoverWidth(coverRef.current.clientWidth)
+    }
+  }, [coverRef]);
+
   return (
     <div className={style.importContainer}>
-      <Col>
-        <Button onClick={() => {
-          setLoading(true);
-          try {
-            importNft().then(
-              () => {
-                setLoading(false);
-              }
-            );
-          } catch (e) {
-            setLoading(false);
-          }
-        }}
-          disabled={selected.tokenID === ''}
-        >import</Button>
-        <Row>
-          <Table
-            onRow={
-              record => {
-                return {
-                  onClick: event => {
-                    // 29 = length of "data:application/json;base64,"
-                    const json = Buffer.from(record.tokenURI.substring(29), 'base64').toString('utf8');
-                    const result = JSON.parse(json);
-                    setSelected({ tokenID: record.tokenId.toString(), image: result.image });
-                  }, // 点击行
-                  onDoubleClick: event => {
-                  },
-                  onContextMenu: event => {
-                  },
-                  onMouseEnter: event => {
-                  }, // 鼠标移入行
-                  onMouseLeave: event => {
-                  },
-                };
-              }
-            }
-            rowClassName={(record) => {
-              return record.tokenId === selected.tokenID ? style.active : style.inactive;
-            }}
-            columns={columns}
-            rowKey={record => record.tokenId}
-            dataSource={tokenData}
-            loading={loading}
-          />
-          <Image
-            src={selected.image}
-          ></Image>
-        </Row>
-      </Col>
+      <Skeleton
+        loading={!apiWs || loading}
+        height={200}
+        children={
+          !tokenData.length ? (
+            <div className={style.noNFTs}>
+              <img
+                src={'/images/icon/query.svg'}
+                className={style.topImage}
+              />
+              <div className={style.description}>
+                {intl.formatMessage({
+                  id: 'wallet.nfts.empty',
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className={style.nftsList}>
+              {tokenData.map((item: any) => {
+                const json = Buffer.from(item.tokenURI.substring(29), 'base64').toString('utf8');
+                const result = JSON.parse(json);
+                return (
+                  <div className={style.nftItem}>
+                    <div className={style.card}>
+                      <div className={style.cardWrapper}>
+                        <div className={style.cardBox}>
+                          <div
+                            className={style.cover}
+                            ref={coverRef}
+                            style={{
+                              backgroundImage: `url(${result?.image})`,
+                              height: coverWidth,
+                              minHeight: '20vh',
+                            }}
+                          >
+                            <div className={style.nftID}>
+                              #{item?.tokenId?.toString()}
+                            </div>
+                          </div>
+                          <div
+                            className={style.filterImage}
+                          />
+                          <div className={style.cardDetail}>
+                            <h3 className={style.text}>
+                              {item?.name}
+                            </h3>
+                            <div className={style.action}>
+                              <Button
+                                block
+                                type='primary'
+                                shape='round'
+                                size='middle'
+                                loading={submitLoading}
+                                onClick={async () => {
+                                  await importNft(item?.tokenID)
+                                }}
+                              >
+                                {intl.formatMessage({
+                                  id: 'wallet.nfts.import',
+                                })}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        }
+      />
     </div>
   )
 };

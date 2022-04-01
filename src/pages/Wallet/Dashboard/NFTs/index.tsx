@@ -13,11 +13,12 @@ import { hexToDid } from '@/utils/common';
 
 const NFTs: React.FC = () => {
     const apiWs = useModel('apiWs');
-    const { kickNFT, nftList } = useModel('nft');
+    const { connect } = useModel('web3');
+    const { kickNFT, nftList, loading } = useModel('nft');
     const [coverWidth, setCoverWidth] = useState<number>(0);
     const [importModal, setImportModal] = useState<boolean>(false);
     const [mintModal, setMintModal] = useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
     const [secModal, setSecModal] = useState(false);
     const [password, setPassword] = useState('');
     const [mode, setMode] = useState<string>('create');
@@ -31,27 +32,28 @@ const NFTs: React.FC = () => {
     const did = localStorage.getItem('did') as string;
 
     const handleSubmit = async () => {
-        setLoading(true);
+        setSubmitLoading(true);
         try {
             switch (mode) {
                 case 'create':
                     await KickNFT(password, controllerKeystore);
-                    setLoading(false);
+                    setSubmitLoading(false);
                     break;
                 case 'import':
+                    connect();
                     setImportModal(true);
-                    setLoading(false);
+                    setSubmitLoading(false);
                     break;
                 case 'mint':
                     setMintModal(true);
-                    setLoading(false);
+                    setSubmitLoading(false);
             }
         } catch (e: any) {
             notification.error({
                 message: e.message,
                 duration: null,
             });
-            setLoading(false);
+            setSubmitLoading(false);
         }
     };
 
@@ -65,7 +67,7 @@ const NFTs: React.FC = () => {
         <>
             <div className={style.nftsContainer}>
                 <Skeleton
-                    loading={!apiWs}
+                    loading={!apiWs || loading}
                     height={200}
                     children={
                         !nftList.length ? (
@@ -91,7 +93,7 @@ const NFTs: React.FC = () => {
                                                 shape='round'
                                                 size='large'
                                                 className={style.button}
-                                                loading={loading}
+                                                loading={submitLoading}
                                                 onClick={() => {
                                                     setMode('create');
                                                     setSecModal(true);
@@ -109,7 +111,7 @@ const NFTs: React.FC = () => {
                                                 shape='round'
                                                 size='large'
                                                 className={style.button}
-                                                loading={loading}
+                                                loading={submitLoading}
                                                 onClick={async () => {
                                                     setMode('import');
                                                     setSecModal(true);
@@ -138,6 +140,7 @@ const NFTs: React.FC = () => {
                                                                 style={{
                                                                     backgroundImage: `url(${item?.tokenURI})`,
                                                                     height: coverWidth,
+                                                                    minHeight: '10vh',
                                                                 }}
                                                             >
                                                                 <div className={style.nftID}>
@@ -208,6 +211,7 @@ const NFTs: React.FC = () => {
                                                                 style={{
                                                                     backgroundImage: `url(${item?.tokenURI})`,
                                                                     height: coverWidth,
+                                                                    minHeight: '10vh',
                                                                 }}
                                                             >
                                                                 <div className={style.nftID}>
@@ -260,7 +264,7 @@ const NFTs: React.FC = () => {
                                     <div className={style.card}>
                                         <Button
                                             className={style.createNFT}
-                                            loading={loading}
+                                            loading={submitLoading}
                                             disabled={!!kickNFT.length}
                                             onClick={() => {
                                                 setMode('create');
@@ -277,7 +281,7 @@ const NFTs: React.FC = () => {
                                         <span className={style.divider} />
                                         <Button
                                             className={style.importNFT}
-                                            loading={loading}
+                                            loading={submitLoading}
                                             onClick={() => {
                                                 setMode('import');
                                                 setSecModal(true);

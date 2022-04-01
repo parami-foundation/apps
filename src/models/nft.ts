@@ -15,6 +15,8 @@ export default () => {
     const [portNFT, setPortNFT] = useState<any[]>([]);
     const [nftList, setNftList] = useState<any[]>([]);
 
+    const [loading, setLoading] = useState<boolean>(true);
+
     const currentAccount = localStorage.getItem('did');
 
     const getNFTs = async () => {
@@ -71,6 +73,7 @@ export default () => {
             setKickNFT([...kickNFTMap.values()]);
             setPortNFT([...portNFTMap.values()]);
             setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+            setLoading(false);
         });
     }
 
@@ -87,5 +90,6 @@ export default () => {
         kickNFT,
         portNFT,
         nftList,
+        loading,
     }
 }

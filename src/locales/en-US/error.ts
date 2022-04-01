@@ -25,4 +25,5 @@ export default {
     'error.keyInfo.lost': 'The information stored locally is abnormal. Please try to restore your account again.',
     'error.nft.notFound': 'This KOL does not own any NFT',
     'error.nft.notOwn': 'This NFT does not belong to this KOL',
+    'error.nft.Exists': 'This NFT has been imported or in import process',
 };
