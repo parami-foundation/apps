@@ -168,7 +168,7 @@ const InputLink: React.FC<{
                 }
               }}
               disabled={loading}
-              placeholder={'https://app.parami.io/recover/#...'}
+              placeholder={`${window.location.origin}/recover/#...`}
             />
           </div>
           <div className={style.buttons}>

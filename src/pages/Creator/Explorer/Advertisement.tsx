@@ -39,7 +39,7 @@ const Advertisement: React.FC<{
 
     const selfDid = localStorage.getItem('did') as string;
 
-    const link = !!selfDid ? `https://app.parami.io/${did}?referrer=${selfDid}` : `https://app.parami.io/${did}`;
+    const link = !!selfDid ? `${window.location.origin}/${did}?referrer=${selfDid}` : `${window.location.origin}/${did}`;
 
     const { query } = history.location;
     const { audience, scope } = query as { audience: string, scope: string | null | undefined };

@@ -365,7 +365,7 @@ const SelectMode: React.FC<{
                 size="large"
                 bordered
                 onChange={(e) => setVerifyLink(e.target.value)}
-                placeholder={'https://app.parami.io/recover/#...'}
+                placeholder={`${window.location.origin}/recover/#...`}
               />
             </div>
             <div className={style.buttons}>
