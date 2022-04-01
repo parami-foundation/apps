@@ -1,14 +1,24 @@
 :global(.ant-input) {
-    line-height: unset;
+  line-height: unset;
 }
 
 .networkSelect {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
 
-    .icon {
-        margin-right: 5px;
-    }
+  .icon {
+    margin-right: 5px;
+  }
+}
+
+.importContainer {
+  .active
+  {
+    background-color: #ff4d4f
+  }
+  :global(.ant-table-tbody) .inactive:hover > td{
+    background-color: #ff4d4f;
+  }
 }

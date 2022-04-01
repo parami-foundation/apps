@@ -165,7 +165,20 @@ export const KickNFT = async (password: string, keystore: string) => {
   return await subCallback(codo, payUser);
 };
 
-export const PortNFT = async (password: string, keystore: string, network: string, namespace: string, tokenID: string) => {
+
+
+type NFTNetwork=
+  'Unknown'
+  |'Binance'
+  |'Bitcoin'
+  |'Eosio'
+  |'Ethereum'
+  |'Kusama'
+  |'Polkadot'
+  |'Solana'
+  |'Tron'
+  |'Near';
+export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
