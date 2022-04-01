@@ -80,15 +80,6 @@ export const GetNFTMetaStore = async (id: string) => {
   return nftInfo;
 };
 
-export const GetKolDeposit = async (did: string) => {
-  const id = await GetPreferedNFT(did);
-  if (id.isEmpty) {
-    return null;
-  }
-  const deposit = await window.apiWs.query.nft.deposit(id.toHuman());
-  return deposit;
-};
-
 export const NftMint = async (name: string, symbol: string, password: string, keystore: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
@@ -233,4 +224,14 @@ export const ClaimNFT = async (nftID: string, password: string, keystore: string
   const codo = window.apiWs.tx.magic.codo(back);
 
   return await subCallback(codo, payUser);
+};
+
+
+export const GetKolDeposit = async (did: string) => {
+  const id = await GetPreferedNFT(did);
+  if (id.isEmpty) {
+    return null;
+  }
+  const deposit = await window.apiWs.query.nft.deposit(id.toHuman());
+  return deposit;
 };

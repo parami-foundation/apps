@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Input, Modal, Typography } from 'antd';
+import { Button, Input, Modal, Typography } from 'antd';
 import { useIntl } from 'umi';
 import styles from './style.less';
 
@@ -14,24 +14,10 @@ const SecurityModal: React.FC<{
   changePassword?: boolean;
 }> = ({ visable, setVisable, password, setPassword, func, changePassword }) => {
   const [submitting, setSubmitting] = useState(false);
-  const [errorState, setErrorState] = useState<API.Error>({});
 
   const intl = useIntl();
 
   const stamp = localStorage.getItem('stamp');
-
-  const Message: React.FC<{
-    content: string;
-  }> = ({ content }) => (
-    <Alert
-      style={{
-        marginBottom: 24,
-      }}
-      message={content}
-      type="error"
-      showIcon
-    />
-  );
 
   const inputVerify = (e: any) => {
     if (e) {
@@ -44,12 +30,6 @@ const SecurityModal: React.FC<{
   const handleSubmit = () => {
     setSubmitting(true);
     if (!password || password.length < 6) {
-      setErrorState({
-        Type: 'empty',
-        Message: intl.formatMessage({
-          id: 'error.password.empty',
-        }),
-      });
       setSubmitting(false);
       return;
     }
@@ -129,25 +109,24 @@ const SecurityModal: React.FC<{
             width: '100%',
           }}
         >
-          {errorState.Message && <Message content={errorState.Message} />}
           <div className={styles.codeInput}>
             <div className={styles.verifyForm}>
-              <span className={password.slice(0) && !password.slice(1, 5) && styles.highLight}>
-                {password.slice(0, 1).replace(/[^]/, '✱')}
+              <span className={password?.slice(0) && !password?.slice(1, 5) && styles.highLight}>
+                {password?.slice(0, 1).replace(/[^]/, '✱')}
               </span>
-              <span className={password.slice(1) && !password.slice(2, 5) && styles.highLight}>
-                {password.slice(1, 2).replace(/[^]/, '✱')}
+              <span className={password?.slice(1) && !password?.slice(2, 5) && styles.highLight}>
+                {password?.slice(1, 2).replace(/[^]/, '✱')}
               </span>
-              <span className={password.slice(2, 3) && !password.slice(3, 5) && styles.highLight}>
-                {password.slice(2, 3).replace(/[^]/, '✱')}
+              <span className={password?.slice(2, 3) && !password?.slice(3, 5) && styles.highLight}>
+                {password?.slice(2, 3).replace(/[^]/, '✱')}
               </span>
-              <span className={password.slice(3, 4) && !password.slice(4, 5) && styles.highLight}>
-                {password.slice(3, 4).replace(/[^]/, '✱')}
+              <span className={password?.slice(3, 4) && !password?.slice(4, 5) && styles.highLight}>
+                {password?.slice(3, 4).replace(/[^]/, '✱')}
               </span>
-              <span className={password.slice(4, 5) && !password.slice(5) && styles.highLight}>
-                {password.slice(4, 5).replace(/[^]/, '✱')}
+              <span className={password?.slice(4, 5) && !password?.slice(5) && styles.highLight}>
+                {password?.slice(4, 5).replace(/[^]/, '✱')}
               </span>
-              <span className={password.slice(5) && styles.highLight}>{password.slice(5).replace(/[^]/, '✱')}</span>
+              <span className={password?.slice(5) && styles.highLight}>{password?.slice(5).replace(/[^]/, '✱')}</span>
             </div>
             <Input.Password
               autoFocus

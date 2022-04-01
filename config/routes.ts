@@ -100,14 +100,6 @@
     component: './Record/Record',
   },
   {
-    path: '/creator',
-    name: 'creator',
-    icon: 'TrophyOutlined',
-    access: 'canUser',
-    hideChildrenInMenu: true,
-    component: './Creator/Dashboard',
-  },
-  {
     path: '/visa',
     name: 'visa',
     icon: 'FileProtectOutlined',
