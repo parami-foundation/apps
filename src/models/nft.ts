@@ -47,7 +47,7 @@ export default () => {
                             deposit: BigInt(deposit.toString()),
                         });
                     } else {
-                        const wrapContract = await new ethers.Contract(external?.namespace, wrapABI, Provider);
+                        const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, Provider);
                         const tokenURI = await wrapContract?.tokenURI(external?.token);
                         portNFTMap.set(value, {
                             id: value,
@@ -70,7 +70,7 @@ export default () => {
 
             setKickNFT([...kickNFTMap.values()]);
             setPortNFT([...portNFTMap.values()]);
-            setNftList([...nftMap?.values()]);
+            setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
         });
     }
 

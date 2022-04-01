@@ -1,6 +1,6 @@
 import { Button, Col, notification, Progress, Row } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
-import { useIntl, useModel, history } from 'umi';
+import { useIntl, useModel } from 'umi';
 import style from './style.less';
 import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
@@ -239,8 +239,7 @@ const NFTs: React.FC = () => {
                                                                         shape='round'
                                                                         size='middle'
                                                                         onClick={() => {
-                                                                            history.push(`${window.location.origin}/${hexToDid(did)}/${item?.id}`);
-                                                                            console.log(`${window.location.origin}/${hexToDid(did)}/${item?.id}`)
+                                                                            window.location.href = `${window.location.origin}/${hexToDid(did)}/${item?.id}`;
                                                                         }}
                                                                     >
                                                                         {intl.formatMessage({

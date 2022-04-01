@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Col, Form, Image, Input, message, notification, Row, Table } from 'antd';
+import { Button, Col, Form, Image, notification, Row, Table } from 'antd';
 import { PortNFT } from '@/services/parami/nft';
 import { contractAddresses } from '../config';
 import { useModel } from "@@/plugin-model/useModel";
-import { BigNumber, ethers } from "ethers";
+import type { BigNumber } from "ethers";
+import { ethers } from "ethers";
 import WrapperABI from "../abi/ParamiHyperlink.json";
-import { JsonRpcSigner } from "@ethersproject/providers";
+import type { JsonRpcSigner } from "@ethersproject/providers";
 
 type Erc721 = {
   tokenId: string,
