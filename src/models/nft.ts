@@ -51,6 +51,8 @@ export default () => {
                     } else {
                         const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, Provider);
                         const tokenURI = await wrapContract?.tokenURI(external?.token);
+                        const json = Buffer.from(tokenURI?.substring(29), 'base64').toString('utf8');
+                        const result = JSON.parse(json);
                         portNFTMap.set(value, {
                             id: value,
                             name: asset?.name || 'My NFT',
@@ -59,7 +61,7 @@ export default () => {
                             network: external?.network,
                             namespace: external?.namespace,
                             token: external?.token,
-                            tokenURI: tokenURI,
+                            tokenURI: result?.image,
                             deposit: BigInt(deposit.toString()),
                         });
                     }
