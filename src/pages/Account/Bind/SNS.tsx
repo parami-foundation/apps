@@ -94,20 +94,39 @@ const SNS: React.FC<{
                                     <span className={style.label}>Discord</span>
                                 </div>
                                 <div className={style.button}>
-                                    <Button
-                                        disabled
-                                        size='large'
-                                        shape='round'
-                                        type='primary'
-                                        onClick={() => {
-                                            setBindModal(true);
-                                            setBindPlatform('Discord');
-                                        }}
+                                    <Spin
+                                        indicator={
+                                            <LoadingOutlined spin />
+                                        }
+                                        spinning={!Object.keys(linkedInfo).length}
                                     >
-                                        {intl.formatMessage({
-                                            id: 'social.coming',
-                                        })}
-                                    </Button>
+                                        <Button
+                                            disabled={null !== linkedInfo.Discord}
+                                            size='large'
+                                            shape='round'
+                                            type='primary'
+                                            onClick={() => {
+                                                setBindModal(true);
+                                                setBindPlatform('Discord');
+                                            }}
+                                        >
+                                            {!linkedInfo.Discord &&
+                                                intl.formatMessage({
+                                                    id: 'social.bind',
+                                                })
+                                            }
+                                            {linkedInfo.Discord === 'linked' &&
+                                                intl.formatMessage({
+                                                    id: 'social.binded',
+                                                })
+                                            }
+                                            {linkedInfo.Discord === 'verifing' &&
+                                                intl.formatMessage({
+                                                    id: 'social.verifing',
+                                                })
+                                            }
+                                        </Button>
+                                    </Spin>
                                 </div>
                             </div>
                             <div className={style.field}>

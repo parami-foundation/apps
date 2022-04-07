@@ -162,10 +162,14 @@ const BindModal: React.FC<{
             // SNS
             case 'Discord':
                 await handleStamp();
+                setLoading(false);
+                setBindModal(false);
                 break;
             case 'Telegram':
                 if (stampMode) {
                     await handleStamp();
+                    setLoading(false);
+                    setBindModal(false);
                 } else {
                     await defaultSNS();
                     break;
@@ -332,18 +336,20 @@ const BindModal: React.FC<{
                                     })}
                                 </Button>
                             </div>
-                            <Button
-                                block
-                                size='large'
-                                type='primary'
-                                shape='round'
-                                onClick={() => {
-                                    setStampMode(true);
-                                    setSecModal(true);
-                                }}
-                            >
-                                Parami Community
-                            </Button>
+                            {/* <div className={style.field}>
+                                <Button
+                                    block
+                                    size='large'
+                                    type='primary'
+                                    shape='round'
+                                    onClick={() => {
+                                        setStampMode(true);
+                                        setSecModal(true);
+                                    }}
+                                >
+                                    Parami Community
+                                </Button>
+                            </div> */}
                         </>
                     )}
                     {bindPlatform === 'Twitter' && (
