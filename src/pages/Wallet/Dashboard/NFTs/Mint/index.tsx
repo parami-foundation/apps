@@ -63,6 +63,7 @@ const MintNFTModal: React.FC<{
                         className={style.input}
                         onChange={(a) => { setSymbol(a.target.value) }}
                         disabled={loading}
+                        prefix={'$'}
                     />
                 </div>
             </div>

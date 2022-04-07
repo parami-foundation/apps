@@ -148,6 +148,7 @@
     "vconsole": "^3.10.1",
     "web3": "^1.6.1",
     "web3-eth": "^1.6.1",
+    "web3-eth-contract": "^1.7.1",
     "web3modal": "^1.9.5"
   },
   "devDependencies": {

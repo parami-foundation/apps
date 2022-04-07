@@ -2,10 +2,10 @@ import { useModel } from 'umi';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import wrapABI from '@/pages/Wallet/Dashboard/NFTs/abi/ParamiHyperlink.json';
+import { infuraProvider } from '@/config/web3provider';
 
 export default () => {
     const apiWs = useModel('apiWs');
-    const { Provider } = useModel('web3');
     const { avatar } = useModel('user');
     const [kickNFTMap, setKickNFTMap] = useState<Map<string, any>>(new Map());
     const [portNFTMap, setPortNFTMap] = useState<Map<string, any>>(new Map());
@@ -24,9 +24,9 @@ export default () => {
             return;
         }
 
-        await apiWs.query.nft.account.keys(currentAccount, async (allEntries) => {
-            for (let i = 0; i < allEntries.length; i++) {
-                const [key, value]: any = allEntries[i].toHuman();
+        apiWs.query.nft.account.keys(currentAccount, async (allEntries) => {
+            for (const nftItem in allEntries) {
+                const [key, value]: any = allEntries[nftItem].toHuman();
                 if (!!key) {
                     const externalData = await apiWs.query.nft.external(value);
                     const nftMetadata = await apiWs.query.nft.metadata(value);
@@ -36,8 +36,6 @@ export default () => {
 
                     const assetData = await apiWs.query.assets.metadata(nft?.tokenAssetId);
                     const asset: any = assetData.toHuman();
-
-                    // TODO: Query import NFT name
 
                     if (externalData.isEmpty) {
                         kickNFTMap.set(value, {
@@ -49,13 +47,15 @@ export default () => {
                             deposit: BigInt(deposit.toString()),
                         });
                     } else {
-                        const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, Provider);
+                        const provider = new ethers.providers.JsonRpcProvider(infuraProvider[4]);
+                        const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, provider);
                         const tokenURI = await wrapContract?.tokenURI(external?.token);
+                        const name = await wrapContract?.getOriginalName(external?.token);
                         const json = Buffer.from(tokenURI?.substring(29), 'base64').toString('utf8');
                         const result = JSON.parse(json);
                         portNFTMap.set(value, {
                             id: value,
-                            name: asset?.name || 'My NFT',
+                            name: asset?.name || name,
                             symbol: asset?.symbol,
                             minted: nft?.minted,
                             network: external?.network,
@@ -66,6 +66,15 @@ export default () => {
                         });
                     }
                 }
+
+                setKickNFTMap(kickNFTMap);
+                setPortNFTMap(portNFTMap);
+                setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
+
+                setKickNFT([...kickNFTMap.values()]);
+                setPortNFT([...portNFTMap.values()]);
+                setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+                setLoading(false);
             }
 
             setKickNFTMap(kickNFTMap);
