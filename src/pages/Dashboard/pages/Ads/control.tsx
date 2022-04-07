@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Alert, Button, PageHeader, Statistic } from 'antd';
+import { Button, notification, PageHeader, Statistic } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import List from './components/List';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -11,24 +10,10 @@ import { GetAdsListOf, GetTagsOf } from '@/services/parami/dashboard';
 import { formatBalance } from '@polkadot/util';
 import { fromHexString } from '@/utils/hexcode';
 
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
-
 const did = localStorage.getItem('dashboardDid') as string;
 
 const Control: React.FC = () => {
     const apiWs = useModel('apiWs');
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [createModal, setCreateModal] = useState<boolean>(false);
     const [adsList, setAdsList] = useState<any[]>([]);
 
@@ -52,9 +37,9 @@ const Control: React.FC = () => {
                 setAdsList(data);
             }
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message,
+                duration: null,
             });
         }
     }
@@ -67,36 +52,31 @@ const Control: React.FC = () => {
 
     return (
         <>
-            {errorState.Message && <Message content={errorState.Message} />}
-            <div className={styles.mainContainer}>
-                <div className={styles.contentContainer}>
-                    <PageHeader
-                        className={style.header}
-                        title={
-                            <Statistic
-                                title={intl.formatMessage({
-                                    id: 'dashboard.ads.control.total',
-                                })}
-                                value={adsList.length}
-                            />
-                        }
-                        extra={[
-                            <Button
-                                type='primary'
-                                size='large'
-                                shape='round'
-                                icon={<PlusCircleOutlined />}
-                                onClick={() => { setCreateModal(true) }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'dashboard.ads.control.create',
-                                })}
-                            </Button>,
-                        ]}
+            <PageHeader
+                className={style.header}
+                title={
+                    <Statistic
+                        title={intl.formatMessage({
+                            id: 'dashboard.ads.control.total',
+                        })}
+                        value={adsList.length}
                     />
-                    <List adsList={adsList} />
-                </div>
-            </div>
+                }
+                extra={[
+                    <Button
+                        type='primary'
+                        size='large'
+                        shape='round'
+                        icon={<PlusCircleOutlined />}
+                        onClick={() => { setCreateModal(true) }}
+                    >
+                        {intl.formatMessage({
+                            id: 'dashboard.ads.control.create',
+                        })}
+                    </Button>,
+                ]}
+            />
+            <List adsList={adsList} />
             <BigModal
                 visable={createModal}
                 title={intl.formatMessage({

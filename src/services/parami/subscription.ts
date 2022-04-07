@@ -3,10 +3,10 @@ import type { KeyringPair } from "@polkadot/keyring/types";
 import { notification } from 'antd';
 import type { InjectedExtension } from '@polkadot/extension-inject/types';
 
-export const subCallback = (call: SubmittableExtrinsic<"promise", any>, payUser: KeyringPair) => {
+export const subCallback = (cb: SubmittableExtrinsic<"promise", any>, payUser: KeyringPair) => {
     return new Promise(async (resolve, reject) => {
         try {
-            await call.signAndSend(payUser, ({ events = [], status, dispatchError }: any) => {
+            await cb.signAndSend(payUser, ({ events = [], status, dispatchError }: any) => {
                 if (dispatchError) {
                     if (dispatchError.isModule) {
                         // for module errors, we have the section indexed, lookup
@@ -69,9 +69,9 @@ export const subCallback = (call: SubmittableExtrinsic<"promise", any>, payUser:
     })
 };
 
-export const subWeb3Callback = (call: SubmittableExtrinsic<"promise", any>, injector: InjectedExtension, account: any) => {
+export const subWeb3Callback = (cb: SubmittableExtrinsic<"promise", any>, injector: InjectedExtension, account: any) => {
     return new Promise(async (resolve, reject) => {
-        await call.signAndSend(account.address, { signer: injector.signer }, ({ events = [], status, dispatchError }: any) => {
+        await cb.signAndSend(account.address, { signer: injector.signer }, ({ events = [], status, dispatchError }: any) => {
             if (dispatchError) {
                 if (dispatchError.isModule) {
                     // for module errors, we have the section indexed, lookup

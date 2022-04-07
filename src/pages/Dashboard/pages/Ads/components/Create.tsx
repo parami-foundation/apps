@@ -2,31 +2,18 @@ import React, { useRef, useState } from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Alert, Button, Input, InputNumber, Tag, Tooltip } from 'antd';
+import { Button, Input, InputNumber, notification, Tag, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { CreateAds, CreateTag, ExistTag } from '@/services/parami/dashboard';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { parseAmount } from '@/utils/common';
-
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
+import { message } from 'antd';
 
 const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
 
 const Create: React.FC<{
     setCreateModal: React.Dispatch<React.SetStateAction<boolean>>
 }> = ({ setCreateModal }) => {
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [budget, setBudget] = useState<number>(0);
     const [tags, setTags] = useState<string[]>([]);
     const [metadata, setMetadata] = useState<string>();
@@ -38,9 +25,12 @@ const Create: React.FC<{
     const [tagInputValue, setTagInputValue] = useState<string>('');
     const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
     const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
+    const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+
     const tagInputRef = useRef<Input>(null);
 
     const intl = useIntl();
+    const { Search } = Input;
 
     const existTag = async (tag: string) => {
         try {
@@ -50,15 +40,16 @@ const Create: React.FC<{
             }
             return true;
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message || e,
+                duration: null,
             });
             return false;
         }
     };
 
     const newTag = async (tag: string) => {
+        setSubmitLoading(true);
         try {
             await CreateTag(tag, JSON.parse(currentAccount));
             let Tags = tags;
@@ -68,13 +59,15 @@ const Create: React.FC<{
             setTags(Tags);
             setTagInputVisible(false);
             setTagInputValue('');
+            setSubmitLoading(false);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: intl.formatMessage({ id: e.message || e }),
+                duration: null,
             });
+            setSubmitLoading(false);
         }
-    }
+    };
 
     const handleTagInputConfirm = async () => {
         const exist = await existTag(tagInputValue);
@@ -96,7 +89,7 @@ const Create: React.FC<{
         newTags[tagEditInputIndex] = tagEditInputValue;
 
         setTags(newTags);
-        setTagEditInputIndex(-1);
+        setTagEditInputIndex(0);
         setTagEditInputValue('');
     };
 
@@ -110,9 +103,9 @@ const Create: React.FC<{
             await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(currentAccount));
             setCreateModal(false);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: e.message || e,
+                duration: null,
             });
         }
     };
@@ -120,7 +113,6 @@ const Create: React.FC<{
     return (
         <>
             <div className={styles.modalBody}>
-                {errorState.Message && <Message content={errorState.Message} />}
                 <div className={styles.field}>
                     <div className={styles.title}>
                         {intl.formatMessage({
@@ -149,15 +141,24 @@ const Create: React.FC<{
                         {tags.map((tag, index) => {
                             if (tagEditInputIndex === index) {
                                 return (
-                                    <Input
+                                    <Search
                                         key={tag}
                                         size="large"
                                         className="tag-input"
+                                        enterButton={intl.formatMessage({
+                                            id: 'common.confirm',
+                                        })}
+                                        loading={submitLoading}
                                         onChange={(e) => {
                                             setTagEditInputValue(e.target.value);
                                         }}
-                                        onBlur={() => { handleTagEditInputConfirm() }}
-                                        onPressEnter={() => { handleTagEditInputConfirm() }}
+                                        onSearch={() => {
+                                            if (!tagEditInputValue) {
+                                                message.error('Please Input Tag');
+                                                return;
+                                            }
+                                            handleTagEditInputConfirm();
+                                        }}
                                     />
                                 );
                             }
@@ -195,16 +196,25 @@ const Create: React.FC<{
                             );
                         })}
                         {tagInputVisible && (
-                            <Input
+                            <Search
                                 ref={tagInputRef}
                                 type="text"
                                 size="large"
+                                enterButton={intl.formatMessage({
+                                    id: 'common.confirm',
+                                })}
                                 className={style.tagInput}
+                                loading={submitLoading}
                                 onChange={(e) => {
                                     setTagInputValue(e.target.value);
                                 }}
-                                onBlur={() => { handleTagInputConfirm() }}
-                                onPressEnter={() => { handleTagInputConfirm() }}
+                                onSearch={() => {
+                                    if (!tagInputValue) {
+                                        message.error('Please Input Tag');
+                                        return;
+                                    }
+                                    handleTagInputConfirm();
+                                }}
                             />
                         )
                         }

@@ -26,4 +26,5 @@ export default {
     'error.nft.notFound': 'This KOL does not own any NFT',
     'error.nft.notOwn': 'This NFT does not belong to this KOL',
     'error.nft.Exists': 'This NFT has been imported or in import process',
+    'error.tag.InsufficientBalance': 'Insufficient balance',
 };

@@ -1,13 +1,13 @@
 import { web3FromSource } from '@polkadot/extension-dapp';
+import { subWeb3Callback } from './subscription';
 import { errCb } from './wallet';
 
 export const BecomeAdvertiser = async (deposit: string, account: any) => {
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.advertiser.deposit(deposit);
-    const ex = window.apiWs.tx.magic.codo(tx);
+    const codo = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
-    return hash
+    return await subWeb3Callback(codo, injector, account);
 };
 
 export const IsAdvertiser = async (stashAccount: string): Promise<boolean> => {
@@ -53,10 +53,9 @@ export const CreateAds = async (budget: string, tags: any[], metadata: string, r
 export const CreateTag = async (tag: string, account: any): Promise<any> => {
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.tag.create(tag);
-    const ex = window.apiWs.tx.magic.codo(tx);
+    const codo = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
-    return hash
+    return await subWeb3Callback(codo, injector, account);
 };
 
 export const ExistTag = async (tag: string): Promise<any> => {
@@ -78,8 +77,8 @@ export const GetAssetInfo = async (assetId: string) => {
     return assetInfo;
 };
 
-export const GetSlotAdOf = async (did: string): Promise<any> => {
-    const slot = await window.apiWs.query.ad.slotOf(did);
+export const GetSlotAdOf = async (nftID: string): Promise<any> => {
+    const slot = await window.apiWs.query.ad.slotOf(nftID);
     if (slot.isEmpty) {
         return null;
     }
