@@ -36,3 +36,9 @@ export const GetUserTags = async (did: string) => {
 
     return tags;
 };
+
+export const GetEndtimeOf = async (adId: string) => {
+    const res = await window.apiWs.query.ad.endtimeOf(adId);
+
+    return res;
+};

@@ -46,8 +46,7 @@ export const CreateAds = async (budget: string, tags: any[], metadata: string, r
     const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl));
     const ex = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
-    return hash
+    return await subWeb3Callback(ex, injector, account);
 };
 
 export const CreateTag = async (tag: string, account: any): Promise<any> => {

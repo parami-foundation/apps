@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Button, Input, InputNumber, notification, Tag, Tooltip } from 'antd';
+import { Button, Input, notification, Select, Tag, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { CreateAds, CreateTag, ExistTag } from '@/services/parami/dashboard';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -20,6 +20,7 @@ const Create: React.FC<{
     const [rewardRate, setRewardRate] = useState<number>(0);
     const [lifetime, setLifetime] = useState<number>();
     const [createTag, setCreateTag] = useState<boolean>(false);
+    const [submiting, setSubmiting] = useState<boolean>(false);
 
     const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
     const [tagInputValue, setTagInputValue] = useState<string>('');
@@ -31,6 +32,7 @@ const Create: React.FC<{
 
     const intl = useIntl();
     const { Search } = Input;
+    const { Option } = Select;
 
     const existTag = async (tag: string) => {
         try {
@@ -99,14 +101,17 @@ const Create: React.FC<{
     };
 
     const handleSubmit = async () => {
+        setSubmiting(true);
         try {
             await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(currentAccount));
+            setSubmiting(false);
             setCreateModal(false);
         } catch (e: any) {
             notification.error({
                 message: e.message || e,
                 duration: null,
             });
+            setSubmiting(false);
         }
     };
 
@@ -120,14 +125,14 @@ const Create: React.FC<{
                         })}
                     </div>
                     <div className={styles.value}>
-                        <InputNumber
+                        <Input
                             className={styles.withAfterInput}
                             placeholder="0.00"
                             size='large'
                             type='number'
                             maxLength={18}
                             min={0}
-                            onChange={(e) => setBudget(e)}
+                            onChange={(e) => setBudget(Number(e.target.value))}
                         />
                     </div>
                 </div>
@@ -171,7 +176,7 @@ const Create: React.FC<{
                                     color="volcano"
                                     key={tag}
                                     closable={true}
-                                    onClose={(item) => handleTagClose(item)}
+                                    onClose={() => handleTagClose(tag)}
                                 >
                                     <span
                                         onDoubleClick={() => {
@@ -245,8 +250,9 @@ const Create: React.FC<{
                     <div className={styles.value}>
                         <Input
                             size='large'
-                            onChange={(e) => setMetadata(e.target.value)}
-                            placeholder='ipfs://<CID>/<path>'
+                            onChange={(e) => setMetadata(`ipfs://${e.target.value}`)}
+                            placeholder='<CID>/<path>'
+                            prefix={'ipfs://'}
                         />
                     </div>
                 </div>
@@ -257,14 +263,14 @@ const Create: React.FC<{
                         })}
                     </div>
                     <div className={styles.value}>
-                        <InputNumber
+                        <Input
                             className={styles.withAfterInput}
                             placeholder="0.00"
                             size='large'
                             type='number'
                             maxLength={18}
                             min={0}
-                            onChange={(e) => setRewardRate(e)}
+                            onChange={(e) => setRewardRate(Number(e.target.value))}
                         />
                     </div>
                 </div>
@@ -281,54 +287,32 @@ const Create: React.FC<{
                         </small>
                     </div>
                     <div className={styles.value}>
-                        <InputNumber
-                            className={styles.withAfterInput}
-                            placeholder="0"
+                        <Select
                             size='large'
-                            type='number'
-                            maxLength={18}
-                            value={lifetime}
-                            min={0}
-                            onChange={(e) => setLifetime(e)}
-                        />
-                        <div className={style.buttons}>
-                            <Button
-                                type='primary'
-                                shape='round'
-                                size='large'
-                                onClick={() => {
-                                    setLifetime(3 * 24 * 60 * 60 / 6)
-                                }}
-                            >
+                            style={{
+                                width: '100%',
+                            }}
+                            placeholder={'Please select a lifetime'}
+                            onChange={(value) => {
+                                setLifetime(Number(value));
+                            }}
+                        >
+                            <Option value={3 * 24 * 60 * 60 / 6}>
                                 {intl.formatMessage({
                                     id: 'dashboard.ads.create.lifetime.3days',
                                 })}
-                            </Button>
-                            <Button
-                                type='primary'
-                                shape='round'
-                                size='large'
-                                onClick={() => {
-                                    setLifetime(7 * 24 * 60 * 60 / 6)
-                                }}
-                            >
+                            </Option>
+                            <Option value={7 * 24 * 60 * 60 / 6}>
                                 {intl.formatMessage({
                                     id: 'dashboard.ads.create.lifetime.7days',
                                 })}
-                            </Button>
-                            <Button
-                                type='primary'
-                                shape='round'
-                                size='large'
-                                onClick={() => {
-                                    setLifetime(15 * 24 * 60 * 60 / 6)
-                                }}
-                            >
+                            </Option>
+                            <Option value={15 * 24 * 60 * 60 / 6}>
                                 {intl.formatMessage({
                                     id: 'dashboard.ads.create.lifetime.15days',
                                 })}
-                            </Button>
-                        </div>
+                            </Option>
+                        </Select>
                     </div>
                 </div>
                 <div
@@ -343,7 +327,10 @@ const Create: React.FC<{
                         shape='round'
                         type='primary'
                         disabled={!budget || !tags || !metadata || !lifetime}
-                        onClick={() => { handleSubmit() }}
+                        loading={submiting}
+                        onClick={() => {
+                            handleSubmit()
+                        }}
                     >
                         {intl.formatMessage({
                             id: 'common.submit',

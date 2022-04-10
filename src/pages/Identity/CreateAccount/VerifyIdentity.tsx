@@ -77,6 +77,7 @@ const VerifyIdentity: React.FC<{
       // Network exception
       if (!Resp) {
         notification.error({
+          key: 'networkException',
           message: 'Network exception',
           description: 'Unable to connect to airdrop server. Please replace the network environment, refresh and try again, or deposit manually.',
           duration: null,
@@ -146,6 +147,7 @@ const VerifyIdentity: React.FC<{
       // Network exception
       if (!response) {
         notification.error({
+          key: 'networkException',
           message: 'Network exception',
           description: 'Unable to complete account binding, please enter the account page to bind manually after registration.',
           duration: null,
@@ -161,6 +163,7 @@ const VerifyIdentity: React.FC<{
         // Network exception
         if (!Resp) {
           notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
@@ -254,6 +257,7 @@ const VerifyIdentity: React.FC<{
         const data: any = info.data;
         if (free && free !== `${data.free}`) {
           notification.success({
+            key: 'gasBalanceChange',
             message: 'Changes in Gas Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })

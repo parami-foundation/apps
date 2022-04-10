@@ -9,6 +9,8 @@ import Create from './components/Create';
 import { GetAdsListOf, GetTagsOf } from '@/services/parami/dashboard';
 import { formatBalance } from '@polkadot/util';
 import { fromHexString } from '@/utils/hexcode';
+import { GetEndtimeOf } from '@/services/parami/ads';
+import { deleteComma } from '@/utils/format';
 
 const did = localStorage.getItem('dashboardDid') as string;
 
@@ -24,21 +26,22 @@ const Control: React.FC = () => {
             const ads = await GetAdsListOf(fromHexString(did) as Uint8Array);
             const data: any[] = [];
             if (ads.length) {
-                for (const adsID in ads) {
+                for (const adItem in ads) {
+                    const endtime = await GetEndtimeOf(ads[adItem].id);
                     data.push({
-                        id: ads[adsID].id,
-                        budget: formatBalance(ads[adsID].meta.budget, { withUnit: 'AD3' }, 18),
-                        tag: await GetTagsOf(ads[adsID].id),
-                        metadata: ads[adsID].meta.metadata,
-                        rewardRate: ads[adsID].meta.rewardRate,
-                        deadline: ads[adsID].meta.deadline,
+                        id: ads[adItem].id,
+                        budget: formatBalance(deleteComma(ads[adItem].meta.budget), { withUnit: 'AD3' }, 18),
+                        tag: await GetTagsOf(ads[adItem].id),
+                        metadata: ads[adItem].meta.metadata,
+                        rewardRate: ads[adItem].meta.rewardRate,
+                        endtime: endtime.toString(),
                     })
                 }
                 setAdsList(data);
             }
         } catch (e: any) {
             notification.error({
-                message: e.message,
+                message: e.message || e,
                 duration: null,
             });
         }
@@ -85,23 +88,10 @@ const Control: React.FC = () => {
                 content={
                     <Create setCreateModal={setCreateModal} />
                 }
-                footer={
-                    <>
-                        <Button
-                            block
-                            shape='round'
-                            size='large'
-                            onClick={() => {
-                                setCreateModal(false);
-                            }}
-                        >
-                            {intl.formatMessage({
-                                id: 'common.close',
-                                defaultMessage: 'Close',
-                            })}
-                        </Button>
-                    </>
-                }
+                close={() => {
+                    setCreateModal(false);
+                }}
+                footer={false}
             />
         </>
     )

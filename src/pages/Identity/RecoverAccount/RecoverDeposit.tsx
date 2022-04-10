@@ -56,6 +56,7 @@ const RecoverDeposit: React.FC<{
         const data: any = info.data;
         if (free && free !== `${data.free}`) {
           notification.success({
+            key: 'magicBalanceChange',
             message: 'Changes in Magic Balancee',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })

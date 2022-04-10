@@ -103,3 +103,7 @@ export const base64url = (buffer) => {
         .replace(/\//g, '_')
         .replace(/\=+$/m, '');
 };
+
+export const deleteComma = (value: string) => {
+    return value.replace(/,/g, '');
+};

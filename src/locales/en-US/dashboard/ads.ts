@@ -25,7 +25,7 @@ export default {
     'dashboard.ads.item.tag': 'Tag',
     'dashboard.ads.item.metadata': 'Metadata',
     'dashboard.ads.item.rewardRate': 'RewardRate',
-    'dashboard.ads.item.deadline': 'Deadline',
+    'dashboard.ads.item.endtime': 'EndTime',
     'dashboard.ads.item.action': 'Action',
     'dashboard.ads.item.edit': 'Edit',
     'dashboard.ads.item.launch': 'Launch',

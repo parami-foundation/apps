@@ -59,10 +59,10 @@ const List: React.FC<{
         },
         {
             title: intl.formatMessage({
-                id: 'dashboard.ads.item.deadline',
+                id: 'dashboard.ads.item.endtime',
             }),
-            dataIndex: 'deadline',
-            key: 'deadline',
+            dataIndex: 'endtime',
+            key: 'endtime',
         },
         {
             title: intl.formatMessage({
@@ -71,19 +71,9 @@ const List: React.FC<{
             key: 'action',
             render: (item: any) => (
                 <Space size="middle">
-                    {/* <Button
-                        shape='round'
-                        icon={<EditOutlined />}
-                        onClick={() => { setEditModal(true) }}
-                    >
-                        {
-                            intl.formatMessage({
-                                id: 'dashboard.ads.item.edit',
-                            })
-                        }
-                    </Button> */}
                     <Button
                         shape='round'
+                        type='primary'
                         icon={<RocketOutlined />}
                         onClick={() => {
                             setAdItem(item);
@@ -123,23 +113,10 @@ const List: React.FC<{
                 content={
                     <Edit adItem={adItem} />
                 }
-                close={() => { setEditModal(false) }}
-                footer={
-                    <>
-                        <Button
-                            block
-                            shape='round'
-                            size='large'
-                            onClick={() => {
-                                setEditModal(false);
-                            }}
-                        >
-                            {intl.formatMessage({
-                                id: 'common.close',
-                            })}
-                        </Button>
-                    </>
-                }
+                close={() => {
+                    setEditModal(false)
+                }}
+                footer={false}
             />
             <BigModal
                 visable={launchModal}
@@ -149,23 +126,10 @@ const List: React.FC<{
                 content={
                     <Launch adItem={adItem} setLaunchModal={setLaunchModal} />
                 }
-                close={() => { setLaunchModal(false) }}
-                footer={
-                    <>
-                        <Button
-                            block
-                            shape='round'
-                            size='large'
-                            onClick={() => {
-                                setLaunchModal(false);
-                            }}
-                        >
-                            {intl.formatMessage({
-                                id: 'common.close',
-                            })}
-                        </Button>
-                    </>
-                }
+                close={() => {
+                    setLaunchModal(false)
+                }}
+                footer={false}
                 bodyStyle={{
                     padding: 0,
                 }}

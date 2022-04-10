@@ -22,6 +22,7 @@ export default () => {
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
           notification.success({
+            key: 'gasBalanceChange',
             message: 'Dashboard: Changes in Gas Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
@@ -43,6 +44,7 @@ export default () => {
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
           notification.success({
+            key: 'stashBalanceChange',
             message: 'Dashboard: Changes in Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })

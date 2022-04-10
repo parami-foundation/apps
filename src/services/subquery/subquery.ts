@@ -43,6 +43,7 @@ export const OwnerDidOfNft = async (nftId: any) => {
     // Network exception
     if (!res) {
         notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
@@ -80,6 +81,7 @@ export const AdvertisementRewards = async (ADid: string) => {
     // Network exception
     if (!res) {
         notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
@@ -115,6 +117,7 @@ export const AssetTransactionHistory = async (did: string) => {
     // Network exception
     if (!res) {
         notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
@@ -178,6 +181,7 @@ export const getAdViewerCounts = async (ADid: string) => {
     // Network exception
     if (!res) {
         notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
@@ -207,6 +211,7 @@ export const getAdvertisementRefererCounts = async (ADid: string) => {
     // Network exception
     if (!res) {
         notification.error({
+            key: 'networkException',
             message: 'Network exception',
             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
             duration: null,
