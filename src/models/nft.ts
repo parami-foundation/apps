@@ -65,28 +65,28 @@ export default () => {
                             deposit: BigInt(deposit.toString()),
                         });
                     }
+
+                    setKickNFTMap(kickNFTMap);
+                    setPortNFTMap(portNFTMap);
+                    setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
+
+                    setKickNFT([...kickNFTMap.values()]);
+                    setPortNFT([...portNFTMap.values()]);
+                    setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+                    setLoading(false);
                 }
-
-                setKickNFTMap(kickNFTMap);
-                setPortNFTMap(portNFTMap);
-                setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
-
-                setKickNFT([...kickNFTMap.values()]);
-                setPortNFT([...portNFTMap.values()]);
-                setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
-                setLoading(false);
             }
-
-            setKickNFTMap(kickNFTMap);
-            setPortNFTMap(portNFTMap);
-            setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
-
-            setKickNFT([...kickNFTMap.values()]);
-            setPortNFT([...portNFTMap.values()]);
-            setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
-            setLoading(false);
         });
-    }
+
+        setKickNFTMap(kickNFTMap);
+        setPortNFTMap(portNFTMap);
+        setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
+
+        setKickNFT([...kickNFTMap.values()]);
+        setPortNFT([...portNFTMap.values()]);
+        setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+        setLoading(false);
+    };
 
     useEffect(() => {
         if (apiWs) {
@@ -102,5 +102,6 @@ export default () => {
         portNFT,
         nftList,
         loading,
+        getNFTs,
     }
 }

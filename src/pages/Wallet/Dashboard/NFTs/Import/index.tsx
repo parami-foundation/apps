@@ -18,6 +18,7 @@ const ImportNFTModal: React.FC<{
   keystore: string;
 }> = ({ setImportModal, password, keystore }) => {
   const apiWs = useModel('apiWs');
+  const { getNFTs } = useModel('nft');
   const [loading, setLoading] = useState<boolean>(true);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
@@ -79,6 +80,7 @@ const ImportNFTModal: React.FC<{
       await PortNFT(password, keystore, 'Ethereum', contractAddresses.wrap[1], tokenID);
       setSubmitLoading(false);
       setImportModal(false);
+      getNFTs();
     } catch (e: any) {
       notification.error({
         message: intl.formatMessage({ id: e }),

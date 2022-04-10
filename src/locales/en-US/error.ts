@@ -27,4 +27,5 @@ export default {
     'error.nft.notOwn': 'This NFT does not belong to this KOL',
     'error.nft.Exists': 'This NFT has been imported or in import process',
     'error.tag.InsufficientBalance': 'Insufficient balance',
+    'error.controller.notMatch': 'The controller address does not match, a new controller account will be created for you.',
 };

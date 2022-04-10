@@ -15,19 +15,6 @@ import { useIntl, history } from 'umi';
 import style from '../style.less';
 import { config } from './config';
 
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
-
 const BindModal: React.FC<{
     bindPlatform: string;
     setBindModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -37,7 +24,6 @@ const BindModal: React.FC<{
     const controllerUserAddress = localStorage.getItem('controllerUserAddress');
     const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [secModal, setSecModal] = useState<boolean>(false);
     const [Password, setPassword] = useState<string>(stmap || '');
     const [loading, setLoading] = useState<boolean>(false);
@@ -118,10 +104,9 @@ const BindModal: React.FC<{
             setLoading(false);
             setBindModal(false);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: intl.formatMessage({
-                    id: e,
+            notification.error({
+                message: intl.formatMessage({
+                    id: e.message || e,
                 }),
             });
             setLoading(false);
@@ -147,9 +132,10 @@ const BindModal: React.FC<{
             setBindModal(false);
             setLoading(false);
         } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+            notification.error({
+                message: intl.formatMessage({
+                    id: e.message || e,
+                }),
             });
             setLoading(false);
             return;
@@ -193,9 +179,10 @@ const BindModal: React.FC<{
                             }
                             setLoading(false);
                         } catch (e: any) {
-                            setErrorState({
-                                Type: 'chain error',
-                                Message: e.message,
+                            notification.error({
+                                message: intl.formatMessage({
+                                    id: e.message || e,
+                                }),
                             });
                             setLoading(false);
                         }
@@ -221,9 +208,10 @@ const BindModal: React.FC<{
                             }
                             setLoading(false);
                         } catch (e: any) {
-                            setErrorState({
-                                Type: 'chain error',
-                                Message: e.message,
+                            notification.error({
+                                message: intl.formatMessage({
+                                    id: e.message || e,
+                                }),
                             });
                             setLoading(false);
                         }
@@ -249,9 +237,10 @@ const BindModal: React.FC<{
                             }
                             setLoading(false);
                         } catch (e: any) {
-                            setErrorState({
-                                Type: 'chain error',
-                                Message: e.message,
+                            notification.error({
+                                message: intl.formatMessage({
+                                    id: e.message || e,
+                                }),
                             });
                             setLoading(false);
                         }
@@ -285,7 +274,6 @@ const BindModal: React.FC<{
                 spinning={loading}
             >
                 <div className={style.bindModal}>
-                    {errorState.Message && <Message content={errorState.Message} />}
                     {/* SNS */}
                     {bindPlatform === 'Telegram' && (
                         <>
@@ -336,20 +324,6 @@ const BindModal: React.FC<{
                                     })}
                                 </Button>
                             </div>
-                            {/* <div className={style.field}>
-                                <Button
-                                    block
-                                    size='large'
-                                    type='primary'
-                                    shape='round'
-                                    onClick={() => {
-                                        setStampMode(true);
-                                        setSecModal(true);
-                                    }}
-                                >
-                                    Parami Community
-                                </Button>
-                            </div> */}
                         </>
                     )}
                     {bindPlatform === 'Twitter' && (

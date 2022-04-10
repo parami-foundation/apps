@@ -1,20 +1,24 @@
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Image, Spin, Steps, Typography } from 'antd';
+import { Image, Spin, Steps, Tooltip, Typography } from 'antd';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import classNames from 'classnames';
 import Deposit from './deposit';
 import Withdraw from './withdraw';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
-import { LoadingOutlined } from '@ant-design/icons';
 import SelectWallet from '../../components/SelectWallet';
+import BigModal from '@/components/ParamiModal/BigModal';
+import { LoadingOutlined } from '@ant-design/icons';
+import config from '@/config/config';
 
 const Bridge: React.FC = () => {
     const { Account } = useModel('web3');
     const [tab, setTab] = useState<string>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
-    const [step, setStep] = useState<number>(0);
+    const [step, setStep] = useState<number>(1);
+    const [ethHash, setETHHash] = useState<string>();
+    const [paramiHash, setParamiHash] = useState<string>();
 
     const intl = useIntl();
 
@@ -24,128 +28,258 @@ const Bridge: React.FC = () => {
     return (
         <>
             {Account ? (
-                <Spin
-                    tip={
-                        [tab === 'deposit' && (
-                            <Steps
-                                direction="vertical"
-                                size="default"
-                                current={step}
-                                className={styles.stepContainer}
-                            >
-                                <Step title="Ethereum Chain" icon={step === 0 ? <LoadingOutlined /> : false} />
-                                <Step title="Parami Chain" icon={step === 1 ? <LoadingOutlined /> : false} />
-                            </Steps>
-                        ),
-                        tab === 'withdraw' && (
-                            <Steps
-                                direction="vertical"
-                                size="default"
-                                current={step}
-                                className={styles.stepContainer}
-                            >
-                                <Step title="Parami Chain" icon={step === 0 ? <LoadingOutlined /> : false} />
-                                <Step title="Ethereum Chain" icon={step === 1 ? <LoadingOutlined /> : false} />
-                            </Steps>
-                        )]
-                    }
-                    size='large'
-                    indicator={(<></>)}
-                    spinning={loading}
-                    style={{
-                        background: 'rgba(255,255,255,.7)'
-                    }}
-                >
-                    <div className={styles.mainBgContainer}>
-                        <div className={styles.contentContainer}>
-                            <ETHAddress />
-                            <div className={style.bridgeContainer}>
-                                <div className={style.leftContainer}>
-                                    <div className={style.innerWrapper}>
-                                        <Title level={2}>
+                <div className={styles.mainBgContainer}>
+                    <div className={styles.contentContainer}>
+                        <ETHAddress />
+                        <div className={style.bridgeContainer}>
+                            <div className={style.leftContainer}>
+                                <div className={style.innerWrapper}>
+                                    <Title level={2}>
+                                        {intl.formatMessage({
+                                            id: 'dashboard.bridge.title',
+                                            defaultMessage: 'Parami Bridge',
+                                        })}
+                                    </Title>
+                                    <span className={style.description}>
+                                        {intl.formatMessage({
+                                            id: 'dashboard.bridge.description',
+                                            defaultMessage: 'The safe, fast and most secure way to bring cross-chain assets to Parami chain.',
+                                        })}
+                                    </span>
+                                    <div className={style.points}>
+                                        <a>
                                             {intl.formatMessage({
-                                                id: 'dashboard.bridge.title',
-                                                defaultMessage: 'Parami Bridge',
+                                                id: 'dashboard.bridge.howItWorks',
+                                                defaultMessage: 'How it works?',
                                             })}
-                                        </Title>
-                                        <span className={style.description}>
+                                        </a>
+                                        <a>
                                             {intl.formatMessage({
-                                                id: 'dashboard.bridge.description',
-                                                defaultMessage: 'The safe, fast and most secure way to bring cross-chain assets to Parami chain.',
+                                                id: 'dashboard.bridge.faq',
+                                                defaultMessage: 'FAQ',
                                             })}
-                                        </span>
-                                        <div className={style.points}>
-                                            <a>
-                                                {intl.formatMessage({
-                                                    id: 'dashboard.bridge.howItWorks',
-                                                    defaultMessage: 'How it works?',
-                                                })}
-                                            </a>
-                                            <a>
-                                                {intl.formatMessage({
-                                                    id: 'dashboard.bridge.faq',
-                                                    defaultMessage: 'FAQ',
-                                                })}
-                                            </a>
-                                            <a>
-                                                {intl.formatMessage({
-                                                    id: 'dashboard.bridge.userGuide',
-                                                    defaultMessage: 'User guide',
-                                                })}
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className={style.bottomSection}>
-                                        <Image
-                                            src='/images/background/chainbridge.svg'
-                                            preview={false}
-                                            className={style.background}
-                                        />
+                                        </a>
+                                        <a>
+                                            {intl.formatMessage({
+                                                id: 'dashboard.bridge.userGuide',
+                                                defaultMessage: 'User guide',
+                                            })}
+                                        </a>
                                     </div>
                                 </div>
-                                <div className={style.rightContainer}>
-                                    <div className={style.bridgeTabs}>
-                                        <div
-                                            className={classNames(style.bridgeTabsItem, tab === 'deposit' ? style.active : '')}
-                                            onClick={() => setTab('deposit')}
-                                        >
-                                            {intl.formatMessage({
-                                                id: 'dashboard.bridge.deposit',
-                                                defaultMessage: 'Deposit',
-                                            })}
-                                        </div>
-                                        <div
-                                            className={classNames(style.bridgeTabsItem, tab === 'withdraw' ? style.active : '')}
-                                            onClick={() => setTab('withdraw')}
-                                        >
-                                            {intl.formatMessage({
-                                                id: 'dashboard.bridge.withdraw',
-                                                defaultMessage: 'Withdraw',
-                                            })}
-                                        </div>
+                                <div className={style.bottomSection}>
+                                    <Image
+                                        src='/images/background/chainbridge.svg'
+                                        preview={false}
+                                        className={style.background}
+                                    />
+                                </div>
+                            </div>
+                            <div className={style.rightContainer}>
+                                <div className={style.bridgeTabs}>
+                                    <div
+                                        className={classNames(style.bridgeTabsItem, tab === 'deposit' ? style.active : '')}
+                                        onClick={() => setTab('deposit')}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'dashboard.bridge.deposit',
+                                            defaultMessage: 'Deposit',
+                                        })}
                                     </div>
-                                    <div className={style.bridgeBody}>
-                                        {tab === 'deposit' && (
-                                            <Deposit
-                                                setLoading={setLoading}
-                                                setStep={setStep}
-                                            />
-                                        )}
-                                        {tab === 'withdraw' && (
-                                            <Withdraw
-                                                setLoading={setLoading}
-                                                setStep={setStep}
-                                            />
-                                        )}
+                                    <div
+                                        className={classNames(style.bridgeTabsItem, tab === 'withdraw' ? style.active : '')}
+                                        onClick={() => setTab('withdraw')}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'dashboard.bridge.withdraw',
+                                            defaultMessage: 'Withdraw',
+                                        })}
                                     </div>
+                                </div>
+                                <div className={style.bridgeBody}>
+                                    {tab === 'deposit' && (
+                                        <Deposit
+                                            setLoading={setLoading}
+                                            setStep={setStep}
+                                            setETHHash={setETHHash}
+                                            setParamiHash={setParamiHash}
+                                        />
+                                    )}
+                                    {tab === 'withdraw' && (
+                                        <Withdraw
+                                            setLoading={setLoading}
+                                            setStep={setStep}
+                                            setETHHash={setETHHash}
+                                            setParamiHash={setParamiHash}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
                     </div>
-                </Spin>
+                </div>
             ) : (
                 <SelectWallet />
             )}
+            <BigModal
+                visable={loading}
+                content={
+                    <div className={style.processContainer}>
+                        {tab === 'deposit' && (
+                            <>
+                                <Steps
+                                    progressDot
+                                    size='small'
+                                    current={step}
+                                >
+                                    <Step title="Enter information" />
+                                    <Step title="Ethereum chain" />
+                                    <Step title="Parami chain" />
+                                    <Step title="Tokens transferred" />
+                                </Steps>
+                                <div className={style.title}>
+                                    {step === 1 && (
+                                        <span>Ethereum chain</span>
+                                    )}
+                                    {step === 2 && (
+                                        <span>Parami chain</span>
+                                    )}
+                                    {step === 3 && (
+                                        <span>Tokens transferred</span>
+                                    )}
+                                </div>
+                                <div
+                                    className={style.cardContainer}
+                                >
+                                    {ethHash && paramiHash ? (
+                                        <div className={style.listHash}>
+                                            <div className={style.field}>
+                                                <span className={style.title}>
+                                                    Parami chain
+                                                </span>
+                                                <span
+                                                    className={style.value}
+                                                    onClick={() => {
+                                                        window.open(`${config.explorer.block}/${paramiHash}`, '_blank');
+                                                    }}
+                                                >
+                                                    <Tooltip
+                                                        placement="topLeft"
+                                                        title={paramiHash}
+                                                    >
+                                                        {paramiHash}
+                                                    </Tooltip>
+                                                </span>
+                                            </div>
+                                            <div className={style.field}>
+                                                <span className={style.title}>
+                                                    ETH chain
+                                                </span>
+                                                <span
+                                                    className={style.value}
+                                                    onClick={() => {
+                                                        window.open(`https://etherscan.io/tx/${ethHash}`, '_blank');
+                                                    }}
+                                                >
+                                                    <Tooltip
+                                                        placement="topLeft"
+                                                        title={ethHash}
+                                                    >
+                                                        {ethHash}
+                                                    </Tooltip>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Spin
+                                            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                                            tip={'Transfering...'}
+                                        />
+                                    )}
+                                </div>
+                            </>
+                        )}
+                        {tab === 'withdraw' && (
+                            <>
+                                <Steps
+                                    progressDot
+                                    size='small'
+                                    current={step}
+                                >
+                                    <Step title="Enter information" />
+                                    <Step title="Parami chain" />
+                                    <Step title="Ethereum chain" />
+                                    <Step title="Tokens transferred" />
+                                </Steps>
+                                <div className={style.title}>
+                                    {step === 1 && (
+                                        <span>Parami chain</span>
+                                    )}
+                                    {step === 2 && (
+                                        <span>Ethereum chain</span>
+                                    )}
+                                    {step === 3 && (
+                                        <span>Tokens transferred</span>
+                                    )}
+                                </div>
+                                <div
+                                    className={style.cardContainer}
+                                >
+                                    {ethHash && paramiHash ? (
+                                        <div className={style.listHash}>
+                                            <div className={style.field}>
+                                                <span className={style.title}>
+                                                    Parami chain
+                                                </span>
+                                                <span
+                                                    className={style.value}
+                                                    onClick={() => {
+                                                        window.open(`${config.explorer.block}/${paramiHash}`, '_blank');
+                                                    }}
+                                                >
+                                                    <Tooltip
+                                                        placement="topLeft"
+                                                        title={paramiHash}
+                                                    >
+                                                        {paramiHash}
+                                                    </Tooltip>
+                                                </span>
+                                            </div>
+                                            <div className={style.field}>
+                                                <span className={style.title}>
+                                                    ETH chain
+                                                </span>
+                                                <span
+                                                    className={style.value}
+                                                    onClick={() => {
+                                                        window.open(`https://etherscan.io/tx/${ethHash}`, '_blank');
+                                                    }}
+                                                >
+                                                    <Tooltip
+                                                        placement="topLeft"
+                                                        title={ethHash}
+                                                    >
+                                                        {ethHash}
+                                                    </Tooltip>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <Spin
+                                            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
+                                            tip={'Transfering...'}
+                                        />
+                                    )}
+                                </div>
+                            </>
+                        )}
+                    </div>
+                }
+                footer={false}
+                close={ethHash && paramiHash ? () => {
+                    setLoading(false);
+                } : undefined}
+            />
         </>
     )
 }

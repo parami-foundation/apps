@@ -272,3 +272,73 @@
         }
     }
 }
+
+.processContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .title {
+        font-size: 2rem;
+        color: #ff5b00;
+        font-weight: 900;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border: 1px solid rgba(243, 243, 243, 1);
+    padding: 12px;
+    border-radius: 16px;
+
+    .listHash {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+
+        .field {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(243, 243, 243, 1);
+            border-radius: 8px;
+            transition: all 500ms ease 0s;
+
+            &:not(:last-of-type) {
+                margin-bottom: 10px;
+            }
+        
+            .title {
+                flex: 1;
+                margin: 0;
+                color: #272729;
+                font-weight: 500 !important;
+                font-size: 0.8rem !important;
+            }
+        
+            .value {
+                flex: 2;
+                color: #272729;
+                font-weight: 900;
+                font-size: 16px;
+                text-align: right;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}

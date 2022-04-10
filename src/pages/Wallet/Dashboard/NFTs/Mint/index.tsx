@@ -6,6 +6,7 @@ import { formatBalance } from '@polkadot/util';
 import { DownOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { MintNFT } from '@/services/parami/nft';
+import { useModel } from 'umi';
 
 const MintNFTModal: React.FC<{
     item: any;
@@ -13,6 +14,7 @@ const MintNFTModal: React.FC<{
     password: string;
     keystore: string;
 }> = ({ item, setMintModal, password, keystore }) => {
+    const { getNFTs } = useModel('nft');
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>('');
     const [symbol, setSymbol] = useState<string>('');
@@ -25,6 +27,7 @@ const MintNFTModal: React.FC<{
             await MintNFT(item?.id, name, symbol, password, keystore);
             setLoading(false);
             setMintModal(false);
+            getNFTs();
         } catch (e: any) {
             notification.error({
                 message: e.message,

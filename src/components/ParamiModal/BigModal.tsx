@@ -8,7 +8,7 @@ const { Title } = Typography;
 
 const BigModal: React.FC<{
     visable: boolean,
-    title: string,
+    title?: string,
     content: ReactNode,
     footer: ReactNode,
     close?: () => void,
@@ -17,14 +17,14 @@ const BigModal: React.FC<{
     return (
         <Modal
             title={
-                <>
+                title ? (
                     <Title
                         level={3}
                         className={styles.title}
                     >
                         {title}
                     </Title>
-                </>
+                ) : null
             }
             closable={close ? true : false}
             closeIcon={

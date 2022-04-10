@@ -41,11 +41,23 @@ const InputLink: React.FC<{
     try {
       const { address } = await QueryAccountFromMnemonic(magicMnemonics || magicMnemonic);
 
+      setMagicUserAddress(address);
+
       const oldControllerUserAddress: any = await QueryStableAccountByMagic(
         address,
       );
 
-      setMagicUserAddress(address);
+      const { address: oldControllerAddressFromMnemonic } = await QueryAccountFromMnemonic(controllerMnemonics || oldControllerMnemonic);
+
+      if (oldControllerAddressFromMnemonic !== oldControllerUserAddress) {
+        setOldControllerMnemonic('');
+        notification.error({
+          key: 'error.controller.notMatch',
+          message: intl.formatMessage({
+            id: 'error.controller.notMatch',
+          }),
+        })
+      };
 
       const stableAccountData = await GetStableAccount(
         oldControllerUserAddress,

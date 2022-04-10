@@ -14,7 +14,7 @@ import { hexToDid } from '@/utils/common';
 const NFTs: React.FC = () => {
     const apiWs = useModel('apiWs');
     const { connect } = useModel('web3');
-    const { kickNFT, nftList, loading } = useModel('nft');
+    const { kickNFT, nftList, loading, getNFTs } = useModel('nft');
     const [coverWidth, setCoverWidth] = useState<number>(0);
     const [importModal, setImportModal] = useState<boolean>(false);
     const [mintModal, setMintModal] = useState<boolean>(false);
@@ -38,6 +38,7 @@ const NFTs: React.FC = () => {
                 case 'create':
                     await KickNFT(password, controllerKeystore);
                     setSubmitLoading(false);
+                    getNFTs();
                     break;
                 case 'import':
                     connect();
