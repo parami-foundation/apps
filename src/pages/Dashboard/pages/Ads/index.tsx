@@ -19,7 +19,7 @@ const Ads: React.FC = () => {
             setAdvertisers(isAdvertiser);
         } catch (e: any) {
             notification.error({
-                message: e.message,
+                message: e.message || e,
                 duration: null,
             });
         };

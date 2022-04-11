@@ -61,8 +61,9 @@ export default () => {
                 })
 
                 tmpTags.map((item) => {
-                    if (((new Date()).getTime() - first >= 30000) && !data.has(Data.all[item.count])) {
+                    if (((new Date()).getTime() - first >= 30000) && !data.has(Data[item.count])) {
                         notification.success({
+                            key: 'newTag',
                             message: 'Get new tag!',
                             description: Data[item.count],
                             duration: null,

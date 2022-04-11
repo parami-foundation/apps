@@ -99,7 +99,7 @@ const Advertisement: React.FC<{
 
     useEffect(() => {
         handleStamp();
-    }, [handleStamp]);
+    }, []);
 
     useEffect(() => {
         if (!loading) {

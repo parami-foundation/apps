@@ -68,6 +68,7 @@ export default () => {
                 // TODO: time events(first)
                 if (((new Date()).getTime() - first >= 30000) && changes) {
                     notification.success({
+                        key: 'assetsChange',
                         message: `Changes in ${tmpAssets[assetId].name}`,
                         description: formatBalance(changes, { withUnit: tmpAssets[assetId].symbol }, 18),
                     });

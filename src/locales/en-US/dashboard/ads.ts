@@ -14,6 +14,7 @@ export default {
     'dashboard.ads.launch.upload.title': 'Click or drag avatar to this area to upload',
     'dashboard.ads.launch.upload.desc': 'Please upload pictures in JPG, PNG, GIF and other formats',
     'dashboard.ads.launch.did': 'Did',
+    'dashboard.ads.launch.nftID': 'NFT ID',
     'dashboard.ads.launch.currentPrice': 'Current Price',
     'dashboard.ads.launch.offer': 'Offer a price',
     'dashboard.ads.launch.offer.tip': 'The bid must be 20% higher than the current price',

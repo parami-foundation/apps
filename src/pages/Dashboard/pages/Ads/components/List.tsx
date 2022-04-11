@@ -105,6 +105,7 @@ const List: React.FC<{
                 dataSource={adsList}
                 columns={columns}
             />
+
             <BigModal
                 visable={editModal}
                 title={intl.formatMessage({
@@ -118,6 +119,7 @@ const List: React.FC<{
                 }}
                 footer={false}
             />
+
             <BigModal
                 visable={launchModal}
                 title={intl.formatMessage({
