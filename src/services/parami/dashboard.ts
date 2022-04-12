@@ -1,6 +1,6 @@
+import { BigIntToFloatString, deleteComma } from '@/utils/format';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { subWeb3Callback } from './subscription';
-import { errCb } from './wallet';
 
 export const BecomeAdvertiser = async (deposit: string, account: any) => {
     const injector = await web3FromSource(account.meta.source);
@@ -12,9 +12,9 @@ export const BecomeAdvertiser = async (deposit: string, account: any) => {
 
 export const IsAdvertiser = async (stashAccount: string): Promise<boolean> => {
     const res = await window.apiWs.query.balances.reserves(stashAccount);
-    const reserves = res.toHuman() as any;
-    for (let i = 0; i < reserves.length; i++) {
-        if (reserves[i].id.indexOf('prm/ader') > -1) {
+    const reserves: any = res.toHuman();
+    for (const key in reserves) {
+        if (reserves[key].id === 'prm/ader' && Number(BigIntToFloatString(deleteComma(reserves[key].amount), 18)) >= 1000) {
             return true;
         }
     }
@@ -62,13 +62,13 @@ export const ExistTag = async (tag: string): Promise<any> => {
     return res
 };
 
-export const BidSlot = async (adId: string, kolDid: string, amount: string, account: any) => {
+export const BidSlot = async (adId: string, nftID: string, amount: string, account: any) => {
+    console.log(account)
     const injector = await web3FromSource(account.meta.source);
-    const tx = window.apiWs.tx.ad.bid(adId, kolDid, amount);
-    const ex = window.apiWs.tx.magic.codo(tx);
+    const tx = window.apiWs.tx.ad.bid(adId, nftID, amount);
+    const codo = window.apiWs.tx.magic.codo(tx);
 
-    const hash = await ex.signAndSend(account.address, { signer: injector.signer }, errCb);
-    return hash
+    return await subWeb3Callback(codo, injector, account);
 };
 
 export const GetAssetInfo = async (assetId: string) => {

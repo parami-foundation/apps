@@ -134,9 +134,9 @@
         access: 'canDashboard',
       },
       {
-        path: '/dashboard/ads',
-        name: 'Ads',
-        component: './Dashboard/pages/Ads',
+        path: '/dashboard/advertisement',
+        name: 'Advertisement',
+        component: './Dashboard/pages/Advertisement',
         access: 'canDashboard',
       },
       {

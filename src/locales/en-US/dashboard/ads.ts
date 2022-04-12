@@ -1,4 +1,6 @@
 export default {
+    'dashboard.ads.title': 'Advertisement',
+    'dashboard.ads.create': 'Create Advertisement',
     'dashboard.ads.create.budget': 'Budget',
     'dashboard.ads.create.tag': 'Tag',
     'dashboard.ads.create.tag.new': 'New Tag',
@@ -34,7 +36,11 @@ export default {
     'dashboard.ads.edit.title': 'Edit',
     'dashboard.ads.launch.title': 'Launch',
     'dashboard.ads.becomeAdvertisers': 'Become an Advertisers',
+    'dashboard.ads.register.description': 'It will cost your 1,000 AD3 to become an Advertisers.',
     'dashboard.ads.deposit': 'Deposit',
     'dashboard.ads.control.total': 'Total',
     'dashboard.ads.control.create': 'Create',
+    'dashboard.ads.bid': 'Bid Advertisement',
+    'dashboard.ads.list': 'Bided List',
+    'dashboard.ads.nfts.empty': 'This advertisement has not been bided yet',
 };

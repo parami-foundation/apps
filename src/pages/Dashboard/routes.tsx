@@ -20,10 +20,10 @@ export default {
                 component: './Did',
             },
             {
-                path: '/dashboard/ads',
-                name: 'Ads',
+                path: '/dashboard/advertisement',
+                name: 'Advertisement',
                 icon: <NotificationOutlined />,
-                component: './Ads',
+                component: './Advertisement',
             },
             {
                 path: '/dashboard/bridge',

@@ -19,4 +19,5 @@ export default {
     'common.export': 'Export',
     'common.enable': 'Enable',
     'common.disable': 'Disable',
+    'common.search': 'Search',
 };
