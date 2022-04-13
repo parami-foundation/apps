@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import RightContent from '@/components/RightContent';
 import ProLayout from '@ant-design/pro-layout';
 import React, { useState } from 'react';
-import { history, useModel } from 'umi';
+import { history } from 'umi';
 import routes from './routes';
 import { useEffect } from 'react';
 import { web3Enable } from '@polkadot/extension-dapp';
 
 const Layout: React.FC = (props) => {
-    const apiWs = useModel('apiWs');
     const [pathname, setPathname] = useState('');
 
     const init = async () => {

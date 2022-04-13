@@ -6,7 +6,8 @@ export const config = {
         "adEarnUpTo": "500000000000000000000",
     },
     "main": isDev ? {
-        "socketServer": "wss://staging.parami.io/ws",
+        "socketServer": "ws://127.0.0.1:9944",
+        // "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
         "airdropServer": "https://staging.parami.io/airdrop",
