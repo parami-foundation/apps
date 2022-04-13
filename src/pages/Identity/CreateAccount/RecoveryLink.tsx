@@ -6,79 +6,56 @@ import style from '../style.less';
 import config from '@/config/config';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
 import { guid } from '@/utils/common';
-import { CreateAccountAddress, CreateAccountKeystore, CreateMnemonic } from '@/services/parami/Identity';
+import { CreateKeystore } from '@/services/parami/Identity';
 import BigModal from '@/components/ParamiModal/BigModal';
 
 const { Title } = Typography;
 
 const RecoveryLink: React.FC<{
-  magicMnemonic: string;
-  controllerMnemonic: string;
+  mnemonic: string;
+  passphrase: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
-  setControllerMnemonic: React.Dispatch<React.SetStateAction<string>>;
-  setControllerKeystore: React.Dispatch<React.SetStateAction<string>>;
-  setControllerUserAddress: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ magicMnemonic, controllerMnemonic, setStep, setPassword, setControllerMnemonic, setControllerKeystore, setControllerUserAddress }) => {
+  setPassphrase: React.Dispatch<React.SetStateAction<string>>;
+  setKeystore: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ mnemonic, setStep, setPassphrase, setKeystore }) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [verifyLink, setVerifyLink] = useState<string>();
 
   const recoverWithLink = `${window.location.origin}/recover/#${encodeURI(
-    magicMnemonic as string,
-  )};${encodeURI(
-    controllerMnemonic as string,
+    mnemonic as string,
   )}`;
 
   const intl = useIntl();
   const { TextArea } = Input;
 
-  // Create Controller Keystore
-  const createControllerKeystore = async (password: string) => {
+  // Create Keystore
+  const createKeystore = async (password: string) => {
     try {
-      const { mnemonic } = await CreateMnemonic();
-      const { keystore } = await CreateAccountKeystore(
+      const { keystore } = await CreateKeystore(
         mnemonic,
         password,
       );
-      setControllerMnemonic(mnemonic);
-      setControllerKeystore(keystore);
-      localStorage.setItem('controllerKeystore', keystore);
+      setKeystore(keystore);
+      localStorage.setItem('parami:wallet:keystore', keystore);
     } catch (e: any) {
       notification.error({
-        message: e.message,
+        message: e.message || e,
         duration: null,
       });
       return;
     }
-  }
-
-  // Create Controller Address
-  const createControllerUserAddress = async () => {
-    try {
-      const { address } = await CreateAccountAddress(controllerMnemonic);
-      setControllerUserAddress(address);
-      localStorage.setItem('controllerUserAddress', address);
-    } catch (e: any) {
-      notification.error({
-        message: e.message,
-        duration: null,
-      });
-      return;
-    }
-  }
+  };
 
   // Generate Password
   const GeneratePassword = async () => {
     const generatePassword = guid().substring(0, 6);
-    setPassword(generatePassword);
-    localStorage.setItem('stamp', generatePassword);
-    await createControllerKeystore(generatePassword);
+    setPassphrase(generatePassword);
+    localStorage.setItem('parami:wallet:passphrase', generatePassword);
+    await createKeystore(generatePassword);
   };
-  // GeneratePassword
 
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -107,14 +84,10 @@ const RecoveryLink: React.FC<{
       }
     }
 
-    await createControllerUserAddress();
+    await GeneratePassword();
 
     setStep(3);
   };
-
-  useEffect(() => {
-    GeneratePassword();
-  }, []);
 
   return (
     <>
@@ -138,7 +111,7 @@ const RecoveryLink: React.FC<{
         <div className={style.recoveryLinkContainer}>
           <Spin
             indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-            spinning={!magicMnemonic}
+            spinning={!mnemonic}
             wrapperClassName={style.recoveryLinkSpinWrapper}
             tip={intl.formatMessage({
               id: 'identity.recoveryLink.placeholder',
@@ -147,7 +120,7 @@ const RecoveryLink: React.FC<{
             <CopyToClipboard
               text={recoverWithLink}
               onCopy={() => {
-                if (!!magicMnemonic) {
+                if (!!mnemonic) {
                   message.success(
                     intl.formatMessage({
                       id: 'common.copied',
@@ -163,7 +136,7 @@ const RecoveryLink: React.FC<{
                 placeholder={intl.formatMessage({
                   id: 'identity.recoveryLink.placeholder',
                 })}
-                value={!magicMnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
+                value={!mnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
                 readOnly
                 className={style.recoveryLinkInput}
               />
@@ -172,7 +145,7 @@ const RecoveryLink: React.FC<{
             <CopyToClipboard
               text={recoverWithLink}
               onCopy={() => {
-                if (!!magicMnemonic) {
+                if (!!mnemonic) {
                   message.success(
                     intl.formatMessage({
                       id: 'common.copied',
@@ -204,7 +177,7 @@ const RecoveryLink: React.FC<{
             size="large"
             className={style.button}
             onClick={() => setShowModal(true)}
-            disabled={!magicMnemonic || !copied}
+            disabled={!mnemonic || !copied}
             loading={submitting}
           >
             {intl.formatMessage({

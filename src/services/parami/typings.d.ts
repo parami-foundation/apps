@@ -1,57 +1,79 @@
-// @ts-ignore
-/* eslint-disable */
-
 declare namespace API {
-    type Error = {
-        Type?: string;
-        Message?: string;
-    };
+	type Error = {
+		Type?: string;
+		Message?: string;
+	};
 
-    type Resp = {
-        data?: Result;
-        response?: Response;
-    };
+	type Resp = {
+		data?: Result;
+		response?: Response;
+	};
 
-    type AirdropLogin = {
-        ticket?: {};
-        site?: string;
-        wallet?: string;
-    };
+	type AirdropLogin = {
+		ticket?: {};
+		site?: string;
+		wallet?: string;
+	};
 
-    type AirdropLoginResp = {
-        avatar?: string;
-        nickname?: string;
-    };
+	type AirdropLoginResp = {
+		avatar?: string;
+		nickname?: string;
+	};
 
-    type AirdropLink = {
-        site?: string;
-        wallet?: string;
-    };
+	type AirdropLink = {
+		site?: string;
+		wallet?: string;
+	};
+
+	type Info = {
+		common: {
+			languageCode?: string | null;
+			releaseNotesModal?: string | null;
+		};
+
+		wallet: {
+			passphrase?: string | null;
+			keystore?: string | null;
+			account?: string | null;
+			did?: string | null;
+			customPassphrase?: boolean;
+			inProcess?: string | null;
+			redirect?: string | null;
+		};
+
+		dashboard: {
+			accountMeta?: string | null;
+			account?: string | null;
+			did?: string | null;
+			accounts?: any;
+			assets?: any;
+		};
+	}
 };
 
 declare namespace State {
-    type Controller = {
-        free?: any;
-        reserved?: any;
-        total?: any;
-        nonce?: any;
-    };
+	type Controller = {
+		free?: any;
+		reserved?: any;
+		total?: any;
+		nonce?: any;
+	};
 
-    type Stash = {
-        free?: any;
-        reserved?: any;
-        total?: any;
-        nonce?: any;
-    };
+	type Stash = {
+		free?: any;
+		reserved?: any;
+		total?: any;
+		nonce?: any;
+	};
 
-    type Assets = {
-        assetID?: string;
-        balance?: any;
-        valueOf?: any;
-    }[];
+	type Assets = {
+		assetID?: string;
+		balance?: any;
+		valueOf?: any;
+	}[];
 
-    type Tags = {
-        count?: any;
-        value?: any;
-    }[];
+	type Tags = {
+		count?: any;
+		value?: any;
+	}[];
 }

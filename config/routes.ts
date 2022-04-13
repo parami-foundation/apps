@@ -17,12 +17,12 @@
       {
         path: '/create',
         name: 'create',
-        component: './Identity/CreateAccount',
+        component: './Identity/Create',
       },
       {
         path: '/create/:platfrom',
         name: 'create',
-        component: './Identity/CreateAccount',
+        component: './Identity/Create',
       },
       {
         component: './404',

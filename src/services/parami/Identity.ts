@@ -13,7 +13,7 @@ export const CreateMnemonic = async () => {
     }
 }
 
-export const CreateAccountKeystore = async (mnemonic: string, password: string) => {
+export const CreateKeystore = async (mnemonic: string, password: string) => {
     let keystore: any = '';
     keystore = EncodeKeystoreWithPwd(password, mnemonic);
 
@@ -22,12 +22,34 @@ export const CreateAccountKeystore = async (mnemonic: string, password: string) 
     };
 };
 
-export const CreateAccountAddress = async (mnemonic: string) => {
+export const CreateAccount = async (mnemonic: string) => {
     const sp = instanceKeyring.createFromUri(mnemonic);
 
     return {
         address: sp.address,
     }
+};
+
+export const QueryDID = async (address: any) => {
+    const data = await window.apiWs.query.did.didOf(address);
+    if (data.isEmpty) {
+        return null;
+    }
+
+    return (data.toHuman() as any).toString();
+};
+
+export const RegisterDID = async (passphrase: string, keystore: string) => {
+    const decodedMnemonic = DecodeKeystoreWithPwd(passphrase, keystore);
+
+    if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+        return;
+    }
+
+    const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+    const ex = await window.apiWs.tx.did.register(null);
+
+    return await subCallback(ex, payUser);
 };
 
 export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: string, password: string, keystore: string) => {
@@ -51,15 +73,6 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
 
     const events = await subCallback(batch, payUser);
     return events;
-};
-
-export const QueryDid = async (address: any) => {
-    const data = await window.apiWs.query.did.didOf(address);
-    if (data.isEmpty) {
-        return null;
-    }
-
-    return (data.toHuman() as any).toString();
 };
 
 export const CreateAccountsAndDid = async (password: string, keystore: string, magicUserAddress: string, amount: string) => {

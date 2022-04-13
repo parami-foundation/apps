@@ -10,7 +10,6 @@ import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
-import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { GetAvatar, LinkAccount, LoginWithAirdrop } from '@/services/parami/api';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
@@ -20,46 +19,43 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
-import { BatchNicknameAndAvatar, CreateAccountsAndDid, GetExistentialDeposit, GetStableAccount, QueryDid } from '@/services/parami/Identity';
-
-const { Title } = Typography;
-const { Step } = Steps;
-const { TextArea } = Input;
+import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
 
 const goto = () => {
   setTimeout(() => {
-    const redirect = localStorage.getItem('redirect');
+    const redirect = localStorage.getItem('parami:wallet:redirect');
     window.location.href = redirect || config.page.walletPage;
-    localStorage.removeItem('process');
-    localStorage.removeItem('redirect');
+    localStorage.removeItem('parami:wallet:inProcess');
+    localStorage.removeItem('parami:wallet:redirect');
   }, 10);
 };
 
 let unsub: VoidFn | null = null;
 
 const VerifyIdentity: React.FC<{
-  password: string;
   qsTicket?: any;
   qsPlatform?: string | undefined;
-  magicUserAddress: string;
-  controllerUserAddress: string;
-  controllerKeystore: string;
+  passphrase: string;
+  account: string;
+  keystore: string;
+  did: string;
   setQsTicket: React.Dispatch<any>;
   setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
-}> = ({ password, qsTicket, qsPlatform, magicUserAddress, controllerUserAddress, controllerKeystore, setQsTicket, setQsPlatform }) => {
+  setDID: React.Dispatch<React.SetStateAction<string>>;
+}> = ({ qsTicket, qsPlatform, passphrase, account, keystore, did, setQsTicket, setQsPlatform, setDID }) => {
   const apiWs = useModel('apiWs');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
-  const [secModal, setSecModal] = useState<boolean>(false);
-  const [Password, setPassword] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [airdropData, setAirDropData] = useState<any>(null);
-  const [step, setStep] = useState<number>(3);
-  const [controllerBalance, setControllerBalance] = useState<bigint>(BigInt(0));
+  const [step, setStep] = useState<number>(2);
+  const [balance, setBalance] = useState<bigint>(BigInt(0));
   const [avatarNicknameEvents, setAvatarNicknameEvents] = useState<any>();
-  const [DID, setDID] = useState<string>();
   const [ExistentialDeposit, setExistentialDeposit] = useState<string>();
 
   const intl = useIntl();
+  const { Title } = Typography;
+  const { Step } = Steps;
+  const { TextArea } = Input;
 
   // Login With Airdrop
   const loginWithAirdrop = async (response, platform) => {
@@ -71,7 +67,7 @@ const VerifyIdentity: React.FC<{
       const { response: Resp, data } = await LoginWithAirdrop({
         ticket: response,
         site: qsPlatform || platform,
-        wallet: controllerUserAddress,
+        wallet: account,
       });
 
       // Network exception
@@ -141,7 +137,7 @@ const VerifyIdentity: React.FC<{
     try {
       const { response } = await LinkAccount({
         site: qsPlatform,
-        wallet: controllerUserAddress,
+        wallet: account,
       });
 
       // Network exception
@@ -153,7 +149,7 @@ const VerifyIdentity: React.FC<{
           duration: null,
         });
         setAvatarNicknameEvents('Network exception');
-        setStep(7);
+        setStep(5);
         return;
       };
 
@@ -176,11 +172,11 @@ const VerifyIdentity: React.FC<{
             const imgBlob = (img as string).substring(22);
             try {
               const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-              const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, password, controllerKeystore);
+              const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, passphrase, keystore);
               setAvatarNicknameEvents(events);
             } catch (e: any) {
               setAvatarNicknameEvents(e.message);
-              setStep(7);
+              setStep(5);
             }
           });
       };
@@ -189,61 +185,43 @@ const VerifyIdentity: React.FC<{
         message: e.message,
         duration: null,
       });
-      setStep(7);
+      setStep(5);
     }
   };
 
-  // Create Account
-  const createAccount = async () => {
-    // Create Stash process
-    let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
-    let did = localStorage.getItem('did') as string;
-
-    let existAccounts
-
-    if (!stashUserAddress || !did) {
-      // Get whether all accounts exist
-      existAccounts = await GetStableAccount(controllerUserAddress);
-      if (!!existAccounts?.stashAccount) {
-        stashUserAddress = existAccounts?.stashAccount;
-        localStorage.setItem('stashUserAddress', existAccounts?.stashAccount);
-
-        // Query DID
-        const didData = await QueryDid(stashUserAddress);
-        if (!!didData) {
-          localStorage.setItem('did', didData as string);
-          setDID(didData as string);
-          localStorage.setItem('did', didData as string);
-        }
-      } else try {
-        const events: any = await CreateAccountsAndDid(
-          password,
-          controllerKeystore,
-          magicUserAddress,
-          '0.01',
+  // Create DID
+  const createDID = async () => {
+    // Query DID
+    try {
+      let didData = await QueryDID(account);
+      if (!!didData) {
+        setDID(didData);
+        localStorage.setItem('parami:wallet:did', didData);
+      } else {
+        const events: any = await RegisterDID(
+          passphrase,
+          keystore,
         );
-        stashUserAddress = events['magic']['Created'][0][0];
-        did = events['did']['Assigned'][0][0];
-        setDID(did as string);
-        localStorage.setItem('stashUserAddress', stashUserAddress);
-        localStorage.setItem('did', did);
-      } catch (e: any) {
-        notification.error({
-          message: e.message,
-          duration: null,
-        });
-        return;
+        didData = events['did']['Assigned'][0][0];
+        setDID(didData);
+        localStorage.setItem('parami:wallet:did', didData);
       }
+    } catch (e: any) {
+      notification.error({
+        message: e.message || e,
+        duration: null,
+      });
+      return;
     }
 
-    setStep(6);
+    setStep(4);
 
     if (qsTicket) {
       await linkAccountAndSetNicknameAvatar(airdropData, did);
       return;
     }
 
-    setStep(7);
+    setStep(5);
   };
 
   // Listen Balance Change
@@ -251,27 +229,27 @@ const VerifyIdentity: React.FC<{
     if (!apiWs) {
       return;
     }
-    if (!!controllerUserAddress) {
+    if (!!account) {
       let free: any;
-      unsub = await apiWs.query.system.account(controllerUserAddress, (info) => {
+      unsub = await apiWs.query.system.account(account, (info) => {
         const data: any = info.data;
         if (free && free !== `${data.free}`) {
           notification.success({
-            key: 'gasBalanceChange',
-            message: 'Changes in Gas Balance',
+            key: 'balanceChange',
+            message: 'Changes in Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }
         free = `${data.free}`;
         if (BigInt(`${data.free}`) > FloatStringToBigInt('0', 18)) {
-          setControllerBalance(data.free);
+          setBalance(data.free);
         }
       });
     }
   };
 
   // From Quick Sign
-  const minimalAirdrop = async () => {
+  const airdrop = async () => {
     try {
       await loginWithAirdrop(qsTicket, qsPlatform);
       if (unsub === null) {
@@ -293,48 +271,49 @@ const VerifyIdentity: React.FC<{
   };
 
   useEffect(() => {
-    if (apiWs && controllerUserAddress) {
+    if (apiWs && account) {
       getExistentialDeposit();
       listenBalance();
     }
-  }, [apiWs, controllerUserAddress]);
+  }, [apiWs, account]);
 
   useEffect(() => {
     if (!!avatarNicknameEvents && !!qsTicket) {
       goto();
       return;
     }
-    if (!qsTicket && !!DID) {
+    if (!qsTicket && !!did) {
       goto();
       return;
     }
-  }, [avatarNicknameEvents, qsTicket, DID]);
+  }, [avatarNicknameEvents, qsTicket, did]);
 
   useEffect(() => {
-    if (password === '' || controllerUserAddress === '' || controllerKeystore === '') {
+    if (passphrase === '' || account === '' || keystore === '') {
       return;
     }
     if (qsTicket) {
-      minimalAirdrop()
+      airdrop()
       return;
     };
-  }, [password, controllerUserAddress, controllerKeystore]);
+  }, [passphrase, account, keystore]);
 
   useEffect(() => {
-    if (!!ExistentialDeposit && controllerBalance >= FloatStringToBigInt(ExistentialDeposit, 18)) {
+    if (!!ExistentialDeposit && balance >= FloatStringToBigInt(ExistentialDeposit, 18)) {
+      setStep(3);
       setLoading(true);
       if (unsub !== null) {
         unsub();
       }
-      createAccount();
-    } else if (!!ExistentialDeposit && controllerBalance > 0 && controllerBalance < FloatStringToBigInt(ExistentialDeposit, 18)) {
+      createDID();
+    } else if (!!ExistentialDeposit && balance > 0 && balance < FloatStringToBigInt(ExistentialDeposit, 18)) {
       notification.error({
         message: 'Sorry, your credit is running low',
         description: `Please make sure to recharge ${ExistentialDeposit} $AD3 at least`,
         duration: null,
       });
     }
-  }, [controllerBalance, ExistentialDeposit]);
+  }, [balance, ExistentialDeposit]);
 
   return (
     <>
@@ -349,14 +328,14 @@ const VerifyIdentity: React.FC<{
           size='large'
           tip={(
             <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
-              <Step title="Magic Account" icon={step === 0 ? <LoadingOutlined /> : false} />
-              <Step title="Weak Password" icon={step === 1 ? <LoadingOutlined /> : false} />
-              <Step title="Controller Account" icon={step === 2 ? <LoadingOutlined /> : false} />
-              <Step title="Deposit" icon={step === 3 ? <LoadingOutlined /> : false} />
-              <Step title="Stash Account" icon={step === 4 ? <LoadingOutlined /> : false} />
-              <Step title="DID" icon={step === 5 ? <LoadingOutlined /> : false} />
-              <Step title="Bind Account" icon={step === 6 ? <LoadingOutlined /> : false} />
-              <Step title="Jump to wallet" icon={step === 7 ? <LoadingOutlined /> : false} />
+              <Step title="Create Account" icon={step === 0 ? <LoadingOutlined /> : false} />
+              <Step title="Generate Passphrase" icon={step === 1 ? <LoadingOutlined /> : false} />
+              <Step title="Deposit" icon={step === 2 ? <LoadingOutlined /> : false} />
+              <Step title="Create DID" icon={step === 3 ? <LoadingOutlined /> : false} />
+              {qsTicket && qsPlatform && (
+                <Step title="Bind Account" icon={step === 4 ? <LoadingOutlined /> : false} />
+              )}
+              <Step title="Completing" icon={step === 5 ? <LoadingOutlined /> : false} />
             </Steps>
           )}
           indicator={(<></>)}
@@ -417,7 +396,7 @@ const VerifyIdentity: React.FC<{
                 </span>
                 <span className={style.value}>
                   <CopyToClipboard
-                    text={controllerUserAddress}
+                    text={account}
                     onCopy={() =>
                       message.success(
                         intl.formatMessage({
@@ -435,7 +414,7 @@ const VerifyIdentity: React.FC<{
                 </span>
               </div>
               <CopyToClipboard
-                text={controllerUserAddress}
+                text={account}
                 onCopy={() =>
                   message.success(
                     intl.formatMessage({
@@ -450,7 +429,7 @@ const VerifyIdentity: React.FC<{
                     backgroundColor: '#fff',
                   }}
                   readOnly
-                  value={controllerUserAddress}
+                  value={account}
                   autoSize={{ minRows: 1, maxRows: 4 }}
                 />
               </CopyToClipboard>
@@ -558,12 +537,6 @@ const VerifyIdentity: React.FC<{
             </Button>
           </>
         }
-      />
-      <SecurityModal
-        visable={secModal}
-        setVisable={setSecModal}
-        password={Password}
-        setPassword={setPassword}
       />
     </>
   );

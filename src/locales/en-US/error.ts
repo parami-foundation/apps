@@ -1,5 +1,4 @@
 export default {
-    'error.identity.zeroBalance': 'The amount of this account is empty. Please confirm whether this account is available.',
     'error.password.empty': 'Password cannot be empty',
     'error.password.passwordNotMatch': 'Passwords do not match',
     'error.identity.incorrectRecoveryLink': 'Incorrent RecoveryLink, please try again',

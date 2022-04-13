@@ -1,6 +1,6 @@
-import { formatBoolean } from '@/utils/format';
+import { formatBoolean } from "@/utils/format";
 
-export default () => {
+export const QueryCurrentUser = async (): Promise<API.Info | undefined> => {
   // Common Info
   const languageCode = localStorage.getItem('languageCode');
   const releaseNotesModal = localStorage.getItem('parami.wallet.releaseNotesModal');
@@ -42,5 +42,5 @@ export default () => {
       accounts: dashboardAccounts ? JSON.parse(dashboardAccounts) : {},
       assets: dashboardAssets ? JSON.parse(dashboardAssets) : {},
     }
-  } as API.Info;
+  };
 }

@@ -10,6 +10,7 @@ import type { VoidFn } from '@polkadot/api/types';
 import type { ApiPromise } from '@polkadot/api';
 import NoFoundPage from './pages/404';
 import { initWebSocket } from './utils/websocket';
+import { QueryCurrentUser } from './services/parami/currentUser';
 
 declare global {
   interface Window {
@@ -25,20 +26,23 @@ export const initialStateConfig = {
 export async function getInitialState(): Promise<{
   collapsed?: boolean | undefined;
   settings?: Partial<LayoutSettings>;
+  currentInfo?: API.Info;
 }> {
+  const currentInfo = await QueryCurrentUser();
+
   await initWebSocket(config.main.socketServer);
 
-  const process = localStorage.getItem('process');
-  if (access().canPreDid && window.location.toString().indexOf('create') < 0 && process === 'createAccount') {
+  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.Wallet?.inProcess === 'createAccount') {
     window.location.href = config.page.createPage;
   };
-  if (access().canPreDid && window.location.toString().indexOf('create') < 0 && process === 'recoverAccount') {
+  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.Wallet?.inProcess === 'recoverAccount') {
     window.location.href = config.page.recoverPage;
   };
 
   return {
     collapsed: false,
     settings: {},
+    currentInfo,
   };
 };
 

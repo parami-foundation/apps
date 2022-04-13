@@ -1,34 +1,19 @@
-/**
- * @see https://umijs.org/zh-CN/plugins/plugin-access
- * */
-export const access = () => {
-  const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
-  const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
-  const magicUserAddress = localStorage.getItem('magicUserAddress') as string;
-  const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
-  const did = localStorage.getItem('did') as string;
-
-  const dashboardDid = localStorage.getItem('dashboardDid');
-  const dashboardCurrentAccount = localStorage.getItem('dashboardCurrentAccount');
-
+export const access = (initialState: { currentInfo?: API.Info | undefined }) => {
+  const { currentInfo } = initialState || {};
   return {
-    canPreDid:
-      !!magicUserAddress &&
-      !!controllerKeystore &&
-      !!controllerUserAddress &&
-      !did,
-    canUser:
-      !!magicUserAddress &&
-      !!controllerKeystore &&
-      !!controllerUserAddress &&
-      !!stashUserAddress &&
-      !!did,
-    canRecover:
-      !!controllerKeystore &&
-      !!controllerUserAddress,
+    canWalletUser:
+      !!currentInfo &&
+      !!currentInfo?.Wallet &&
+      !!currentInfo?.Wallet.account &&
+      !!currentInfo?.Wallet.keystore &&
+      !!currentInfo?.Wallet.did,
     canDashboard:
-      !!dashboardDid &&
-      !!dashboardCurrentAccount,
+      !!currentInfo?.Dashboard,
+    canPreDID:
+      !!currentInfo &&
+      !!currentInfo?.Wallet &&
+      !!currentInfo?.Wallet.account &&
+      !!currentInfo?.Wallet.keystore,
   };
 }
 

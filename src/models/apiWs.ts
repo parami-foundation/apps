@@ -16,7 +16,7 @@ export default () => {
         });
         window.apiWs = api;
         setApiWs(api);
-    }
+    };
 
     useEffect(() => {
         initChain();
