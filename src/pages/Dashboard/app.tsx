@@ -40,11 +40,11 @@ const Layout: React.FC = (props) => {
             rightContentRender={() => <RightContent />}
             disableContentMargin={true}
             logo={'/images/logo-round-core.svg'}
-            title={'Dashboard'}
+            title={'Para Identity Dashboard'}
             headerHeight={70}
             siderWidth={260}
             navTheme='light'
-            headerTheme='light'
+            headerTheme='dark'
             layout='mix'
         >
             {props.children}
