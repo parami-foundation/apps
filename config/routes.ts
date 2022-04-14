@@ -89,7 +89,7 @@
     icon: 'UserOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
-    component: './Account/Profile',
+    component: './Account',
   },
   {
     path: '/record',

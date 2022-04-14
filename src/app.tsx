@@ -32,10 +32,10 @@ export async function getInitialState(): Promise<{
 
   await initWebSocket(config.main.socketServer);
 
-  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.Wallet?.inProcess === 'createAccount') {
+  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.wallet?.inProcess === 'createAccount') {
     window.location.href = config.page.createPage;
   };
-  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.Wallet?.inProcess === 'recoverAccount') {
+  if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.wallet?.inProcess === 'recoverAccount') {
     window.location.href = config.page.recoverPage;
   };
 

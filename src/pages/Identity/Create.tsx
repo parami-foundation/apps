@@ -48,6 +48,7 @@ const Create: React.FC = () => {
 
     // Check if user is already logged in
     if (access.canWalletUser) {
+      localStorage.removeItem('parami:wallet:inProcess');
       history.push(config.page.walletPage);
       return;
     };

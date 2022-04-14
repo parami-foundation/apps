@@ -1,8 +1,21 @@
-// @ts-ignore
-/* eslint-disable */
 import config from '@/config/config';
 import Keyring from "@polkadot/keyring";
 import { DecodeKeystoreWithPwd, errCb } from "./wallet";
+import { extend } from 'umi-request';
+
+const errorHandler = (error: any) => {
+    const { response = {}, message = '', data = {} } = error;
+    if (message === 'http error') {
+        return {
+            response,
+            data
+        } as API.Resp;
+    }
+}
+const request = extend({
+    errorHandler,
+    credentials: 'omit',
+});
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -11,13 +24,12 @@ export async function uploadIPFS(body: any, options?: { [key: string]: any }) {
     const formData = new FormData();
     formData.append('file', body);
 
-    const res = await fetch(config.ipfs.upload, {
+    return request(config.ipfs.upload, {
         method: 'POST',
         body: formData,
+        requestType: 'form',
         ...(options || {}),
     });
-
-    return await res.json();
 };
 
 export const uploadAvatar = async (hash: string, password: string, keystore: string) => {

@@ -28,4 +28,5 @@ export default {
     'error.nft.Exists': 'This NFT has been imported or in import process',
     'error.tag.InsufficientBalance': 'Insufficient balance',
     'error.controller.notMatch': 'The controller address does not match, a new controller account will be created for you.',
+    'error.avatar.largeSize': 'The avatar is too large, please upload a smaller one',
 };

@@ -3,17 +3,17 @@ export const access = (initialState: { currentInfo?: API.Info | undefined }) => 
   return {
     canWalletUser:
       !!currentInfo &&
-      !!currentInfo?.Wallet &&
-      !!currentInfo?.Wallet.account &&
-      !!currentInfo?.Wallet.keystore &&
-      !!currentInfo?.Wallet.did,
+      !!currentInfo?.wallet &&
+      !!currentInfo?.wallet.account &&
+      !!currentInfo?.wallet.keystore &&
+      !!currentInfo?.wallet.did,
     canDashboard:
-      !!currentInfo?.Dashboard,
+      !!currentInfo?.dashboard,
     canPreDID:
       !!currentInfo &&
-      !!currentInfo?.Wallet &&
-      !!currentInfo?.Wallet.account &&
-      !!currentInfo?.Wallet.keystore,
+      !!currentInfo?.wallet &&
+      !!currentInfo?.wallet.account &&
+      !!currentInfo?.wallet.keystore,
   };
 }
 

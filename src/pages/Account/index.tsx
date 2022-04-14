@@ -3,11 +3,11 @@ import styles from '@/pages/wallet.less';
 import style from './style.less';
 import AccountDetails from './AccountDetails/AccountDetails';
 import Security from './Security/Security';
-import Avatar from './Avatar/Avatar';
+import Avatar from './Avatar';
 import ExportController from './Export/ExportController';
 import Bind from './Bind';
 
-const Profile: React.FC = () => {
+const Account: React.FC = () => {
     return (
         <>
             <div className={styles.mainTopContainer}>
@@ -37,4 +37,4 @@ const Profile: React.FC = () => {
     )
 }
 
-export default Profile;
+export default Account;
