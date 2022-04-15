@@ -3,7 +3,7 @@ import { Button, Card, Divider, Typography } from 'antd';
 import { useIntl, history } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
-import style from '../style.less';
+import style from '../../../style.less';
 import { useEffect } from 'react';
 
 const { Title } = Typography;

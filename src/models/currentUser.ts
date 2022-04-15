@@ -24,7 +24,7 @@ export default () => {
   return {
     common: {
       languageCode,
-      releaseNotesModal,
+      releaseNotesModal: releaseNotesModal ? JSON.parse(releaseNotesModal) : [],
     },
     wallet: {
       passphrase: walletPassphrase,

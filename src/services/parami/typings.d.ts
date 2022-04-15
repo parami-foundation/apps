@@ -28,7 +28,7 @@ declare namespace API {
 	type Info = {
 		common: {
 			languageCode?: string | null;
-			releaseNotesModal?: string | null;
+			releaseNotesModal?: any[] | null;
 		};
 
 		wallet: {

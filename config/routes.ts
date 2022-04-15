@@ -35,7 +35,7 @@
     hideInMenu: true,
     headerRender: false,
     footerRender: false,
-    component: './Identity/RecoverAccount',
+    component: './Identity/Recover',
   },
   {
     path: '/wallet',

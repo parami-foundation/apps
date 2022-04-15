@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Card, Divider, Input, message, Spin, Typography, notification } from 'antd';
 import { useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
-import style from '../style.less';
+import style from '../../../style.less';
 import config from '@/config/config';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined } from '@ant-design/icons';

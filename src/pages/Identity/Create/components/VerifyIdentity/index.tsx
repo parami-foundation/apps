@@ -4,7 +4,7 @@ import { Button, Card, Divider, Input, message, notification, Popconfirm, Spin, 
 import { useIntl, useModel, history } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
-import style from '../style.less';
+import style from '../../../style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
@@ -21,15 +21,6 @@ import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
 import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
 
-const goto = () => {
-  setTimeout(() => {
-    const redirect = localStorage.getItem('parami:wallet:redirect');
-    window.location.href = redirect || config.page.walletPage;
-    localStorage.removeItem('parami:wallet:inProcess');
-    localStorage.removeItem('parami:wallet:redirect');
-  }, 10);
-};
-
 let unsub: VoidFn | null = null;
 
 const VerifyIdentity: React.FC<{
@@ -44,6 +35,7 @@ const VerifyIdentity: React.FC<{
   setDID: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ qsTicket, qsPlatform, passphrase, account, keystore, did, setQsTicket, setQsPlatform, setDID }) => {
   const apiWs = useModel('apiWs');
+  const { initialState, refresh } = useModel('@@initialState');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [airdropData, setAirDropData] = useState<any>(null);
@@ -56,6 +48,16 @@ const VerifyIdentity: React.FC<{
   const { Title } = Typography;
   const { Step } = Steps;
   const { TextArea } = Input;
+
+  // Goto redirect page
+  const goto = () => {
+    refresh();
+    setTimeout(() => {
+      window.location.href = initialState?.currentInfo?.wallet?.redirect || config.page.walletPage;
+      localStorage.removeItem('parami:wallet:inProcess');
+      localStorage.removeItem('parami:wallet:redirect');
+    }, 10);
+  };
 
   // Login With Airdrop
   const loginWithAirdrop = async (response, platform) => {

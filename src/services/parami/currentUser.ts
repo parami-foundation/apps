@@ -24,7 +24,7 @@ export const QueryCurrentUser = async (): Promise<API.Info | undefined> => {
   return {
     common: {
       languageCode,
-      releaseNotesModal,
+      releaseNotesModal: releaseNotesModal ? JSON.parse(releaseNotesModal) : [],
     },
     wallet: {
       passphrase: walletPassphrase,

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styles from '@/pages/wallet.less';
-import QuickSign from './CreateAccount/QuickSign';
-import RecoveryLink from './CreateAccount/RecoveryLink';
-import VerifyIdentity from './CreateAccount/VerifyIdentity';
+import NotSupport from '../NotSupport';
+import BeforeStart from './components/BeforeStart';
+import QuickSign from './components/QuickSign';
+import RecoveryLink from './components/RecoveryLink';
+import VerifyIdentity from './components/VerifyIdentity';
 import { CreateAccount, CreateMnemonic } from '@/services/parami/Identity';
 import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
-import BeforeStart from './CreateAccount/BeforeStart';
-import NotSupport from './CreateAccount/NotSupport';
 import isiOSSafari from '@/utils/isSafaiApp';
 import InApp from 'detect-inapp';
 
@@ -15,7 +15,7 @@ const inapp = new InApp(navigator.userAgent || navigator.vendor || (window as an
 
 const Create: React.FC = () => {
   const apiWs = useModel('apiWs');
-  const { wallet } = useModel('currentUser');
+  const { initialState } = useModel('@@initialState');
   const [step, setStep] = useState<number>(1);
   const [qsTicket, setQsTicket] = useState<any>();
   const [qsPlatform, setQsPlatform] = useState<string>();
@@ -28,6 +28,7 @@ const Create: React.FC = () => {
   const [mnemonic, setMnemonic] = useState<string>('');
 
   const access = useAccess();
+  const walletInfo = initialState?.currentInfo?.wallet;
 
   // Create Account
   const createAccount = async () => {
@@ -57,10 +58,10 @@ const Create: React.FC = () => {
     localStorage.setItem('parami:wallet:inProcess', 'createAccount');
 
     // Check if user has already created a account
-    if (!!wallet?.account && !!wallet?.keystore && !!wallet?.passphrase) {
-      setAccount(wallet.account);
-      setKeystore(wallet.keystore);
-      setPassphrase(wallet.passphrase);
+    if (!!walletInfo?.account && !!walletInfo?.keystore && !!walletInfo?.passphrase) {
+      setAccount(walletInfo.account);
+      setKeystore(walletInfo.keystore);
+      setPassphrase(walletInfo.passphrase);
       setStep(3);
       return;
     };

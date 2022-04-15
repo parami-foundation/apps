@@ -4,7 +4,7 @@ import { Button, Card, Divider, Input, message, notification, Popconfirm, Spin, 
 import { useIntl, useModel } from 'umi';
 import config from '@/config/config';
 import styles from '@/pages/wallet.less';
-import style from '../style.less';
+import style from '../../../style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
