@@ -47,7 +47,7 @@
       {
         path: '/wallet',
         name: 'wallet',
-        component: './Wallet/Dashboard',
+        component: './Wallet',
       },
       {
         path: '/wallet/send',
