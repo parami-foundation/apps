@@ -173,9 +173,11 @@ const VerifyIdentity: React.FC<{
           .then(async (img) => {
             const imgBlob = (img as string).substring(22);
             try {
-              const res = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-              const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${res.Hash}`, passphrase, keystore);
-              setAvatarNicknameEvents(events);
+              const { response: uploadResp, data: uploadData } = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
+              if (uploadResp?.ok) {
+                const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${uploadData.Hash}`, passphrase, keystore);
+                setAvatarNicknameEvents(events);
+              }
             } catch (e: any) {
               setAvatarNicknameEvents(e.message);
               setStep(5);
@@ -184,6 +186,7 @@ const VerifyIdentity: React.FC<{
       };
     } catch (e: any) {
       notification.error({
+        key: 'unknowError',
         message: e.message,
         duration: null,
       });
@@ -210,6 +213,7 @@ const VerifyIdentity: React.FC<{
       }
     } catch (e: any) {
       notification.error({
+        key: 'unknowError',
         message: e.message || e,
         duration: null,
       });
@@ -259,6 +263,7 @@ const VerifyIdentity: React.FC<{
       }
     } catch (e: any) {
       notification.error({
+        key: 'unknowError',
         message: e.message,
         duration: null,
       });
@@ -310,6 +315,7 @@ const VerifyIdentity: React.FC<{
       createDID();
     } else if (!!ExistentialDeposit && balance > 0 && balance < FloatStringToBigInt(ExistentialDeposit, 18)) {
       notification.error({
+        key: 'balanceNotEnough',
         message: 'Sorry, your credit is running low',
         description: `Please make sure to recharge ${ExistentialDeposit} $AD3 at least`,
         duration: null,

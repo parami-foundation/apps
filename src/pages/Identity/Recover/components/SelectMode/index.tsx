@@ -51,6 +51,7 @@ const SelectMode: React.FC<{
       setLoading(true);
     } else {
       notification.error({
+        key: 'passwordIncorrect',
         message: 'The password is incorrect.',
       });
       setLoading(false);

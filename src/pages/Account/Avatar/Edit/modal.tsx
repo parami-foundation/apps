@@ -47,8 +47,8 @@ const Modal: React.FC<{
       }));
       return;
     }
-    setSpinning(true);
     try {
+      setSpinning(true);
       const { response, data } = await uploadIPFS(File);
       if (response.ok) {
         await uploadAvatar(`ipfs://${data.Hash}`, password, controllerKeystore);
@@ -60,15 +60,17 @@ const Modal: React.FC<{
           }),
           duration: null,
         })
+        setSpinning(false);
+        return;
       }
     } catch (e: any) {
       notification.error({
         message: e.message || e,
         duration: null,
       });
+      setSpinning(false);
       return;
     }
-    setSpinning(false);
   };
 
   return (

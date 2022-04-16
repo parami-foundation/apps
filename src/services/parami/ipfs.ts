@@ -28,6 +28,7 @@ export async function uploadIPFS(body: any, options?: { [key: string]: any }) {
         method: 'POST',
         body: formData,
         requestType: 'form',
+        getResponse: true,
         ...(options || {}),
     });
 };

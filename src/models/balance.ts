@@ -5,50 +5,26 @@ import { useModel } from 'umi';
 
 export default () => {
   const apiWs = useModel('apiWs');
-  const [controller, setController] = useState<State.Controller>({});
-  const [stash, setStash] = useState<State.Stash>({});
-  const controllerUserAddress = localStorage.getItem('controllerUserAddress') as string;
-  const stashUserAddress = localStorage.getItem('stashUserAddress') as string;
+  const { wallet } = useModel('currentUser');
+  const [balance, setBalance] = useState<State.Controller>({});
 
   const getController = async () => {
     if (!apiWs) {
       return;
     }
-    if (!!controllerUserAddress) {
+    if (!!wallet && !!wallet.account) {
       let free: any;
-      await apiWs.query.system.account(controllerUserAddress, (info) => {
+      await apiWs.query.system.account(wallet.account, (info) => {
         const data: any = info.data;
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
           notification.success({
-            key: 'gasBalanceChange',
-            message: 'Changes in Gas Balance',
-            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
-          })
-        }
-        setController({
-          free: `${data.free}`,
-          reserved: `${data.reserved}`,
-          total: `${total}`,
-          nonce: `${info.nonce}`,
-        });
-        free = `${data.free}`;
-      });
-    }
-
-    if (!!stashUserAddress) {
-      let free: any;
-      await apiWs.query.system.account(stashUserAddress, (info) => {
-        const data: any = info.data;
-        const total: any = data.free.add(data.reserved);
-        if (free && free !== `${data.free}`) {
-          notification.success({
-            key: 'stashBalanceChange',
+            key: 'balanceChange',
             message: 'Changes in Balance',
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }
-        setStash({
+        setBalance({
           free: `${data.free}`,
           reserved: `${data.reserved}`,
           total: `${total}`,
@@ -66,7 +42,6 @@ export default () => {
   }, [apiWs]);
 
   return {
-    controller,
-    stash
+    balance
   }
 }

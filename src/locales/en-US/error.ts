@@ -29,4 +29,5 @@ export default {
     'error.tag.InsufficientBalance': 'Insufficient balance',
     'error.controller.notMatch': 'The controller address does not match, a new controller account will be created for you.',
     'error.avatar.largeSize': 'The avatar is too large, please upload a smaller one',
+    'error.accessDenied': 'Access denied, please use your RecoveryLink to restore your account',
 };

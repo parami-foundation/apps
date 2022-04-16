@@ -79,6 +79,7 @@ const RecoveryLink: React.FC<{
         await navigator.share(shareData);
       } catch (e: any) {
         notification.warning({
+          key: 'shareWarning',
           message: 'Please keep your Recovery Link safe.',
         })
       }

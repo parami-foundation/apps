@@ -65,11 +65,6 @@
         component: './Wallet/Buy',
       },
       {
-        path: '/wallet/charge',
-        name: 'wallet.charge',
-        component: './Wallet/Charge',
-      },
-      {
         component: './404',
       },
     ],

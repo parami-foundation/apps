@@ -97,6 +97,7 @@ const RecoverDeposit: React.FC<{
       return;
     } catch (e: any) {
       notification.error({
+        key: 'unknowError',
         message: e.message,
         duration: null,
       });
@@ -126,6 +127,7 @@ const RecoverDeposit: React.FC<{
       changeController();
     } else if (!!RecoveryFee && magicBalance > 0 && magicBalance < FloatStringToBigInt(RecoveryFee, 18)) {
       notification.error({
+        key: 'balanceNotEnough',
         message: 'Sorry, your credit is running low',
         description: `Please make sure to recharge ${RecoveryFee} $AD3 at least`,
         duration: null,

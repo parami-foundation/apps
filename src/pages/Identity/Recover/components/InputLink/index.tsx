@@ -56,6 +56,7 @@ const InputLink: React.FC<{
 
       if (didData === null) {
         notification.error({
+          key: 'identitynotFound',
           message: intl.formatMessage({
             id: 'error.identity.notFound',
           }),
@@ -74,6 +75,7 @@ const InputLink: React.FC<{
       return;
     } catch (e: any) {
       notification.error({
+        key: 'identitynotFound',
         message: intl.formatMessage({
           id: 'error.identity.notFound',
         }),
@@ -94,6 +96,7 @@ const InputLink: React.FC<{
     // RecoveryLink Error
     if (!!hash && !mnemonics) {
       notification.error({
+        key: 'recoveryLinkError',
         message: intl.formatMessage({
           id: 'error.identity.incorrectRecoveryLink',
         }),
