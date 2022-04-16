@@ -72,7 +72,7 @@ const NFTs: React.FC = () => {
 		if (nftList.length) {
 			setCoverWidth(coverRef.current.clientWidth)
 		}
-	}, [coverRef]);
+	}, [coverRef, nftList]);
 
 	return (
 		<>

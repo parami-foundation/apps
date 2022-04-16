@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Image, Button, Input, notification } from 'antd';
+import React, { useState } from 'react';
+import { Image, Button, Input } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import styles from '../../style.less';
 import { RightOutlined } from '@ant-design/icons';
-import { GetUserBalance } from '@/services/parami/wallet';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import Token from '@/components/Token/Token';
 
@@ -14,45 +13,15 @@ const InputAmount: React.FC<{
   token: any;
   setToken: React.Dispatch<React.SetStateAction<any>>;
 }> = ({ setStep, number, setNumber, token }) => {
-  const apiWs = useModel('apiWs');
-  const { wallet } = useModel('currentUser');
+  const { balance } = useModel('balance');
   const [submitting, setSubmitting] = useState(false);
-  const [freeBalance, setFreeBalance] = useState<string>('0');
 
   const intl = useIntl();
-
-  const getBalance = async () => {
-    if (!!wallet && !!wallet.account) {
-      if (!Object.keys(token).length) {
-        const { freeBalance: _freeBalance }: any = await GetUserBalance(wallet?.account);
-        setFreeBalance(`${_freeBalance}`);
-      } else {
-        const { balance }: any = await window.apiWs.query.assets.account(token?.id, wallet?.account);
-        if (!!balance) {
-          setFreeBalance(`${balance}`);
-        }
-      }
-    } else {
-      notification.error({
-        key: 'accessDenied',
-        message: intl.formatMessage({
-          id: 'error.accessDenied',
-        }),
-        duration: null,
-      });
-    }
-  };
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setStep('InputAddress');
   };
-
-  useEffect(() => {
-    if (apiWs) {
-      getBalance();
-    }
-  }, [apiWs]);
 
   return (
     <>
@@ -74,7 +43,7 @@ const InputAmount: React.FC<{
         type='primary'
         shape='round'
         onClick={() => {
-          setNumber(BigIntToFloatString(freeBalance, 18))
+          setNumber(BigIntToFloatString(balance?.free, 18))
         }}
       >
         {intl.formatMessage({
@@ -112,7 +81,7 @@ const InputAmount: React.FC<{
         </div>
         <div className={styles.balance}>
           <span className={styles.token}>
-            <Token value={freeBalance} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
+            <Token value={balance?.free} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
           </span>
         </div>
       </div>
@@ -124,7 +93,7 @@ const InputAmount: React.FC<{
           size="large"
           className={styles.button}
           loading={submitting}
-          disabled={FloatStringToBigInt(number, 18) <= BigInt(0) || FloatStringToBigInt(number, 18) > BigInt(freeBalance)}
+          disabled={FloatStringToBigInt(number, 18) <= BigInt(0) || FloatStringToBigInt(number, 18) > BigInt(balance?.free)}
           onClick={() => handleSubmit()}
         >
           {intl.formatMessage({
