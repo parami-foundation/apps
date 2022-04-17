@@ -1,7 +1,7 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { setNickName } from '@/services/parami/wallet';
-import { Button, Input, message } from 'antd';
+import { Button, Input } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { notification } from 'antd';
@@ -11,25 +11,35 @@ const Nickname: React.FC<{
     setNicknameModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ nicknameModal, setNicknameModal }) => {
     const { nickname, setNickname } = useModel('user');
-    const [spinning, setSpinning] = useState<boolean>(false);
+    const { wallet } = useModel('currentUser');
+    const [loading, setLoading] = useState<boolean>(false);
     const [secModal, setSecModal] = useState(false);
-    const [password, setPassword] = useState('');
+    const [passphrase, setPassphrase] = useState('');
 
     const intl = useIntl();
-    const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
 
     const updateNickname = async () => {
-        setSpinning(true);
-        try {
-            await setNickName(nickname, password, controllerKeystore);
-            setNicknameModal(false);
-            setSpinning(false);
-        } catch (e: any) {
+        if (!!wallet && !!wallet.keystore) {
+            try {
+                setLoading(true);
+                await setNickName(nickname, passphrase, wallet?.keystore);
+                setNicknameModal(false);
+                setLoading(false);
+            } catch (e: any) {
+                notification.error({
+                    message: e.message,
+                    duration: null,
+                });
+                setLoading(false);
+            }
+        } else {
             notification.error({
-                message: e.message,
+                key: 'accessDenied',
+                message: intl.formatMessage({
+                    id: 'error.accessDenied',
+                }),
                 duration: null,
             });
-            setSpinning(false);
         }
     };
 
@@ -57,7 +67,7 @@ const Nickname: React.FC<{
                             style={{
                                 marginTop: 20,
                             }}
-                            loading={spinning}
+                            loading={loading}
                             onClick={() => { setSecModal(true) }}
                         >
                             {intl.formatMessage({
@@ -85,8 +95,8 @@ const Nickname: React.FC<{
             <SecurityModal
                 visable={secModal}
                 setVisable={setSecModal}
-                password={password}
-                setPassword={setPassword}
+                passphrase={passphrase}
+                setPassphrase={setPassphrase}
                 func={updateNickname}
             />
         </>

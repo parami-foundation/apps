@@ -11,13 +11,12 @@ import ImgCrop from 'antd-img-crop';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 
-const controllerKeystore = localStorage.getItem('controllerKeystore') as string;
-
 const Modal: React.FC<{
   setModalVisable: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setModalVisable }) => {
   const { setAvatar } = useModel('user');
-  const [password, setPassword] = useState<string>('');
+  const { wallet } = useModel('currentUser');
+  const [passphrase, setPassphrase] = useState<string>('');
   const [secModal, setSecModal] = useState<boolean>(false);
   const [File, setFile] = useState<Blob>();
   const [spinning, setSpinning] = useState<boolean>(false);
@@ -41,35 +40,45 @@ const Modal: React.FC<{
   };
 
   const UploadAvatar = async () => {
-    if (!File) {
-      message.error(intl.formatMessage({
-        id: 'error.avatar.empty',
-      }));
-      return;
-    }
-    try {
-      setSpinning(true);
-      const { response, data } = await uploadIPFS(File);
-      if (response.ok) {
-        await uploadAvatar(`ipfs://${data.Hash}`, password, controllerKeystore);
-        setModalVisable(false);
-      } else if (response.status === 405) {
+    if (!!wallet && !!wallet.keystore) {
+      if (!File) {
+        message.error(intl.formatMessage({
+          id: 'error.avatar.empty',
+        }));
+        return;
+      }
+      try {
+        setSpinning(true);
+        const { response, data } = await uploadIPFS(File);
+        if (response.ok) {
+          await uploadAvatar(`ipfs://${data.Hash}`, passphrase, wallet?.keystore);
+          setModalVisable(false);
+        } else if (response.status === 405) {
+          notification.error({
+            message: intl.formatMessage({
+              id: 'error.avatar.largeSize',
+            }),
+            duration: null,
+          })
+          setSpinning(false);
+          return;
+        }
+      } catch (e: any) {
         notification.error({
-          message: intl.formatMessage({
-            id: 'error.avatar.largeSize',
-          }),
+          message: e.message || e,
           duration: null,
-        })
+        });
         setSpinning(false);
         return;
       }
-    } catch (e: any) {
+    } else {
       notification.error({
-        message: e.message || e,
+        key: 'accessDenied',
+        message: intl.formatMessage({
+          id: 'error.accessDenied',
+        }),
         duration: null,
-      });
-      setSpinning(false);
-      return;
+      })
     }
   };
 
@@ -140,8 +149,8 @@ const Modal: React.FC<{
       <SecurityModal
         visable={secModal}
         setVisable={setSecModal}
-        password={password}
-        setPassword={setPassword}
+        passphrase={passphrase}
+        setPassphrase={setPassphrase}
         func={UploadAvatar}
       />
     </>

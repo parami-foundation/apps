@@ -37,8 +37,6 @@ export default {
     'wallet.balance.nonce': 'Nonce',
     'wallet.decodeDid.decodeDidFromImg': 'Identify user DID from avatar',
     'wallet.decodeDid.decodeDidFromImg.title': 'The user\'s DID is',
-    'wallet.exportController.title': 'Export control account',
-    'wallet.exportController.subtitle': 'The Recovery Phrase of your control account is',
     'wallet.recordlist.title': 'Transaction history',
     'wallet.recordlist.all': 'View All',
     'wallet.receive.did': 'DID',

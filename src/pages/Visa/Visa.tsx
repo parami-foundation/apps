@@ -53,7 +53,7 @@ const Visa: React.FC = () => {
         if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
             message.error(
                 intl.formatMessage({
-                    id: 'error.password.error',
+                    id: 'error.passphrase.error',
                 })
             );
             return;

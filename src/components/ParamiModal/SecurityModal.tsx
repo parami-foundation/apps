@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Modal, Typography } from 'antd';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from './style.less';
 
 const { Title } = Typography;
@@ -8,28 +8,27 @@ const { Title } = Typography;
 const SecurityModal: React.FC<{
   visable: boolean;
   setVisable: React.Dispatch<React.SetStateAction<boolean>>;
-  password: string;
-  setPassword: React.Dispatch<React.SetStateAction<string>>;
+  passphrase: string;
+  setPassphrase: React.Dispatch<React.SetStateAction<string>>;
   func?: () => Promise<void>;
-  changePassword?: boolean;
-}> = ({ visable, setVisable, password, setPassword, func, changePassword }) => {
+  changePassphrase?: boolean;
+}> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase }) => {
+  const { wallet } = useModel('currentUser');
   const [submitting, setSubmitting] = useState(false);
 
   const intl = useIntl();
 
-  const stamp = localStorage.getItem('stamp');
-
   const inputVerify = (e: any) => {
     if (e) {
-      setPassword(e.target.value);
+      setPassphrase(e.target.value);
     } else {
-      setPassword('');
+      setPassphrase('');
     }
   };
 
   const handleSubmit = () => {
     setSubmitting(true);
-    if (!password || password.length < 6) {
+    if (!passphrase || passphrase.length < 6) {
       setSubmitting(false);
       return;
     }
@@ -41,11 +40,11 @@ const SecurityModal: React.FC<{
   };
 
   useEffect(() => {
-    if (!!stamp && visable && !changePassword) {
-      setPassword(stamp);
+    if (!!wallet?.passphrase && visable && !changePassphrase) {
+      setPassphrase(wallet?.passphrase);
       handleSubmit();
     };
-  }, [stamp, password, visable, changePassword]);
+  }, [wallet?.passphrase, passphrase, visable, changePassphrase]);
 
   return (
     <Modal
@@ -75,7 +74,7 @@ const SecurityModal: React.FC<{
               onClick={() => {
                 handleSubmit();
               }}
-              disabled={!password || password.length < 6}
+              disabled={!passphrase || passphrase.length < 6}
               loading={submitting}
             >
               {intl.formatMessage({
@@ -111,22 +110,22 @@ const SecurityModal: React.FC<{
         >
           <div className={styles.codeInput}>
             <div className={styles.verifyForm}>
-              <span className={password?.slice(0) && !password?.slice(1, 5) && styles.highLight}>
-                {password?.slice(0, 1).replace(/[^]/, '✱')}
+              <span className={passphrase?.slice(0) && !passphrase?.slice(1, 5) && styles.highLight}>
+                {passphrase?.slice(0, 1).replace(/[^]/, '✱')}
               </span>
-              <span className={password?.slice(1) && !password?.slice(2, 5) && styles.highLight}>
-                {password?.slice(1, 2).replace(/[^]/, '✱')}
+              <span className={passphrase?.slice(1) && !passphrase?.slice(2, 5) && styles.highLight}>
+                {passphrase?.slice(1, 2).replace(/[^]/, '✱')}
               </span>
-              <span className={password?.slice(2, 3) && !password?.slice(3, 5) && styles.highLight}>
-                {password?.slice(2, 3).replace(/[^]/, '✱')}
+              <span className={passphrase?.slice(2, 3) && !passphrase?.slice(3, 5) && styles.highLight}>
+                {passphrase?.slice(2, 3).replace(/[^]/, '✱')}
               </span>
-              <span className={password?.slice(3, 4) && !password?.slice(4, 5) && styles.highLight}>
-                {password?.slice(3, 4).replace(/[^]/, '✱')}
+              <span className={passphrase?.slice(3, 4) && !passphrase?.slice(4, 5) && styles.highLight}>
+                {passphrase?.slice(3, 4).replace(/[^]/, '✱')}
               </span>
-              <span className={password?.slice(4, 5) && !password?.slice(5) && styles.highLight}>
-                {password?.slice(4, 5).replace(/[^]/, '✱')}
+              <span className={passphrase?.slice(4, 5) && !passphrase?.slice(5) && styles.highLight}>
+                {passphrase?.slice(4, 5).replace(/[^]/, '✱')}
               </span>
-              <span className={password?.slice(5) && styles.highLight}>{password?.slice(5).replace(/[^]/, '✱')}</span>
+              <span className={passphrase?.slice(5) && styles.highLight}>{passphrase?.slice(5).replace(/[^]/, '✱')}</span>
             </div>
             <Input.Password
               autoFocus
@@ -134,7 +133,7 @@ const SecurityModal: React.FC<{
               size="large"
               className={styles.verifyInput}
               onChange={inputVerify}
-              value={password}
+              value={passphrase}
               disabled={submitting}
               maxLength={6}
               visibilityToggle={false}

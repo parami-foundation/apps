@@ -27,7 +27,7 @@ const ExportController: React.FC<{
             if (!decrypted) {
                 message.error(
                     intl.formatMessage({
-                        id: 'error.password.error',
+                        id: 'error.passphrase.error',
                     }),
                 );
                 setPassword('');
@@ -38,7 +38,7 @@ const ExportController: React.FC<{
         } catch (e: any) {
             message.error(
                 intl.formatMessage({
-                    id: 'error.password.error',
+                    id: 'error.passphrase.error',
                 }),
             );
             setPassword('');

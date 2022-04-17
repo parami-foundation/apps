@@ -14,7 +14,7 @@ export default {
     'account.avatar.subtitle.tip': 'The picture you uploaded will be added with did information, and then you can use this picture as an identification avatar.',
     'account.blockchain.title': 'Blockchain',
     'account.export.title': 'Export',
-    'account.export.exportController': 'Export Controller',
+    'account.export.exportMnemonic': 'Export Mnemonic',
     'account.export.exportAll': 'Export All',
     'account.security.passphrase.changeSuccess': 'Modified successfully',
     'account.security.title': 'Security',
