@@ -33,6 +33,7 @@ const Rows: React.FC<{
     const [pendingUnstake, setPendingUnstake] = useState<(true | false)[]>([]);
     const [pendingClaim, setPendingClaim] = useState<(true | false)[]>([]);
     const [currentPrice, setCurrentPrice] = useState<bigint>(BigInt(0));
+
     const handleStake = useCallback(async (tokenId, incentiveIndex) => {
         pendingStake[tokenId] = true;
         setPendingStake(pendingStake);

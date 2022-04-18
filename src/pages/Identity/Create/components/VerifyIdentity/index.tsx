@@ -503,7 +503,7 @@ const VerifyIdentity: React.FC<{
               botName={config.airdropService.telegram.botName}
             />
             <DiscordLoginButton
-              dataOnauth={(response) => {
+              dataOauth={(response) => {
                 loginWithAirdrop(response, 'Discord')
               }}
               clientId={config.airdropService.discord.clientId}

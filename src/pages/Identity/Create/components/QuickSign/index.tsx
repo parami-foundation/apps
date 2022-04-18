@@ -94,7 +94,7 @@ const QuickSign: React.FC<{
             botName={config.airdropService.telegram.botName}
           />
           <DiscordLoginButton
-            dataOnauth={(response) => { handleQuickCreate(response, 'Discord') }}
+            dataOauth={(response) => { handleQuickCreate(response, 'Discord') }}
             clientId={config.airdropService.discord.clientId}
             redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
           />

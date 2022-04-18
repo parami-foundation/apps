@@ -43,6 +43,7 @@ const PairItem: React.FC<{
     const [Ticks, setTicks] = useState<any[]>([]);
     const [Token0, setToken0] = useState<Token | undefined>(undefined);
     const [Token1, setToken1] = useState<Token | undefined>(undefined);
+
     const getToken = async (address: string) => {
         if (ChainId !== 1 && ChainId !== 4 || !Signer) return undefined
         const erc20_rw = new ethers.Contract(address, ERC20_ABI, Signer);

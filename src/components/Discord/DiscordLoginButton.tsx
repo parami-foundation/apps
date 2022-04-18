@@ -6,16 +6,16 @@ import { useParams } from 'umi';
 import qs from 'qs';
 
 const DiscordLoginButton: React.FC<{
-    dataOnauth: (response: any) => void;
+    dataOauth: (response: any) => void;
     clientId: string;
     redirectUri?: string;
     scope?: string;
-}> = ({ dataOnauth, clientId, scope = 'identify', redirectUri }) => {
+}> = ({ dataOauth, clientId, scope = 'identify', redirectUri }) => {
     const handleMessage = (event: MessageEvent) => {
         if (!event.data.target) {
             const url = new URL(event.data);
             const ticket = qs.parse(url.hash.substring(1));
-            dataOnauth(ticket);
+            dataOauth(ticket);
         }
     };
 
