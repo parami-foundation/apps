@@ -9,17 +9,16 @@ import { GetUserInfo } from "@/services/parami/Info";
 
 export default () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [LPs, setLPs] = useState<Map<string, any>>(new Map());
     const [LPsArr, setLPsArr] = useState<any[]>([]);
 
-    const currentAccount = localStorage.getItem('stashUserAddress');
-
     const getTokenList = async () => {
-        if (!apiWs || !currentAccount) {
+        if (!apiWs || !wallet?.account) {
             return;
         }
         const allLPs: Map<string, any> = new Map();
-        const LPTokens: any = await apiWs.query.swap.account.entries(currentAccount);
+        const LPTokens: any = await apiWs.query.swap.account.entries(wallet?.account);
         for (const tokenId in LPTokens) {
             const tokenInfo: any = LPTokens[tokenId][0].toHuman();
             const LPTokenId = tokenInfo[1];
@@ -76,10 +75,10 @@ export default () => {
     }
 
     useEffect(() => {
-        if (apiWs && currentAccount) {
+        if (apiWs && !wallet?.account) {
             getTokenList();
         }
-    }, [apiWs, currentAccount]);
+    }, [apiWs, !wallet?.account]);
 
     return {
         LPs,

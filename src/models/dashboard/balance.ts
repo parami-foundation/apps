@@ -5,19 +5,16 @@ import { useModel } from 'umi';
 
 export default () => {
   const apiWs = useModel('apiWs');
-  const [controller, setController] = useState<State.Controller>({});
-  const [stash, setStash] = useState<State.Stash>({});
-
-  const controllerUserAddress = localStorage.getItem('dashboardControllerUserAddress') as string;
-  const stashUserAddress = localStorage.getItem('dashboardStashUserAddress');
+  const { dashboard } = useModel('currentUser');
+  const [balance, setBalance] = useState<State.Controller>({});
 
   const getController = async () => {
     if (!apiWs) {
       return;
     }
-    if (!!controllerUserAddress) {
+    if (!!dashboard && !!dashboard.account) {
       let free: any;
-      await apiWs.query.system.account(controllerUserAddress, (info) => {
+      await apiWs.query.system.account(dashboard?.account, (info) => {
         const data: any = info.data;
         const total: any = data.free.add(data.reserved);
         if (free && free !== `${data.free}`) {
@@ -27,29 +24,7 @@ export default () => {
             description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }
-        setController({
-          free: `${data.free}`,
-          reserved: `${data.reserved}`,
-          total: `${total}`,
-          nonce: `${info.nonce}`,
-        });
-        free = `${data.free}`;
-      });
-    }
-
-    if (!!stashUserAddress) {
-      let free: any;
-      await apiWs.query.system.account(stashUserAddress, (info) => {
-        const data: any = info.data;
-        const total: any = data.free.add(data.reserved);
-        if (free && free !== `${data.free}`) {
-          notification.success({
-            key: 'stashBalanceChange',
-            message: 'Dashboard: Changes in Balance',
-            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
-          })
-        }
-        setStash({
+        setBalance({
           free: `${data.free}`,
           reserved: `${data.reserved}`,
           total: `${total}`,
@@ -67,7 +42,6 @@ export default () => {
   }, [apiWs]);
 
   return {
-    controller,
-    stash,
+    balance,
   }
 }

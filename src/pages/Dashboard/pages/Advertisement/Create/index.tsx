@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useState } from 'react';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Tooltip } from 'antd';
@@ -12,6 +12,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setCreateModal }) => {
+  const { dashboard } = useModel('currentUser');
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [budget, setBudget] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
@@ -23,8 +24,6 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
-
-  const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
 
   const tagInputRef = useRef<Input>(null);
 
@@ -49,23 +48,33 @@ const Create: React.FC<{
   };
 
   const newTag = async (tag: string) => {
-    setSubmiting(true);
-    try {
-      await CreateTag(tag, JSON.parse(currentAccount));
-      let Tags = tags;
-      if (tagInputValue && tags.indexOf(tagInputValue) === -1) {
-        Tags = [...tags, tagInputValue];
+    if (!!dashboard && !!dashboard?.accountMeta) {
+      setSubmiting(true);
+      try {
+        await CreateTag(tag, JSON.parse(dashboard?.accountMeta));
+        let Tags = tags;
+        if (tagInputValue && tags.indexOf(tagInputValue) === -1) {
+          Tags = [...tags, tagInputValue];
+        }
+        setTags(Tags);
+        setTagInputVisible(false);
+        setTagInputValue('');
+        setSubmiting(false);
+      } catch (e: any) {
+        notification.error({
+          message: intl.formatMessage({ id: e.message || e }),
+          duration: null,
+        });
+        setSubmiting(false);
       }
-      setTags(Tags);
-      setTagInputVisible(false);
-      setTagInputValue('');
-      setSubmiting(false);
-    } catch (e: any) {
+    } else {
       notification.error({
-        message: intl.formatMessage({ id: e.message || e }),
+        key: 'accessDenied',
+        message: intl.formatMessage({
+          id: 'error.accessDenied',
+        }),
         duration: null,
-      });
-      setSubmiting(false);
+      })
     }
   };
 
@@ -99,17 +108,27 @@ const Create: React.FC<{
   };
 
   const handleSubmit = async () => {
-    setSubmiting(true);
-    try {
-      await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(currentAccount));
-      setSubmiting(false);
-      setCreateModal(false);
-    } catch (e: any) {
+    if (!!dashboard && !!dashboard?.accountMeta) {
+      setSubmiting(true);
+      try {
+        await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(dashboard?.accountMeta));
+        setSubmiting(false);
+        setCreateModal(false);
+      } catch (e: any) {
+        notification.error({
+          message: e.message || e,
+          duration: null,
+        });
+        setSubmiting(false);
+      }
+    } else {
       notification.error({
-        message: e.message || e,
+        key: 'accessDenied',
+        message: intl.formatMessage({
+          id: 'error.accessDenied',
+        }),
         duration: null,
-      });
-      setSubmiting(false);
+      })
     }
   };
 

@@ -6,6 +6,7 @@ import { infuraProvider } from '@/config/web3provider';
 
 export default () => {
 	const apiWs = useModel('apiWs');
+	const { wallet } = useModel('currentUser');
 	const { avatar } = useModel('user');
 	const [kickNFTMap, setKickNFTMap] = useState<Map<string, any>>(new Map());
 	const [portNFTMap, setPortNFTMap] = useState<Map<string, any>>(new Map());
@@ -17,14 +18,12 @@ export default () => {
 
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const currentAccount = localStorage.getItem('did');
-
 	const getNFTs = async () => {
 		if (!apiWs) {
 			return;
 		}
 
-		apiWs.query.nft.account.keys(currentAccount, async (allEntries) => {
+		apiWs.query.nft.account.keys(wallet?.did, async (allEntries) => {
 			for (const nftItem in allEntries) {
 				const [key, value]: any = allEntries[nftItem].toHuman();
 				if (!!key) {

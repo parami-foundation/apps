@@ -6,7 +6,6 @@ import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
 import config from '@/config/config';
 import Did from '../Did/did';
-import ExportController from './ExportController/ExportController';
 
 const { Title } = Typography;
 
@@ -14,14 +13,12 @@ export type GlobalHeaderRightProps = {
   menu?: boolean;
 };
 
-
 const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
   const [menuVisible, setMenuVisible] = useState<boolean>(false);
+  const { wallet } = useModel('currentUser');
   const { nickname, avatar } = useModel('user');
 
   const intl = useIntl();
-
-  const did = localStorage.getItem('did') as string;
 
   const loginOut = async () => {
     localStorage.clear();
@@ -43,10 +40,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           <span className={styles.nickname}>
             {nickname.toString() || 'Nickname'}
           </span>
-          <Did did={did} />
-        </div>
-        <div className={styles.buttons}>
-          <ExportController setMenuVisible={setMenuVisible} />
+          <Did did={wallet.did!} />
         </div>
         <Divider />
         <div
@@ -81,17 +75,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           src={avatar || '/images/logo-square-core.svg'}
           alt="avatar"
         />
-        {/* <Image
-          src={'/images/SantaHat.svg'}
-          preview={false}
-          style={{
-            position: 'absolute',
-            height: '25px',
-            width: '25px',
-            top: '-25px',
-            right: '-11px',
-          }}
-        /> */}
       </span>
     </HeaderDropdown>
   );

@@ -9,26 +9,35 @@ import { parseAmount } from '@/utils/common';
 const Register: React.FC<{
   setIsAdvertisers: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setIsAdvertisers }) => {
-  const { stash } = useModel('dashboard.balance');
+  const { balance } = useModel('dashboard.balance');
+  const { dashboard } = useModel('currentUser');
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   const intl = useIntl();
 
-  const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
-
   const becomeAdvertiser = async () => {
-    setSubmitLoading(true);
-    try {
-      await BecomeAdvertiser(parseAmount('1000'), JSON.parse(currentAccount));
-      setIsAdvertisers(true);
-      setSubmitLoading(false);
-    } catch (e: any) {
+    if (!!dashboard && !!dashboard?.accountMeta) {
+      setSubmitLoading(true);
+      try {
+        await BecomeAdvertiser(parseAmount('1000'), JSON.parse(dashboard?.accountMeta));
+        setIsAdvertisers(true);
+        setSubmitLoading(false);
+      } catch (e: any) {
+        notification.error({
+          message: e.message,
+          duration: null,
+        });
+        setSubmitLoading(false);
+      };
+    } else {
       notification.error({
-        message: e.message,
+        key: 'accessDenied',
+        message: intl.formatMessage({
+          id: 'error.accessDenied',
+        }),
         duration: null,
-      });
-      setSubmitLoading(false);
-    };
+      })
+    }
   };
 
   return (
@@ -51,7 +60,7 @@ const Register: React.FC<{
           size='large'
           shape='round'
           loading={submitLoading}
-          disabled={stash?.free < FloatStringToBigInt('1000', 18)}
+          disabled={balance?.free < FloatStringToBigInt('1000', 18)}
           onClick={() => {
             becomeAdvertiser();
           }}

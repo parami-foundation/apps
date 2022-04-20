@@ -6,18 +6,17 @@ import { notification } from "antd";
 
 export default () => {
     const apiWs = useModel('apiWs');
+    const { dashboard } = useModel('currentUser');
     const [Nickname, setNickname] = useState<string>('Nickname');
     const [Avatar, setAvatar] = useState<any>();
 
-    const did = localStorage.getItem('dashboardDid');
-
     const getUserInfo = async () => {
-        if (!apiWs || !did) {
+        if (!apiWs || !dashboard?.did) {
             return;
         }
-        await apiWs.query.did.metadata(did, async (res) => {
+        await apiWs.query.did.metadata(dashboard?.did, async (res) => {
             let info = res.toHuman();
-            const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
+            const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(dashboard?.did, ['pic', 'name']);
             info = { ...info, avatar, nickname };
             if (!info) {
                 return;

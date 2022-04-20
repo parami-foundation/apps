@@ -10,11 +10,10 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [first] = useState((new Date()).getTime());
     const [assets, setAssets] = useState<Map<string, any>>(new Map());
     const [assetsArr, setAssetsArr] = useState<any[]>([]);
-
-    const currentAccount = localStorage.getItem('stashUserAddress');
 
     const getAssets = async () => {
         if (!apiWs) {
@@ -31,7 +30,7 @@ export default () => {
             }
         }
         for (const assetId in tmpAssets) {
-            apiWs.query.assets.account(Number(assetId), currentAccount, async (result: any) => {
+            apiWs.query.assets.account(Number(assetId), wallet?.account, async (result: any) => {
                 const { balance } = result;
 
                 const ad3 = await GetValueOf(assetId, balance);

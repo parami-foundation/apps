@@ -5,6 +5,7 @@ import { useModel } from "umi";
 
 export default () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [first] = useState((new Date()).getTime());
     const [tags, setTags] = useState<Map<string, any>>(new Map());
     const [tagsArr, setTagsArr] = useState<any[]>([]);
@@ -15,9 +16,8 @@ export default () => {
         if (!apiWs) {
             return;
         }
-        const did = localStorage.getItem('did') as string;
 
-        const allTags = await apiWs.query.tag.personasOf.entries(did);
+        const allTags = await apiWs.query.tag.personasOf.entries(wallet?.did);
 
         const tmpTags: any[] = [];
 
@@ -36,7 +36,6 @@ export default () => {
         const guide: Map<string, any> = new Map();
 
         GetTagsMap().then(({ response, data: Data }) => {
-
             // Network exception
             if (!response) {
                 notification.error({

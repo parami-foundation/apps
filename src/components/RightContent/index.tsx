@@ -37,55 +37,20 @@ const GlobalHeaderRight: React.FC = () => {
   };
 
   return (
-    <>
-      <Space className={styles.right}>
-        {/* {window.location.pathname.indexOf('dashboard') > -1 && (
-          <Tag
-            color="#f50"
-            style={{
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              history.push(config.page.homePage);
-            }}
-            className={styles.switchButton}
-          >
-            {intl.formatMessage({
-              id: 'common.wallet',
-            })}
-          </Tag>
-        )} */}
-        {/* {window.location.pathname.indexOf('dashboard') < 0 && (
-          <Tag
-            color="#f50"
-            style={{
-              cursor: 'pointer',
-            }}
-            onClick={() => {
-              history.push(config.page.dashboard.homePage);
-            }}
-            className={styles.switchButton}
-          >
-            {intl.formatMessage({
-              id: 'common.dashboard',
-            })}
-          </Tag>
-        )} */}
-
-        <Upload
-          accept="image/*"
-          showUploadList={false}
-          className={styles.action}
-          onChange={onChange}
-        >
-          <ScanOutlined />
-        </Upload>
-        {access.canUser && (
-          <Avatar />
-        )}
-        <SelectLang className={styles.action} />
-      </Space>
-    </>
+    <Space className={styles.right}>
+      <Upload
+        accept="image/*"
+        showUploadList={false}
+        className={styles.action}
+        onChange={onChange}
+      >
+        <ScanOutlined />
+      </Upload>
+      {access.canWalletUser && (
+        <Avatar />
+      )}
+      <SelectLang className={styles.action} />
+    </Space>
   );
 };
 export default GlobalHeaderRight;

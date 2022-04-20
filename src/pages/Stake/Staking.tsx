@@ -9,71 +9,71 @@ import List from './Staking/List';
 import BigModal from '@/components/ParamiModal/BigModal';
 
 const Staking: React.FC = () => {
-    const [addModal, setAddModal] = useState<boolean>(false);
+	const [addModal, setAddModal] = useState<boolean>(false);
 
-    const intl = useIntl();
-    const { Title } = Typography;
+	const intl = useIntl();
+	const { Title } = Typography;
 
-    return (
-        <>
-            <div className={styles.mainTopContainer}>
-                <div className={styles.pageContainer}>
-                    <div className={style.headerContainer}>
-                        <div className={style.titleContainer}>
-                            <Title
-                                level={1}
-                                className={style.sectionTitle}
-                            >
-                                <Image
-                                    src='/images/icon/stake.svg'
-                                    className={style.sectionIcon}
-                                    preview={false}
-                                />
-                                {intl.formatMessage({
-                                    id: 'stake.title',
-                                })}
-                            </Title>
-                        </div>
-                        <div className={style.subtitle}>
-                            {intl.formatMessage({
-                                id: 'stake.subtitle',
-                            })}
-                        </div>
-                        <div className={style.addNewStake}>
-                            <Button
-                                block
-                                type='primary'
-                                shape='round'
-                                size='large'
-                                className={style.stakeButton}
-                                onClick={() => { setAddModal(true) }}
-                            >
-                                {intl.formatMessage({
-                                    id: 'stake.add',
-                                })}
-                            </Button>
-                        </div>
-                    </div>
-                    <List />
-                </div>
-            </div>
+	return (
+		<>
+			<div className={styles.mainTopContainer}>
+				<div className={styles.pageContainer}>
+					<div className={style.headerContainer}>
+						<div className={style.titleContainer}>
+							<Title
+								level={1}
+								className={style.sectionTitle}
+							>
+								<Image
+									src='/images/icon/stake.svg'
+									className={style.sectionIcon}
+									preview={false}
+								/>
+								{intl.formatMessage({
+									id: 'stake.title',
+								})}
+							</Title>
+						</div>
+						<div className={style.subtitle}>
+							{intl.formatMessage({
+								id: 'stake.subtitle',
+							})}
+						</div>
+						<div className={style.addNewStake}>
+							<Button
+								block
+								type='primary'
+								shape='round'
+								size='large'
+								className={style.stakeButton}
+								onClick={() => { setAddModal(true) }}
+							>
+								{intl.formatMessage({
+									id: 'stake.add',
+								})}
+							</Button>
+						</div>
+					</div>
+					<List />
+				</div>
+			</div>
 
-            <BigModal
-                visable={addModal}
-                title={
-                    intl.formatMessage({
-                        id: 'stake.add',
-                    })
-                }
-                content={<Add setAddModal={setAddModal} />}
-                footer={false}
-                close={() => { setAddModal(false) }}
-                bodyStyle={{
-                    padding: 0
-                }}
-            />
-        </>
-    )
+			<BigModal
+				visable={addModal}
+				title={
+					intl.formatMessage({
+						id: 'stake.add',
+					})
+				}
+				content={<Add setAddModal={setAddModal} />}
+				footer={false}
+				close={() => { setAddModal(false) }}
+				bodyStyle={{
+					padding: 0
+				}}
+			/>
+		</>
+	)
 }
 
 export default Staking;

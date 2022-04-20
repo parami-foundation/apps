@@ -7,9 +7,8 @@ import { useModel } from 'umi';
 
 export default () => {
   const apiWs = useModel('apiWs');
+  const { dashboard } = useModel('currentUser');
   const [AdList, setAdList] = useState<any[]>([]);
-
-  const dashboardDid = localStorage.getItem('dashboardDid');
 
   const getAdList = async () => {
     if (!apiWs) {
@@ -17,7 +16,7 @@ export default () => {
     }
     const data: any[] = [];
 
-    await apiWs.query.ad.adsOf(dashboardDid, async (adListRaw) => {
+    await apiWs.query.ad.adsOf(dashboard?.did, async (adListRaw) => {
       const adList: any = adListRaw.toHuman();
       for (const adItem in adList) {
         const metadataRaw = await apiWs.query.ad.metadata(adList[adItem]);

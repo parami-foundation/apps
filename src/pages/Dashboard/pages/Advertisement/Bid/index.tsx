@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from '@/pages/dashboard.less';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import { Alert, Button, Divider, Input, message, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
 import Marquee from 'react-fast-marquee';
@@ -13,6 +13,7 @@ const Bid: React.FC<{
   adItem: any;
   setBidModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ adItem, setBidModal }) => {
+  const { dashboard } = useModel('currentUser');
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [did, setDid] = useState<string>();
   const [nftInfo, setNftInfo] = useState<any>({});
@@ -21,13 +22,11 @@ const Bid: React.FC<{
   const [price, setPrice] = useState<number>();
   const [confirmNFT, setConfirmNFT] = useState<boolean>(false);
 
-  const CurrentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
-
   const intl = useIntl();
   const { Search } = Input;
 
   const queryDid = async () => {
-    const didHexString = didToHex(did as string);
+    const didHexString = didToHex(did!);
 
     const nftID = await GetPreferedNFT(didHexString);
     if (nftID.isEmpty) {
@@ -84,159 +83,167 @@ const Bid: React.FC<{
   };
 
   const handleSubmit = async () => {
-    setSubmiting(true);
-    try {
-      await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), JSON.parse(CurrentAccount));
-      setBidModal(false);
-      setSubmiting(false);
-    } catch (e: any) {
+    if (!!dashboard && !!dashboard?.accountMeta) {
+      setSubmiting(true);
+      try {
+        await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
+        setBidModal(false);
+        setSubmiting(false);
+      } catch (e: any) {
+        notification.error({
+          message: e.message || e,
+          duration: null,
+        });
+        setSubmiting(false);
+        return;
+      }
+    } else {
       notification.error({
-        message: e.message || e,
+        key: 'accessDenied',
+        message: intl.formatMessage({
+          id: 'error.accessDenied',
+        }),
         duration: null,
-      });
-      setSubmiting(false);
-      return;
+      })
     }
   };
 
   return (
-    <>
-      <div className={styles.modalBody}>
-        <Divider>Find NFT ID from DID</Divider>
-        <div className={styles.field}>
-          <div className={styles.title}>
-            {intl.formatMessage({
-              id: 'dashboard.ads.launch.did',
-            })}
-          </div>
-          <div className={styles.value}>
-            <Search
-              key={nftInfo?.id}
-              size='large'
-              className="tag-input"
-              enterButton={intl.formatMessage({
-                id: 'common.search',
-              })}
-              onChange={(e) => {
-                setDid(e.target.value);
-              }}
-              onSearch={async () => {
-                if (!did) {
-                  message.error('Please Input DID');
-                  return;
-                }
-                await queryDid();
-              }}
-              placeholder={'did:ad3:......'}
-              value={did}
-            />
-          </div>
+    <div className={styles.modalBody}>
+      <Divider>Find NFT ID from DID</Divider>
+      <div className={styles.field}>
+        <div className={styles.title}>
+          {intl.formatMessage({
+            id: 'dashboard.ads.launch.did',
+          })}
         </div>
-        <Divider />
-        <div className={styles.field}>
-          <div className={styles.title}>
-            {intl.formatMessage({
-              id: 'dashboard.ads.launch.nftID',
+        <div className={styles.value}>
+          <Search
+            key={nftInfo?.id}
+            size='large'
+            className="tag-input"
+            enterButton={intl.formatMessage({
+              id: 'common.search',
             })}
-          </div>
-          <div className={styles.value}>
-            <Search
-              key={nftInfo?.id}
-              size='large'
-              className="tag-input"
-              enterButton={intl.formatMessage({
-                id: 'common.confirm',
-              })}
-              onChange={(e) => {
-                setNftId(e.target.value);
-              }}
-              onSearch={async () => {
-                if (!nftId) {
-                  message.error('Please Input NFT ID');
-                  return;
-                }
-                await getSlotAdOf();
-              }}
-              value={nftId}
-            />
-          </div>
+            onChange={(e) => {
+              setDid(e.target.value);
+            }}
+            onSearch={async () => {
+              if (!did) {
+                message.error('Please Input DID');
+                return;
+              }
+              await queryDid();
+            }}
+            placeholder={'did:ad3:......'}
+            value={did}
+          />
         </div>
-        {!!Object.keys(currentAd).length && (
-          <div className={styles.field}>
-            <div className={styles.title}>
-              {intl.formatMessage({
-                id: 'dashboard.ads.launch.currentPrice',
-              })}
-            </div>
-            <div className={styles.value}>
-              <Input
-                readOnly
-                disabled
-                size='large'
-                value={`${formatBalance(deleteComma(currentAd?.remain), { withUnit: 'AD3' }, 18)}`}
-              />
-            </div>
-          </div>
-        )}
+      </div>
+      <Divider />
+      <div className={styles.field}>
+        <div className={styles.title}>
+          {intl.formatMessage({
+            id: 'dashboard.ads.launch.nftID',
+          })}
+        </div>
+        <div className={styles.value}>
+          <Search
+            key={nftInfo?.id}
+            size='large'
+            className="tag-input"
+            enterButton={intl.formatMessage({
+              id: 'common.confirm',
+            })}
+            onChange={(e) => {
+              setNftId(e.target.value);
+            }}
+            onSearch={async () => {
+              if (!nftId) {
+                message.error('Please Input NFT ID');
+                return;
+              }
+              await getSlotAdOf();
+            }}
+            value={nftId}
+          />
+        </div>
+      </div>
+      {!!Object.keys(currentAd).length && (
         <div className={styles.field}>
           <div className={styles.title}>
             {intl.formatMessage({
-              id: 'dashboard.ads.launch.offer',
+              id: 'dashboard.ads.launch.currentPrice',
             })}
-            <br />
-            <small>
-              {intl.formatMessage({
-                id: 'dashboard.ads.launch.offer.tip',
-              })}
-            </small>
           </div>
           <div className={styles.value}>
             <Input
-              value={price}
-              className={styles.withAfterInput}
-              placeholder={!!Object.keys(currentAd).length ? (Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2).toString() : ''}
+              readOnly
+              disabled
               size='large'
-              type='number'
-              min={!!Object.keys(currentAd).length ? Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2 : 0}
-              onChange={(e) => {
-                setPrice(Number(e.target.value));
-              }}
+              value={`${formatBalance(deleteComma(currentAd?.remain), { withUnit: 'AD3' }, 18)}`}
             />
           </div>
         </div>
-        <div className={styles.field}>
-          <Alert
-            banner
-            message={
-              <Marquee pauseOnHover gradient={false}>
-                {intl.formatMessage({
-                  id: 'dashboard.ads.launch.tip',
-                })}
-              </Marquee>
-            }
+      )}
+      <div className={styles.field}>
+        <div className={styles.title}>
+          {intl.formatMessage({
+            id: 'dashboard.ads.launch.offer',
+          })}
+          <br />
+          <small>
+            {intl.formatMessage({
+              id: 'dashboard.ads.launch.offer.tip',
+            })}
+          </small>
+        </div>
+        <div className={styles.value}>
+          <Input
+            value={price}
+            className={styles.withAfterInput}
+            placeholder={!!Object.keys(currentAd).length ? (Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2).toString() : ''}
+            size='large'
+            type='number'
+            min={!!Object.keys(currentAd).length ? Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2 : 0}
+            onChange={(e) => {
+              setPrice(Number(e.target.value));
+            }}
           />
         </div>
-        {confirmNFT && (
-          <div className={styles.field}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={styles.button}
-              loading={submiting}
-              onClick={() => {
-                handleSubmit();
-              }}
-            >
-              {intl.formatMessage({
-                id: 'common.submit',
-              })}
-            </Button>
-          </div>
-        )}
       </div>
-    </>
+      <div className={styles.field}>
+        <Alert
+          banner
+          message={
+            <Marquee pauseOnHover gradient={false}>
+              {intl.formatMessage({
+                id: 'dashboard.ads.launch.tip',
+              })}
+            </Marquee>
+          }
+        />
+      </div>
+      {confirmNFT && (
+        <div className={styles.field}>
+          <Button
+            block
+            type="primary"
+            shape="round"
+            size="large"
+            className={styles.button}
+            loading={submiting}
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            {intl.formatMessage({
+              id: 'common.submit',
+            })}
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }
 

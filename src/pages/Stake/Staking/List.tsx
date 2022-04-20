@@ -4,18 +4,18 @@ import PairItem from './components/PairItem';
 import { useModel } from 'umi';
 
 const List: React.FC = () => {
-    const { LPsArr } = useModel('stake');
+	const { LPsArr } = useModel('stake');
 
-    return (
-        <div className={style.stakeListContainer}>
-            {LPsArr.map((lp: any) => (
-                <PairItem
-                    logo={lp.icon}
-                    lp={lp}
-                />
-            ))}
-        </div>
-    )
+	return (
+		<div className={style.stakeListContainer}>
+			{LPsArr.map((lp: any) => (
+				<PairItem
+					logo={lp.icon}
+					lp={lp}
+				/>
+			))}
+		</div>
+	)
 }
 
 export default List;

@@ -25,11 +25,10 @@ const Modal: React.FC<{
 
   const onChange = async (info: any) => {
     if (info.event) {
-      const did = localStorage.getItem('did');
-      if (did === null) {
+      if (wallet?.did === null) {
         history.push(config.page.createPage);
       };
-      generateRoundAvatar(URL.createObjectURL(info.file.originFileObj), '', '', did)
+      generateRoundAvatar(URL.createObjectURL(info.file.originFileObj), '', '', wallet?.did)
         .then(async (img) => {
           const file = (img as string).substring(22);
           setFile(b64toBlob(file, 'image/png'));

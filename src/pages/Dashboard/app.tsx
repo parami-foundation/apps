@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { web3Enable } from '@polkadot/extension-dapp';
 
 const Layout: React.FC = (props) => {
-    const [pathname, setPathname] = useState('');
+    const [pathname, setPathname] = useState<string>('');
 
     const init = async () => {
         await web3Enable('Parami Dashboard');
