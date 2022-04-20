@@ -4,23 +4,23 @@ import { cryptoWaitReady } from "@polkadot/util-crypto";
 import { useEffect, useState } from 'react';
 
 export default () => {
-    const [apiWs, setApiWs] = useState<ApiPromise>();
+	const [apiWs, setApiWs] = useState<ApiPromise>();
 
-    const initChain = async () => {
-        await cryptoWaitReady();
-        const provider = new WsProvider(config.main.socketServer);
-        const api = await ApiPromise.create({
-            provider,
-            types: config.types,
-            rpc: config.rpc
-        });
-        window.apiWs = api;
-        setApiWs(api);
-    };
+	const initChain = async () => {
+		await cryptoWaitReady();
+		const provider = new WsProvider(config.main.socketServer);
+		const api = await ApiPromise.create({
+			provider,
+			types: config.types,
+			rpc: config.rpc
+		});
+		window.apiWs = api;
+		setApiWs(api);
+	};
 
-    useEffect(() => {
-        initChain();
-    }, []);
+	useEffect(() => {
+		initChain();
+	}, []);
 
-    return apiWs;
+	return apiWs;
 }

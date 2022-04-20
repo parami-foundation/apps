@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
-import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined } from '@ant-design/icons';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import Skeleton from '@/components/Skeleton';
 import SmallModal from '@/components/ParamiModal/SmallModal';
+import { DecodeKeystoreWithPwd } from '@/services/parami/crypto';
 
 const Export: React.FC = () => {
 	const apiWs = useModel('apiWs');

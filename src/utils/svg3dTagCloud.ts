@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-export function SVG3DTagCloud(element, params) {
+export const SVG3DTagCloud = (element, params) => {
     const settings = {
         entries: [] as any[],
         width: 480,

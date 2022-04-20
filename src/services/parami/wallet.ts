@@ -56,8 +56,7 @@ export const setNickName = async (nickname: string, password: string, keystore: 
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  const tx = await window.apiWs.tx.did.setMetadata('name', nickname);
+  const tx = window.apiWs.tx.did.setMetadata('name', nickname);
 
   return await subCallback(tx, payUser);
 };
