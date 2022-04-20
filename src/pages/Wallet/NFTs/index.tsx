@@ -21,7 +21,7 @@ const NFTs: React.FC = () => {
 	const [mintModal, setMintModal] = useState<boolean>(false);
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 	const [secModal, setSecModal] = useState(false);
-	const [password, setPassword] = useState('');
+	const [passphrase, setPassphrase] = useState('');
 	const [mode, setMode] = useState<string>('create');
 	const [mintItem, setMintItem] = useState<any>({});
 
@@ -29,15 +29,13 @@ const NFTs: React.FC = () => {
 
 	const coverRef: any = useRef();
 
-	const did = localStorage.getItem('did') as string;
-
 	const handleSubmit = async () => {
 		if (!!wallet && !!wallet.keystore) {
 			setSubmitLoading(true);
 			try {
 				switch (mode) {
 					case 'create':
-						await KickNFT(password, wallet?.keystore);
+						await KickNFT(passphrase, wallet?.keystore);
 						setSubmitLoading(false);
 						getNFTs();
 						break;
@@ -254,7 +252,7 @@ const NFTs: React.FC = () => {
 																		shape='round'
 																		size='middle'
 																		onClick={() => {
-																			window.location.href = `${window.location.origin}/${hexToDid(did)}/${item?.id}`;
+																			window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
 																		}}
 																	>
 																		{intl.formatMessage({
@@ -316,21 +314,21 @@ const NFTs: React.FC = () => {
 			<Import
 				importModal={importModal}
 				setImportModal={setImportModal}
-				password={password}
+				passphrase={passphrase}
 			/>
 
 			<Mint
 				mintModal={mintModal}
 				setMintModal={setMintModal}
-				password={password}
+				passphrase={passphrase}
 				item={mintItem}
 			/>
 
 			<SecurityModal
 				visable={secModal}
 				setVisable={setSecModal}
-				password={password}
-				setPassword={setPassword}
+				passphrase={passphrase}
+				setPassphrase={setPassphrase}
 				func={handleSubmit}
 			/>
 		</>

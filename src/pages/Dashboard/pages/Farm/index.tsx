@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useCallback, useEffect, useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
@@ -26,12 +25,9 @@ const Farm: React.FC = () => {
 	const [Pairs, setPairs] = useState<any[]>([]);
 	const [Balances, setBalances] = useState<BigNumber[]>([]);
 	const [AD3Price, setAD3Price] = useState('0');
-	// const [AD3Supply, setSupply] = useState(BigInt(0));
 	const [Pools, setPools] = useState<string[]>([]);
 	const [Apys, setApys] = useState<string[][]>([]);
 	const [WalletReady, setWalletReady] = useState(false);
-	// const [ad3Approved, setAd3Approved] = useState<boolean>(false);
-	// const [ad3ApprovedLoading, setAd3ApprovedLoading] = useState<boolean>(false);
 
 	const { Title } = Typography;
 
@@ -48,14 +44,6 @@ const Farm: React.FC = () => {
 		FactoryContract,
 		LPContract
 	} = useModel('contracts');
-
-	// const handleApproveAd3 = async () => {
-	//     const tx = await Ad3Contract?.approve(StakeContract?.address, ethers.constants.MaxUint256)
-	//     setAd3ApprovedLoading(true);
-	//     await tx.wait();
-	//     setAd3Approved(true);
-	// };
-	//check ChainId
 
 	useEffect(() => {
 		if (ChainId !== 1 && ChainId !== 4) {
@@ -83,7 +71,7 @@ const Farm: React.FC = () => {
 		setPairs(p);
 	}, [ChainId]);
 
-	//get total supply
+	// get total supply
 	useEffect(() => {
 		if (Ad3Contract) {
 			Ad3Contract.totalSupply().then((res: BigNumber) => {
@@ -93,8 +81,8 @@ const Farm: React.FC = () => {
 		}
 	}, [Ad3Contract]);
 
-	//get LPContract's balance
-	async function getLPBalance() {
+	// get LPContract's balance
+	const getLPBalance = async () => {
 		if (ChainId !== 1 && ChainId !== 4) {
 			return;
 		}
@@ -119,7 +107,7 @@ const Farm: React.FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ChainId, Signer, Pools]);
 
-	//update AD3 price && set pools
+	// update AD3 price && set pools
 	const getPoolsAndPrice = useCallback(async () => {
 		if (FactoryContract && ChainId !== undefined) {
 			if (ChainId !== 1 && ChainId !== 4) {
@@ -145,8 +133,8 @@ const Farm: React.FC = () => {
 		setLoading(false);
 	}, [FactoryContract, ChainId, Pools, getPoolsAndPrice]);
 
-	//update liquidities from 
-	async function getPositions() {
+	// update liquidities from 
+	const getPositions = async () => {
 		const balanceKinds: BigNumber = await LPContract?.balanceOf(Account);
 		if (!balanceKinds) return;
 		const tokenIndexArray: number[] = [];

@@ -18,25 +18,6 @@ export const GetSlotAdOf = async (did: string): Promise<any> => {
     return res;
 };
 
-export const GetUserTags = async (did: string) => {
-    const allTags = await window.apiWs.query.tag.personasOf.entries(did);
-
-    const tags: any[] = [];
-
-    for (let i = 0; i < allTags.length; i++) {
-        const [key, value] = allTags[i];
-        const shortKey = key.toHuman();
-        if (!!shortKey) {
-            tags.push({
-                value: value.toHuman(),
-                count: shortKey[1],
-            })
-        }
-    }
-
-    return tags;
-};
-
 export const GetEndtimeOf = async (adId: string) => {
     const res = await window.apiWs.query.ad.endtimeOf(adId);
 

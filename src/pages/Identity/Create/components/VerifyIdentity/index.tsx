@@ -19,7 +19,7 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
-import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
+import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/identity';
 
 let unsub: VoidFn | null = null;
 

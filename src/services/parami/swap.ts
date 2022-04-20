@@ -1,6 +1,6 @@
 import { Keyring } from '@polkadot/api';
+import { DecodeKeystoreWithPwd } from './crypto';
 import { subCallback } from './subscription';
-import { DecodeKeystoreWithPwd } from './wallet';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -12,10 +12,9 @@ export const AddLiquidity = async (assetId: string, amount: string, LP: string, 
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ddl = await window.apiWs.query.system.number();
-	const addLiquidity = window.apiWs.tx.swap.addLiquidity(assetId, amount, LP, token, ddl.toNumber() + 5);
-	const codo = window.apiWs.tx.magic.codo(addLiquidity);
-	const events = await subCallback(codo, payUser);
-	return events;
+	const tx = window.apiWs.tx.swap.addLiquidity(assetId, amount, LP, token, ddl.toNumber() + 5);
+
+	return await subCallback(tx, payUser);
 };
 
 export const RemoveLiquidity = async (lpTokenId: string, minCurrency: string, minTokens: string, password: string, keystore: string) => {
@@ -25,10 +24,9 @@ export const RemoveLiquidity = async (lpTokenId: string, minCurrency: string, mi
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ddl = await window.apiWs.query.system.number();
-	const removeLiquidity = window.apiWs.tx.swap.removeLiquidity(lpTokenId, minCurrency, minTokens, ddl.toNumber() + 5);
-	const codo = window.apiWs.tx.magic.codo(removeLiquidity);
-	const events = await subCallback(codo, payUser);
-	return events;
+	const tx = window.apiWs.tx.swap.removeLiquidity(lpTokenId, minCurrency, minTokens, ddl.toNumber() + 5);
+
+	return await subCallback(tx, payUser);
 };
 
 export const DrylyAddLiquidity = async (assetId: string, amount: string) => {
@@ -62,8 +60,7 @@ export const ClaimLPReward = async (LPTokenId: string, password: string, keystor
 		throw new Error('Wrong password');
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-	const getReward = window.apiWs.tx.swap.acquireReward(LPTokenId);
-	const codo = window.apiWs.tx.magic.codo(getReward);
-	const events = await subCallback(codo, payUser);
-	return events;
+	const tx = window.apiWs.tx.swap.acquireReward(LPTokenId);
+
+	return await subCallback(tx, payUser);
 };

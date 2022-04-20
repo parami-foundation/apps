@@ -10,33 +10,22 @@ import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import { formatBalance } from '@polkadot/util';
-import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import { FloatStringToBigInt } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';
 import type { VoidFn } from '@polkadot/api/types';
-import { ChangeController, GetRecoveryFee, GetStableAccount } from '@/services/parami/Identity';
 
 const { Title } = Typography;
 const { Step } = Steps;
 
-const goto = () => {
-  setTimeout(() => {
-    const redirect = localStorage.getItem('redirect');
-    window.location.href = redirect || config.page.walletPage;
-    localStorage.removeItem('redirect');
-    localStorage.removeItem('process');
-  }, 10);
-};
-
 let unsub: VoidFn | null = null;
 
 const RecoverDeposit: React.FC<{
-  magicKeystore: string;
-  password: string;
-  controllerUserAddress: string;
-  magicUserAddress: string;
-  setStep: React.Dispatch<React.SetStateAction<number>>;
-}> = ({ magicKeystore, password, controllerUserAddress, magicUserAddress }) => {
+  keystore: string;
+  passphrase: string;
+  account: string;
+}> = ({ keystore, passphrase, account }) => {
   const apiWs = useModel('apiWs');
+  const { wallet } = useModel('currentUser');
   const [modalVisable, setModalVisable] = useState(false);
   const [magicBalance, setMagicBalance] = useState<bigint>(BigInt(0));
   const [RecoveryFee, setRecoveryFee] = useState<string>();
@@ -45,14 +34,22 @@ const RecoverDeposit: React.FC<{
 
   const intl = useIntl();
 
+  const goto = () => {
+    setTimeout(() => {
+      window.location.href = wallet?.redirect || config.page.walletPage;
+      localStorage.removeItem('parami:wallet:redirect');
+      localStorage.removeItem('parami:wallet:process');
+    }, 10);
+  };
+
   // Listen Balance Change
   const listenBalance = async () => {
     if (!apiWs) {
       return;
     }
-    if (!!magicUserAddress) {
+    if (!!account) {
       let free: any;
-      unsub = await apiWs.query.system.account(magicUserAddress, (info) => {
+      unsub = await apiWs.query.system.account(account, (info) => {
         const data: any = info.data;
         if (free && free !== `${data.free}`) {
           notification.success({
@@ -67,56 +64,15 @@ const RecoverDeposit: React.FC<{
         }
       });
     }
-  }
-
-  // Change Controller
-  const changeController = async () => {
-    setStep(3);
-    // Change Controller process
-    let stashUserAddress = localStorage.getItem('stashUserAddress') as string;
-    // Get whether all accounts exist
-    const existAccounts = await GetStableAccount(controllerUserAddress);
-    if (!!existAccounts?.stashAccount) {
-      stashUserAddress = existAccounts?.stashAccount;
-      localStorage.setItem('stashUserAddress', existAccounts?.stashAccount);
-      localStorage.removeItem('magicKeystore');
-      setStep(4);
-      goto();
-      return;
-    } else try {
-      const events: any = await ChangeController(
-        password,
-        magicKeystore,
-        controllerUserAddress,
-      );
-      stashUserAddress = events['magic']['Changed'][0][0];
-      localStorage.setItem('stashUserAddress', stashUserAddress);
-      localStorage.removeItem('magicKeystore');
-      setStep(4);
-      goto();
-      return;
-    } catch (e: any) {
-      notification.error({
-        key: 'unknowError',
-        message: e.message,
-        duration: null,
-      });
-      return;
-    }
   };
 
-  // Get Recovery Fee
-  const getRecoveryFee = async () => {
-    const fee = await GetRecoveryFee(magicUserAddress, controllerUserAddress);
-    setRecoveryFee(BigIntToFloatString(BigInt(fee), 18));
-  };
+  // TODO: Move DID
 
   useEffect(() => {
-    if (apiWs && magicUserAddress) {
-      getRecoveryFee();
+    if (apiWs && account) {
       listenBalance();
     }
-  }, [apiWs, magicUserAddress]);
+  }, [apiWs, account]);
 
   useEffect(() => {
     if (!!RecoveryFee && magicBalance >= FloatStringToBigInt(RecoveryFee, 18)) {
@@ -124,7 +80,6 @@ const RecoverDeposit: React.FC<{
       if (unsub !== null) {
         unsub();
       }
-      changeController();
     } else if (!!RecoveryFee && magicBalance > 0 && magicBalance < FloatStringToBigInt(RecoveryFee, 18)) {
       notification.error({
         key: 'balanceNotEnough',
@@ -206,7 +161,7 @@ const RecoverDeposit: React.FC<{
                 </span>
                 <span className={style.value}>
                   <CopyToClipboard
-                    text={magicUserAddress}
+                    text={account}
                     onCopy={() =>
                       message.success(
                         intl.formatMessage({
@@ -224,7 +179,7 @@ const RecoverDeposit: React.FC<{
                 </span>
               </div>
               <CopyToClipboard
-                text={magicUserAddress}
+                text={account}
                 onCopy={() =>
                   message.success(
                     intl.formatMessage({
@@ -236,7 +191,7 @@ const RecoverDeposit: React.FC<{
                 <Input
                   size="small"
                   readOnly
-                  value={magicUserAddress}
+                  value={account}
                 />
               </CopyToClipboard>
             </div>

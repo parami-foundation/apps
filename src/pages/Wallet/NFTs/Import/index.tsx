@@ -14,8 +14,8 @@ import Skeleton from '@/components/Skeleton';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
-  password: string;
-}> = ({ setImportModal, password }) => {
+  passphrase: string;
+}> = ({ setImportModal, passphrase }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
   const { getNFTs } = useModel('nft');
@@ -78,7 +78,7 @@ const ImportNFTModal: React.FC<{
     if (!!wallet && !!wallet.keystore) {
       setSubmitLoading(true);
       try {
-        await PortNFT(password, wallet?.keystore, 'Ethereum', contractAddresses.wrap[1], tokenID);
+        await PortNFT(passphrase, wallet?.keystore, 'Ethereum', contractAddresses.wrap[1], tokenID);
         setSubmitLoading(false);
         setImportModal(false);
         getNFTs();
@@ -200,8 +200,8 @@ const ImportNFTModal: React.FC<{
 const Import: React.FC<{
   importModal: boolean;
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
-  password: string;
-}> = ({ importModal, setImportModal, password }) => {
+  passphrase: string;
+}> = ({ importModal, setImportModal, passphrase }) => {
   const intl = useIntl();
 
   return (
@@ -213,7 +213,7 @@ const Import: React.FC<{
       content={
         <ImportNFTModal
           setImportModal={setImportModal}
-          password={password}
+          passphrase={passphrase}
         />
       }
       footer={false}

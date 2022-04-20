@@ -3,7 +3,7 @@ import { Button, Card, Divider, Input, notification, Spin, Typography } from 'an
 import { useIntl, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../../../style.less';
-import { QueryAccountExist, QueryAccountFromMnemonic, QueryDID } from '@/services/parami/Identity';
+import { QueryAccountExist, QueryAccountFromMnemonic, QueryDID } from '@/services/parami/identity';
 
 const InputLink: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;

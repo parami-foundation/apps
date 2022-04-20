@@ -7,7 +7,7 @@ import config from '@/config/config';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined } from '@ant-design/icons';
 import { guid } from '@/utils/common';
-import { CreateKeystore } from '@/services/parami/Identity';
+import { CreateKeystore } from '@/services/parami/identity';
 import BigModal from '@/components/ParamiModal/BigModal';
 
 const { Title } = Typography;

@@ -16,7 +16,7 @@ const Receive: React.FC = () => {
 
   const intl = useIntl();
 
-  const did = hexToDid(localStorage.getItem('did')) as string;
+  const did = hexToDid(wallet.did!);
 
   const getBalance = async () => {
     if (!!wallet && !!wallet.account) {

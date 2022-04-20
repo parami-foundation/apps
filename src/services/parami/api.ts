@@ -1,5 +1,3 @@
-// @ts-ignore
-/* eslint-disable */
 import config from '@/config/config';
 import { extend } from 'umi-request';
 

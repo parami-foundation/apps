@@ -1,6 +1,7 @@
 import { Keyring } from '@polkadot/api';
+import { DecodeKeystoreWithPwd } from './crypto';
 import { subCallback } from './subscription';
-import { DecodeKeystoreWithPwd, errCb } from './wallet';
+
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
 export const BuyToken = async (assetId: string, amount: string, maxCurrency: string, password: string, keystore: string) => {
@@ -12,9 +13,9 @@ export const BuyToken = async (assetId: string, amount: string, maxCurrency: str
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
   const ddl = await window.apiWs.query.system.number();
-  const buyTokens = window.apiWs.tx.swap.buyTokens(assetId, amount, maxCurrency, ddl.toNumber() + 5);
-  const codo = window.apiWs.tx.magic.codo(buyTokens);
-  await codo.signAndSend(payUser, errCb);
+  const tx = window.apiWs.tx.swap.buyTokens(assetId, amount, maxCurrency, ddl.toNumber() + 5);
+
+  return await subCallback(tx, payUser);
 };
 
 export const SellToken = async (assetId: string, amount: string, maxCurrency: string, password: string, keystore: string) => {
@@ -26,9 +27,9 @@ export const SellToken = async (assetId: string, amount: string, maxCurrency: st
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
   const ddl = await window.apiWs.query.system.number();
-  const sellTokens = window.apiWs.tx.swap.sellTokens(assetId, amount, maxCurrency, ddl.toNumber() + 5);
-  const codo = window.apiWs.tx.magic.codo(sellTokens);
-  await codo.signAndSend(payUser, errCb);
+  const tx = window.apiWs.tx.swap.sellTokens(assetId, amount, maxCurrency, ddl.toNumber() + 5);
+
+  return await subCallback(tx, payUser);
 };
 
 export const GetValueOf = async (assetId: string, amount: string) => {
@@ -79,9 +80,8 @@ export const NftMint = async (name: string, symbol: string, password: string, ke
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
   const mint = await window.apiWs.tx.nft.mint(name, symbol);
-  const codo = window.apiWs.tx.magic.codo(mint);
   let result = false;
-  await codo.signAndSend(payUser, ({ events = [], status }) => {
+  await mint.signAndSend(payUser, ({ events = [], status }) => {
     if (status.isInBlock || status.isFinalized) {
       events
         // find/filter for failed events
@@ -139,25 +139,24 @@ export const KickNFT = async (password: string, keystore: string) => {
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
-  const data = await window.apiWs.tx.nft.kick();
-  const codo = window.apiWs.tx.magic.codo(data);
+  const tx = window.apiWs.tx.nft.kick();
 
-  return await subCallback(codo, payUser);
+  return await subCallback(tx, payUser);
 };
 
 
 
-type NFTNetwork=
+type NFTNetwork =
   'Unknown'
-  |'Binance'
-  |'Bitcoin'
-  |'Eosio'
-  |'Ethereum'
-  |'Kusama'
-  |'Polkadot'
-  |'Solana'
-  |'Tron'
-  |'Near';
+  | 'Binance'
+  | 'Bitcoin'
+  | 'Eosio'
+  | 'Ethereum'
+  | 'Kusama'
+  | 'Polkadot'
+  | 'Solana'
+  | 'Tron'
+  | 'Near';
 export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
@@ -166,11 +165,9 @@ export const PortNFT = async (password: string, keystore: string, network: NFTNe
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+  const tx = window.apiWs.tx.nft.port(network, namespace, tokenID);
 
-  const data = await window.apiWs.tx.nft.port(network, namespace, tokenID);
-  const codo = window.apiWs.tx.magic.codo(data);
-
-  return await subCallback(codo, payUser);
+  return await subCallback(tx, payUser);
 };
 
 export const SupportDAO = async (nftID: string, amount: string, password: string, keystore: string) => {
@@ -181,10 +178,9 @@ export const SupportDAO = async (nftID: string, amount: string, password: string
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const back = window.apiWs.tx.nft.back(nftID, amount);
-  const codo = window.apiWs.tx.magic.codo(back);
+  const tx = window.apiWs.tx.nft.back(nftID, amount);
 
-  return await subCallback(codo, payUser);
+  return await subCallback(tx, payUser);
 };
 
 export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string) => {
@@ -195,10 +191,9 @@ export const MintNFT = async (nftID: string, name: string, symbol: string, passw
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const back = window.apiWs.tx.nft.mint(nftID, name, symbol);
-  const codo = window.apiWs.tx.magic.codo(back);
+  const tx = window.apiWs.tx.nft.mint(nftID, name, symbol);
 
-  return await subCallback(codo, payUser);
+  return await subCallback(tx, payUser);
 };
 
 export const ClaimNFT = async (nftID: string, password: string, keystore: string) => {
@@ -209,10 +204,9 @@ export const ClaimNFT = async (nftID: string, password: string, keystore: string
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const back = window.apiWs.tx.nft.claim(nftID);
-  const codo = window.apiWs.tx.magic.codo(back);
+  const tx = window.apiWs.tx.nft.claim(nftID);
 
-  return await subCallback(codo, payUser);
+  return await subCallback(tx, payUser);
 };
 
 

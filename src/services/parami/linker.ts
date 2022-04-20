@@ -1,48 +1,45 @@
 import { Keyring } from '@polkadot/api';
+import { DecodeKeystoreWithPwd } from './crypto';
 import { subCallback } from './subscription';
-import { DecodeKeystoreWithPwd } from './wallet';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
 /// @type= one of {Discord,Twitter,Reddit,Facebook,Telegram,Twitter,Reddit,Facebook}
 export const GetLinkedInfo = async (did: string, type: string) => {
-    const linked = await window.apiWs.query.linker.linksOf(did, type);
-    if (linked.isEmpty) {
-        const pending = await window.apiWs.query.linker.pendingOf(type, did);
-        if (pending.isEmpty) {
-            return null;
-        } else {
-            return 'verifing'
-        }
-    } else {
-        return 'linked'
-    }
+	const linked = await window.apiWs.query.linker.linksOf(did, type);
+	if (linked.isEmpty) {
+		const pending = await window.apiWs.query.linker.pendingOf(type, did);
+		if (pending.isEmpty) {
+			return null;
+		} else {
+			return 'verifing'
+		}
+	} else {
+		return 'linked'
+	}
 };
 
 export const LinkSociality = async (did: string, type: string, profile: string, password: string, keystore: string) => {
-    const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
-    if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-        throw new Error('Wrong password');
-    }
+	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+		throw new Error('Wrong password');
+	}
 
-    const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-    const link = window.apiWs.tx.linker.linkSociality(type, profile);
-    const codo = window.apiWs.tx.magic.codo(link);
-    const res = await subCallback(codo, payUser);
-    return res;
+	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+	const tx = window.apiWs.tx.linker.linkSociality(type, profile);
+	const res = await subCallback(tx, payUser);
+	return res;
 };
 
 export const LinkBlockChain = async (type: string, address: string, signature: string, password: string, keystore: string) => {
-    const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
-    if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-        throw new Error('Wrong password');
-    }
+	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+		throw new Error('Wrong password');
+	}
 
-    const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-    const bindCrypto = window.apiWs.tx.linker.linkCrypto(type, address, signature);
-    const codo = window.apiWs.tx.magic.codo(bindCrypto);
-    const res = await subCallback(codo, payUser);
-    return res;
+	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+	const tx = window.apiWs.tx.linker.linkCrypto(type, address, signature);
+	return await subCallback(tx, payUser);
 };

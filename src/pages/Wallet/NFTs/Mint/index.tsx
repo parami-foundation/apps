@@ -11,8 +11,8 @@ import { useModel } from 'umi';
 const MintNFTModal: React.FC<{
 	item: any;
 	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
-	password: string;
-}> = ({ item, setMintModal, password }) => {
+	passphrase: string;
+}> = ({ item, setMintModal, passphrase }) => {
 	const { getNFTs } = useModel('nft');
 	const { wallet } = useModel('currentUser');
 	const [loading, setLoading] = useState<boolean>(false);
@@ -25,7 +25,7 @@ const MintNFTModal: React.FC<{
 		if (!!wallet && !!wallet.keystore) {
 			setLoading(true);
 			try {
-				await MintNFT(item?.id, name, symbol, password, wallet?.keystore);
+				await MintNFT(item?.id, name, symbol, passphrase, wallet?.keystore);
 				setLoading(false);
 				setMintModal(false);
 				getNFTs();
@@ -178,9 +178,9 @@ const MintNFTModal: React.FC<{
 const Mint: React.FC<{
 	mintModal: boolean
 	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
-	password: string;
+	passphrase: string;
 	item: any;
-}> = ({ mintModal, setMintModal, password, item }) => {
+}> = ({ mintModal, setMintModal, passphrase, item }) => {
 	const intl = useIntl();
 
 	return (
@@ -193,7 +193,7 @@ const Mint: React.FC<{
 				<MintNFTModal
 					setMintModal={setMintModal}
 					item={item}
-					password={password}
+					passphrase={passphrase}
 				/>
 			}
 			footer={false}

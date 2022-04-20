@@ -9,7 +9,7 @@ import config from './config';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
-import { QueryAccountFromDid } from '@/services/parami/wallet';
+import { QueryAccountFromDid } from '@/services/parami/identity';
 
 const Deposit: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,6 +18,7 @@ const Deposit: React.FC<{
 	setParamiHash: React.Dispatch<React.SetStateAction<string | undefined>>;
 }> = ({ setLoading, setStep, setETHHash, setParamiHash }) => {
 	const apiWs = useModel('apiWs');
+	const { dashboard } = useModel('currentUser');
 	const {
 		Account,
 		ChainName,
@@ -26,7 +27,7 @@ const Deposit: React.FC<{
 	} = useModel('web3');
 	const { Events, SubParamiEvents } = useModel('dashboard.paramiEvents');
 	const { DataHash, SubBridgeEvents, UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
-	const { stash } = useModel('dashboard.balance');
+	const { balance } = useModel('dashboard.balance');
 	const { Ad3Contract, BridgeContract } = useModel('contracts');
 	const [freeBalance, setFreeBalance] = useState<string>('');
 	const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
@@ -35,8 +36,6 @@ const Deposit: React.FC<{
 	const [destinationAddress, setDestinationAddress] = useState<string>('');
 
 	const intl = useIntl();
-
-	const Did = localStorage.getItem('dashboardDid') as string;
 
 	let unsubParami;
 	const isDepositSuccessEvent = (item: any, nonce: bigint) => {
@@ -51,8 +50,8 @@ const Deposit: React.FC<{
 	const getBalance = async () => {
 		if (!Provider || !Signer) return;
 		try {
-			const balance = await Ad3Contract?.balanceOf(Account);
-			setFreeBalance(BigNumber.from(balance).toString());
+			const balanceOf = await Ad3Contract?.balanceOf(Account);
+			setFreeBalance(BigNumber.from(balanceOf).toString());
 		} catch (e: any) {
 			notification.error({
 				message: e.message || e,
@@ -266,9 +265,9 @@ const Deposit: React.FC<{
 							defaultMessage: 'Balance',
 						})}:
 					</span>
-					<Tooltip placement="top" title={BigIntToFloatString(stash.total, 18)}>
+					<Tooltip placement="top" title={BigIntToFloatString(balance?.total, 18)}>
 						<span className={style.balanceDetailsBalance}>
-							<AD3 value={stash.total} />
+							<AD3 value={balance?.total} />
 						</span>
 					</Tooltip>
 				</div>
@@ -297,7 +296,7 @@ const Deposit: React.FC<{
 					type='default'
 					size='small'
 					onClick={() => {
-						setDestinationAddress(hexToDid(Did));
+						setDestinationAddress(hexToDid(dashboard.did!));
 					}}
 				>
 					{intl.formatMessage({

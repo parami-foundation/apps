@@ -5,9 +5,8 @@ import { subWeb3Callback } from './subscription';
 export const BecomeAdvertiser = async (deposit: string, account: any) => {
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.advertiser.deposit(deposit);
-    const codo = window.apiWs.tx.magic.codo(tx);
 
-    return await subWeb3Callback(codo, injector, account);
+    return await subWeb3Callback(tx, injector, account);
 };
 
 export const IsAdvertiser = async (stashAccount: string): Promise<boolean> => {
@@ -44,17 +43,15 @@ export const CreateAds = async (budget: string, tags: any[], metadata: string, r
     const ddl = await window.apiWs.query.system.number();
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl));
-    const ex = window.apiWs.tx.magic.codo(tx);
 
-    return await subWeb3Callback(ex, injector, account);
+    return await subWeb3Callback(tx, injector, account);
 };
 
 export const CreateTag = async (tag: string, account: any): Promise<any> => {
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.tag.create(tag);
-    const codo = window.apiWs.tx.magic.codo(tx);
 
-    return await subWeb3Callback(codo, injector, account);
+    return await subWeb3Callback(tx, injector, account);
 };
 
 export const ExistTag = async (tag: string): Promise<any> => {
@@ -66,9 +63,8 @@ export const BidSlot = async (adId: string, nftID: string, amount: string, accou
     console.log(account)
     const injector = await web3FromSource(account.meta.source);
     const tx = window.apiWs.tx.ad.bid(adId, nftID, amount);
-    const codo = window.apiWs.tx.magic.codo(tx);
 
-    return await subWeb3Callback(codo, injector, account);
+    return await subWeb3Callback(tx, injector, account);
 };
 
 export const GetAssetInfo = async (assetId: string) => {

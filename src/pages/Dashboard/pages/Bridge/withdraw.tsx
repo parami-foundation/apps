@@ -22,8 +22,9 @@ const Withdraw: React.FC<{
 		Provider,
 		Signer,
 	} = useModel('web3');
+	const { dashboard } = useModel('currentUser');
 	const { DepositNonce, DataHash, SubBridgeEvents, UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
-	const { stash } = useModel('dashboard.balance');
+	const { balance } = useModel('dashboard.balance');
 	const { Ad3Contract, BridgeContract } = useModel('contracts');
 	const [freeBalance, setFreeBalance] = useState<string>('');
 	const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
@@ -32,13 +33,11 @@ const Withdraw: React.FC<{
 
 	const intl = useIntl();
 
-	const currentAccount = localStorage.getItem('dashboardCurrentAccount') as string;
-
 	const getBalance = async () => {
 		if (!Provider || !Signer) return;
 		try {
-			const balance = await Ad3Contract?.balanceOf(Account);
-			setFreeBalance(BigNumber.from(balance).toString());
+			const balanceOf = await Ad3Contract?.balanceOf(Account);
+			setFreeBalance(BigNumber.from(balanceOf).toString());
 		} catch (e: any) {
 			notification.error({
 				message: e.message || e,
@@ -58,7 +57,7 @@ const Withdraw: React.FC<{
 
 		try {
 			setLoading(true);
-			const paramiRes: any = await AD3ToETH(JSON.parse(currentAccount), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+			const paramiRes: any = await AD3ToETH(JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
 			setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
 			setParamiHash(paramiRes.chainBridge.FungibleTransfer[0][0]);
 			setStep(2);
@@ -127,9 +126,9 @@ const Withdraw: React.FC<{
 								defaultMessage: 'Balance',
 							})}:
 						</span>
-						<Tooltip placement="top" title={BigIntToFloatString(stash.total, 18)}>
+						<Tooltip placement="top" title={BigIntToFloatString(balance?.total, 18)}>
 							<span className={style.balanceDetailsBalance}>
-								<AD3 value={stash.total} />
+								<AD3 value={balance?.total} />
 							</span>
 						</Tooltip>
 					</div>
@@ -158,7 +157,7 @@ const Withdraw: React.FC<{
 							type='link'
 							size='small'
 							onClick={() => {
-								setAmount(BigIntToFloatString(stash.total, 18));
+								setAmount(BigIntToFloatString(balance?.total, 18));
 							}}
 						>
 							{intl.formatMessage({
