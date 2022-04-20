@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Timeline, Alert, Tooltip } from 'antd';
+import { Card, Timeline, Tooltip } from 'antd';
 import { useIntl, useModel } from 'umi';
 import classNames from 'classnames';
 import styles from '@/pages/wallet.less';
@@ -12,39 +12,28 @@ import { dealWithDid, hexToDid } from '@/utils/common';
 import Token from '@/components/Token/Token';
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import config from '@/config/config';
-
-const Message: React.FC<{
-    content: string;
-}> = ({ content }) => (
-    <Alert
-        style={{
-            marginBottom: 24,
-        }}
-        message={content}
-        type="error"
-        showIcon
-    />
-);
+import { notification } from 'antd';
 
 const All: React.FC<{
     allData: AssetTransaction[],
-    userDid: string,
-}> = ({ allData, userDid }) => {
+}> = ({ allData }) => {
+    const { wallet } = useModel('currentUser');
+
     return (
         <>
             <Timeline className={style.timeline}>
                 {allData.map((value) => {
                     return (
                         <Timeline.Item
-                            color={value.fromDid === userDid ? "red" : "green"}
-                            dot={value.fromDid === userDid ? <LogoutOutlined /> : <LoginOutlined />}
+                            color={value.fromDid === wallet?.did ? "red" : "green"}
+                            dot={value.fromDid === wallet?.did ? <LogoutOutlined /> : <LoginOutlined />}
                             className={style.timelineItem}
                             key={value.timestampInSecond}
                         >
                             <div className={style.body}>
                                 <div className={style.left}>
                                     <div className={style.desc}>
-                                        {value.fromDid === userDid ? '-' : '+'}
+                                        {value.fromDid === wallet?.did ? '-' : '+'}
                                         <Token value={value.amount} symbol={value.assetSymbol} />
                                     </div>
                                     <div className={style.receiver}>
@@ -53,8 +42,11 @@ const All: React.FC<{
                                 </div>
                                 <div className={style.right}>
                                     <div className={style.address}>
-                                        <Tooltip placement="topLeft" title={dealWithDid(value, userDid)}>
-                                            {dealWithDid(value, userDid)}
+                                        <Tooltip
+                                            placement="topLeft"
+                                            title={dealWithDid(value, wallet.did!)}
+                                        >
+                                            {dealWithDid(value, wallet.did!)}
                                         </Tooltip>
                                     </div>
                                     <div className={style.time}>
@@ -72,12 +64,13 @@ const All: React.FC<{
 
 const Send: React.FC<{
     allData: AssetTransaction[],
-    userDid: string,
-}> = ({ allData, userDid }) => {
+}> = ({ allData }) => {
+    const { wallet } = useModel('currentUser');
+
     return (
         <>
             <Timeline className={style.timeline}>
-                {allData.map((value) => value.fromDid === userDid && (
+                {allData.map((value) => value.fromDid === wallet?.did && (
                     <Timeline.Item
                         color="red"
                         className={style.timelineItem}
@@ -112,12 +105,13 @@ const Send: React.FC<{
 
 const Receive: React.FC<{
     allData: AssetTransaction[],
-    userDid: string,
-}> = ({ allData, userDid }) => {
+}> = ({ allData }) => {
+    const { wallet } = useModel('currentUser');
+
     return (
         <>
             <Timeline className={style.timeline}>
-                {allData.map((value) => value.toDid === userDid && (
+                {allData.map((value) => value.toDid === wallet?.did && (
                     <Timeline.Item
                         color="green"
                         className={style.timelineItem}
@@ -152,24 +146,33 @@ const Receive: React.FC<{
 
 const Record: React.FC = () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [tab, setTab] = useState<string>('all');
-    const [errorState, setErrorState] = useState<API.Error>({});
     const [allData, setAllData] = useState<AssetTransaction[]>([]);
 
     const intl = useIntl();
 
-    const userDid = localStorage.getItem('did') as string;
-
     const getRecord = async () => {
-        try {
-            const res: any = await AssetTransactionHistory(userDid);
-            setAllData(res);
-        } catch (e: any) {
-            setErrorState({
-                Type: 'chain error',
-                Message: e.message,
+        if (!!wallet && !!wallet.did) {
+            try {
+                const res: any = await AssetTransactionHistory(wallet?.did);
+                setAllData(res);
+            } catch (e: any) {
+                notification.error({
+                    key: 'unknownErorr',
+                    message: e.message || e,
+                    duration: null,
+                });
+            };
+        } else {
+            notification.error({
+                key: 'accessDenied',
+                message: intl.formatMessage({
+                    id: 'error.accessDenied',
+                }),
+                duration: null,
             });
-        };
+        }
     };
 
     useEffect(() => {
@@ -189,7 +192,6 @@ const Record: React.FC = () => {
                             width: '100%',
                         }}
                     >
-                        {errorState.Message && <Message content={errorState.Message} />}
                         <div className={styles.tabSelector}>
                             <div
                                 className={classNames(styles.tabItem, tab === 'all' ? '' : styles.inactive)}
@@ -218,14 +220,14 @@ const Record: React.FC = () => {
                         </div>
                         <div className={style.recordList}>
                             {tab === 'all' && (
-                                <All allData={allData} userDid={userDid} />
+                                <All allData={allData} />
 
                             )}
                             {tab === 'send' && (
-                                <Send allData={allData} userDid={userDid} />
+                                <Send allData={allData} />
                             )}
                             {tab === 'receive' && (
-                                <Receive allData={allData} userDid={userDid} />
+                                <Receive allData={allData} />
                             )}
                         </div>
                     </Card>

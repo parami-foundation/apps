@@ -1,6 +1,11 @@
 import { formatBoolean } from '@/utils/format';
+import { useModel } from 'umi';
+import { notification } from 'antd';
+import { useEffect } from 'react';
 
 export default () => {
+  const apiWs = useModel('apiWs');
+
   // Common Info
   const languageCode = localStorage.getItem('languageCode');
   const releaseNotesModal = localStorage.getItem('parami.wallet.releaseNotesModal');
@@ -20,6 +25,39 @@ export default () => {
   const dashboardDID = localStorage.getItem('parami:dashboard:did');
   const dashboardAccounts = localStorage.getItem('parami:dashboard:accounts');
   const dashboardAssets = localStorage.getItem('parami:dashboard:assets');
+
+  const QueryAccountExist = async (account: string) => {
+    if (!apiWs) {
+      return;
+    }
+
+    const accountInfo = await apiWs.query.system.account(account);
+    if (accountInfo.isEmpty) {
+      notification.error({
+        key: 'accessDenied',
+        message: 'Access Denied',
+        description: 'The account does not exist',
+        duration: null,
+      })
+    }
+    if (accountInfo.toHuman()?.nonce === 0) {
+      notification.error({
+        key: 'accessDenied',
+        message: 'Access Denied',
+        description: 'The account does not exist',
+        duration: null,
+      })
+    }
+  };
+
+  useEffect(() => {
+    if (!!apiWs && !!walletAccount) {
+      QueryAccountExist(walletAccount);
+    }
+    if (!!apiWs && !!dashboardAccount) {
+      QueryAccountExist(dashboardAccount);
+    }
+  }, [apiWs]);
 
   return {
     common: {

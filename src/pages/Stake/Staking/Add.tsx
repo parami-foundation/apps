@@ -9,7 +9,7 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { AddLiquidity, DrylyAddLiquidity } from '@/services/parami/swap';
 import config from '@/config/config';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
-import AD3 from '../../../components/Token/AD3';
+import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import { GetUserInfo } from '@/services/parami/Info';
@@ -30,15 +30,6 @@ const SelectAssets: React.FC<{
 
     return (
         <div className={styles.selectAssets}>
-            {/* <div className={styles.searchBar}>
-                <Input
-                    autoFocus
-                    size='large'
-                    className={styles.searchInput}
-                    onChange={(e) => (setKeyword(e.target.value))}
-                    placeholder={'0'}
-                />
-            </div> */}
             <div className={styles.assetsList}>
                 <div className={styles.title}>
                     <span>
@@ -92,7 +83,7 @@ const Add: React.FC<{
     const [number, setNumber] = useState<string>('0');
     const [token, setToken] = useState<Record<string, string>>({});
     const [secModal, setSecModal] = useState(false);
-    const [password, setPassword] = useState('');
+    const [passphrase, setPassphrase] = useState('');
     const [selectModal, setSelectModal] = useState(false);
     const [assetsBalance, setAssetsBalance] = useState<any[]>([]);
     const currentAccount = localStorage.getItem('stashUserAddress');
@@ -101,8 +92,6 @@ const Add: React.FC<{
     const [tokenBalance, setTokenBalance] = useState<any>();
 
     const intl = useIntl();
-
-    const controllerKeystore = localStorage.getItem('controllerKeystore');
 
     const getBalance = async () => {
         const { freeBalance: _freeBalance }: any = await GetUserBalance(
@@ -160,7 +149,7 @@ const Add: React.FC<{
     const handleSubmit = async () => {
         setSubmitting(true);
         try {
-            await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], password, controllerKeystore as string).then(() => {
+            await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], passphrase, controllerKeystore as string).then(() => {
                 setSubmitting(false);
             });
             getTokenList();
@@ -376,8 +365,8 @@ const Add: React.FC<{
             <SecurityModal
                 visable={secModal}
                 setVisable={setSecModal}
-                password={password}
-                setPassword={setPassword}
+                passphrase={passphrase}
+                setPassphrase={setPassphrase}
                 func={handleSubmit}
             />
         </>

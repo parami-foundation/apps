@@ -7,16 +7,14 @@ const List: React.FC = () => {
     const { LPsArr } = useModel('stake');
 
     return (
-        <>
-            <div className={style.stakeListContainer}>
-                {LPsArr.map((lp: any) => (
-                    <PairItem
-                        logo={lp.icon}
-                        lp={lp}
-                    />
-                ))}
-            </div>
-        </>
+        <div className={style.stakeListContainer}>
+            {LPsArr.map((lp: any) => (
+                <PairItem
+                    logo={lp.icon}
+                    lp={lp}
+                />
+            ))}
+        </div>
     )
 }
 
