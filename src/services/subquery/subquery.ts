@@ -13,7 +13,7 @@ export type AssetTransaction = {
 	timestampInSecond: number
 };
 
-function formatTimestamp(timestamp: number): string {
+const formatTimestamp = (timestamp: number): string => {
 	const date = new Date(timestamp);
 	return date.toLocaleString();
 };
@@ -93,7 +93,7 @@ export const AdvertisementRewards = async (ADid: string) => {
 	return data.data.advertisementRewards.nodes as any[];
 };
 
-//first 50
+// first 50
 export const AssetTransactionHistory = async (did: string) => {
 	const query = `query {
         assetTransactions(
