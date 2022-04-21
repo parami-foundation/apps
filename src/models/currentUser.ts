@@ -51,10 +51,10 @@ export default () => {
   };
 
   useEffect(() => {
-    if (!!apiWs && !!walletAccount) {
+    if (!!apiWs && !!walletAccount && !!walletDID) {
       QueryAccountExist(walletAccount);
     }
-    if (!!apiWs && !!dashboardAccount) {
+    if (!!apiWs && !!dashboardAccount && !!dashboardDID) {
       QueryAccountExist(dashboardAccount);
     }
   }, [apiWs]);
