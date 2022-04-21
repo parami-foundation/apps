@@ -1,4 +1,5 @@
-import { GetEndtimeOf, GetTagsOf } from '@/services/parami/Advertisement';
+import { GetEndtimeOf } from '@/services/parami/Advertisement';
+import { GetTagsOf } from '@/services/parami/Tag';
 import { deleteComma } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import { useState, useEffect } from 'react';
