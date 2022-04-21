@@ -9,7 +9,7 @@ import config from './config';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
-import { QueryAccountFromDid } from '@/services/parami/identity';
+import { QueryAccountFromDid } from '@/services/parami/Identity';
 
 const Deposit: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;

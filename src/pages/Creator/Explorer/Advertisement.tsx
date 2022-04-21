@@ -14,9 +14,9 @@ import Token from '@/components/Token/Token';
 import copy from 'copy-to-clipboard';
 import { base64url } from '@/utils/format';
 import Keyring from '@polkadot/keyring';
-import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;

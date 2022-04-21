@@ -1,5 +1,4 @@
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { Keyring } from '@polkadot/api';
 import { Button, Card, Typography, message, Alert, notification } from 'antd';
 import React, { useState } from 'react';
@@ -7,6 +6,7 @@ import { useIntl, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { base64url } from '@/utils/format';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 
 const { Title } = Typography;
 

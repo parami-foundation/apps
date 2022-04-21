@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GetTagsMap } from "@/services/parami/api";
+import { GetTagsMap } from "@/services/parami/HTTP";
 import { notification } from "antd";
 import { useModel } from "umi";
 

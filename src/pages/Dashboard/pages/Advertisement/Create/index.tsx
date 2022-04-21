@@ -5,9 +5,10 @@ import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Tooltip } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { CreateAds, CreateTag, ExistTag } from '@/services/parami/dashboard';
 import { parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
+import { CreateAds } from '@/services/parami/Advertisement';
+import { CreateTag, ExistTag } from '@/services/parami/Tag';
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;

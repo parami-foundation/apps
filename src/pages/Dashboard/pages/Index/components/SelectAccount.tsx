@@ -1,74 +1,79 @@
-import { Tooltip, message } from 'antd';
+import { Tooltip, notification } from 'antd';
 import React from 'react';
 import config from '@/config/config';
 import style from './style.less';
-import { useIntl } from 'umi';
-import { GetStableAccount, QueryDid } from '@/services/parami/wallet';
+import { QueryDID } from '@/services/parami/Identity';
+import { QueryAccountExist } from '@/services/parami/Identity';
 
 const SelectAccount: React.FC<{
-    accounts: any[],
+	accounts: any[],
 }> = ({ accounts }) => {
-    const intl = useIntl();
+	const fetchCurrentUser = async (accountMeta: any) => {
+		localStorage.setItem('parami:dashboard:accountMeta', JSON.stringify(accountMeta));
 
-    const fetchCurrentUser = async (currentAccount: any) => {
-        localStorage.setItem('dashboardCurrentAccount', JSON.stringify(currentAccount));
+		try {
+			const exist = await QueryAccountExist(accountMeta?.address);
+			if (!exist) {
+				notification.error({
+					key: 'accessDenied',
+					message: 'Access Denied',
+					description: 'The account does not exist',
+					duration: null,
+				})
+				return;
+			}
+			localStorage.setItem('parami:dashboard:account', accountMeta?.address)
 
-        try {
-            const existAccounts = await GetStableAccount(currentAccount?.address);
-            if (!existAccounts) {
-                message.error(intl.formatMessage({
-                    id: 'error.identity.notFound',
-                }));
-                return;
-            }
-            localStorage.setItem('dashboardControllerUserAddress', currentAccount?.address)
-            localStorage.setItem('dashboardStashUserAddress', existAccounts?.stashAccount as string);
+			// Query DID
+			const didData = await QueryDID(accountMeta?.address);
+			if (didData !== null) {
+				localStorage.setItem('parami:dashboard:did', didData);
 
-            // Query DID
-            const didData = await QueryDid(existAccounts?.stashAccount);
-            if (didData !== null) {
-                localStorage.setItem('dashboardDid', didData as string);
+				window.location.href = config.page.dashboard.didPage;
+				return;
+			} else {
+				notification.error({
+					key: 'accessDenied',
+					message: 'Access Denied',
+					description: 'The account does not exist',
+					duration: null,
+				});
+				return;
+			}
+		} catch (e: any) {
+			notification.error({
+				key: 'unknownError',
+				message: e.message || e,
+				duration: null,
+			})
+			return;
+		}
+	}
 
-                window.location.href = config.page.dashboard.didPage;
-                return;
-            } else {
-                message.error(intl.formatMessage({
-                    id: 'error.identity.notFound',
-                }))
-            }
-        } catch (e: any) {
-            message.error(e.message);
-            message.error(intl.formatMessage({
-                id: 'error.identity.notFound',
-            }));
-            return;
-        }
-    }
-
-    return (
-        <>
-            <div className={style.selectAccount}>
-                {accounts.map((value) => (
-                    <div
-                        className={style.field}
-                        onClick={() => { fetchCurrentUser(value) }}
-                    >
-                        <span className={style.title}>
-                            {value?.meta?.name}
-                        </span>
-                        <Tooltip
-                            placement="bottomRight"
-                            title={value?.address}
-                        >
-                            <span className={style.value}>
-                                {value?.address}
-                            </span>
-                        </Tooltip>
-                    </div>
-                ))}
-            </div>
-        </>
-    )
+	return (
+		<div className={style.selectAccount}>
+			{accounts.map((value) => (
+				<div
+					className={style.field}
+					onClick={() => {
+						fetchCurrentUser(value);
+					}}
+				>
+					<span className={style.title}>
+						{value?.meta?.name}
+					</span>
+					<Tooltip
+						placement="bottomRight"
+						title={value?.address}
+					>
+						<span className={style.value}>
+							{value?.address}
+						</span>
+					</Tooltip>
+				</div>
+			))}
+		</div>
+	)
 }
 
 export default SelectAccount;

@@ -5,9 +5,10 @@ import { Alert, Button, Divider, Input, message, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
 import Marquee from 'react-fast-marquee';
 import { didToHex, parseAmount } from '@/utils/common';
-import { GetAssetInfo, GetNFTMetaData, GetPreferedNFT } from '@/services/parami/nft';
-import { BidSlot, GetSlotAdOf } from '@/services/parami/dashboard';
+import { GetNFTMetaData, GetPreferedNFT } from '@/services/parami/NFT';
 import { BigIntToFloatString, deleteComma } from '@/utils/format';
+import { BidSlot, GetSlotAdOfByAssetID } from '@/services/parami/Advertisement';
+import { GetAssetInfo } from '@/services/parami/Assets';
 
 const Bid: React.FC<{
   adItem: any;
@@ -18,7 +19,7 @@ const Bid: React.FC<{
   const [did, setDid] = useState<string>();
   const [nftInfo, setNftInfo] = useState<any>({});
   const [currentAd, setCurrentAd] = useState<any>({});
-  const [nftId, setNftId] = useState<string>('');
+  const [assetId, setAssetId] = useState<string>('');
   const [price, setPrice] = useState<number>();
   const [confirmNFT, setConfirmNFT] = useState<boolean>(false);
 
@@ -60,13 +61,13 @@ const Bid: React.FC<{
       });
       return;
     }
-    setNftId(nftID.toString());
+    setAssetId(nftID.toString());
     setNftInfo(nftMetadata);
   };
 
   const getSlotAdOf = async () => {
     try {
-      const ad = await GetSlotAdOf(nftId);
+      const ad = await GetSlotAdOfByAssetID(assetId);
       if (ad?.ad) {
         setCurrentAd(ad);
       } else {
@@ -86,7 +87,7 @@ const Bid: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
+        await BidSlot(adItem.id, assetId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);
       } catch (e: any) {
@@ -156,16 +157,16 @@ const Bid: React.FC<{
               id: 'common.confirm',
             })}
             onChange={(e) => {
-              setNftId(e.target.value);
+              setAssetId(e.target.value);
             }}
             onSearch={async () => {
-              if (!nftId) {
+              if (!assetId) {
                 message.error('Please Input NFT ID');
                 return;
               }
               await getSlotAdOf();
             }}
-            value={nftId}
+            value={assetId}
           />
         </div>
       </div>

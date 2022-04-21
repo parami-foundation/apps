@@ -4,8 +4,9 @@ import style from '../style.less';
 import { Divider, Space, Button, message, notification } from 'antd';
 import { LinkOutlined } from '@ant-design/icons';
 import Token from '@/components/Token/Token';
-import { ClaimLPReward, DrylyRemoveLiquidity, RemoveLiquidity } from '@/services/parami/swap';
+import { ClaimLPReward, RemoveLiquidity } from '@/services/parami/Swap';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { DrylyRemoveLiquidity } from '@/services/parami/RPC';
 
 const Rows: React.FC<{
 	collapse: boolean;

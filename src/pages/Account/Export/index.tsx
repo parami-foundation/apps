@@ -8,7 +8,7 @@ import { CopyOutlined } from '@ant-design/icons';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import Skeleton from '@/components/Skeleton';
 import SmallModal from '@/components/ParamiModal/SmallModal';
-import { DecodeKeystoreWithPwd } from '@/services/parami/crypto';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 
 const Export: React.FC = () => {
 	const apiWs = useModel('apiWs');

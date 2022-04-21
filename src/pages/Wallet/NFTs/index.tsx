@@ -4,7 +4,7 @@ import { useIntl, useModel } from 'umi';
 import style from './style.less';
 import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { KickNFT } from '@/services/parami/nft';
+import { KickNFT } from '@/services/parami/NFT';
 import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';

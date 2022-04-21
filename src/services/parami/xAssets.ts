@@ -1,5 +1,5 @@
 import { web3FromSource } from "@polkadot/extension-dapp";
-import { subWeb3Callback } from "./subscription";
+import { subWeb3Callback } from "./Subscription";
 import config from "@/pages/Dashboard/pages/Bridge/config";
 
 export const AD3ToETH = async (account: any, amount: string, recipient: string) => {

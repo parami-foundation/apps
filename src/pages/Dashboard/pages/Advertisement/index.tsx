@@ -5,7 +5,6 @@ import { useIntl, useModel } from 'umi';
 import { Button, Statistic, Table, Tooltip, notification, Space } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { IsAdvertiser } from '@/services/parami/dashboard';
 import { useEffect } from 'react';
 import Skeleton from '@/components/Skeleton';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -13,6 +12,7 @@ import Register from './Register';
 import Create from './Create';
 import Bid from './Bid';
 import List from './List';
+import { IsAdvertiser } from '@/services/parami/Advertisement';
 
 const Advertisement: React.FC = () => {
 	const apiWs = useModel('apiWs');

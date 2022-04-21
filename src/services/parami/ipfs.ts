@@ -1,8 +1,8 @@
 import config from '@/config/config';
 import Keyring from "@polkadot/keyring";
 import { extend } from 'umi-request';
-import { DecodeKeystoreWithPwd } from './crypto';
-import { subCallback } from './subscription';
+import { DecodeKeystoreWithPwd } from './Crypto';
+import { subCallback } from './Subscription';
 
 const errorHandler = (error: any) => {
 	const { response = {}, message = '', data = {} } = error;

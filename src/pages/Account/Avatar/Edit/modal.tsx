@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import generateRoundAvatar from '@/utils/encode';
 import { Button, message, Spin, Upload, notification } from 'antd';
-import { uploadAvatar, uploadIPFS } from '@/services/parami/ipfs';
+import { uploadAvatar, uploadIPFS } from '@/services/parami/IPFS';
 import style from '../style.less';
 import MyAvatar from '@/components/Avatar/MyAvatar';
 import ImgCrop from 'antd-img-crop';

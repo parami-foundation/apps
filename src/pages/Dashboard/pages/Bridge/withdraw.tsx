@@ -3,7 +3,7 @@ import { useIntl, useModel } from 'umi';
 import { Button, Image, Input, message, notification, Tooltip } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
-import { AD3ToETH } from '@/services/parami/bridge';
+import { AD3ToETH } from '@/services/parami/xAssets';
 import { isETHAddress } from '@/utils/checkAddress';
 import { BigNumber } from 'ethers';
 import AD3 from '@/components/Token/AD3';

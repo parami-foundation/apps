@@ -5,7 +5,7 @@ import styles from '@/pages/wallet.less';
 import style from './style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { didToHex } from '@/utils/common';
-import { SupportDAO } from '@/services/parami/nft';
+import { SupportDAO } from '@/services/parami/NFT';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { FloatStringToBigInt } from '@/utils/format';
 import AD3 from '@/components/Token/AD3';

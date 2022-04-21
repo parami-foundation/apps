@@ -10,16 +10,16 @@ import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
-import { GetAvatar, LinkAccount, LoginWithAirdrop } from '@/services/parami/api';
+import { GetAvatar, LinkAccount, LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
-import { uploadIPFS } from '@/services/parami/ipfs';
+import { uploadIPFS } from '@/services/parami/IPFS';
 import { b64toBlob } from '@/utils/common';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
-import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/identity';
+import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
 
 let unsub: VoidFn | null = null;
 

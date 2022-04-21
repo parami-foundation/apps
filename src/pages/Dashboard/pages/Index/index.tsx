@@ -31,7 +31,7 @@ const Index: React.FC = () => {
                 tmpAssets[shortKey[0]] = value.toHuman();
             }
         }
-        localStorage.setItem('dashboardAssets', JSON.stringify(tmpAssets));
+        localStorage.setItem('parami:dashboard:assets', JSON.stringify(tmpAssets));
     };
 
     const checkExtension = async () => {
@@ -65,7 +65,7 @@ const Index: React.FC = () => {
                     duration: 6,
                 });
             } else {
-                localStorage.setItem('dashboardAccounts', JSON.stringify(Accounts));
+                localStorage.setItem('parami:dashboard:accounts', JSON.stringify(Accounts));
                 await updateAssetsInfo();
                 setAccounts(Accounts);
                 setSelectModal(true);

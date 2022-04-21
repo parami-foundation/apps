@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import config from "@/config/config";
-import { GetAvatar } from "@/services/parami/api";
+import { GetAvatar } from "@/services/parami/HTTP";
 import { useModel } from "umi";
 import { notification } from "antd";
 

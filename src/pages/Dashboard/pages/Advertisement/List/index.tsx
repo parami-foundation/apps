@@ -4,11 +4,12 @@ import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import Skeleton from '@/components/Skeleton';
 import { notification, Progress } from 'antd';
-import { GetSlotAdOf, GetSlotsOf } from '@/services/parami/dashboard';
 import { useEffect } from 'react';
-import { GetAssetInfo, GetNFTMetaData } from '@/services/parami/nft';
+import { GetNFTMetaData } from '@/services/parami/NFT';
 import AD3 from '@/components/Token/AD3';
 import { deleteComma, BigIntToFloatString } from '@/utils/format';
+import { GetAssetInfo } from '@/services/parami/Assets';
+import { GetSlotAdOfByAssetID, GetSlotsOf } from '@/services/parami/Advertisement';
 
 const List: React.FC<{
   adItem: any;
@@ -32,7 +33,7 @@ const List: React.FC<{
         for (const slot of slots) {
           const nftInfoRaw = await GetNFTMetaData(slot);
           const nftInfo: any = nftInfoRaw.toHuman();
-          const adInfo = await GetSlotAdOf(nftInfo?.tokenAssetId);
+          const adInfo = await GetSlotAdOfByAssetID(nftInfo?.tokenAssetId);
           const assetRaw = await GetAssetInfo(nftInfo?.tokenAssetId);
           const asset = assetRaw.toHuman();
           data.push({

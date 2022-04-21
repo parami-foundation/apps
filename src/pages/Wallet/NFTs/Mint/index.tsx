@@ -5,7 +5,7 @@ import { Button, Input, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
 import { DownOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { MintNFT } from '@/services/parami/nft';
+import { MintNFT } from '@/services/parami/NFT';
 import { useModel } from 'umi';
 
 const MintNFTModal: React.FC<{

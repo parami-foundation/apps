@@ -5,7 +5,7 @@ import BeforeStart from './components/BeforeStart';
 import QuickSign from './components/QuickSign';
 import RecoveryLink from './components/RecoveryLink';
 import VerifyIdentity from './components/VerifyIdentity';
-import { CreateAccount, CreateMnemonic } from '@/services/parami/identity';
+import { CreateAccount, CreateMnemonic } from '@/services/parami/Identity';
 import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
 import isiOSSafari from '@/utils/isSafaiApp';

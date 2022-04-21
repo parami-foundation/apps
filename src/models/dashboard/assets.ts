@@ -1,7 +1,6 @@
 import config from "@/config/config";
-import { GetAvatar } from "@/services/parami/api";
-import { GetUserInfo } from "@/services/parami/Info";
-import { GetValueOf } from "@/services/parami/nft";
+import { GetAvatar } from "@/services/parami/HTTP";
+import { GetUserInfo, GetValueOf } from "@/services/parami/RPC";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";

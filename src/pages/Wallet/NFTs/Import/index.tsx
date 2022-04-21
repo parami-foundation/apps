@@ -3,7 +3,7 @@ import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, notification } from 'antd';
-import { PortNFT } from '@/services/parami/nft';
+import { PortNFT } from '@/services/parami/NFT';
 import { contractAddresses } from '../config';
 import { useModel } from "@@/plugin-model/useModel";
 import type { BigNumber } from "ethers";

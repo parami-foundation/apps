@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Tooltip, Typography, message, notification } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import styles from '../../style.less';
-import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/wallet';
+import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/Transfer';
 import config from '@/config/config';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { didToHex } from '@/utils/common';
@@ -20,10 +20,10 @@ const Confirm: React.FC<{
 }> = ({ setStep, number, token, address }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
   const [fee, setFee] = useState<any>(null);
-  const [secModal, setSecModal] = useState(false);
-  const [password, setPassword] = useState('');
+  const [secModal, setSecModal] = useState<boolean>(false);
+  const [passphrase, setPassphrase] = useState<string>('');
 
   const intl = useIntl();
 
@@ -41,7 +41,7 @@ const Confirm: React.FC<{
             number,
             wallet?.keystore,
             toAddress,
-            password,
+            passphrase,
           );
         } else {
           await TransferAsset(
@@ -49,7 +49,7 @@ const Confirm: React.FC<{
             number.toString(),
             wallet.keystore,
             toAddress,
-            password,
+            passphrase,
           );
         }
 
@@ -74,7 +74,7 @@ const Confirm: React.FC<{
           message: e.message || e,
           duration: null,
         });
-        setPassword('');
+        setPassphrase('');
         setSubmitting(false);
       }
     } else {
@@ -201,8 +201,8 @@ const Confirm: React.FC<{
       <SecurityModal
         visable={secModal}
         setVisable={setSecModal}
-        password={password}
-        setPassword={setPassword}
+        passphrase={passphrase}
+        setPassphrase={setPassphrase}
         func={handleSubmit}
       />
     </>

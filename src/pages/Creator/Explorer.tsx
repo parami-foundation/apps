@@ -7,16 +7,16 @@ import style from './style.less';
 import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
 import { hexToDid, didToHex, parseAmount } from '@/utils/common';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetNFTMetaData, GetPreferedNFT, GetValueOf } from '@/services/parami/nft';
+import { GetNFTMetaData, GetPreferedNFT } from '@/services/parami/NFT';
 import { Image, notification, Button } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
-import { GetSlotAdOf } from '@/services/parami/ads';
+import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { GetAdRemain } from '../../services/parami/nft';
-import { GetAvatar } from '@/services/parami/api';
-import { GetUserInfo } from '@/services/parami/Info';
+import { GetAvatar } from '@/services/parami/HTTP';
+import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
+import { GetAdRemain, GetUserInfo, GetValueOf } from '@/services/parami/RPC';
 
 const Explorer: React.FC = () => {
 	const apiWs = useModel('apiWs');

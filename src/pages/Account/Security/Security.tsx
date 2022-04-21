@@ -6,9 +6,9 @@ import { Typography, Image, Card, Button, Tooltip, message, notification } from 
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from '@/services/parami/wallet';
 import { guid } from '@/utils/common';
 import Skeleton from '@/components/Skeleton';
+import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from '@/services/parami/Crypto';
 
 const Security: React.FC = () => {
 	const apiWs = useModel('apiWs');

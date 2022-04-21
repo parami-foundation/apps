@@ -5,13 +5,13 @@ import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { AddLiquidity, DrylyAddLiquidity } from '@/services/parami/swap';
+import { AddLiquidity } from '@/services/parami/Swap';
 import config from '@/config/config';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
-import { GetUserInfo } from '@/services/parami/Info';
+import { DrylyAddLiquidity, GetUserInfo } from '@/services/parami/RPC';
 
 const SelectAssets: React.FC<{
 	setToken: React.Dispatch<React.SetStateAction<any>>,

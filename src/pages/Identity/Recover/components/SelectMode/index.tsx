@@ -5,7 +5,7 @@ import styles from '@/pages/wallet.less';
 import style from '../../../style.less';
 import { guid, hexToDid } from '@/utils/common';
 import { useEffect } from 'react';
-import { EncodeKeystoreWithPwd } from '@/services/parami/crypto';
+import { EncodeKeystoreWithPwd } from '@/services/parami/Crypto';
 import config from '@/config/config';
 
 const SelectMode: React.FC<{

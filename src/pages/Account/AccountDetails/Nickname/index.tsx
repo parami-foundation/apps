@@ -1,10 +1,10 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { setNickName } from '@/services/parami/wallet';
 import { Button, Input } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { notification } from 'antd';
+import { SetNickName } from '@/services/parami/Identity';
 
 const Nickname: React.FC<{
 	nicknameModal: boolean;
@@ -22,7 +22,7 @@ const Nickname: React.FC<{
 		if (!!wallet && !!wallet.keystore) {
 			try {
 				setLoading(true);
-				await setNickName(nickname, passphrase, wallet?.keystore);
+				await SetNickName(nickname, passphrase, wallet?.keystore);
 				setNicknameModal(false);
 				setLoading(false);
 			} catch (e: any) {

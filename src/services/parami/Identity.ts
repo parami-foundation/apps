@@ -1,8 +1,8 @@
 import { didToHex } from "@/utils/common";
 import Keyring from "@polkadot/keyring";
 import { mnemonicGenerate } from "@polkadot/util-crypto";
-import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from "./crypto";
-import { subCallback } from "./subscription";
+import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from "./Crypto";
+import { subCallback } from "./Subscription";
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -108,4 +108,17 @@ export const QueryAccountFromDid = async (did: string) => {
 	}
 
 	return null;
+};
+
+export const SetNickName = async (nickname: string, password: string, keystore: string) => {
+	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+		throw new Error('Wrong password');
+	}
+
+	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+	const tx = window.apiWs.tx.did.setMetadata('name', nickname);
+
+	return await subCallback(tx, payUser);
 };

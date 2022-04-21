@@ -77,3 +77,15 @@ declare namespace State {
 		value?: any;
 	}[];
 }
+
+type NFTNetwork =
+	'Unknown'
+	| 'Binance'
+	| 'Bitcoin'
+	| 'Eosio'
+	| 'Ethereum'
+	| 'Kusama'
+	| 'Polkadot'
+	| 'Solana'
+	| 'Tron'
+	| 'Near';

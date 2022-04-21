@@ -1,7 +1,7 @@
 import MyAvatar from '@/components/Avatar/MyAvatar';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { LinkBlockChain, LinkSociality } from '@/services/parami/linker';
-import { DecodeKeystoreWithPwd } from '@/services/parami/wallet';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import { LinkBlockChain, LinkSociality } from '@/services/parami/Linker';
 import { solanaSignMessage } from '@/services/solana/solana';
 import { signBSCMessage, signETHMessage } from '@/services/walletconnect/walletconnect';
 import { hexToDid } from '@/utils/common';

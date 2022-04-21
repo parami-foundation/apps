@@ -7,8 +7,9 @@ import { DownOutlined } from '@ant-design/icons';
 import AD3 from '@/components/Token/AD3';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import Token from '@/components/Token/Token';
-import { BuyToken, DrylyBuyCurrency, DrylySellCurrency, GetCostOf, GetValueOf, SellToken } from '@/services/parami/nft';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { DrylyBuyCurrency, DrylySellCurrency, GetCostOf, GetValueOf } from '@/services/parami/RPC';
+import { BuyToken, SellToken } from '@/services/parami/Swap';
 
 const { Title } = Typography;
 
@@ -204,7 +205,7 @@ const Trade: React.FC<{
 										onChange={(e) => {
 											if (mode === 'tokenToAd3') {
 												setTokenNumber(e);
-												GetValueOf(user?.nft, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+												GetValueOf(user?.nft, FloatStringToBigInt(e, 18)).then((res: any) => {
 													setFlat(BigIntToFloatString(res, 18));
 												});
 											}
@@ -230,7 +231,7 @@ const Trade: React.FC<{
 										className={style.maxButton}
 										onClick={() => {
 											setTokenNumber(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18));
-											GetValueOf(user?.nft, FloatStringToBigInt(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18), 18).toString()).then((res: any) => {
+											GetValueOf(user?.nft, FloatStringToBigInt(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18), 18)).then((res: any) => {
 												setFlat(BigIntToFloatString(res, 18));
 											});
 										}}

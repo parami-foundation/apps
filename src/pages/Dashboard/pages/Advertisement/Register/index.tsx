@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useModel, useIntl } from 'umi';
 import style from './style.less';
 import { FloatStringToBigInt } from '@/utils/format';
-import { BecomeAdvertiser } from '@/services/parami/dashboard';
 import { parseAmount } from '@/utils/common';
+import { BecomeAdvertiser } from '@/services/parami/Advertisement';
 
 const Register: React.FC<{
   setIsAdvertisers: React.Dispatch<React.SetStateAction<boolean>>;
