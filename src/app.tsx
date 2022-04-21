@@ -11,6 +11,7 @@ import type { ApiPromise } from '@polkadot/api';
 import NoFoundPage from './pages/404';
 import { initWebSocket } from './utils/websocket';
 import { QueryCurrentUser } from './services/parami/currentUser';
+import { Merge } from './services/parami/Merge';
 
 declare global {
   interface Window {
@@ -28,6 +29,8 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentInfo?: API.Info;
 }> {
+  await Merge();
+
   const currentInfo = await QueryCurrentUser();
 
   await initWebSocket(config.main.socketServer);
@@ -117,5 +120,12 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     headerHeight: 70,
     unAccessible: <NoFoundPage />,
     ...initialState?.settings,
+    childrenRender: (children) => {
+      return (
+        <>
+          {children}
+        </>
+      );
+    },
   };
 };
