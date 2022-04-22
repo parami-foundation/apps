@@ -104,6 +104,35 @@ const AccountDetails: React.FC = () => {
 							<div className={style.field}>
 								<div className={style.title}>
 									{intl.formatMessage({
+										id: 'account.accountDetails.address',
+									})}
+								</div>
+								<div className={style.idCody}>
+									<span className={style.text}>
+										{wallet?.account}
+									</span>
+									<CopyToClipboard
+										text={hexToDid(wallet?.account)}
+										onCopy={() => {
+											message.success(
+												intl.formatMessage({
+													id: 'common.copied',
+												}),
+											)
+										}}
+									>
+										<Button
+											size='middle'
+											shape='circle'
+											icon={<CopyOutlined />}
+											className={style.valueButton}
+										/>
+									</CopyToClipboard>
+								</div>
+							</div>
+							<div className={style.field}>
+								<div className={style.title}>
+									{intl.formatMessage({
 										id: 'account.accountDetails.walletBalance',
 									})}
 								</div>
