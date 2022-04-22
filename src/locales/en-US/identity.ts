@@ -9,7 +9,7 @@ export default {
     'identity.recoveryLink.sendMessage': 'This is your RecoveryLink, please keep it safe to recover your account:{link} Please send this message to Bot, and you can continue creating and using your wallet.',
     'identity.recoveryLink.title': 'Create RecoveryLink',
     'identity.recoveryLink.description': 'Write down the url and keep them somewhere safe. {strong} You’ll be asked to verify your RecoveryLink next.',
-    'identity.recoveryLink.description.strong': 'Anyone with access to it will also have access to your account!',
+    'identity.recoveryLink.description.strong': 'Anyone with access to it will also have access to your account! No one will ask you for this information, including our customer service.',
     'identity.recoveryLink.placeholder': 'Gernerating your RecoveryLink...',
     'identity.recoveryLink.copyRecoveryLink': 'Copy RecoveryLink',
     'identity.recoveryLink.message': 'We have upgraded the service experience. You can use the new recoverylink to quickly recover your account for 0 fee. Please keep your new recoverylink properly.',

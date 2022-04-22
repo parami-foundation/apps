@@ -274,7 +274,7 @@ const VerifyIdentity: React.FC<{
   // Compute Existential Deposit
   const getExistentialDeposit = async () => {
     const existentialDeposit = await GetExistentialDeposit();
-    setExistentialDeposit(BigIntToFloatString(BigInt(existentialDeposit) + FloatStringToBigInt(`${(0.02 * 3).toString()}`, 18), 18));
+    setExistentialDeposit(BigIntToFloatString(BigInt(existentialDeposit) + FloatStringToBigInt(`${(0.02 * 1).toString()}`, 18), 18));
   };
 
   useEffect(() => {
@@ -366,7 +366,7 @@ const VerifyIdentity: React.FC<{
             {intl.formatMessage({
               id: 'identity.initialDeposit.description',
             }, {
-              ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></strong>)
+              ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit!, 18).toString()} /></strong>)
             })}
           </p>
           <Divider />
