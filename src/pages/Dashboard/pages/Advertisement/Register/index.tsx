@@ -8,7 +8,8 @@ import { BecomeAdvertiser } from '@/services/parami/Advertisement';
 
 const Register: React.FC<{
   setIsAdvertisers: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setIsAdvertisers }) => {
+  setBecomeModal: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setIsAdvertisers, setBecomeModal }) => {
   const { balance } = useModel('dashboard.balance');
   const { dashboard } = useModel('currentUser');
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
@@ -22,6 +23,7 @@ const Register: React.FC<{
         await BecomeAdvertiser(parseAmount('1000'), JSON.parse(dashboard?.accountMeta));
         setIsAdvertisers(true);
         setSubmitLoading(false);
+        setBecomeModal(false);
       } catch (e: any) {
         notification.error({
           message: e.message,

@@ -112,7 +112,7 @@ const AccountDetails: React.FC = () => {
 										{wallet?.account}
 									</span>
 									<CopyToClipboard
-										text={hexToDid(wallet?.account)}
+										text={wallet?.account}
 										onCopy={() => {
 											message.success(
 												intl.formatMessage({

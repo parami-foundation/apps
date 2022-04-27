@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { Button, Image, Input, message, notification, Tooltip } from 'antd';
 import style from './style.less';
-import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { AD3ToETH } from '@/services/parami/xAssets';
 import { isETHAddress } from '@/utils/checkAddress';
 import { BigNumber } from 'ethers';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
+import SelectToken from './SelectToken';
 
 const Withdraw: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,6 +31,7 @@ const Withdraw: React.FC<{
 	const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
 	const [amount, setAmount] = useState<string>('');
 	const [destinationAddress, setDestinationAddress] = useState<string>();
+	const [selectModal, setSelectModal] = useState<boolean>(false);
 
 	const intl = useIntl();
 
@@ -134,13 +136,19 @@ const Withdraw: React.FC<{
 					</div>
 				</div>
 				<div className={style.tokenAndAmountDetails}>
-					<div className={style.tokenDetails}>
+					<div
+						className={style.tokenDetails}
+						onClick={() => {
+							setSelectModal(true);
+						}}
+					>
 						<Image
 							src='/images/logo-round-core.svg'
 							preview={false}
 							className={style.chainIcon}
 						/>
 						<span className={style.tokenDetailsTokenName}>AD3</span>
+						<DownOutlined className={style.tokenDetailsArrow} />
 					</div>
 					<div className={style.amountDetails}>
 						<Input
@@ -249,6 +257,12 @@ const Withdraw: React.FC<{
 					defaultMessage: 'Transfer',
 				})}
 			</Button>
+
+			<SelectToken
+				selectModal={selectModal}
+				setSelectModal={setSelectModal}
+				chain={'parami'}
+			/>
 		</>
 	)
 }

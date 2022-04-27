@@ -11,6 +11,7 @@ import Skeleton from '@/components/Skeleton';
 const Assets: React.FC = () => {
   const apiWs = useModel('apiWs');
   const { assetsArr } = useModel('assets');
+  console.log(assetsArr)
 
   const intl = useIntl();
 

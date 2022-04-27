@@ -113,9 +113,9 @@ const Advertisement: React.FC = () => {
 	];
 
 	const checkIsAdvertiser = async () => {
-		if (!!dashboard && !!dashboard?.accountMeta) {
+		if (!!dashboard && !!dashboard?.account) {
 			try {
-				const isAdvertiser = await IsAdvertiser(dashboard?.accountMeta);
+				const isAdvertiser = await IsAdvertiser(dashboard?.account);
 				setIsAdvertisers(isAdvertiser);
 			} catch (e: any) {
 				notification.error({
@@ -219,6 +219,7 @@ const Advertisement: React.FC = () => {
 				content={
 					<Register
 						setIsAdvertisers={setIsAdvertisers}
+						setBecomeModal={setBecomeModal}
 					/>
 				}
 				footer={false}

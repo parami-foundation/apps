@@ -10,11 +10,13 @@ export const config = {
         // "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
+        "tokenListConfig": "/tokens.json",
         "airdropServer": "https://staging.parami.io/airdrop",
     } : {
         "socketServer": "wss://rpc.parami.io/ws",
         "subqueryServer": "https://graph.parami.io/",
         "tagMapConfig": "/tagmap.json",
+        "tokenListConfig": "/tokens.json",
         "airdropServer": "https://airdrop.parami.io",
     },
     "ipfs": {

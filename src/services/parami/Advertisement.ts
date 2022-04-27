@@ -1,4 +1,4 @@
-import { deleteComma } from "@/utils/format";
+import { deleteComma, BigIntToFloatString } from "@/utils/format";
 import { web3FromSource } from "@polkadot/extension-dapp";
 import { GetPreferedNFT } from "./NFT";
 import { subWeb3Callback } from "./Subscription";
@@ -78,8 +78,8 @@ export const BecomeAdvertiser = async (deposit: string, account: any) => {
     return await subWeb3Callback(tx, injector, account);
 };
 
-export const IsAdvertiser = async (stashAccount: string): Promise<boolean> => {
-    const res = await window.apiWs.query.balances.reserves(stashAccount);
+export const IsAdvertiser = async (account: string): Promise<boolean> => {
+    const res = await window.apiWs.query.balances.reserves(account);
     const reserves: any = res.toHuman();
     for (const key in reserves) {
         if (reserves[key].id === 'prm/ader' && Number(BigIntToFloatString(deleteComma(reserves[key].amount), 18)) >= 1000) {

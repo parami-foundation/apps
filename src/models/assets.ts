@@ -18,6 +18,7 @@ export default () => {
 		if (!apiWs) {
 			return;
 		}
+
 		const allEntries = await apiWs.query.assets.metadata.entries();
 		const tmpAssets = {};
 		for (let i = 0; i < allEntries.length; i++) {

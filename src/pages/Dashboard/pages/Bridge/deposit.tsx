@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { Button, Image, Input, Tooltip, notification } from 'antd';
 import style from './style.less';
-import { ArrowDownOutlined, PlusOutlined } from '@ant-design/icons';
+import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { BigNumber, utils } from 'ethers';
 import { decodeAddress } from '@polkadot/util-crypto';
 import config from './config';
@@ -10,6 +10,7 @@ import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
+import SelectToken from './SelectToken';
 
 const Deposit: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +35,7 @@ const Deposit: React.FC<{
 	const [amount, setAmount] = useState<string>('');
 	const [waitingParami, setWaitingParami] = useState<boolean>(false);
 	const [destinationAddress, setDestinationAddress] = useState<string>('');
+	const [selectModal, setSelectModal] = useState<boolean>(false);
 
 	const intl = useIntl();
 
@@ -206,13 +208,19 @@ const Deposit: React.FC<{
 					</div>
 				</div>
 				<div className={style.tokenAndAmountDetails}>
-					<div className={style.tokenDetails}>
+					<div
+						className={style.tokenDetails}
+						onClick={() => {
+							setSelectModal(true);
+						}}
+					>
 						<Image
 							src='/images/logo-round-core.svg'
 							preview={false}
 							className={style.chainIcon}
 						/>
 						<span className={style.tokenDetailsTokenName}>AD3</span>
+						<DownOutlined className={style.tokenDetailsArrow} />
 					</div>
 					<div className={style.amountDetails}>
 						<Input
@@ -321,6 +329,12 @@ const Deposit: React.FC<{
 					defaultMessage: 'Transfer',
 				})}
 			</Button>
+
+			<SelectToken
+				selectModal={selectModal}
+				setSelectModal={setSelectModal}
+				chain={'ethereum'}
+			/>
 		</>
 	)
 }
