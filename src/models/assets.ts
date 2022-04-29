@@ -1,6 +1,6 @@
 import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/HTTP";
-import { GetUserInfo, GetValueOf } from "@/services/parami/RPC";
+import { GetUserInfo, DrylySellToken } from "@/services/parami/RPC";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
@@ -33,7 +33,7 @@ export default () => {
 			apiWs.query.assets.account(Number(assetId), wallet?.account, async (result: any) => {
 				const { balance } = result;
 
-				const ad3 = await GetValueOf(assetId, balance);
+				const ad3 = await DrylySellToken(assetId, balance);
 				const did = await OwnerDidOfNft(assetId);
 				const kol = await GetUserInfo(did);
 				let icon: any;

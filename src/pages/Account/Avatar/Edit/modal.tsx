@@ -14,7 +14,7 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 const Modal: React.FC<{
   setModalVisable: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setModalVisable }) => {
-  const { setAvatar } = useModel('user');
+  const { avatar, setAvatar } = useModel('user');
   const { wallet } = useModel('currentUser');
   const [passphrase, setPassphrase] = useState<string>('');
   const [secModal, setSecModal] = useState<boolean>(false);
@@ -24,6 +24,7 @@ const Modal: React.FC<{
   const intl = useIntl();
 
   const onChange = async (info: any) => {
+    setSpinning(true);
     if (info?.event?.percent === 100) {
       if (wallet?.did === null) {
         history.push(config.page.createPage);
@@ -47,7 +48,6 @@ const Modal: React.FC<{
         return;
       }
       try {
-        setSpinning(true);
         const { response, data } = await uploadIPFS(File);
         if (response.ok) {
           await uploadAvatar(`ipfs://${data.Hash}`, passphrase, wallet?.keystore);
@@ -90,10 +90,33 @@ const Modal: React.FC<{
         spinning={spinning}
       >
         <div className={style.avatarEdit}>
-          <MyAvatar
-            width={200}
-            height={200}
-          />
+          {!!avatar ? (
+            <MyAvatar
+              width={200}
+              height={200}
+            />
+          ) : (
+            <ImgCrop
+              zoom
+              rotate
+              quality={1}
+              modalTitle={intl.formatMessage({
+                id: 'wallet.avatar.uploadAvatar',
+              })}
+            >
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                onChange={onChange}
+                action={config.ipfs.upload}
+              >
+                <MyAvatar
+                  width={200}
+                  height={200}
+                />
+              </Upload>
+            </ImgCrop>
+          )}
           <span
             className={style.avatarSaveDesc}
           >
@@ -114,6 +137,7 @@ const Modal: React.FC<{
                 accept="image/*"
                 showUploadList={false}
                 onChange={onChange}
+                action={config.ipfs.upload}
               >
                 <Button
                   block
@@ -129,18 +153,6 @@ const Modal: React.FC<{
                 </Button>
               </Upload>
             </ImgCrop>
-
-            <Button
-              block
-              size="large"
-              shape='round'
-              className={style.button}
-              onClick={() => { setModalVisable(false) }}
-            >
-              {intl.formatMessage({
-                id: 'common.close',
-              })}
-            </Button>
           </div>
         </div>
       </Spin>

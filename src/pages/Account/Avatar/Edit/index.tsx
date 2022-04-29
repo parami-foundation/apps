@@ -21,6 +21,7 @@ const Edit: React.FC<{
         />
       }
       footer={false}
+      close={() => setModalVisable(false)}
     />
   )
 }

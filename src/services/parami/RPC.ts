@@ -1,8 +1,3 @@
-export const GetValueOf = async (assetId: string, amount: bigint) => {
-  const value = await (window.apiWs.rpc as any).swap.drylySellTokens(assetId, amount.toString());
-  return value.toHuman();
-};
-
 export const GetUserInfo = async (did: string) => {
   const userInfo = await window.apiWs.query.did.metadata(did);
   const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
@@ -14,18 +9,23 @@ export const GetUserInfo = async (did: string) => {
   return { ...user, avatar, nickname };
 };
 
-export const GetCostOf = async (assetId: string, amount: string) => {
-  const value = await (window.apiWs.rpc as any).swap.drylyBuyTokens(assetId, amount);
+export const DrylyBuyToken = async (tokenId: string, tokens: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylyBuyTokens(tokenId, tokens);
   return value.toHuman();
 };
 
-export const DrylySellCurrency = async (assetId: string, amount: string) => {
-  const value = await (window.apiWs.rpc as any).swap.drylySellCurrency(assetId, amount);
+export const DrylySellToken = async (tokenId: string, tokens: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylySellTokens(tokenId, tokens);
   return value.toHuman();
 };
 
-export const DrylyBuyCurrency = async (assetId: string, amount: string) => {
-  const value = await (window.apiWs.rpc as any).swap.drylyBuyCurrency(assetId, amount);
+export const DrylyBuyCurrency = async (tokenId: string, currency: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylyBuyCurrency(tokenId, currency);
+  return value.toHuman();
+};
+
+export const DrylySellCurrency = async (tokenId: string, currency: string) => {
+  const value = await (window.apiWs.rpc as any).swap.drylySellCurrency(tokenId, currency);
   return value.toHuman();
 };
 

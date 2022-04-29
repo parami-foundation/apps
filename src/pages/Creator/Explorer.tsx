@@ -16,7 +16,7 @@ import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/sub
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAvatar } from '@/services/parami/HTTP';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
-import { GetAdRemain, GetUserInfo, GetValueOf } from '@/services/parami/RPC';
+import { GetAdRemain, GetUserInfo, DrylySellToken } from '@/services/parami/RPC';
 
 const Explorer: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -180,7 +180,7 @@ const Explorer: React.FC = () => {
 			const assetInfo = assetData.toHuman() as any;
 			setAsset(assetInfo);
 
-			const value = await GetValueOf(nftInfo?.tokenAssetId, parseAmount('1'));
+			const value = await DrylySellToken(nftInfo?.tokenAssetId, parseAmount('1'));
 			setAssetPrice(value.toString());
 
 			const assetDetail = await GetAssetDetail(nftInfo?.tokenAssetId);

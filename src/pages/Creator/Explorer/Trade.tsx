@@ -8,8 +8,8 @@ import AD3 from '@/components/Token/AD3';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 import Token from '@/components/Token/Token';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { DrylyBuyCurrency, DrylySellCurrency, GetCostOf, GetValueOf } from '@/services/parami/RPC';
-import { BuyToken, SellToken } from '@/services/parami/Swap';
+import { DrylyBuyCurrency, DrylyBuyToken, DrylySellCurrency, DrylySellToken } from '@/services/parami/RPC';
+import { BuyCurrency, BuyToken } from '@/services/parami/Swap';
 
 const { Title } = Typography;
 
@@ -38,10 +38,9 @@ const Trade: React.FC<{
 			switch (mode) {
 				case 'ad3ToToken':
 					try {
-						await BuyToken(nft?.classId, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
+						await BuyToken(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore).then(() => {
 							setSubmitting(false);
 						});
-						return;
 					} catch (e: any) {
 						notification.error({
 							message: e.message,
@@ -49,12 +48,12 @@ const Trade: React.FC<{
 						});
 						return;
 					}
+					break;
 				case 'tokenToAd3':
 					try {
-						await SellToken(nft?.classId, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
+						await BuyCurrency(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore).then(() => {
 							setSubmitting(false);
 						});
-						return;
 					} catch (e: any) {
 						notification.error({
 							message: e.message,
@@ -62,6 +61,7 @@ const Trade: React.FC<{
 						});
 						return;
 					}
+					break;
 			}
 		} else {
 			notification.error({
@@ -158,10 +158,19 @@ const Trade: React.FC<{
 										size='middle'
 										className={style.maxButton}
 										onClick={() => {
-											setAd3Number(BigIntToFloatString(balance?.free, 18));
-											DrylySellCurrency(nft?.classId, FloatStringToBigInt(balance?.free, 18).toString()).then((res: any) => {
-												setFlat(BigIntToFloatString(res, 18));
-											});
+											const ad3BalanceStr = BigIntToFloatString(balance?.free, 18);
+											if (mode === 'ad3ToToken') {
+												setAd3Number(ad3BalanceStr);
+												DrylySellCurrency(nft?.classId, FloatStringToBigInt(ad3BalanceStr, 18).toString()).then((res: any) => {
+													setFlat(BigIntToFloatString(res, 18));
+												});
+											}
+											if (mode === 'tokenToAd3') {
+												setFlat(ad3BalanceStr);
+												DrylyBuyCurrency(nft?.classId, FloatStringToBigInt(ad3BalanceStr, 18).toString()).then((res: any) => {
+													setTokenNumber(BigIntToFloatString(res, 18));
+												});
+											}
 										}}
 									>
 										{intl.formatMessage({
@@ -205,13 +214,13 @@ const Trade: React.FC<{
 										onChange={(e) => {
 											if (mode === 'tokenToAd3') {
 												setTokenNumber(e);
-												GetValueOf(nft?.classId, FloatStringToBigInt(e, 18)).then((res: any) => {
+												DrylySellToken(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
 													setFlat(BigIntToFloatString(res, 18));
 												});
 											}
 											if (mode === 'ad3ToToken') {
 												setFlat(e);
-												GetCostOf(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+												DrylyBuyToken(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
 													setAd3Number(BigIntToFloatString(res, 18));
 												});
 											}
@@ -230,10 +239,19 @@ const Trade: React.FC<{
 										size='middle'
 										className={style.maxButton}
 										onClick={() => {
-											setTokenNumber(BigIntToFloatString(assets.get(nft?.classId)?.balance, 18));
-											GetValueOf(nft?.classId, FloatStringToBigInt(BigIntToFloatString(assets.get(nft?.classId)?.balance, 18), 18)).then((res: any) => {
-												setFlat(BigIntToFloatString(res, 18));
-											});
+											const tokenBalanceStr = BigIntToFloatString(assets.get(nft?.classId)?.balance, 18);
+											if (mode === 'tokenToAd3') {
+												setTokenNumber(tokenBalanceStr);
+												DrylySellToken(nft?.classId, FloatStringToBigInt(tokenBalanceStr, 18).toString()).then((res: any) => {
+													setFlat(BigIntToFloatString(res, 18));
+												});
+											}
+											if (mode === 'ad3ToToken') {
+												setFlat(tokenBalanceStr);
+												DrylyBuyToken(nft?.classId, FloatStringToBigInt(tokenBalanceStr, 18).toString()).then((res: any) => {
+													setAd3Number(BigIntToFloatString(res, 18));
+												});
+											}
 										}}
 									>
 										{intl.formatMessage({

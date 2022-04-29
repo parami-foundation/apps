@@ -20,6 +20,7 @@ export const config = {
         "airdropServer": "https://airdrop.parami.io",
     },
     "ipfs": {
+        "host": "ipfs.parami.io",
         "upload": "https://ipfs.parami.io/api/v0/add?stream-channels=true",
         "endpoint": "https://ipfs.parami.io/ipfs/",
     },
