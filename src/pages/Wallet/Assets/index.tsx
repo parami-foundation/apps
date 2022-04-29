@@ -11,7 +11,6 @@ import Skeleton from '@/components/Skeleton';
 const Assets: React.FC = () => {
   const apiWs = useModel('apiWs');
   const { assetsArr } = useModel('assets');
-  console.log(assetsArr)
 
   const intl = useIntl();
 
@@ -64,7 +63,7 @@ const Assets: React.FC = () => {
                           fallback='/images/logo-round-core.svg'
                           preview={false}
                         />
-                        {item?.token}
+                        {item?.token}#{item?.id}
                       </span>
                       <span
                         className={style.price}

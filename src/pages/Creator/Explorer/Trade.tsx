@@ -46,6 +46,7 @@ const Trade: React.FC<{
 							message: e.message,
 							duration: null,
 						});
+						setSubmitting(false);
 						return;
 					}
 					break;
@@ -59,6 +60,7 @@ const Trade: React.FC<{
 							message: e.message,
 							duration: null,
 						});
+						setSubmitting(false);
 						return;
 					}
 					break;
@@ -71,6 +73,7 @@ const Trade: React.FC<{
 				}),
 				duration: null,
 			});
+			setSubmitting(false);
 		}
 	};
 
