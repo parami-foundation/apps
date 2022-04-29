@@ -24,7 +24,7 @@ const Modal: React.FC<{
   const intl = useIntl();
 
   const onChange = async (info: any) => {
-    if (info.event) {
+    if (info?.event?.percent === 100) {
       if (wallet?.did === null) {
         history.push(config.page.createPage);
       };

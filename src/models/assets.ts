@@ -49,10 +49,9 @@ export default () => {
 							description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
 							duration: null,
 						});
-						return;
 					}
 
-					if (response.status === 200) {
+					if (response?.status === 200) {
 						icon = window.URL.createObjectURL(data);
 					}
 				}

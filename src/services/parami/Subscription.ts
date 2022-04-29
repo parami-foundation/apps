@@ -34,18 +34,17 @@ export const subCallback = (cb: SubmittableExtrinsic<"promise", any>, payUser: K
 
 					const map = {};
 					events.forEach(({ event: { data, method, section } }) => {
-						if (data[0].isError) {
+						if (section === 'system' && method === 'ExtrinsicFailed') {
 							notification.error({
 								message: 'Transaction failed',
 							});
-							const error = data[0].asError;
-							if (error.isModule) {
-								const decoded = window.apiWs.registry.findMetaError(error.asModule);
+							if (data[0]?.isModule) {
+								const decoded = window.apiWs.registry.findMetaError(data[0]?.asModule);
 								reject(`error.${decoded.section}.${decoded.method}`);
 								return;
 							} else {
 								// Other, CannotLookup, BadOrigin, no extra info
-								console.log(error);
+								console.log(data[0].toString());
 							}
 						}
 						if (!map[section]) map[section] = {}
@@ -99,18 +98,17 @@ export const subWeb3Callback = (cb: SubmittableExtrinsic<"promise", any>, inject
 
 				const map = {};
 				events.forEach(({ event: { data, method, section } }) => {
-					if (data[0].isError) {
+					if (section === 'system' && method === 'ExtrinsicFailed') {
 						notification.error({
 							message: 'Transaction failed',
 						});
-						const error = data[0].asError;
-						if (error.isModule) {
-							const decoded = window.apiWs.registry.findMetaError(error.asModule);
+						if (data[0]?.isModule) {
+							const decoded = window.apiWs.registry.findMetaError(data[0]?.asModule);
 							reject(`error.${decoded.section}.${decoded.method}`);
 							return;
 						} else {
 							// Other, CannotLookup, BadOrigin, no extra info
-							console.log(error);
+							console.log(data[0].toString());
 						}
 					}
 					if (!map[section]) map[section] = {}

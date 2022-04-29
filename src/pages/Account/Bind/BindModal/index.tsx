@@ -209,6 +209,7 @@ const BindModal: React.FC<{
                   message: intl.formatMessage({
                     id: e.message || e,
                   }),
+                  duration: null,
                 });
                 setLoading(false);
               }
@@ -238,6 +239,7 @@ const BindModal: React.FC<{
                   message: intl.formatMessage({
                     id: e.message || e,
                   }),
+                  duration: null,
                 });
                 setLoading(false);
               }

@@ -16,12 +16,12 @@ const { Title } = Typography;
 const Trade: React.FC<{
 	avatar: string;
 	asset: any;
-	user: any;
+	nft: any;
 	assetPrice: string;
-}> = ({ avatar, asset, user, assetPrice }) => {
+}> = ({ avatar, asset, nft, assetPrice }) => {
 	const { wallet } = useModel('currentUser');
 	const { balance } = useModel('balance');
-	const { assetsArr } = useModel('assets');
+	const { assets } = useModel('assets');
 	const [submitting, setSubmitting] = useState<boolean>(false);
 	const [mode, setMode] = useState<string>('ad3ToToken');
 	const [ad3Number, setAd3Number] = useState<string>('');
@@ -38,7 +38,7 @@ const Trade: React.FC<{
 			switch (mode) {
 				case 'ad3ToToken':
 					try {
-						await BuyToken(user?.nft, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
+						await BuyToken(nft?.classId, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
 							setSubmitting(false);
 						});
 						return;
@@ -51,7 +51,7 @@ const Trade: React.FC<{
 					}
 				case 'tokenToAd3':
 					try {
-						await SellToken(user?.nft, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
+						await SellToken(nft?.classId, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(flat, 18).toString(), passphrase, wallet?.keystore).then(() => {
 							setSubmitting(false);
 						});
 						return;
@@ -133,13 +133,13 @@ const Trade: React.FC<{
 										onChange={(e) => {
 											if (mode === 'ad3ToToken') {
 												setAd3Number(e);
-												DrylySellCurrency(user?.nft, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+												DrylySellCurrency(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
 													setFlat(BigIntToFloatString(res, 18));
 												});
 											}
 											if (mode === 'tokenToAd3') {
 												setFlat(e);
-												DrylyBuyCurrency(user?.nft, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+												DrylyBuyCurrency(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
 													setTokenNumber(BigIntToFloatString(res, 18));
 												});
 											}
@@ -159,7 +159,7 @@ const Trade: React.FC<{
 										className={style.maxButton}
 										onClick={() => {
 											setAd3Number(BigIntToFloatString(balance?.free, 18));
-											DrylySellCurrency(user?.nft, FloatStringToBigInt(balance?.free, 18).toString()).then((res: any) => {
+											DrylySellCurrency(nft?.classId, FloatStringToBigInt(balance?.free, 18).toString()).then((res: any) => {
 												setFlat(BigIntToFloatString(res, 18));
 											});
 										}}
@@ -205,13 +205,13 @@ const Trade: React.FC<{
 										onChange={(e) => {
 											if (mode === 'tokenToAd3') {
 												setTokenNumber(e);
-												GetValueOf(user?.nft, FloatStringToBigInt(e, 18)).then((res: any) => {
+												GetValueOf(nft?.classId, FloatStringToBigInt(e, 18)).then((res: any) => {
 													setFlat(BigIntToFloatString(res, 18));
 												});
 											}
 											if (mode === 'ad3ToToken') {
 												setFlat(e);
-												GetCostOf(user?.nft, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+												GetCostOf(nft?.classId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
 													setAd3Number(BigIntToFloatString(res, 18));
 												});
 											}
@@ -223,15 +223,15 @@ const Trade: React.FC<{
 										{intl.formatMessage({
 											id: 'creator.explorer.trade.balance',
 											defaultMessage: 'Balance'
-										})}: <Token value={assetsArr[user?.nft]?.balance} symbol={asset?.symbol} />
+										})}: <Token value={assets.get(nft?.classId)?.balance} symbol={asset?.symbol} />
 									</span>
 									<Button
 										type='link'
 										size='middle'
 										className={style.maxButton}
 										onClick={() => {
-											setTokenNumber(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18));
-											GetValueOf(user?.nft, FloatStringToBigInt(BigIntToFloatString(assetsArr[user?.nft]?.balance, 18), 18)).then((res: any) => {
+											setTokenNumber(BigIntToFloatString(assets.get(nft?.classId)?.balance, 18));
+											GetValueOf(nft?.classId, FloatStringToBigInt(BigIntToFloatString(assets.get(nft?.classId)?.balance, 18), 18)).then((res: any) => {
 												setFlat(BigIntToFloatString(res, 18));
 											});
 										}}
@@ -247,7 +247,7 @@ const Trade: React.FC<{
 						<div className={style.pairCoinsFlat}>
 							<Space>
 								<Token value={FloatStringToBigInt('1', 18).toString()} symbol={asset?.symbol} />
-								<span>=</span>
+								<span>≈</span>
 								<AD3 value={assetPrice} />
 							</Space>
 						</div>

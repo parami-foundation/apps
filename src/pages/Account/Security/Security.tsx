@@ -34,7 +34,7 @@ const Security: React.FC = () => {
 				}
 				const generatePassword = guid().substring(0, 6);
 				setPassphrase(generatePassword);
-				localStorage.setItem('stamp', generatePassword);
+				localStorage.setItem('parami:wallet:passphrase', generatePassword);
 				const encodedMnemonic = EncodeKeystoreWithPwd(generatePassword, decodedMnemonic);
 				if (!encodedMnemonic) {
 					message.error(intl.formatMessage({
@@ -42,7 +42,7 @@ const Security: React.FC = () => {
 					}));
 					return;
 				}
-				localStorage.setItem('controllerKeystore', encodedMnemonic);
+				localStorage.setItem('parami:wallet:keystore', encodedMnemonic);
 				setPassphraseEnable('disable');
 				message.success(intl.formatMessage({
 					id: 'account.security.passphrase.changeSuccess',
@@ -62,12 +62,12 @@ const Security: React.FC = () => {
 					}));
 					return;
 				}
-				localStorage.setItem('controllerKeystore', encodedMnemonic);
+				localStorage.setItem('parami:wallet:keystore', encodedMnemonic);
 				setPassphraseEnable('enable');
 				message.success(intl.formatMessage({
 					id: 'account.security.passphrase.changeSuccess',
 				}));
-				localStorage.removeItem('stamp');
+				localStorage.removeItem('parami:wallet:passphrase');
 				window.location.reload();
 			}
 		} else {
@@ -82,11 +82,11 @@ const Security: React.FC = () => {
 	};
 
 	const passphraseModeChange = async () => {
-		if (!!wallet && !!wallet.keystore && !!wallet.passphrase) {
+		if (!!wallet && !!wallet.keystore) {
 			if (passphraseEnable === 'enable') {
 				// disable
 				setSecModal(true);
-			} else {
+			} else if (passphraseEnable === 'disable' && !!wallet.passphrase) {
 				// enable
 				const decodedMnemonic = DecodeKeystoreWithPwd(wallet?.passphrase, wallet?.keystore);
 				if (!decodedMnemonic) {
@@ -97,6 +97,14 @@ const Security: React.FC = () => {
 				}
 				setDecoded(decodedMnemonic);
 				setSecModal(true);
+			} else {
+				notification.error({
+					key: 'accessDenied',
+					message: intl.formatMessage({
+						id: 'error.accessDenied',
+					}),
+					duration: null,
+				})
 			}
 		} else {
 			notification.error({

@@ -26,6 +26,7 @@ const Explorer: React.FC = () => {
 	const [avatar, setAvatar] = useState<string>('');
 	const [KOL, setKOL] = useState<boolean>(true);
 	const [user, setUser] = useState<any>();
+	const [nft, setNft] = useState<any>();
 	const [asset, setAsset] = useState<any>();
 	const [assetPrice, setAssetPrice] = useState<string>('');
 	const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
@@ -130,7 +131,7 @@ const Explorer: React.FC = () => {
 						description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
 						duration: null,
 					});
-					return;
+					setLoading(false);
 				}
 
 				if (response?.status === 200) {
@@ -156,6 +157,7 @@ const Explorer: React.FC = () => {
 			}
 
 			const nftInfo: any = nftInfoData?.toHuman();
+			setNft(nftInfo);
 
 			if (nftInfo?.owner !== didHex) {
 				notification.error({
@@ -199,6 +201,7 @@ const Explorer: React.FC = () => {
 				message: e.message,
 				duration: null,
 			});
+			setLoading(false);
 			return;
 		}
 	};
@@ -323,7 +326,6 @@ const Explorer: React.FC = () => {
 						avatar={avatar}
 						did={did}
 						user={user}
-						nftID={params?.nftID}
 						asset={asset}
 					/>
 				</div>
@@ -345,8 +347,8 @@ const Explorer: React.FC = () => {
 							/>
 							<Trade
 								avatar={avatar}
+								nft={nft}
 								asset={asset}
-								user={user}
 								assetPrice={assetPrice}
 							/>
 						</>

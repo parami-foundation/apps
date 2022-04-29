@@ -23,59 +23,58 @@ export default () => {
 			return;
 		}
 
-		apiWs.query.nft.account.keys(wallet?.did, async (allEntries) => {
-			for (const nftItem in allEntries) {
-				const [key, value]: any = allEntries[nftItem].toHuman();
-				if (!!key) {
-					const externalData = await apiWs.query.nft.external(value);
-					const nftMetadata = await apiWs.query.nft.metadata(value);
-					const external: any = externalData.toHuman();
-					const nft: any = nftMetadata.toHuman();
-					const deposit = await apiWs.query.nft.deposit(value);
-
-					const assetData = await apiWs.query.assets.metadata(nft?.tokenAssetId);
-					const asset: any = assetData.toHuman();
-
-					if (externalData.isEmpty) {
-						kickNFTMap.set(value, {
-							id: value,
-							name: asset?.name || 'My NFT',
-							symbol: asset?.symbol,
-							minted: nft?.minted,
-							tokenURI: avatar || '/images/logo-square-core.svg',
-							deposit: BigInt(deposit.toString()),
-						});
-					} else {
-						const provider = new ethers.providers.JsonRpcProvider(infuraProvider[4]);
-						const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, provider);
-						const tokenURI = await wrapContract?.tokenURI(external?.token);
-						const name = await wrapContract?.getOriginalName(external?.token);
-						const json = Buffer.from(tokenURI?.substring(29), 'base64').toString('utf8');
-						const result = JSON.parse(json);
-						portNFTMap.set(value, {
-							id: value,
-							name: asset?.name || name,
-							symbol: asset?.symbol,
-							minted: nft?.minted,
-							network: external?.network,
-							namespace: external?.namespace,
-							token: external?.token,
-							tokenURI: result?.image,
-							deposit: BigInt(deposit.toString()),
-						});
-					}
-
-					setKickNFTMap(kickNFTMap);
-					setPortNFTMap(portNFTMap);
-					setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
-
-					setKickNFT([...kickNFTMap.values()]);
-					setPortNFT([...portNFTMap.values()]);
-					setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
-					setLoading(false);
-				}
+		const allEntries = await apiWs.query.nft.metadata.entries();
+		const tmpAssets = {};
+		for (let i = 0; i < allEntries.length; i++) {
+			const [key, value] = allEntries[i];
+			const shortKey = key.toHuman();
+			const meta: any = value.toHuman();
+			if (shortKey && meta?.owner === wallet?.did) {
+				tmpAssets[shortKey[0]] = value.toHuman();
 			}
-		});
+		}
+
+		for (const index in tmpAssets) {
+			const nftId = tmpAssets[index].classId;
+			const tokenAssetId = tmpAssets[index].tokenAssetId;
+			const minted = tmpAssets[index].minted;
+
+			const externalData = await apiWs.query.nft.external(nftId);
+			const external: any = externalData.toHuman();
+			const deposit = await apiWs.query.nft.deposit(nftId);
+
+			const assetData = await apiWs.query.assets.metadata(tokenAssetId);
+			const asset: any = assetData.toHuman();
+
+			if (externalData.isEmpty) {
+				kickNFTMap.set(nftId, {
+					id: nftId,
+					name: asset?.name || 'My NFT',
+					symbol: asset?.symbol,
+					minted: minted,
+					tokenURI: avatar || '/images/logo-square-core.svg',
+					deposit: BigInt(deposit.toString()),
+				});
+			} else {
+				const provider = new ethers.providers.JsonRpcProvider(infuraProvider[4]);
+				const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, provider);
+				const tokenURI = await wrapContract?.tokenURI(external?.token);
+				const name = await wrapContract?.getOriginalName(external?.token);
+				const json = Buffer.from(tokenURI?.substring(29), 'base64').toString('utf8');
+				const result = JSON.parse(json);
+				portNFTMap.set(nftId, {
+					id: nftId,
+					name: asset?.name || name,
+					symbol: asset?.symbol,
+					minted: minted,
+					network: external?.network,
+					namespace: external?.namespace,
+					token: external?.token,
+					tokenURI: result?.image,
+					deposit: BigInt(deposit.toString()),
+				});
+			}
+		}
 
 		setKickNFTMap(kickNFTMap);
 		setPortNFTMap(portNFTMap);

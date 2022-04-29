@@ -22,7 +22,6 @@ export const LinkBlockChain = async (type: string, address: string, signature: s
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
 		throw new Error('Wrong password');
 	}
-
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const tx = window.apiWs.tx.linker.linkCrypto(type, address, signature);
 	return await subCallback(tx, payUser);

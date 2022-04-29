@@ -1,7 +1,7 @@
 import Did from '@/components/Did/did';
 import { Card, Col, Divider, Row, Statistic, Typography, Image } from 'antd';
 import React from 'react';
-import { useIntl, useModel } from 'umi';
+import { useIntl } from 'umi';
 import styles from './style.less';
 import { didToHex } from '@/utils/common';
 
@@ -9,10 +9,8 @@ const User: React.FC<{
 	avatar: string;
 	did: string;
 	user: any;
-	nftID: string;
 	asset: any;
-}> = ({ avatar, did, user, nftID, asset }) => {
-	const { nftMap } = useModel('nft');
+}> = ({ avatar, did, user, asset }) => {
 
 	const intl = useIntl();
 
@@ -42,7 +40,7 @@ const User: React.FC<{
 			>
 				<div className={styles.user}>
 					<Image
-						src={nftMap.get(nftID)?.tokenURI || avatar}
+						src={avatar}
 						className={styles.avatar}
 						fallback='/images/logo-round-core.svg'
 						preview={false}
