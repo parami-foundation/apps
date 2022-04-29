@@ -18,6 +18,9 @@ const Assets: React.FC = () => {
 			}),
 			dataIndex: 'token',
 			key: 'token',
+			render: (text, row) => (
+				`${row?.token}#${row?.id}`
+			),
 		},
 		{
 			title: intl.formatMessage({

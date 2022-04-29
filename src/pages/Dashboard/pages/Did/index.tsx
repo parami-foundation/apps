@@ -2,11 +2,12 @@ import React from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Card, Image } from 'antd';
+import { Card } from 'antd';
 import Assets from './components/Assets';
 import AD3 from '@/components/Token/AD3';
 import DID from '@/components/Did/did';
 import { useModel } from 'umi';
+import Avatar from '@/components/Avatar/Avatar';
 
 const Did: React.FC = () => {
 	const { dashboard } = useModel('currentUser');
@@ -20,12 +21,13 @@ const Did: React.FC = () => {
 			<div className={styles.contentContainer}>
 				<Card
 					className={styles.dashboardCard}
+					bodyStyle={{
+						width: '100%',
+					}}
 				>
 					<div className={style.profileCard}>
-						<Image
-							src={avatar || '/images/logo-square-core.svg'}
-							preview={false}
-							className={style.avatar}
+						<Avatar
+							avatar={avatar || '/images/logo-square-core.svg'}
 						/>
 						<div className={style.profile}>
 							<div className={style.totalBalance}>
@@ -44,12 +46,12 @@ const Did: React.FC = () => {
 									})}
 									: <AD3 value={balance?.free} />
 								</div>
+								<DID did={dashboard.did!} />
 							</div>
-							<DID did={dashboard.did!} />
 						</div>
 					</div>
+					<Assets />
 				</Card>
-				<Assets />
 			</div>
 		</div>
 	)

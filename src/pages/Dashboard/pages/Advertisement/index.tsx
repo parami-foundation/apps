@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { useIntl, useModel } from 'umi';
-import { Button, Statistic, Table, Tooltip, notification, Space } from 'antd';
+import { Button, Statistic, Table, Tooltip, notification, Space, Card } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect } from 'react';
@@ -149,7 +149,12 @@ const Advertisement: React.FC = () => {
 						loading={!apiWs}
 						height={400}
 						children={
-							<>
+							<Card
+								className={styles.dashboardCard}
+								bodyStyle={{
+									width: '100%',
+								}}
+							>
 								{!isAdvertisers && (
 									<div className={style.createModal}>
 										<Button
@@ -205,7 +210,7 @@ const Advertisement: React.FC = () => {
 										columns={columns}
 									/>
 								</PageContainer>
-							</>
+							</Card>
 						}
 					/>
 				</div>

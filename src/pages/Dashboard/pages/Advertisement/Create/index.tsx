@@ -115,6 +115,7 @@ const Create: React.FC<{
         await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(dashboard?.accountMeta));
         setSubmiting(false);
         setCreateModal(false);
+        window.location.reload();
       } catch (e: any) {
         notification.error({
           message: e.message || e,

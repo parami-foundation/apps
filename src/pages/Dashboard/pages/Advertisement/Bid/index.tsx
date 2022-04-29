@@ -90,6 +90,7 @@ const Bid: React.FC<{
         await BidSlot(adItem.id, assetId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);
+        window.location.reload();
       } catch (e: any) {
         notification.error({
           message: e.message || e,

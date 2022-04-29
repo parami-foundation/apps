@@ -18,6 +18,7 @@ export default () => {
         if (!apiWs) {
             return;
         }
+
         const allEntries = await apiWs.query.assets.metadata.entries();
         const tmpAssets = {};
         for (let i = 0; i < allEntries.length; i++) {
@@ -48,10 +49,9 @@ export default () => {
                             description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
                             duration: null,
                         });
-                        return;
                     }
 
-                    if (response.status === 200) {
+                    if (response?.status === 200) {
                         icon = window.URL.createObjectURL(data);
                     }
                 }
@@ -66,19 +66,22 @@ export default () => {
                 // TODO: time events(first)
                 if (((new Date()).getTime() - first >= 30000) && changes) {
                     notification.success({
-                        message: `Dashboard: Changes in ${tmpAssets[assetId].name}`,
+                        key: 'assetsChange',
+                        message: `Changes in ${tmpAssets[assetId].name}`,
                         description: formatBalance(changes, { withUnit: tmpAssets[assetId].symbol }, 18),
                     });
                 }
 
-                assets.set(assetId, {
-                    id: assetId,
-                    token: tmpAssets[assetId].name,
-                    symbol: tmpAssets[assetId].symbol,
-                    balance: `${balance}`,
-                    ad3: `${ad3}`,
-                    icon,
-                });
+                if (!!balance && balance > 0 && !tmpAssets[assetId].name.endsWith('LP*')) {
+                    assets.set(assetId, {
+                        id: assetId,
+                        token: tmpAssets[assetId].name,
+                        symbol: tmpAssets[assetId].symbol,
+                        balance: `${balance}`,
+                        ad3: `${ad3}`,
+                        icon,
+                    });
+                }
 
                 setAssets(assets);
                 setAssetsArr([...assets?.values()]);
