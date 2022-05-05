@@ -5,7 +5,7 @@ export default {
     'identity.beforeStart.description': 'Please set a password for your identy and make sure to note down your password and the Recovery Phrase generated.',
     'identity.beforeStart.agree': 'Agree and Continue',
     'identity.beforeStart.licDesc': 'By creating Para Meta Identity, you are agreeing to Parami\'s Service Terms and Privacy Policy',
-    'identity.beforeStart.faucet': 'Faucet',
+    'identity.beforeStart.faucet': 'Create you account by Social Media',
     'identity.recoveryLink.sendMessage': 'This is your RecoveryLink, please keep it safe to recover your account:{link} Please send this message to Bot, and you can continue creating and using your wallet.',
     'identity.recoveryLink.title': 'Create RecoveryLink',
     'identity.recoveryLink.description': 'Write down the url and keep them somewhere safe. {strong} You’ll be asked to verify your RecoveryLink next.',
