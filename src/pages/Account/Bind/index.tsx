@@ -1,6 +1,5 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import config from '@/config/config';
-import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { history, useIntl, useModel } from 'umi';
 import BindModal from './BindModal';
@@ -60,22 +59,7 @@ const Bind: React.FC = () => {
 					setBindModal(false);
 					history.replace(config.page.accountPage);
 				}}
-				footer={
-					<>
-						<Button
-							block
-							shape='round'
-							size='large'
-							onClick={() => {
-								setBindModal(false);
-							}}
-						>
-							{intl.formatMessage({
-								id: 'common.close',
-							})}
-						</Button>
-					</>
-				}
+				footer={false}
 			/>
 		</>
 	)
