@@ -8,8 +8,7 @@ export const config = {
     "main": isDev ? {
         // "socketServer": "ws://127.0.0.1:9944",
         "socketServer": "wss://staging.parami.io/ws",
-        "subqueryServer": "https://graph.parami.io/",
-        // "subqueryServer": "https://staging.parami.io/graph/",
+        "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
         "tokenListConfig": "/tokens.json",
         "airdropServer": "https://staging.parami.io/airdrop",
