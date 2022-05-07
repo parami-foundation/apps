@@ -10,7 +10,7 @@ import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
 import TelegramLoginButton from 'react-telegram-login';
-import { GetAvatar, LinkAccount, LoginWithAirdrop } from '@/services/parami/HTTP';
+import { GetAvatar, LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
 import { uploadIPFS } from '@/services/parami/IPFS';
@@ -38,7 +38,6 @@ const VerifyIdentity: React.FC<{
   const { initialState, refresh } = useModel('@@initialState');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const [airdropData, setAirDropData] = useState<any>(null);
   const [step, setStep] = useState<number>(2);
   const [balance, setBalance] = useState<bigint>(BigInt(0));
   const [avatarNicknameEvents, setAvatarNicknameEvents] = useState<any>();
@@ -60,14 +59,14 @@ const VerifyIdentity: React.FC<{
   };
 
   // Login With Airdrop
-  const loginWithAirdrop = async (response, platform) => {
+  const handleLoginWithAirdrop = async (ticket, platform) => {
     setLoading(true);
     setQsPlatform(platform);
-    setQsTicket(response);
+    setQsTicket(ticket);
 
     try {
-      const { response: Resp, data } = await LoginWithAirdrop({
-        ticket: response,
+      const { response: Resp, data: Data } = await LoginWithAirdrop({
+        ticket: ticket,
         site: qsPlatform || platform,
         wallet: account,
       });
@@ -87,10 +86,45 @@ const VerifyIdentity: React.FC<{
         notification.success({
           message: 'Airdrop Success',
         })
-        setAirDropData(data);
         setStep(4);
+
+        if (!!Data?.did) {
+          setDID(Data?.did);
+          localStorage.setItem('parami:wallet:did', Data?.did);
+        }
+
+        if (!!Data?.nickname && !!Data?.avatar) {
+          const { response: avatarResp, data: avatarData } = await GetAvatar(Data?.avatar);
+
+          // Network exception
+          if (!avatarResp) {
+            notification.error({
+              key: 'networkException',
+              message: 'Network exception',
+              description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+              duration: null,
+            });
+            return;
+          }
+
+          generateRoundAvatar(URL.createObjectURL(avatarData), '', '', Data?.did)
+            .then(async (img) => {
+              const imgBlob = (img as string).substring(22);
+              try {
+                const { response: uploadResp, data: uploadData } = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
+                if (uploadResp?.ok) {
+                  const events = await BatchNicknameAndAvatar(Data?.nickname || 'Airdrop User', `ipfs://${uploadData.Hash}`, passphrase, keystore);
+                  setAvatarNicknameEvents(events);
+                }
+              } catch (e: any) {
+                setAvatarNicknameEvents(e.message);
+                setStep(5);
+              }
+            });
+        }
         return;
       }
+
       if (Resp?.status === 401) {
         notification.error({
           message: 'Abnormal account',
@@ -101,6 +135,7 @@ const VerifyIdentity: React.FC<{
         setLoading(false);
         return;
       }
+
       if (Resp?.status === 409) {
         notification.error({
           message: 'The account has been used',
@@ -110,6 +145,7 @@ const VerifyIdentity: React.FC<{
         setLoading(false);
         return;
       }
+
       if (Resp?.status === 400) {
         notification.error({
           message: 'Got an error',
@@ -119,6 +155,7 @@ const VerifyIdentity: React.FC<{
         setLoading(false);
         return;
       }
+
       notification.error({
         message: 'Got an error',
         description: `Unknown: Something went wrong, please try again latar.`,
@@ -127,70 +164,12 @@ const VerifyIdentity: React.FC<{
       setLoading(false);
     } catch (e: any) {
       notification.error({
-        message: e.message,
-        duration: null,
-      });
-      setLoading(false);
-    }
-  };
-
-  // Link Account 
-  const linkAccountAndSetNicknameAvatar = async (data: any, didData: any) => {
-    try {
-      const { response } = await LinkAccount({
-        site: qsPlatform,
-        wallet: account,
-      });
-
-      // Network exception
-      if (!response) {
-        notification.error({
-          key: 'networkException',
-          message: 'Network exception',
-          description: 'Unable to complete account binding, please enter the account page to bind manually after registration.',
-          duration: null,
-        });
-        setAvatarNicknameEvents('Network exception');
-        setStep(5);
-        return;
-      };
-
-      if (response?.status === 204 && data?.nickname && data?.avatar) {
-        const { response: Resp, data: file } = await GetAvatar(data?.avatar);
-
-        // Network exception
-        if (!Resp) {
-          notification.error({
-            key: 'networkException',
-            message: 'Network exception',
-            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-            duration: null,
-          });
-          return;
-        }
-
-        generateRoundAvatar(URL.createObjectURL(file), '', '', didData)
-          .then(async (img) => {
-            const imgBlob = (img as string).substring(22);
-            try {
-              const { response: uploadResp, data: uploadData } = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-              if (uploadResp?.ok) {
-                const events = await BatchNicknameAndAvatar(data?.nickname || 'Airdrop User', `ipfs://${uploadData.Hash}`, passphrase, keystore);
-                setAvatarNicknameEvents(events);
-              }
-            } catch (e: any) {
-              setAvatarNicknameEvents(e.message);
-              setStep(5);
-            }
-          });
-      };
-    } catch (e: any) {
-      notification.error({
         key: 'unknowError',
         message: e.message,
         duration: null,
       });
-      setStep(5);
+      setLoading(false);
+      return;
     }
   };
 
@@ -217,13 +196,6 @@ const VerifyIdentity: React.FC<{
         message: e.message || e,
         duration: null,
       });
-      return;
-    }
-
-    setStep(4);
-
-    if (qsTicket) {
-      await linkAccountAndSetNicknameAvatar(airdropData, did);
       return;
     }
 
@@ -257,7 +229,7 @@ const VerifyIdentity: React.FC<{
   // From Quick Sign
   const airdrop = async () => {
     try {
-      await loginWithAirdrop(qsTicket, qsPlatform);
+      await handleLoginWithAirdrop(qsTicket, qsPlatform);
       if (unsub === null) {
         listenBalance();
       }
@@ -498,13 +470,13 @@ const VerifyIdentity: React.FC<{
             <TelegramLoginButton
               dataOnauth={(response) => {
                 response.bot = config.airdropService.telegram.botName;
-                loginWithAirdrop(response, 'Telegram');
+                handleLoginWithAirdrop(response, 'Telegram');
               }}
               botName={config.airdropService.telegram.botName}
             />
             <DiscordLoginButton
               dataOauth={(response) => {
-                loginWithAirdrop(response, 'Discord')
+                handleLoginWithAirdrop(response, 'Discord')
               }}
               clientId={config.airdropService.discord.clientId}
               redirectUri={window.location.origin + config.airdropService.discord.redirectUri}

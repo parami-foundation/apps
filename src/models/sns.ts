@@ -41,7 +41,7 @@ export default () => {
 		const status = await Promise.all(promises);
 		for (let i = 0; i < platforms.length; i++) {
 			data[platforms[i]] = status[i];
-			console.log("[Dev] [sns.ts]: ", tmpList[platforms[i]], data[platforms[i]]);
+			// console.log("[Dev] [sns.ts]: ", tmpList[platforms[i]], data[platforms[i]]);
 			// (tmpList[platforms[i]] is existed and not null) && (tmpList[platforms[i]] status is verifing) && (new status is nothing)
 			// indicate a failed binding
 			if (!!tmpList[platforms[i]] && tmpList[platforms[i]] === 'verifing' && data[platforms[i]] === null) {

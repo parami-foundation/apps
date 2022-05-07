@@ -314,6 +314,8 @@ const Advertisement: React.FC<{
 						} else {
 							copy(link + ` ${intl.formatMessage({
 								id: 'creator.explorer.shareMessage',
+							}, {
+								token: `$${asset?.symbol}`
 							})}`);
 							message.success(
 								intl.formatMessage({

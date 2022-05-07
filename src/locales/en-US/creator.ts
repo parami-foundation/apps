@@ -20,7 +20,7 @@ export default {
     'creator.explorer.sell': 'Sell',
     'creator.explorer.share': 'Share',
     'creator.explorer.price': 'Price',
-    'creator.explorer.shareMessage': 'Watch this ad and earn crypto coin! Get your DID today!',
+    'creator.explorer.shareMessage': 'Click this ad to receive your {token} NFT fragments!',
     'creator.explorer.totalIssues': 'Total Issues',
     'creator.explorer.totalValue': 'Total Value',
     'creator.explorer.reservedValue': 'Reserved Value',

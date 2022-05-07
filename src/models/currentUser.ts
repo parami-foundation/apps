@@ -32,16 +32,8 @@ export default () => {
       return;
     }
 
-    const accountInfo = await apiWs.query.system.account(account);
-    if (accountInfo.isEmpty) {
-      notification.error({
-        key: 'accessDenied',
-        message: 'Access Denied',
-        description: 'The account does not exist',
-        duration: null,
-      })
-    }
-    if (accountInfo.toHuman()?.nonce === 0) {
+    const existDID = await apiWs.query.did.didOf(account);
+    if (existDID.isEmpty) {
       notification.error({
         key: 'accessDenied',
         message: 'Access Denied',
