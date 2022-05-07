@@ -28,7 +28,7 @@ const MintNFTModal: React.FC<{
 				await MintNFT(item?.id, name, symbol, passphrase, wallet?.keystore);
 				setLoading(false);
 				setMintModal(false);
-				getNFTs();
+				await getNFTs();
 			} catch (e: any) {
 				notification.error({
 					message: e.message,

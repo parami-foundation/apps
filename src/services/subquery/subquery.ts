@@ -34,10 +34,10 @@ export const doGraghQuery = async (query: string) => {
 
 export const OwnerDidOfNft = async (nftId: any) => {
 	const query = `query{
-        asset(id: "${nftId}") {
-            ownerDid
-        }
-    }`;
+		asset(id: "${nftId}") {
+				ownerDid
+		}
+  }`;
 	const res = await doGraghQuery(query);
 
 	// Network exception
@@ -195,17 +195,17 @@ export const getAdViewerCounts = async (ADid: string) => {
 
 export const getAdvertisementRefererCounts = async (ADid: string) => {
 	const query = `query{
-        advertisementRewards(filter:{
-        id:{
-            equalTo:"${ADid}"
-        }
-        refererDid:{
-            notEqualTo:""
-        }
-        }){
-            totalCount
-        }
-    }`;
+		advertisementRewards(filter:{
+		id:{
+				equalTo:"${ADid}"
+		}
+		refererDid:{
+				notEqualTo:""
+		}
+		}){
+				totalCount
+		}
+  }`;
 	const res = await doGraghQuery(query);
 
 	// Network exception
@@ -221,4 +221,36 @@ export const getAdvertisementRefererCounts = async (ADid: string) => {
 
 	const data = await res.json();
 	return data.data.advertisementRewards.totalCount as number;
+};
+
+export const getAssetsList = async (account: string) => {
+	const query = `query{
+		members(
+			filter:{
+				id: {
+					includes:"${account}"
+				}
+			}
+		){
+			nodes{
+				id
+				assetId
+			}
+		}	
+	}`;
+	const res = await doGraghQuery(query);
+
+	// Network exception
+	if (!res) {
+		notification.error({
+			key: 'networkException',
+			message: 'Network exception',
+			description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+			duration: null,
+		});
+		return;
+	}
+
+	const data = await res.json();
+	return data.data.members.nodes as any[];
 };

@@ -87,7 +87,7 @@ export default () => {
 	};
 
 	useEffect(() => {
-		if (apiWs) {
+		if (!!apiWs) {
 			getNFTs();
 		}
 	}, [apiWs]);

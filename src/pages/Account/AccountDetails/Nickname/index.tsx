@@ -76,21 +76,8 @@ const Nickname: React.FC<{
 						</Button>
 					</>
 				}
-				footer={
-					<>
-						<Button
-							block
-							shape='round'
-							size='large'
-							onClick={() => { setNicknameModal(false) }}
-						>
-							{intl.formatMessage({
-								id: 'common.close',
-							})}
-						</Button>
-					</>
-				}
 				close={() => { setNicknameModal(false) }}
+				footer={false}
 			/>
 			<SecurityModal
 				visable={secModal}
