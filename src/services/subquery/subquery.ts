@@ -35,7 +35,7 @@ export const doGraghQuery = async (query: string) => {
 export const OwnerDidOfNft = async (nftId: any) => {
 	const query = `query{
 		asset(id: "${nftId}") {
-				ownerDid
+			ownerDid
 		}
   }`;
 	const res = await doGraghQuery(query);
@@ -58,24 +58,24 @@ export const OwnerDidOfNft = async (nftId: any) => {
 // 7 days 
 export const AdvertisementRewards = async (ADid: string) => {
 	const query = `query{
-        advertisementRewards(
-            filter:{
-                id:{
-                    equalTo:"${ADid}"
-                }
-                timestampInSecond:{
-                    greaterThan: ${Math.round(Date.now() / 1000 - 60 * 60 * 24 * 7)}
-                }
-            }
-        ){
-            nodes{
-                reward
-                award
-                timestampInSecond
-                createdAt
-            }
-        }
-    }`;
+		advertisementRewards(
+			filter:{
+				id:{
+						equalTo:"${ADid}"
+				}
+				timestampInSecond:{
+						greaterThan: ${Math.round(Date.now() / 1000 - 60 * 60 * 24 * 7)}
+				}
+			}
+		){
+			nodes{
+				reward
+				award
+				timestampInSecond
+				createdAt
+			}
+		}
+  }`;
 	const res = await doGraghQuery(query);
 
 	// Network exception
@@ -96,22 +96,22 @@ export const AdvertisementRewards = async (ADid: string) => {
 // first 50
 export const AssetTransactionHistory = async (did: string) => {
 	const query = `query {
-        assetTransactions(
-            orderBy: TIMESTAMP_IN_SECOND_DESC
-            first:50
-            filter: 
-            { or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}] }) {
-                nodes {
-                block
-                assetId
-                assetSymbol
-                fromDid
-                toDid
-                amount
-                timestampInSecond
-            }
-        }
-    }`;
+		assetTransactions(
+			orderBy: TIMESTAMP_IN_SECOND_DESC
+			first:50
+			filter: 
+			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}] }) {
+				nodes {
+				block
+				assetId
+				assetSymbol
+				fromDid
+				toDid
+				amount
+				timestampInSecond
+		}
+		}
+  }`;
 	const res = await doGraghQuery(query);
 
 	// Network exception
@@ -166,16 +166,16 @@ export const getChartsData = async (ADid: string, budget: bigint) => {
 export const getAdViewerCounts = async (ADid: string) => {
 	//{"data":{"advertisementRewards":{"totalCount":1}}}
 	const query = `query{
-        advertisementRewards(
-            filter:{
-                advertisementId:{
-                    equalTo:"${ADid}"
-                }
-            }
-        ){
-            totalCount
-        }
-    }`;
+		advertisementRewards(
+			filter:{
+				advertisementId:{
+						equalTo:"${ADid}"
+				}
+			}
+		){
+			totalCount
+		}
+	}`;
 	const res = await doGraghQuery(query);
 
 	// Network exception
@@ -197,13 +197,13 @@ export const getAdvertisementRefererCounts = async (ADid: string) => {
 	const query = `query{
 		advertisementRewards(filter:{
 		id:{
-				equalTo:"${ADid}"
+			equalTo:"${ADid}"
 		}
 		refererDid:{
-				notEqualTo:""
+			notEqualTo:""
 		}
 		}){
-				totalCount
+			totalCount
 		}
   }`;
 	const res = await doGraghQuery(query);
