@@ -22,8 +22,10 @@ export const Merge = async () => {
     localStorage.removeItem('dashboardDid');
     localStorage.removeItem('dashboardControllerUserAddress');
     localStorage.removeItem('dashboardAssets');
+    localStorage.removeItem('dashboardAccounts');
     localStorage.removeItem('dashboardStashUserAddress');
     localStorage.removeItem('redirect');
+    localStorage.removeItem('process');
 
     notification.success({
       key: 'mergeNotice',
