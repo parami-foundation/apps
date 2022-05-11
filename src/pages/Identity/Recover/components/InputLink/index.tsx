@@ -148,6 +148,7 @@ const InputLink: React.FC<{
             bordered
             onChange={(e) => {
               const inputHash = e.target.value.indexOf('#') > -1 ? e.target.value.split('#')[1] : null;
+              const inputMnenomics = e.target.value.indexOf(' ') > -1 ? e.target.value : null;
               if (!!inputHash) {
                 if (mnemonics.indexOf(';') > -1) {
                   const mnemonicArray = mnemonics.split(';');
@@ -158,9 +159,12 @@ const InputLink: React.FC<{
                   setMnemonic(importMnemonic);
                 }
               }
+              if (!!inputMnenomics) {
+                setMnemonic(inputMnenomics);
+              }
             }}
             disabled={loading}
-            placeholder={`${window.location.origin}/recover/#...`}
+            placeholder={`Mnemonics or ${window.location.origin}/recover/#...`}
           />
         </div>
         <div className={style.buttons}>

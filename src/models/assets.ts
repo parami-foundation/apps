@@ -19,7 +19,7 @@ export default () => {
 			return;
 		}
 
-		const entries = await getAssetsList(wallet.account);
+		const entries = await getAssetsList(wallet?.account);
 
 		if (!!entries) {
 			for (const entry of entries) {

@@ -90,7 +90,7 @@ export default () => {
 		if (!!apiWs) {
 			getNFTs();
 		}
-	}, [apiWs]);
+	}, [apiWs, avatar]);
 
 	return {
 		kickNFTMap,
