@@ -1,4 +1,4 @@
-const isDev: boolean = true;
+const isDev: boolean = false;
 
 export const config = {
     "const": {
@@ -6,7 +6,6 @@ export const config = {
         "adEarnUpTo": "500000000000000000000",
     },
     "main": isDev ? {
-        // "socketServer": "ws://127.0.0.1:9944",
         "socketServer": "wss://staging.parami.io/ws",
         "subqueryServer": "https://staging.parami.io/graph/",
         "tagMapConfig": "/tagmap.json",
