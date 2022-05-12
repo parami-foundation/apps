@@ -37,7 +37,7 @@ export const OwnerDidOfNft = async (nftId: any) => {
 		asset(id: "${nftId}") {
 			ownerDid
 		}
-  }`;
+    }`;
     const res = await doGraghQuery(query);
 
     // Network exception
@@ -75,7 +75,7 @@ export const AdvertisementRewards = async (ADid: string) => {
 				createdAt
 			}
 		}
-  }`;
+    }`;
     const res = await doGraghQuery(query);
 
     // Network exception
@@ -111,7 +111,7 @@ export const AssetTransactionHistory = async (did: string) => {
 				timestampInSecond
 		}
 		}
-  }`;
+    }`;
     const res = await doGraghQuery(query);
 
     // Network exception
@@ -205,7 +205,7 @@ export const getAdvertisementRefererCounts = async (ADid: string) => {
 		}){
 			totalCount
 		}
-  }`;
+    }`;
     const res = await doGraghQuery(query);
 
     // Network exception
@@ -226,7 +226,7 @@ export async function getStashOfDid(did: string) {
     const query = `query{
         did(id:"${did}"){
             stashAccount
-          }
+        }
     }`;
     const res = await doGraghQuery(query);
     // Network exception
