@@ -7,7 +7,7 @@ import style from './style.less';
 import Trade from './Explorer/Trade';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
 import { hexToDid, didToHex, parseAmount } from '@/utils/common';
-import { GetNFTMetaData, GetPreferedNFT } from '@/services/parami/NFT';
+import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { Image, notification, Button } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
@@ -208,7 +208,7 @@ const Explorer: React.FC = () => {
 
 	const QueryPreferred = async () => {
 		try {
-			const nftID = await GetPreferedNFT(didHex);
+			const nftID = await GetPreferredNFT(didHex);
 			if (nftID.isEmpty) {
 				setKOL(false);
 				return;

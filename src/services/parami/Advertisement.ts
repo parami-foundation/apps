@@ -1,6 +1,6 @@
 import { deleteComma, BigIntToFloatString } from "@/utils/format";
 import { web3FromSource } from "@polkadot/extension-dapp";
-import { GetPreferedNFT } from "./NFT";
+import { GetPreferredNFT } from "./NFT";
 import { subWeb3Callback } from "./Subscription";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
@@ -18,7 +18,7 @@ export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
 };
 
 export const GetSlotAdOf = async (did: string): Promise<any> => {
-    const id = await GetPreferedNFT(did);
+    const id = await GetPreferredNFT(did);
     if (id.isEmpty) {
         return null;
     }

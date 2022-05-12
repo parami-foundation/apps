@@ -16,7 +16,7 @@ const Assets: React.FC = () => {
 
   const jumpKOLPage = async (assetID: string) => {
     const res = await OwnerDidOfNft(assetID);
-    history.push(`/${hexToDid(res)}`);
+    history.push(`/${hexToDid(res)}/${assetID}`);
   };
 
   return (

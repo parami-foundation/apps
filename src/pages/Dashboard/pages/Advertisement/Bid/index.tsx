@@ -5,7 +5,7 @@ import { Alert, Button, Divider, Input, message, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
 import Marquee from 'react-fast-marquee';
 import { didToHex, parseAmount } from '@/utils/common';
-import { GetNFTMetaData, GetPreferedNFT } from '@/services/parami/NFT';
+import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { BigIntToFloatString, deleteComma } from '@/utils/format';
 import { BidSlot, GetSlotAdOfByAssetID } from '@/services/parami/Advertisement';
 import { GetAssetInfo } from '@/services/parami/Assets';
@@ -29,7 +29,7 @@ const Bid: React.FC<{
   const queryDid = async () => {
     const didHexString = didToHex(did!);
 
-    const nftID = await GetPreferedNFT(didHexString);
+    const nftID = await GetPreferredNFT(didHexString);
     if (nftID.isEmpty) {
       notification.error({
         key: 'userNotFound',

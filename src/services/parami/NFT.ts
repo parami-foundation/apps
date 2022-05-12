@@ -4,7 +4,7 @@ import { subCallback } from './Subscription';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
-export const GetPreferedNFT = async (did: string) => {
+export const GetPreferredNFT = async (did: string) => {
   const id = await window.apiWs.query.nft.preferred(did);
   return id;
 };
@@ -120,7 +120,7 @@ export const ClaimNFT = async (nftID: string, password: string, keystore: string
 
 
 export const GetKolDeposit = async (did: string) => {
-  const id = await GetPreferedNFT(did);
+  const id = await GetPreferredNFT(did);
   if (id.isEmpty) {
     return null;
   }
