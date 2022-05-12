@@ -6,11 +6,12 @@ import style from '../../../style.less';
 import { QueryAccountExist, QueryAccountFromMnemonic, QueryDID } from '@/services/parami/Identity';
 
 const InputLink: React.FC<{
+  mnemonic: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setAccount: React.Dispatch<React.SetStateAction<string>>;
   setDID: React.Dispatch<React.SetStateAction<string>>;
   setMnemonic: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ setStep, setAccount, setDID, setMnemonic }) => {
+}> = ({ mnemonic, setStep, setAccount, setDID, setMnemonic }) => {
   const apiWs = useModel('apiWs');
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -22,20 +23,23 @@ const InputLink: React.FC<{
 
   // Compatible with old RecoveryLink
   let importMnemonic: string = '';
-  if (mnemonics.indexOf(';') > -1) {
-    const mnemonicArray = mnemonics.split(';');
-    importMnemonic = mnemonicArray[1]?.replace(/%20/g, ' ');
-    setMnemonic(importMnemonic);
-  } else {
-    importMnemonic = mnemonics?.replace(/%20/g, ' ');
-    setMnemonic(importMnemonic);
+
+  if (!!mnemonics) {
+    if (mnemonics.indexOf(';') > -1) {
+      const mnemonicArray = mnemonics.split(';');
+      importMnemonic = mnemonicArray[1]?.replace(/%20/g, ' ');
+      setMnemonic(importMnemonic);
+    } else {
+      importMnemonic = mnemonics?.replace(/%20/g, ' ');
+      setMnemonic(importMnemonic);
+    }
   }
 
   // Query Exist Account
   const queryAccount = async () => {
     setLoading(true);
     try {
-      const { address } = await QueryAccountFromMnemonic(importMnemonic);
+      const { address } = await QueryAccountFromMnemonic(mnemonic);
 
       setAccount(address);
 
@@ -108,7 +112,7 @@ const InputLink: React.FC<{
     if (!!hash) {
       queryAccount();
     }
-  }, [apiWs, hash]);
+  }, [apiWs, hash, mnemonic]);
 
   return (
     <Card className={styles.card}>
@@ -150,16 +154,17 @@ const InputLink: React.FC<{
               const inputHash = e.target.value.indexOf('#') > -1 ? e.target.value.split('#')[1] : null;
               const inputMnenomics = e.target.value.indexOf(' ') > -1 ? e.target.value : null;
               if (!!inputHash) {
-                if (mnemonics.indexOf(';') > -1) {
-                  const mnemonicArray = mnemonics.split(';');
+                if (inputHash.indexOf(';') > -1) {
+                  const mnemonicArray = inputHash.split(';');
                   importMnemonic = mnemonicArray[1]?.replace(/%20/g, ' ');
                   setMnemonic(importMnemonic);
                 } else {
-                  importMnemonic = mnemonics;
+                  importMnemonic = inputHash?.replace(/%20/g, ' ');
                   setMnemonic(importMnemonic);
                 }
               }
               if (!!inputMnenomics) {
+                importMnemonic = inputMnenomics;
                 setMnemonic(inputMnenomics);
               }
             }}
@@ -173,10 +178,9 @@ const InputLink: React.FC<{
             shape="round"
             size="large"
             className={style.button}
-            disabled={!mnemonics}
             loading={loading}
-            onClick={async () => {
-              await queryAccount();
+            onClick={() => {
+              queryAccount();
             }}
           >
             {intl.formatMessage({

@@ -60,6 +60,7 @@ const Recover: React.FC = () => {
         }
         {step === 1 && (
           <InputLink
+            mnemonic={mnemonic}
             setStep={setStep}
             setAccount={setAccount}
             setDID={setDID}
