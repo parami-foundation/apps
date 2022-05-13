@@ -1,6 +1,5 @@
 import { deleteComma, BigIntToFloatString } from "@/utils/format";
 import { web3FromSource } from "@polkadot/extension-dapp";
-import { GetPreferredNFT } from "./NFT";
 import { subWeb3Callback } from "./Subscription";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
@@ -17,12 +16,9 @@ export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
     return data;
 };
 
-export const GetSlotAdOf = async (did: string): Promise<any> => {
-    const id = await GetPreferredNFT(did);
-    if (id.isEmpty) {
-        return null;
-    }
-    const slot = await window.apiWs.query.ad.slotOf(id.toHuman());
+export const GetSlotAdOf = async (nftId: string): Promise<any> => {
+    console.log('GetADInfo');
+    const slot = await window.apiWs.query.ad.slotOf(nftId);
     if (slot.isEmpty) {
         return null;
     }
