@@ -127,9 +127,12 @@ const VerifyIdentity: React.FC<{
 
       if (Resp?.status === 401) {
         notification.error({
-          message: 'Abnormal account',
-          description: `No profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead.`,
+          message: 'Bind Failed',
+          description: `Cannot get your profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead. Click here for details.`,
           duration: null,
+          onClick: () => {
+            window.open("https://parami.notion.site/Setting-up-Telegram-to-bind-Parami-f2b43b04c87c4467841499b3d5732b99");
+          }
         })
         history.push(config.page.createPage);
         setLoading(false);
