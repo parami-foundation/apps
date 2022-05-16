@@ -5,22 +5,25 @@ import { OwnerDidOfNft, tmpGetAssetsList } from "@/services/subquery/subquery";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
-import { useModel } from "umi";
+import { useModel, history } from "umi";
 
 export default () => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
   const [first] = useState((new Date()).getTime());
   const [assets, setAssets] = useState<Map<string, any>>(new Map());
-  const [assetsArr, setAssetsArr] = useState<any[]>([]);
+  const [assetsArr, setAssetsArr] = useState<any[] | null>(null);
 
   const getAssets = async () => {
     if (!apiWs || !wallet?.account) {
       return;
     }
-
+ 
     const entries = await tmpGetAssetsList(wallet.did!);
     if (!!entries) {
+      if(entries.length===0){
+        setAssetsArr([]);
+      }
       for (const entry of entries) {
         const metadataRaw = await apiWs.query.assets.metadata(entry?.assetId);
         const metadata: any = metadataRaw.toHuman();
@@ -62,8 +65,11 @@ export default () => {
             if (((new Date()).getTime() - first >= 30000) && changes) {
               notification.success({
                 key: 'assetsChange',
-                message: `Changes in ${metadata?.name}`,
+                message: `Changes in ${metadata?.name}, click for details`,
                 description: formatBalance(changes, { withUnit: metadata?.symbol }, 18),
+                onClick: () => {
+                  history.push("/wallet");
+                }
               });
             }
 
@@ -77,16 +83,15 @@ export default () => {
                 icon,
               });
             }
-
+            console.log(1, assets);
             setAssets(assets);
             setAssetsArr([...assets?.values()]);
           });
         }
       }
     }
-
     setAssets(assets);
-    setAssetsArr([...assets?.values()]);
+    // setAssetsArr([...assets?.values()]);
   }
 
   useEffect(() => {

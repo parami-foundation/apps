@@ -9,9 +9,8 @@ import Token from '@/components/Token/Token';
 import Skeleton from '@/components/Skeleton';
 
 const Assets: React.FC = () => {
-  const apiWs = useModel('apiWs');
+  //const apiWs = useModel('apiWs');
   const { assetsArr } = useModel('assets');
-
   const intl = useIntl();
 
   const jumpKOLPage = async (assetID: string) => {
@@ -22,24 +21,11 @@ const Assets: React.FC = () => {
   return (
     <div className={style.assetsList}>
       <Skeleton
-        loading={!apiWs}
+        loading={!assetsArr}
         height={70}
         children={
           <>
-            {assetsArr.length === 0 && (
-              <div className={style.noAssets}>
-                <img
-                  src={'/images/icon/query.svg'}
-                  className={style.topImage}
-                />
-                <span>
-                  {intl.formatMessage({
-                    id: 'wallet.assets.empty',
-                  })}
-                </span>
-              </div>
-            )}
-            {assetsArr.map((item) => {
+            {!!assetsArr && assetsArr.map((item) => {
               return (
                 <Badge
                   count={intl.formatMessage({
@@ -90,6 +76,19 @@ const Assets: React.FC = () => {
               );
             })
             }
+            { !!assetsArr && assetsArr.length === 0 && (
+              <div className={style.noAssets}>
+                <img
+                  src={'/images/icon/query.svg'}
+                  className={style.topImage}
+                />
+                <span>
+                  {intl.formatMessage({
+                    id: 'wallet.assets.empty',
+                  })}
+                </span>
+              </div>
+            )}
           </>
         }
       />
