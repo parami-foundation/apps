@@ -39,18 +39,16 @@
 
 .buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   margin-top: 30px;
   margin-bottom: 30px;
 
   .button {
-    min-width: 200px;
     height: auto;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    width: 100%;
     padding: 12px 6px;
     text-transform: none;
   }
@@ -61,4 +59,61 @@
   color: rgb(36, 39, 42) !important;
   font-size: calc(22px + 8 * ((100vw - 300px) / 1300)) !important;
   overflow-wrap: break-word !important;
+}
+
+.confirmContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+
+  .alertContainer {
+    margin-bottom: 1rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: rgba(243, 243, 243, 1);
+    border-radius: 8px;
+    width: 100%;
+
+    &:not(:last-of-type) {
+      margin-bottom: 20px;
+    }
+
+    .labal {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      font-weight: 900;
+      font-size: 1rem;
+
+      .small {
+        font-size: 0.8rem;
+        font-weight: 400;
+        font-style: italic;
+        color: rgba(0,0,0,0.5);
+        line-height: inherit;
+        margin-left: 5px;
+      }
+
+      .labalIcon {
+        margin-left: 10px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .value {
+      font-size: 0.6rem;
+      font-weight: 900;
+    }
+  }
 }

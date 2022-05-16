@@ -2,6 +2,7 @@ export default {
     'common.copyright.produced': 'Made with ❤️ by Parami Foundation',
     'common.confirm': 'Confirm',
     'common.cancel': 'Cancel',
+    'common.decline': 'Decline',
     'common.copy': 'Copy',
     'common.copied': 'Copied',
     'common.close': 'Close',
