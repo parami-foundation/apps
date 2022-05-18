@@ -117,7 +117,7 @@
     "lint-staged": "^12.0.2",
     "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "omit.js": "^2.0.2",
     "opensea-js": "^3.0.2",
     "qrcode.react": "^1.0.1",
