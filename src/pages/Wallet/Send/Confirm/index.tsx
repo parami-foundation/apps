@@ -29,7 +29,7 @@ const Confirm: React.FC<{
 
   let toAddress = address;
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       setSubmitting(true);
       if (toAddress.indexOf('did:ad3:') > -1) {
@@ -37,20 +37,30 @@ const Confirm: React.FC<{
       };
       try {
         if (!Object.keys(token).length) {
-          await Transfer(
+          const info: any = await Transfer(
             number,
             wallet?.keystore,
             toAddress,
             passphrase,
+            preTx,
+            account,
           );
+          if (preTx && account) {
+            return info
+          }
         } else {
-          await TransferAsset(
+          const info: any = await TransferAsset(
             token[Object.keys(token)[0]],
             number.toString(),
             wallet.keystore,
             toAddress,
             passphrase,
+            preTx,
+            account,
           );
+          if (preTx && account) {
+            return info
+          }
         }
 
         notification.success({

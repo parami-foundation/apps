@@ -74,13 +74,16 @@ const ImportNFTModal: React.FC<{
     return data;
   };
 
-  const importNft = async (tokenID: string) => {
+  const importNft = async (tokenID: string, preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       setSubmitLoading(true);
       try {
-        await PortNFT(passphrase, wallet?.keystore, 'Ethereum', contractAddresses.wrap[1], tokenID);
+        const info: any = await PortNFT(passphrase, wallet?.keystore, 'Ethereum', contractAddresses.wrap[1], tokenID, preTx, account);
         setSubmitLoading(false);
         setImportModal(false);
+        if (preTx && account) {
+          return info
+        }
         getNFTs();
       } catch (e: any) {
         notification.error({

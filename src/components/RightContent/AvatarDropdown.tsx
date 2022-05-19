@@ -27,38 +27,37 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
   };
 
   const menuHeaderDropdown = (
-    <>
-      <div className={styles.menuContainer}>
-        <Title
-          level={5}
-        >
-          {intl.formatMessage({
-            id: 'common.account',
-          })}
-        </Title>
-        <div className={styles.account}>
-          <span className={styles.nickname}>
-            {nickname.toString() || 'Nickname'}
-          </span>
-          <Did did={wallet.did!} />
-        </div>
-        <Divider />
-        <div
-          className={styles.logout}
-          onClick={() => { loginOut() }}
-        >
-          <LogoutOutlined
-            style={{
-              marginRight: 20,
-            }}
-          />
-          {intl.formatMessage({
-            id: 'common.logout',
-          })}
-        </div>
+    <div className={styles.menuContainer}>
+      <Title
+        level={5}
+      >
+        {intl.formatMessage({
+          id: 'common.account',
+        })}
+      </Title>
+      <div className={styles.account}>
+        <span className={styles.nickname}>
+          {nickname.toString() || 'Nickname'}
+        </span>
+        <Did did={wallet.did!} />
       </div>
-    </>
+      <Divider />
+      <div
+        className={styles.logout}
+        onClick={() => { loginOut() }}
+      >
+        <LogoutOutlined
+          style={{
+            marginRight: 20,
+          }}
+        />
+        {intl.formatMessage({
+          id: 'common.logout',
+        })}
+      </div>
+    </div>
   );
+
   return (
     <HeaderDropdown
       overlay={menuHeaderDropdown}

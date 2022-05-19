@@ -138,13 +138,16 @@ const Add: React.FC<{
 		updateAssetsBalance(tmpAssets);
 	};
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			setSubmitting(true);
 			try {
-				await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], passphrase, wallet?.keystore).then(() => {
-					setSubmitting(false);
-				});
+				const info: any = await AddLiquidity(token?.id, FloatStringToBigInt(number, 18).toString(), tokenAmount[1], tokenAmount[0], passphrase, wallet?.keystore, preTx, account);
+				setSubmitting(false);
+				if (preTx && account) {
+					return info
+				}
+
 				getTokenList();
 			} catch (e: any) {
 				message.error(e);

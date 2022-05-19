@@ -39,7 +39,14 @@ export const QueryDID = async (address: any) => {
 	return (data.toHuman() as any).toString();
 };
 
-export const RegisterDID = async (passphrase: string, keystore: string, preTx?: boolean) => {
+export const RegisterDID = async (passphrase: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ex = await window.apiWs.tx.did.register(null);
+
+	if (preTx && account) {
+		const info = await ex.paymentInfo(account);
+		return info;
+	}
+
 	const decodedMnemonic = DecodeKeystoreWithPwd(passphrase, keystore);
 
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -47,25 +54,11 @@ export const RegisterDID = async (passphrase: string, keystore: string, preTx?: 
 	}
 
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-	const ex = await window.apiWs.tx.did.register(null);
-
-	if (preTx) {
-		const info = await ex.paymentInfo(payUser);
-		return info;
-	}
 
 	return await subCallback(ex, payUser);
 };
 
-export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: string, password: string, keystore: string, preTx?: boolean) => {
-	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-		throw new Error('Wrong password');
-	}
-
-	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
+export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
 	const name = await window.apiWs.tx.did.setMetadata('name', nickname);
 	const avatar = await window.apiWs.tx.did.setMetadata('pic', avatarHash);
 
@@ -74,10 +67,18 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
 		avatar,
 	]);
 
-	if (preTx) {
-		const info = await batch.paymentInfo(payUser);
+	if (preTx && account) {
+		const info = await batch.paymentInfo(account);
 		return info;
 	}
+
+	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+		throw new Error('Wrong password');
+	}
+
+	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
 	return await subCallback(batch, payUser);
 };

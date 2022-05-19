@@ -14,7 +14,14 @@ export const GetNFTMetaData = async (id: string) => {
   return nftInfo;
 };
 
-export const NftMint = async (name: string, symbol: string, password: string, keystore: string, preTx?: boolean) => {
+export const NftMint = async (name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = await window.apiWs.tx.nft.mint(name, symbol);
+
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
+    return info;
+  }
+
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -22,13 +29,6 @@ export const NftMint = async (name: string, symbol: string, password: string, ke
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  const ex = await window.apiWs.tx.nft.mint(name, symbol);
-
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
-    return info;
-  }
 
   let result = false;
 
@@ -59,26 +59,14 @@ export const NftMint = async (name: string, symbol: string, password: string, ke
   return result;
 };
 
-export const KickNFT = async (password: string, keystore: string, preTx?: boolean) => {
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
+export const KickNFT = async (password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.kick();
 
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
     return info;
   }
 
-  return await subCallback(ex, payUser);
-};
-
-export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -86,17 +74,18 @@ export const PortNFT = async (password: string, keystore: string, network: NFTNe
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+};
+
+export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.port(network, namespace, tokenID);
 
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
     return info;
   }
 
-  return await subCallback(ex, payUser);
-};
-
-export const SupportDAO = async (nftID: string, amount: string, password: string, keystore: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -104,17 +93,18 @@ export const SupportDAO = async (nftID: string, amount: string, password: string
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+};
+
+export const SupportDAO = async (nftID: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.back(nftID, amount);
 
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
     return info;
   }
 
-  return await subCallback(ex, payUser);
-};
-
-export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -122,17 +112,18 @@ export const MintNFT = async (nftID: string, name: string, symbol: string, passw
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+};
+
+export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.mint(nftID, name, symbol);
 
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
     return info;
   }
 
-  return await subCallback(ex, payUser);
-};
-
-export const ClaimNFT = async (nftID: string, password: string, keystore: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -140,16 +131,28 @@ export const ClaimNFT = async (nftID: string, password: string, keystore: string
   }
 
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-  const ex = window.apiWs.tx.nft.claim(nftID);
-
-  if (preTx) {
-    const info = await ex.paymentInfo(payUser);
-    return info;
-  }
 
   return await subCallback(ex, payUser);
 };
 
+export const ClaimNFT = async (nftID: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.claim(nftID);
+
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
+    return info;
+  }
+
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+};
 
 export const GetKolDeposit = async (did: string) => {
   const id = await GetPreferredNFT(did);

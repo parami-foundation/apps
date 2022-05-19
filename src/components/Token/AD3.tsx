@@ -7,16 +7,14 @@ const AD3: React.FC<{
   style?: React.CSSProperties;
 }> = ({ value, style }) => {
   return (
-    <>
-      <div
-        className={styles.ad3}
-        style={style}
-      >
-        {value ? formatWithoutUint(value) : '--'}
-        {/* {BigIntToFloatString(value, 18, 8)} */}
-        <span className={styles.unit}>&nbsp;$AD3</span>
-      </div>
-    </>
+    <div
+      className={styles.ad3}
+      style={style}
+    >
+      {value ? formatWithoutUint(value) : '--'}
+      {/* {BigIntToFloatString(value, 18, 8)} */}
+      <span className={styles.unit}>&nbsp;$AD3</span>
+    </div>
   )
 }
 

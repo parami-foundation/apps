@@ -32,15 +32,18 @@ const Trade: React.FC<{
 
 	const intl = useIntl();
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			setSubmitting(true);
 			switch (mode) {
 				case 'ad3ToToken':
 					try {
-						await BuyToken(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore).then(() => {
-							setSubmitting(false);
-						});
+						const info: any = await BuyToken(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+						setSubmitting(false);
+
+						if (preTx && account) {
+							return info
+						}
 					} catch (e: any) {
 						notification.error({
 							message: e.message,
@@ -52,9 +55,12 @@ const Trade: React.FC<{
 					break;
 				case 'tokenToAd3':
 					try {
-						await BuyCurrency(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore).then(() => {
-							setSubmitting(false);
-						});
+						const info: any = await BuyCurrency(nft?.classId, FloatStringToBigInt(flat, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+						setSubmitting(false);
+
+						if (preTx && account) {
+							return info
+						}
 					} catch (e: any) {
 						notification.error({
 							message: e.message,

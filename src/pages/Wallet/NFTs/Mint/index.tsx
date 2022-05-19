@@ -21,13 +21,16 @@ const MintNFTModal: React.FC<{
 
 	const intl = useIntl();
 
-	const handleMint = async () => {
+	const handleMint = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet.keystore) {
 			setLoading(true);
 			try {
-				await MintNFT(item?.id, name, symbol, passphrase, wallet?.keystore);
+				const info: any = await MintNFT(item?.id, name, symbol, passphrase, wallet?.keystore, preTx, account);
 				setLoading(false);
 				setMintModal(false);
+				if (preTx && account) {
+					return info
+				}
 				await getNFTs();
 			} catch (e: any) {
 				notification.error({

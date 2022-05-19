@@ -125,44 +125,39 @@ const SecurityModal: React.FC<{
             className={styles.alertContainer}
           />
         )}
-
-        {!!gasFee && (
-          <>
-            <div className={styles.field}>
-              <div className={styles.labal}>
-                {intl.formatMessage({
-                  id: 'modal.security.gas',
-                })}
-                <span className={styles.small}>
-                  ({intl.formatMessage({
-                    id: 'modal.security.estimated',
-                  })})
-                </span>
-                <Tooltip
-                  placement="bottom"
-                  title={intl.formatMessage({
-                    id: 'modal.security.gas.tooltip',
-                    defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
-                  })}
-                >
-                  <ExclamationCircleFilled
-                    className={styles.labalIcon}
-                  />
-                </Tooltip>
-              </div>
-              <div className={styles.value}>
-                <AD3
-                  value={gasFee}
-                  style={{
-                    fontSize: '0.8rem',
-                    fontWeight: 900,
-                  }}
-                />
-              </div>
-            </div>
-            <Divider />
-          </>
-        )}
+        <div className={styles.field}>
+          <div className={styles.labal}>
+            {intl.formatMessage({
+              id: 'modal.security.gas',
+            })}
+            <span className={styles.small}>
+              ({intl.formatMessage({
+                id: 'modal.security.estimated',
+              })})
+            </span>
+            <Tooltip
+              placement="bottom"
+              title={intl.formatMessage({
+                id: 'modal.security.gas.tooltip',
+                defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
+              })}
+            >
+              <ExclamationCircleFilled
+                className={styles.labalIcon}
+              />
+            </Tooltip>
+          </div>
+          <div className={styles.value}>
+            <AD3
+              value={gasFee}
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: 900,
+              }}
+            />
+          </div>
+        </div>
+        <Divider />
       </div>
       <div
         style={{
