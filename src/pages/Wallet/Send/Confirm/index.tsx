@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Tooltip, Typography, message, notification } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import styles from '../../style.less';
-import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/Transfer';
+import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/Transaction';
 import config from '@/config/config';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { didToHex } from '@/utils/common';

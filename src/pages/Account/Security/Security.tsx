@@ -22,7 +22,11 @@ const Security: React.FC = () => {
 
 	const { Title } = Typography;
 
-	const encryptKeystore = async () => {
+	const encryptKeystore = async (preTx?: boolean, account?: string) => {
+		if (preTx && account) {
+			return
+		}
+
 		if (!!wallet && !!wallet?.keystore) {
 			if (passphraseEnable === 'enable') {
 				const decodedMnemonic = DecodeKeystoreWithPwd(passphrase, wallet?.keystore);

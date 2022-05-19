@@ -18,7 +18,11 @@ const RecoveryLink: React.FC = () => {
 
   const intl = useIntl();
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (preTx?: boolean, account?: string) => {
+    if (preTx && account) {
+      return
+    }
+
     if (!!wallet && !!wallet?.keystore) {
       try {
         const decrypted = DecodeKeystoreWithPwd(wallet?.passphrase || passphrase, wallet?.keystore);

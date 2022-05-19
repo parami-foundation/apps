@@ -39,7 +39,7 @@ const Modal: React.FC<{
     }
   };
 
-  const UploadAvatar = async () => {
+  const UploadAvatar = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       if (!File) {
         message.error(intl.formatMessage({
@@ -50,8 +50,11 @@ const Modal: React.FC<{
       try {
         const { response, data } = await uploadIPFS(File);
         if (response.ok) {
-          await uploadAvatar(`ipfs://${data.Hash}`, passphrase, wallet?.keystore);
+          const info: any = await uploadAvatar(`ipfs://${data.Hash}`, passphrase, wallet?.keystore, preTx, account);
           setModalVisable(false);
+          if (preTx && account) {
+            return info
+          }
         } else if (response.status === 405) {
           notification.error({
             message: intl.formatMessage({

@@ -18,13 +18,16 @@ const Nickname: React.FC<{
 
 	const intl = useIntl();
 
-	const updateNickname = async () => {
+	const updateNickname = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet.keystore) {
 			try {
 				setLoading(true);
-				await SetNickName(nickname, passphrase, wallet?.keystore);
+				const info: any = await SetNickName(nickname, passphrase, wallet?.keystore, preTx, account);
 				setNicknameModal(false);
 				setLoading(false);
+				if (preTx && account) {
+					return info
+				}
 			} catch (e: any) {
 				notification.error({
 					message: e.message,
