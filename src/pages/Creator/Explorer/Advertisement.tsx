@@ -98,7 +98,11 @@ const Advertisement: React.FC<{
 		}
 	};
 
-	const gotoAdPage = async () => {
+	const gotoAdPage = async (preTx?: boolean, account?: string) => {
+		if (preTx && account) {
+			return
+		}
+
 		window.open(`${ad?.link}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}`);
 	};
 

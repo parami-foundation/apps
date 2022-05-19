@@ -2,10 +2,11 @@ import { Keyring } from '@polkadot/api';
 import { didToHex, parseAmount } from '@/utils/common';
 import { subCallback } from './Subscription';
 import { DecodeKeystoreWithPwd } from './Crypto';
+import type { SubmittableExtrinsic } from '@polkadot/api/types';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
-export const Transfer = async (amount: string, keystore: string, toAddress: string, password: string) => {
+export const Transfer = async (amount: string, keystore: string, toAddress: string, password: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -21,12 +22,17 @@ export const Transfer = async (amount: string, keystore: string, toAddress: stri
       throw new Error('Wrong Did');
     }
   }
-  const tx = window.apiWs.tx.balances.transfer(to, parseAmount(amount));
+  const ex = window.apiWs.tx.balances.transfer(to, parseAmount(amount));
 
-  return await subCallback(tx, payUser);
+  if (preTx) {
+    const info = await ex.paymentInfo(payUser);
+    return info;
+  }
+
+  return await subCallback(ex, payUser);
 };
 
-export const TransferAsset = async (assetId: number, amount: string, keystore: string, toAddress: string, password: string) => {
+export const TransferAsset = async (assetId: number, amount: string, keystore: string, toAddress: string, password: string, preTx?: boolean) => {
   const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
   if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -42,9 +48,14 @@ export const TransferAsset = async (assetId: number, amount: string, keystore: s
       throw new Error('Wrong Did');
     }
   }
-  const tx = window.apiWs.tx.assets.transfer(assetId, to, parseAmount(amount));
+  const ex = window.apiWs.tx.assets.transfer(assetId, to, parseAmount(amount));
 
-  return await subCallback(tx, payUser);
+  if (preTx) {
+    const info = await ex.paymentInfo(payUser);
+    return info;
+  }
+
+  return await subCallback(ex, payUser);
 };
 
 export const getTransFee = async (toAddress: string, myAddress: string, amount: string) => {
@@ -66,4 +77,10 @@ export const getTokenTransFee = async (token: any, toAddress: string, myAddress:
 export const GetExistentialDeposit = async () => {
   const existentialDeposit = await window.apiWs.consts.balances.existentialDeposit;
   return existentialDeposit.toString();
+};
+
+export const TransactionInfo = async (transfer: SubmittableExtrinsic<"promise", any>, account: string) => {
+  const info = await transfer.paymentInfo(account);
+
+  return info;
 };

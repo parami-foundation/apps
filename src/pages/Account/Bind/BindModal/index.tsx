@@ -97,7 +97,7 @@ const BindModal: React.FC<{
     }
   };
 
-  const defaultSNS = async () => {
+  const defaultSNS = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet?.did && !!wallet.keystore) {
       if (profileURL === '') {
         message.error(intl.formatMessage({
@@ -106,9 +106,12 @@ const BindModal: React.FC<{
         return;
       }
       try {
-        await LinkSociality(wallet?.did, bindPlatform, profileURL, passphrase, wallet?.keystore);
+        const info: any = await LinkSociality(wallet?.did, bindPlatform, profileURL, passphrase, wallet?.keystore, preTx, account);
         setLoading(false);
         setBindModal(false);
+        if (preTx && account) {
+          return info
+        }
       } catch (e: any) {
         notification.error({
           message: intl.formatMessage({
@@ -129,24 +132,20 @@ const BindModal: React.FC<{
     }
   };
 
-  const defaultBlockChain = async () => {
+  const defaultBlockChain = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       let Signed = signed;
-      if (Signed.indexOf('0x') < 0) {
-        message.error(intl.formatMessage({
-          id: 'error.bind.signWrong',
-        }));
-        setLoading(false);
-        return;
-      };
       if (bindPlatform === 'Polkadot' || bindPlatform === 'Solana') {
         Signed = `0x00${signed}`;
       };
 
       try {
-        await LinkBlockChain(bindPlatform, address, Signed, passphrase, wallet?.keystore);
+        const info: any = await LinkBlockChain(bindPlatform, address, Signed, passphrase, wallet?.keystore, preTx, account);
         setBindModal(false);
         setLoading(false);
+        if (preTx && account) {
+          return info
+        }
       } catch (e: any) {
         notification.error({
           message: intl.formatMessage({
@@ -167,7 +166,7 @@ const BindModal: React.FC<{
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet?.keystore) {
       setLoading(true);
       switch (bindPlatform) {
@@ -183,7 +182,10 @@ const BindModal: React.FC<{
             setLoading(false);
             setBindModal(false);
           } else {
-            await defaultSNS();
+            const info: any = await defaultSNS(preTx, account);
+            if (preTx && account) {
+              return info
+            }
             break;
           }
           break;
@@ -200,8 +202,11 @@ const BindModal: React.FC<{
                     description: ethSignedMsg,
                     duration: 2
                   });
-                  await LinkBlockChain(bindPlatform, ethAccount, ethSignedMsg, passphrase, wallet?.keystore);
+                  const info: any = await LinkBlockChain(bindPlatform, ethAccount, ethSignedMsg, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
+                  if (preTx && account) {
+                    return info
+                  }
                 }
                 setLoading(false);
               } catch (e: any) {
@@ -215,7 +220,10 @@ const BindModal: React.FC<{
               }
               break;
             default:
-              await defaultBlockChain();
+              const info: any = await defaultBlockChain(preTx, account);
+              if (preTx && account) {
+                return info
+              }
               break;
           }
           break;
@@ -230,8 +238,11 @@ const BindModal: React.FC<{
                     description: bscSignedMsg,
                     duration: 2
                   });
-                  await LinkBlockChain(bindPlatform, bscAccount, bscSignedMsg, passphrase, wallet?.keystore);
+                  const info: any = await LinkBlockChain(bindPlatform, bscAccount, bscSignedMsg, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
+                  if (preTx && account) {
+                    return info
+                  }
                 }
                 setLoading(false);
               } catch (e: any) {
@@ -245,7 +256,10 @@ const BindModal: React.FC<{
               }
               break;
             default:
-              await defaultBlockChain();
+              const info: any = await defaultBlockChain(preTx, account);
+              if (preTx && account) {
+                return info
+              }
               break;
           }
           break;
@@ -253,15 +267,18 @@ const BindModal: React.FC<{
           switch (app) {
             case 'sollet':
               try {
-                const { account, signedMsg }: any = await solanaSignMessage(origin);
-                if (!!account && !!signedMsg) {
+                const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
+                if (!!acct && !!signedMsg) {
                   notification.info({
                     message: 'Got an signed message',
                     description: `0x00${signedMsg}`,
                     duration: 2
                   })
-                  await LinkBlockChain(bindPlatform, account, `0x00${signedMsg}`, passphrase, wallet?.keystore);
+                  const info: any = await LinkBlockChain(bindPlatform, acct, `0x00${signedMsg}`, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
+                  if (preTx && account) {
+                    return info
+                  }
                 }
                 setLoading(false);
               } catch (e: any) {
@@ -274,7 +291,10 @@ const BindModal: React.FC<{
               }
               break;
             default:
-              await defaultBlockChain();
+              const info: any = await defaultBlockChain(preTx, account);
+              if (preTx && account) {
+                return info
+              }
               break;
           }
       };
@@ -679,7 +699,7 @@ const BindModal: React.FC<{
                     setPassphrase('');
                     setSecModal(true);
                   }}
-                  disabled={!address || !signed}
+                  disabled={!address || !signed || address.indexOf('0x') == -1 || signed.indexOf('0x') == -1}
                 >
                   {intl.formatMessage({
                     id: 'common.submit',

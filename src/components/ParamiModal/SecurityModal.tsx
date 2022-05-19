@@ -12,12 +12,14 @@ const SecurityModal: React.FC<{
   setVisable: React.Dispatch<React.SetStateAction<boolean>>;
   passphrase: string;
   setPassphrase: React.Dispatch<React.SetStateAction<string>>;
-  func?: () => Promise<void>;
+  func?: any;
   changePassphrase?: boolean;
-  transcationDetail?: any;
-}> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase, transcationDetail }) => {
+}> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase }) => {
+  const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
-  const [submitting, setSubmitting] = useState(false);
+  const { balance } = useModel('balance');
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [gasFee, setGasFee] = useState<any>();
 
   const intl = useIntl();
 
@@ -41,6 +43,21 @@ const SecurityModal: React.FC<{
     setVisable(false);
     setSubmitting(false);
   };
+
+  const getGasfee = async () => {
+    if (!!apiWs && !!wallet.account) {
+      const info = await func(true, wallet.account);
+      if (!!info) {
+        setGasFee(info.partialFee);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!!apiWs && !!wallet?.account && visable) {
+      getGasfee();
+    }
+  }, [apiWs, wallet?.account, visable]);
 
   useEffect(() => {
     if (!!wallet?.passphrase && visable && !changePassphrase) {
@@ -95,67 +112,57 @@ const SecurityModal: React.FC<{
       }
     >
       <div className={styles.confirmContainer}>
-        <Alert
-          description="Network is busy. Gas prices are high and estimates are less accurate."
-          type="warning"
-          showIcon
-          banner
-          className={styles.alertContainer}
-        />
-        <div className={styles.field}>
-          <div className={styles.labal}>
-            {intl.formatMessage({
-              id: 'modal.security.gas',
-            })}
-            <span className={styles.small}>
-              ({intl.formatMessage({
-                id: 'modal.security.estimated',
-              })})
-            </span>
-            <Tooltip
-              placement="bottom"
-              title={intl.formatMessage({
-                id: 'modal.security.gas.tooltip',
-                defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
-              })}
-            >
-              <ExclamationCircleFilled
-                className={styles.labalIcon}
-              />
-            </Tooltip>
-          </div>
-          <div className={styles.value}>
-            <AD3
-              value={transcationDetail?.fee}
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 900,
-              }}
-            />
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.labal}>
-            {intl.formatMessage({
-              id: 'modal.security.total',
-            })}
-            <span className={styles.small}>
-              ({intl.formatMessage({
-                id: 'modal.security.total.description',
-              })})
-            </span>
-          </div>
-          <div className={styles.value}>
-            <AD3
-              value={transcationDetail?.fee}
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 900,
-              }}
-            />
-          </div>
-        </div>
-        <Divider />
+        {!!gasFee && !!gasFee?.toString() > balance.free && (
+          <Alert
+            description={
+              intl.formatMessage({
+                id: 'error.balance.low',
+              })
+            }
+            type="warning"
+            showIcon
+            banner
+            className={styles.alertContainer}
+          />
+        )}
+
+        {!!gasFee && (
+          <>
+            <div className={styles.field}>
+              <div className={styles.labal}>
+                {intl.formatMessage({
+                  id: 'modal.security.gas',
+                })}
+                <span className={styles.small}>
+                  ({intl.formatMessage({
+                    id: 'modal.security.estimated',
+                  })})
+                </span>
+                <Tooltip
+                  placement="bottom"
+                  title={intl.formatMessage({
+                    id: 'modal.security.gas.tooltip',
+                    defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
+                  })}
+                >
+                  <ExclamationCircleFilled
+                    className={styles.labalIcon}
+                  />
+                </Tooltip>
+              </div>
+              <div className={styles.value}>
+                <AD3
+                  value={gasFee}
+                  style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 900,
+                  }}
+                />
+              </div>
+            </div>
+            <Divider />
+          </>
+        )}
       </div>
       <div
         style={{

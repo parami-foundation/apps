@@ -39,7 +39,7 @@ export const QueryDID = async (address: any) => {
 	return (data.toHuman() as any).toString();
 };
 
-export const RegisterDID = async (passphrase: string, keystore: string) => {
+export const RegisterDID = async (passphrase: string, keystore: string, preTx?: boolean) => {
 	const decodedMnemonic = DecodeKeystoreWithPwd(passphrase, keystore);
 
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -49,10 +49,15 @@ export const RegisterDID = async (passphrase: string, keystore: string) => {
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 	const ex = await window.apiWs.tx.did.register(null);
 
+	if (preTx) {
+		const info = await ex.paymentInfo(payUser);
+		return info;
+	}
+
 	return await subCallback(ex, payUser);
 };
 
-export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: string, password: string, keystore: string) => {
+export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: string, password: string, keystore: string, preTx?: boolean) => {
 	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -68,6 +73,11 @@ export const BatchNicknameAndAvatar = async (nickname: string, avatarHash: strin
 		name,
 		avatar,
 	]);
+
+	if (preTx) {
+		const info = await batch.paymentInfo(payUser);
+		return info;
+	}
 
 	return await subCallback(batch, payUser);
 };
@@ -110,7 +120,14 @@ export const QueryAccountFromDid = async (did: string) => {
 	return null;
 };
 
-export const SetNickName = async (nickname: string, password: string, keystore: string) => {
+export const SetNickName = async (nickname: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ex = window.apiWs.tx.did.setMetadata('name', nickname);
+
+	if (preTx && account) {
+		const info = await ex.paymentInfo(account);
+		return info;
+	}
+
 	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -118,7 +135,6 @@ export const SetNickName = async (nickname: string, password: string, keystore: 
 	}
 
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-	const tx = window.apiWs.tx.did.setMetadata('name', nickname);
 
-	return await subCallback(tx, payUser);
+	return await subCallback(ex, payUser);
 };

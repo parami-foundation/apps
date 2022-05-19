@@ -34,7 +34,14 @@ export async function uploadIPFS(body: any, options?: { [key: string]: any }) {
 	});
 };
 
-export const uploadAvatar = async (hash: string, password: string, keystore: string) => {
+export const uploadAvatar = async (hash: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ex = window.apiWs.tx.did.setMetadata('pic', hash);
+
+	if (preTx && account) {
+		const info = await ex.paymentInfo(account);
+		return info;
+	}
+
 	const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
 
 	if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
@@ -42,7 +49,6 @@ export const uploadAvatar = async (hash: string, password: string, keystore: str
 	}
 
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-	const tx = window.apiWs.tx.did.setMetadata('pic', hash);
 
-	return await subCallback(tx, payUser);
+	return await subCallback(ex, payUser);
 };
