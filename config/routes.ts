@@ -70,15 +70,6 @@
     ],
   },
   {
-    path: '/staking',
-    name: 'staking',
-    icon: 'DeploymentUnitOutlined',
-    access: 'canUser',
-    hideChildrenInMenu: true,
-    component: './Stake/Staking',
-    hideInMenu: true,
-  },
-  {
     path: '/profile',
     name: 'account',
     icon: 'UserOutlined',
@@ -93,6 +84,14 @@
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Record/Record',
+  },
+  {
+    path: '/staking',
+    name: 'staking',
+    icon: 'DeploymentUnitOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Stake/Staking',
   },
   {
     path: '/visa',

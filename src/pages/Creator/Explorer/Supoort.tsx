@@ -25,12 +25,15 @@ const Support: React.FC<{
 
 	const intl = useIntl();
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			const didHexString = didToHex(did);
-			await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore);
+			const info: any = await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
 			setModal(false);
 			setSubmitting(false);
+			if (preTx && account) {
+				return info
+			}
 		} else {
 			notification.error({
 				key: 'accessDenied',

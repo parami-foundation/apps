@@ -1,369 +1,135 @@
 .mining {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  padding: 35px;
+
+  .header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     width: 100%;
-    padding: 35px;
+    margin-bottom: 20px;
 
-    .header {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        margin-bottom: 20px;
-
-        .title {
-            font-weight: 800;
-            font-size: 18px;
-            text-align: left;
-        }
-
-        .buttons {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-around;
-
-            >Button {
-                margin-left: 15px;
-            }
-        }
+    .title {
+      font-weight: 800;
+      font-size: 18px;
+      text-align: left;
     }
 
-    .field {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        width: 100%;
-        margin-top: 10px;
-        margin-bottom: 20px;
+    .buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
 
-        .label {
-            color: rgb(36, 39, 42);
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .input {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            border-radius: 8px;
-        }
-
-        .inputAndButton {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-
-            >*:not(:first-child) {
-                margin-left: 10px;
-            }
-        }
-
-        .select {
-            display: flex;
-            width: 100%;
-            align-items: center;
-            border-radius: 8px;
-        }
-
-        .selectAssets {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            padding: 15px;
-            background-color: rgb(250, 250, 250);
-            border-radius: 8px;
-            width: 100%;
-            cursor: pointer;
-            transition: all 500ms ease 0s;
-
-            .title {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: flex-end;
-
-                .icon {
-                    font-size: 16px;
-                    height: 32px;
-                    width: 32px;
-                    margin-right: 10px;
-                    border-radius: 100%;
-                }
-
-                .name {
-                    color: rgb(39, 39, 41);
-                    font-weight: 600;
-                    font-size: 16px;
-                    margin-right: 15px;
-                }
-            }
-
-            .token {
-                color: rgb(39, 39, 41);
-                font-weight: 900;
-                margin: 0;
-            }
-
-            &:hover {
-                background: rgb(230, 230, 230);
-            }
-        }
-
-        .listBtn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-
-            .field {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                width: 100%;
-                padding: 15px;
-                background-color: rgba(243, 243, 243, 1);
-                border-radius: 8px;
-                transition: all 500ms ease 0s;
-                margin-bottom: 10px;
-                margin-top: 0;
-
-                .title {
-                    color: #272729;
-                    font-weight: 900;
-                    margin: 0;
-                }
-
-                .value {
-                    color: #272729;
-                    font-weight: 600;
-                    font-size: 16px;
-                    text-align: right;
-                }
-            }
-        }
+      >Button {
+        margin-left: 15px;
+      }
     }
+  }
 
-    .noAssets {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background-color: rgba(243, 243, 243, 1);
-        width: 100%;
-        padding: 80px 20px;
-        border-radius: 8px;
-
-        .topImage {
-            width: 120px;
-        }
-
-        span {
-            color: #272729;
-            font-weight: 900;
-            margin-top: 20px;
-        }
-    }
-
-    .assetsList {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-
-        .field {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(243, 243, 243, 1);
-            border-radius: 8px;
-            transition: all 500ms ease 0s;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 500ms ease 0s;
-            margin-bottom: 10px;
-
-            .title {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                width: 100%;
-                margin: 0;
-
-                .icons {
-                    position: relative;
-
-                    .leftIcon,
-                    .rightIcon {
-                        font-size: 16px;
-                        height: 32px;
-                        margin-right: 10px;
-                    }
-
-                    .rightIcon {
-                        position: absolute;
-                        left: 20px;
-                        z-index: 2;
-                    }
-                }
-
-                .name {
-                    color: rgb(39, 39, 41);
-                    font-weight: 600;
-                    font-size: 16px;
-                    margin-right: 15px;
-                    margin-left: 20px;
-                }
-            }
-
-            .value {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
-                align-items: center;
-                color: #272729;
-                font-weight: 600;
-                font-size: 16px;
-                text-align: right;
-                width: 100%;
-            }
-
-            &:hover {
-                background: rgb(230, 230, 230);
-                ;
-            }
-        }
-    }
-
-    .actionButtons {
-        width: 100%;
-        margin-top: 30px;
-        margin-bottom: 30px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-
-        .button {
-            width: 100%;
-            height: auto;
-            text-transform: none;
-            padding: 12px 6px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-    }
-}
-
-.selectAssets {
-    .searchBar {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-
-        .searchInput {
-            width: 100%;
-        }
-    }
-
-    .assetsList {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-
-        .title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            color: rgb(114, 114, 122);
-            width: 100%;
-            margin-bottom: 20px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 15px;
-            background-color: rgba(243, 243, 243, 1);
-            border-radius: 8px;
-            transition: all 500ms ease 0s;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 500ms ease 0s;
-            margin-bottom: 10px;
-
-            .title {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                width: 100%;
-                margin: 0;
-
-                .icon {
-                    font-size: 16px;
-                    height: 32px;
-                    width: 32px;
-                    margin-right: 10px;
-                    border-radius: 100%;
-                }
-
-                .name {
-                    color: rgb(39, 39, 41);
-                    font-weight: 600;
-                    font-size: 16px;
-                    margin-right: 15px;
-                }
-            }
-
-            .value {
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-end;
-                align-items: center;
-                color: #272729;
-                font-weight: 600;
-                font-size: 16px;
-                text-align: right;
-                width: 100%;
-            }
-
-            &:hover {
-                background: rgb(230, 230, 230);
-                ;
-            }
-        }
-    }
-}
-
-.inputModal {
+  .field {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     justify-content: center;
-    align-items: center;
     width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
 
-    .field {
+    .label {
+      color: rgb(36, 39, 42);
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .input {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+    }
+
+    .inputAndButton {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+
+      >*:not(:first-child) {
+        margin-left: 10px;
+      }
+    }
+
+    .select {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      border-radius: 8px;
+    }
+
+    .selectAssets {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      background-color: rgb(250, 250, 250);
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: all 500ms ease 0s;
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+
+        .icon {
+          font-size: 16px;
+          height: 32px;
+          width: 32px;
+          margin-right: 10px;
+          border-radius: 100%;
+        }
+
+        .name {
+          color: rgb(39, 39, 41);
+          font-weight: 600;
+          font-size: 16px;
+          margin-right: 15px;
+        }
+      }
+
+      .token {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        color: rgb(39, 39, 41);
+        font-weight: 900;
+        margin: 0;
+      }
+
+      &:hover {
+        background: rgb(230, 230, 230);
+      }
+    }
+
+    .listBtn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+
+      .field {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -374,116 +140,354 @@
         border-radius: 8px;
         transition: all 500ms ease 0s;
         margin-bottom: 10px;
-        transition: all 500ms ease 0s;
-        margin-bottom: 10px;
+        margin-top: 0;
 
         .title {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            align-items: center;
-            width: 100%;
-            margin: 0;
-
-            .icons {
-                position: relative;
-
-                .leftIcon,
-                .rightIcon {
-                    font-size: 16px;
-                    height: 32px;
-                    margin-right: 10px;
-                }
-
-                .rightIcon {
-                    position: absolute;
-                    left: 20px;
-                    z-index: 2;
-                }
-            }
-
-            .name {
-                color: rgb(39, 39, 41);
-                font-weight: 600;
-                font-size: 16px;
-                margin-right: 15px;
-                margin-left: 20px;
-            }
+          color: #272729;
+          font-weight: 900;
+          margin: 0;
         }
 
         .value {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-            align-items: center;
-            color: #272729;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: right;
-            width: 100%;
+          color: #272729;
+          font-weight: 600;
+          font-size: 16px;
+          text-align: right;
         }
+      }
+    }
+  }
+
+  .noAssets {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(243, 243, 243, 1);
+    width: 100%;
+    padding: 80px 20px;
+    border-radius: 8px;
+
+    .topImage {
+      width: 120px;
     }
 
-    .input {
-        margin-top: 20px;
-        margin-bottom: 20px;
+    span {
+      color: #272729;
+      font-weight: 900;
+      margin-top: 20px;
     }
-}
+  }
 
-.headerContainer {
+  .assetsList {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
 
-    .titleContainer {
+    .field {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 15px;
+      background-color: rgba(243, 243, 243, 1);
+      border-radius: 8px;
+      transition: all 500ms ease 0s;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 500ms ease 0s;
+      margin-bottom: 10px;
+
+      .title {
         display: flex;
         flex-direction: row;
+        justify-content: flex-start;
         align-items: center;
-        justify-content: center;
         width: 100%;
+        margin: 0;
 
-        .sectionTitle {
-            margin: 10px 0px;
-            display: flex;
-            align-items: center;
-            font-weight: 900;
-            color: rgb(36, 39, 42);
-            font-size: calc(22px + 8 * ((100vw - 300px) / 1300));
-            overflow-wrap: break-word;
+        .icons {
+          position: relative;
 
-            .sectionIcon {
-                width: 30px;
-                height: 30px;
-                margin-right: 10px;
-            }
+          .leftIcon,
+          .rightIcon {
+            font-size: 16px;
+            height: 32px;
+            margin-right: 10px;
+          }
+
+          .rightIcon {
+            position: absolute;
+            left: 20px;
+            z-index: 2;
+          }
         }
-    }
 
-    .subtitle {
-        line-height: 150%;
-        margin: 25px 0px;
-        font-size: 16px;
-        color: rgb(114, 114, 122);
-        font-weight: 400;
-    }
+        .name {
+          color: rgb(39, 39, 41);
+          font-weight: 600;
+          font-size: 16px;
+          margin-right: 15px;
+          margin-left: 20px;
+        }
+      }
 
-    .addNewStake {
+      .value {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: flex-end;
         align-items: center;
-        justify-content: center;
-        margin:30px 0px;
+        color: #272729;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: right;
         width: 100%;
+      }
 
-        .stakeButton {
-            padding: 10px 0;
-            height: auto;
-            transition: all 100ms ease 0s;
-            font-size: 14px;
-            font-weight: 600;
-            word-break: keep-all;
-        }
+      &:hover {
+        background: rgb(230, 230, 230);
+      ;
+      }
     }
+  }
+
+  .actionButtons {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .button {
+      width: 100%;
+      height: auto;
+      text-transform: none;
+      padding: 12px 6px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.selectAssets {
+  .searchBar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .searchInput {
+      width: 100%;
+    }
+  }
+
+  .assetsList {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: rgb(114, 114, 122);
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 15px;
+      background-color: rgba(243, 243, 243, 1);
+      border-radius: 8px;
+      transition: all 500ms ease 0s;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 500ms ease 0s;
+      margin-bottom: 10px;
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        margin: 0;
+
+        .icon {
+          font-size: 16px;
+          height: 32px;
+          width: 32px;
+          margin-right: 10px;
+          border-radius: 100%;
+        }
+
+        .name {
+          color: rgb(39, 39, 41);
+          font-weight: 600;
+          font-size: 16px;
+          margin-right: 15px;
+        }
+      }
+
+      .value {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        color: #272729;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: right;
+        width: 100%;
+      }
+
+      &:hover {
+        background: rgb(230, 230, 230);
+      ;
+      }
+    }
+  }
+}
+
+.inputModal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+
+  .field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px;
+    background-color: rgba(243, 243, 243, 1);
+    border-radius: 8px;
+    transition: all 500ms ease 0s;
+    margin-bottom: 10px;
+    transition: all 500ms ease 0s;
+    margin-bottom: 10px;
+
+    .title {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      width: 100%;
+      margin: 0;
+
+      .icons {
+        position: relative;
+
+        .leftIcon,
+        .rightIcon {
+          font-size: 16px;
+          height: 32px;
+          margin-right: 10px;
+        }
+
+        .rightIcon {
+          position: absolute;
+          left: 20px;
+          z-index: 2;
+        }
+      }
+
+      .name {
+        color: rgb(39, 39, 41);
+        font-weight: 600;
+        font-size: 16px;
+        margin-right: 15px;
+        margin-left: 20px;
+      }
+    }
+
+    .value {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      color: #272729;
+      font-weight: 600;
+      font-size: 16px;
+      text-align: right;
+      width: 100%;
+    }
+  }
+
+  .input {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+.headerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .titleContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .sectionTitle {
+      margin: 10px 0px;
+      display: flex;
+      align-items: center;
+      font-weight: 900;
+      color: rgb(36, 39, 42);
+      font-size: calc(22px + 8 * ((100vw - 300px) / 1300));
+      overflow-wrap: break-word;
+
+      .sectionIcon {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .subtitle {
+    line-height: 150%;
+    margin: 25px 0px;
+    font-size: 16px;
+    color: rgb(114, 114, 122);
+    font-weight: 400;
+  }
+
+  .addNewStake {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin:30px 0px;
+    width: 100%;
+
+    .stakeButton {
+      padding: 10px 0;
+      height: auto;
+      transition: all 100ms ease 0s;
+      font-size: 14px;
+      font-weight: 600;
+      word-break: keep-all;
+    }
+  }
 }

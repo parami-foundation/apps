@@ -22,14 +22,18 @@ const Rows: React.FC<{
 
 	const intl = useIntl();
 
-	const handleClaim = async () => {
+	const handleClaim = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			setSubmitting(true);
 
 			try {
-				await ClaimLPReward(nftItem?.lpId, passphrase, wallet?.keystore);
-				getTokenList();
+				const info: any = await ClaimLPReward(nftItem?.lpId, passphrase, wallet?.keystore, preTx, account);
 				setSubmitting(false);
+
+				if (preTx && account) {
+					return info
+				}
+				getTokenList();
 			} catch (e: any) {
 				message.error(e);
 			}
@@ -44,15 +48,19 @@ const Rows: React.FC<{
 		}
 	};
 
-	const handleUnstake = async () => {
+	const handleUnstake = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			setSubmitting(true);
 
 			try {
 				const token = await DrylyRemoveLiquidity(nftItem?.lpId);
-				await RemoveLiquidity(nftItem?.lpId, token[1], token[0], passphrase, wallet?.keystore);
-				getTokenList();
+				const info: any = await RemoveLiquidity(nftItem?.lpId, token[1], token[0], passphrase, wallet?.keystore, preTx, account);
 				setSubmitting(false);
+
+				if (preTx && account) {
+					return info
+				}
+				getTokenList();
 			} catch (e: any) {
 				message.error(e);
 				setSubmitting(false);

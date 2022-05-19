@@ -29,14 +29,21 @@ const NFTs: React.FC = () => {
 
 	const coverRef: any = useRef();
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (preTx?: boolean, account?: string) => {
+		if (preTx && account) {
+			return;
+		}
+
 		if (!!wallet && !!wallet.keystore) {
 			setSubmitLoading(true);
 			try {
 				switch (mode) {
 					case 'create':
-						await KickNFT(passphrase, wallet?.keystore);
+						const info: any = await KickNFT(passphrase, wallet?.keystore, preTx, account);
 						setSubmitLoading(false);
+						if (preTx && account) {
+							return info
+						}
 						getNFTs();
 						break;
 					case 'import':

@@ -7,49 +7,49 @@ import { CloseOutlined } from '@ant-design/icons';
 const { Title } = Typography;
 
 const BigModal: React.FC<{
-    visable: boolean,
-    title?: string,
-    content: ReactNode,
-    footer: ReactNode,
-    close?: () => void,
-    bodyStyle?: React.CSSProperties,
+  visable: boolean,
+  title?: string,
+  content: ReactNode,
+  footer: ReactNode,
+  close?: () => void,
+  bodyStyle?: React.CSSProperties,
 }> = ({ visable, title, content, footer, close, bodyStyle }) => {
-    return (
-        <Modal
-            title={
-                title ? (
-                    <Title
-                        level={3}
-                        className={styles.title}
-                    >
-                        {title}
-                    </Title>
-                ) : null
+  return (
+    <Modal
+      title={
+        title ? (
+          <Title
+            level={3}
+            className={styles.title}
+          >
+            {title}
+          </Title>
+        ) : null
+      }
+      closable={close ? true : false}
+      closeIcon={
+        <>
+          <Button
+            shape='circle'
+            size='middle'
+            type='ghost'
+            icon={
+              <CloseOutlined
+                onClick={close}
+              />
             }
-            closable={close ? true : false}
-            closeIcon={
-                <>
-                    <Button
-                        shape='circle'
-                        size='middle'
-                        type='ghost'
-                        icon={
-                            <CloseOutlined
-                                onClick={close}
-                            />
-                        }
-                    />
-                </>
-            }
-            className={styles.modal}
-            centered
-            visible={visable}
-            width={650}
-            footer={footer}
-            bodyStyle={bodyStyle}
-        >
-            {content}
-        </Modal >
-    );
+          />
+        </>
+      }
+      className={styles.modal}
+      centered
+      visible={visable}
+      width={650}
+      footer={footer}
+      bodyStyle={bodyStyle}
+    >
+      {content}
+    </Modal >
+  );
 }
 export default BigModal;

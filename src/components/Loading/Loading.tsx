@@ -5,18 +5,16 @@ import style from './style.less';
 
 const Loading: React.FC = () => {
 
-    return (
-        <>
-            <div className={styles.mainContainer}>
-                <div className={styles.pageContainer}>
-                    <Svga
-                        src={'/images/parami.svga'}
-                        className={style.loadingContainer}
-                    />
-                </div>
-            </div>
-        </>
-    )
+  return (
+    <div className={styles.mainContainer}>
+      <div className={styles.pageContainer}>
+        <Svga
+          src={'/images/parami.svga'}
+          className={style.loadingContainer}
+        />
+      </div>
+    </div>
+  )
 }
 
 export default Loading;
