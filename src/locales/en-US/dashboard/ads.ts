@@ -21,6 +21,8 @@ export default {
   'dashboard.ads.launch.currentPrice': 'Current Price',
   'dashboard.ads.launch.offer': 'Offer a price',
   'dashboard.ads.launch.offer.tip': 'The bid must be 20% higher than the current price',
+  'dashboard.ads.launch.token': 'Token(Optional)',
+  'dashboard.ads.launch.token.tip': 'The bid must be 20% higher than the current price',
   'dashboard.ads.launch.tip': 'If the bid is successful, it will be exchanged for this KOL\'s token.If the advertising space is bid by other advertisers, the fragments will be automatically redeemed back to AD3. This process may cause losses due to exchange rate fluctuations and handling charges.',
   'dashboard.ads.launch.add': 'Add',
   'dashboard.ads.launch.list': 'List',

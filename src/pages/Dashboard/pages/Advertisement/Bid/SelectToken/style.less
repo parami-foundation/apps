@@ -1,0 +1,100 @@
+.selectContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .selectHeader {
+    border-bottom: 1px solid #dddfe0;
+    padding: 32px;
+    width: 100%;
+
+    .selectHeaderSectionTitle {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+      letter-spacing: -.01em;
+      color: #000;
+
+      .fromNetwork {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        .fromNetworkIcon {
+          height: 24px;
+          width: 24px;
+        }
+      }
+    }
+  }
+
+  .selectWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    color: #061024;
+    font-size: .875rem;
+    line-height: 1.25rem;
+    padding: 32px;
+    width: 100%;
+
+    .selectItem {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      cursor: pointer;
+
+      .itemInfo {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+
+        .itemInfoIcon {
+          height: 32px;
+          width: 32px;
+        }
+
+        .itemNameSymbol {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: flex-start;
+          padding-left: 8px;
+
+          .itemName {
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 900;
+            line-height: 24px;
+          }
+
+          .itemSymbol {
+            color: #b0b4bb;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 16px;
+          }
+        }
+      }
+
+      .itemBalance {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 900;
+        line-height: 24px;
+      }
+    }
+  }
+}

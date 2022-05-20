@@ -29,7 +29,6 @@ const Create: React.FC<{
   const [selectModal, setSelectModal] = useState<boolean>(false);
   const [tokenAmount, setTokenAmount] = useState<string>('');
 
-
   const tagInputRef = useRef<Input>(null);
 
   const intl = useIntl();
