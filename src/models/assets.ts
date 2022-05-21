@@ -83,7 +83,6 @@ export default () => {
                 icon,
               });
             }
-            console.log(1, assets);
             setAssets(assets);
             setAssetsArr([...assets?.values()]);
           });
