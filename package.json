@@ -6,7 +6,7 @@
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",
-    "build:stage": "cross-env NODE_ENV=development umi build --env=stage",
+    "build:env": "cross-env REACT_APP_ENV=dev MOCK=none UMI_ENV=dev umi build",
     "deploy": "yarn build && yarn gh-pages",
     "dev": "yarn start:dev",
     "gh-pages": "gh-pages -d dist",

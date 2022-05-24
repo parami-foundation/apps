@@ -3,41 +3,30 @@
 Install `node_modules`:
 
 ```bash
-npm install
-```
-
-or
-
-```bash
 yarn
 ```
 
 ### Start project
 
+#### for app.parami.io
 ```bash
-npm start
+yarn start
+```
+#### for staging.parami.io
+```bash
+yarn dev
 ```
 
 ### Build project
 
+#### for app.parami.io
 ```bash
-npm run build
+yarn build
+```
+#### for staging.parami.io
+```bash
+yarn build:dev
 ```
 
-### Check code style
 
-```bash
-npm run lint
-```
-
-You can also use script to auto fix some lint error:
-
-```bash
-npm run lint:fix
-```
-
-### Test code
-
-```bash
-npm test
-```
+You may want to put `127.0.0.1 app.parami.io` or `127.0.0.1 staging.parami.io` into your `HOSTS` when you are coding.
