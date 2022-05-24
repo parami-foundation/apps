@@ -4,12 +4,12 @@ import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, notification } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
-import { contractAddresses } from '../config';
-import { useModel } from "@@/plugin-model/useModel";
-import type { BigNumber } from "ethers";
-import { ethers } from "ethers";
-import WrapperABI from "../abi/ParamiHyperlink.json";
-import type { JsonRpcSigner } from "@ethersproject/providers";
+import { registryAddresses } from '../config';
+import { useModel } from '@@/plugin-model/useModel';
+import { BigNumber, ethers } from 'ethers';
+import RegistryABI from '../abi/ERC721WRegistry.json';
+import WContractABI from '../abi/ERC721WContract.json';
+import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 
 const ImportNFTModal: React.FC<{
@@ -34,51 +34,57 @@ const ImportNFTModal: React.FC<{
 
   const coverRef: any = useRef();
 
-  const getNfts = async (signer: JsonRpcSigner) => {
-    const wrapContract = new ethers.Contract(contractAddresses.wrap[1], WrapperABI.abi, signer);
-    const balanceKinds: BigNumber = await wrapContract.balanceOf(Account);
+  const getNftsOfSigner = async (signer: JsonRpcSigner): Promise<Erc721[]> => {
+    const registry = new ethers.Contract(registryAddresses, RegistryABI.abi, signer);
+    const wrappedContracts: string[] = await registry.getWrappedContracts();
+    const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
+    console.debug('wrapped contracts', wContracts);
 
-    if (!balanceKinds) {
-      setLoading(false);
-      return [];
-    }
+    // TODO: (ruibin) if we have a lots of wrapped contracts, performance coule be degraded.
+    const results: Erc721[][] = await Promise.all(
+      wContracts.map(async (address) => {
+        const wContract = new ethers.Contract(address, WContractABI.abi, signer);
+        const [balance, name]: [BigNumber, string] = await Promise.all([
+          wContract.balanceOf(signer.getAddress()),
+          wContract.name(),
+        ]);
+        console.debug('balance, name', balance, name);
 
-    const tokenIndexArray: number[] = [];
-    for (let i = 0; i < balanceKinds.toNumber(); i++) {
-      tokenIndexArray.push(i);
-    }
+        const tokenInfo: Promise<Erc721>[] = [];
+        for (let i = 0; i < balance.toNumber(); i++) {
+          tokenInfo.push(
+            (async () => {
+              const tokenId: string = await wContract.tokenByIndex(i);
+              const tokenUri: string = await wContract.tokenURI(tokenId);
+              return {
+                contract: address,
+                tokenId: tokenId,
+                tokenURI: tokenUri,
+                name: name,
+              };
+            })(),
+          );
+        }
+        return await Promise.all(tokenInfo);
+      }),
+    );
 
-    const tokenIdPromises = tokenIndexArray.map(async (i) => {
-      const tokenId = await wrapContract?.tokenOfOwnerByIndex(Account, i);
-
-      if (parseInt(tokenId) == NaN) {
-        return -1;
-      }
-      return tokenId;
-    });
-
-    const tokenIds = await Promise.all(tokenIdPromises);
-
-    const positionPromises = tokenIds.map(async (tokenId) => {
-      const name = await wrapContract?.getOriginalName(tokenId);
-      const tokenURI = await wrapContract?.tokenURI(tokenId);
-      const token = {
-        tokenId,
-        name,
-        tokenURI,
-      }
-      return token;
-    });
-    const data = await Promise.all(positionPromises);
-    setLoading(false);
-    return data;
+    return results.flatMap((r) => r);
   };
 
-  const importNft = async (tokenID: string, preTx?: boolean, account?: string) => {
+  const importNft = async (item: Erc721, preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       setSubmitLoading(true);
       try {
-        const info: any = await PortNFT(passphrase, wallet?.keystore, 'Ethereum', contractAddresses.wrap[1], tokenID, preTx, account);
+        const info: any = await PortNFT(
+          passphrase,
+          wallet?.keystore,
+          'Ethereum',
+          item.contract,
+          item.tokenId,
+          preTx,
+          account,
+        );
         setSubmitLoading(false);
         setImportModal(false);
         if (preTx && account) {
@@ -86,6 +92,7 @@ const ImportNFTModal: React.FC<{
         }
         getNFTs();
       } catch (e: any) {
+        console.log(e);
         notification.error({
           message: intl.formatMessage({ id: e }),
           duration: null,
@@ -111,7 +118,11 @@ const ImportNFTModal: React.FC<{
       if (!Provider || !Signer) {
         return;
       }
-      getNfts(Signer).then(r => setTokenData(r));
+       getNftsOfSigner(Signer).then((r) => {
+        console.debug("nfts of signer", r);
+        setTokenData(r);
+        setLoading(false);
+      });
     }
   }, [Account, Provider, Signer, ChainId]);
 
@@ -141,11 +152,12 @@ const ImportNFTModal: React.FC<{
             </div>
           ) : (
             <div className={style.nftsList}>
-              {tokenData.map((item: any) => {
-                const json = Buffer.from(item.tokenURI.substring(29), 'base64').toString('utf8');
-                const result = JSON.parse(json);
+              {tokenData.map((item: Erc721) => {
+                // FIXME: (ruibin) handle different tokenUri schemes here: base64, image uri, ipfs uri.
+                // const json = Buffer.from(item.tokenURI.substring(29), 'base64').toString('utf8');
+                // const result = JSON.parse(json);
                 return (
-                  <div className={style.nftItem}>
+                  <div className={style.nftItem} key={item.contract + item.tokenId}>
                     <div className={style.card}>
                       <div className={style.cardWrapper}>
                         <div className={style.cardBox}>
@@ -153,7 +165,7 @@ const ImportNFTModal: React.FC<{
                             className={style.cover}
                             ref={coverRef}
                             style={{
-                              backgroundImage: `url(${result?.image})`,
+                              // backgroundImage: `url(${result?.image})`,
                               height: coverWidth,
                               minHeight: '20vh',
                             }}
@@ -177,7 +189,7 @@ const ImportNFTModal: React.FC<{
                                 size='middle'
                                 loading={submitLoading}
                                 onClick={async () => {
-                                  await importNft(item?.tokenID)
+                                  await importNft(item);
                                 }}
                               >
                                 {intl.formatMessage({
