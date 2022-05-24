@@ -1,7 +1,7 @@
 import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/HTTP";
 import { GetUserInfo, DrylySellToken } from "@/services/parami/RPC";
-import { OwnerDidOfNft, tmpGetAssetsList } from "@/services/subquery/subquery";
+import { OwnerDidOfNft, getAssetsList } from "@/services/subquery/subquery";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
@@ -19,7 +19,7 @@ export default () => {
       return;
     }
  
-    const entries = await tmpGetAssetsList(wallet.did!);
+    const entries = await getAssetsList(wallet.did!);
     if (!!entries) {
       if(entries.length===0){
         setAssetsArr([]);
