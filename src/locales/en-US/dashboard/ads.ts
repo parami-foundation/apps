@@ -2,7 +2,7 @@ export default {
   'dashboard.ads.title': 'Advertisement',
   'dashboard.ads.create': 'Create Advertisement',
   'dashboard.ads.create.budget': 'Budget',
-  'dashboard.ads.create.token': 'Token',
+  'dashboard.ads.create.token': 'Second Token',
   'dashboard.ads.create.tag': 'Tag',
   'dashboard.ads.create.tag.new': 'New Tag',
   'dashboard.ads.create.metadata': 'Metadata',

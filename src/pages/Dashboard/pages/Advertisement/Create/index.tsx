@@ -144,7 +144,7 @@ const Create: React.FC<{
           <div className={styles.title}>
             {intl.formatMessage({
               id: 'dashboard.ads.create.budget',
-            })}
+            })}(AD3)
           </div>
           <div className={styles.value}>
             <Input

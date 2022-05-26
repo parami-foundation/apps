@@ -1,6 +1,6 @@
 import React from 'react';
 import style from './style.less';
-import { useIntl } from 'umi';
+import { useIntl, useModel } from 'umi';
 import { Image } from 'antd';
 import BigModal from '@/components/ParamiModal/BigModal';
 
@@ -10,7 +10,7 @@ const SelectToken: React.FC<{
 }> = ({ selectModal, setSelectModal }) => {
 
   const intl = useIntl();
-
+  const {assets} = useModel('dashboard.assets');
   return (
     <BigModal
       title={undefined}
