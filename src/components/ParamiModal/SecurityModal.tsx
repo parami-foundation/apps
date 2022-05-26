@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Divider, Input, Modal, Tooltip, Typography } from 'antd';
+import { Alert, Button, Input, Modal, Tooltip, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import styles from './style.less';
 import AD3 from '../Token/AD3';
@@ -157,49 +157,50 @@ const SecurityModal: React.FC<{
             />
           </div>
         </div>
-        <Divider />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '100%',
-        }}
-      >
-        <div className={styles.codeInput}>
-          <div className={styles.verifyForm}>
-            <span className={passphrase?.slice(0) && !passphrase?.slice(1, 5) && styles.highLight}>
-              {passphrase?.slice(0, 1).replace(/[^]/, '✱')}
-            </span>
-            <span className={passphrase?.slice(1) && !passphrase?.slice(2, 5) && styles.highLight}>
-              {passphrase?.slice(1, 2).replace(/[^]/, '✱')}
-            </span>
-            <span className={passphrase?.slice(2, 3) && !passphrase?.slice(3, 5) && styles.highLight}>
-              {passphrase?.slice(2, 3).replace(/[^]/, '✱')}
-            </span>
-            <span className={passphrase?.slice(3, 4) && !passphrase?.slice(4, 5) && styles.highLight}>
-              {passphrase?.slice(3, 4).replace(/[^]/, '✱')}
-            </span>
-            <span className={passphrase?.slice(4, 5) && !passphrase?.slice(5) && styles.highLight}>
-              {passphrase?.slice(4, 5).replace(/[^]/, '✱')}
-            </span>
-            <span className={passphrase?.slice(5) && styles.highLight}>{passphrase?.slice(5).replace(/[^]/, '✱')}</span>
+      {!wallet?.passphrase && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '100%',
+          }}
+        >
+          <div className={styles.codeInput}>
+            <div className={styles.verifyForm}>
+              <span className={passphrase?.slice(0) && !passphrase?.slice(1, 5) && styles.highLight}>
+                {passphrase?.slice(0, 1).replace(/[^]/, '✱')}
+              </span>
+              <span className={passphrase?.slice(1) && !passphrase?.slice(2, 5) && styles.highLight}>
+                {passphrase?.slice(1, 2).replace(/[^]/, '✱')}
+              </span>
+              <span className={passphrase?.slice(2, 3) && !passphrase?.slice(3, 5) && styles.highLight}>
+                {passphrase?.slice(2, 3).replace(/[^]/, '✱')}
+              </span>
+              <span className={passphrase?.slice(3, 4) && !passphrase?.slice(4, 5) && styles.highLight}>
+                {passphrase?.slice(3, 4).replace(/[^]/, '✱')}
+              </span>
+              <span className={passphrase?.slice(4, 5) && !passphrase?.slice(5) && styles.highLight}>
+                {passphrase?.slice(4, 5).replace(/[^]/, '✱')}
+              </span>
+              <span className={passphrase?.slice(5) && styles.highLight}>{passphrase?.slice(5).replace(/[^]/, '✱')}</span>
+            </div>
+            <Input.Password
+              autoFocus
+              autoComplete="new-password"
+              size="large"
+              className={styles.verifyInput}
+              onChange={inputVerify}
+              value={passphrase}
+              disabled={submitting}
+              maxLength={6}
+              visibilityToggle={false}
+            />
           </div>
-          <Input.Password
-            autoFocus
-            autoComplete="new-password"
-            size="large"
-            className={styles.verifyInput}
-            onChange={inputVerify}
-            value={passphrase}
-            disabled={submitting}
-            maxLength={6}
-            visibilityToggle={false}
-          />
         </div>
-      </div>
+      )}
     </Modal>
   );
 };

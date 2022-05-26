@@ -1,5 +1,6 @@
-const umi_env=process.env.UMI_ENV;
-const isDev: boolean = umi_env?umi_env==='dev':false;
+const umi_env = process.env.UMI_ENV;
+const isDev: boolean = umi_env ? umi_env === 'dev' : false;
+
 export const config = {
   "const": {
     "minimalCharge": "100000000000000000",

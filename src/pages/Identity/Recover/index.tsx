@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccess, useModel, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import NotSupport from '../NotSupport';
-import InputLink from './components/InputLink';
+import InputMnemonic from './components/InputMnemonic';
 import SelectMode from './components/SelectMode';
 import config from '@/config/config';
 import isiOSSafari from '@/utils/isSafaiApp';
@@ -59,7 +59,7 @@ const Recover: React.FC = () => {
           <NotSupport />
         }
         {step === 1 && (
-          <InputLink
+          <InputMnemonic
             mnemonic={mnemonic}
             setStep={setStep}
             setAccount={setAccount}
