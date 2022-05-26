@@ -284,6 +284,7 @@ const Trade: React.FC<{
 							size='large'
 							shape='round'
 							className={style.submitButton}
+							disabled={!flat}
 							onClick={() => {
 								setSecModal(true);
 							}}
