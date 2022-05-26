@@ -28,6 +28,7 @@ const Bid: React.FC<{
   const [confirmNFT, setConfirmNFT] = useState<boolean>(false);
   const [selectModal, setSelectModal] = useState<boolean>(false);
   const [tokenAmount, setTokenAmount] = useState<string>('');
+  const [tokenSelect, setTokenSelect] = useState<any>();
 
   const intl = useIntl();
   const { Search } = Input;
@@ -299,6 +300,7 @@ const Bid: React.FC<{
       <SelectToken
         selectModal={selectModal}
         setSelectModal={setSelectModal}
+        setTokenSelect={setTokenSelect}
       />
     </>
   )

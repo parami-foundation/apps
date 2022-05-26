@@ -28,6 +28,7 @@ const Create: React.FC<{
   const [createTag, setCreateTag] = useState<boolean>(false);
   const [selectModal, setSelectModal] = useState<boolean>(false);
   const [tokenAmount, setTokenAmount] = useState<string>('');
+  const [tokenSelect, setTokenSelect] = useState<any>();
 
   const tagInputRef = useRef<Input>(null);
 
@@ -430,6 +431,7 @@ const Create: React.FC<{
       <SelectToken
         selectModal={selectModal}
         setSelectModal={setSelectModal}
+        setTokenSelect={setTokenSelect}
       />
     </>
   )

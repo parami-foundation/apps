@@ -7,10 +7,12 @@ import BigModal from '@/components/ParamiModal/BigModal';
 const SelectToken: React.FC<{
   selectModal: boolean;
   setSelectModal: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ selectModal, setSelectModal }) => {
+  setTokenSelect: React.Dispatch<any>;
+}> = ({ selectModal, setSelectModal, setTokenSelect }) => {
 
   const intl = useIntl();
-  const {assets} = useModel('dashboard.assets');
+  const { assetsArr } = useModel('dashboard.assets');
+
   return (
     <BigModal
       title={undefined}
@@ -26,26 +28,34 @@ const SelectToken: React.FC<{
             </div>
           </div>
           <div className={style.selectWrapper}>
-            <div className={style.selectItem}>
-              <div className={style.itemInfo}>
-                <Image
-                  src='/images/crypto/usdt-circle.svg'
-                  preview={false}
-                  className={style.itemInfoIcon}
-                />
-                <div className={style.itemNameSymbol}>
-                  <div className={style.itemName}>
-                    USDT
-                  </div>
-                  <div className={style.itemSymbol}>
-                    Tether USD
+            {!!assetsArr && assetsArr.map((asset: any) => (
+              <div
+                className={style.selectItem}
+                onClick={() => {
+                  setTokenSelect(asset);
+                  setSelectModal(false);
+                }}
+              >
+                <div className={style.itemInfo}>
+                  <Image
+                    src={asset?.icon}
+                    preview={false}
+                    className={style.itemInfoIcon}
+                  />
+                  <div className={style.itemNameSymbol}>
+                    <div className={style.itemName}>
+                      {asset?.symbol}
+                    </div>
+                    <div className={style.itemSymbol}>
+                      {asset?.token}
+                    </div>
                   </div>
                 </div>
+                <div className={style.itemBalance}>
+                  {asset?.balance}
+                </div>
               </div>
-              <div className={style.itemBalance}>
-                0
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       }
