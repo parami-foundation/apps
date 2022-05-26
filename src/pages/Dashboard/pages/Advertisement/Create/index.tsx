@@ -1,14 +1,15 @@
-import React, { useRef } from 'react';
-import { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { Image } from 'antd';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Tooltip } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { CreateAds } from '@/services/parami/Advertisement';
 import { CreateTag, ExistTag } from '@/services/parami/Tag';
+import SelectToken from './SelectToken';
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +26,8 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
+  const [selectModal, setSelectModal] = useState<boolean>(false);
+  const [tokenAmount, setTokenAmount] = useState<string>('');
 
   const tagInputRef = useRef<Input>(null);
 
@@ -153,6 +156,43 @@ const Create: React.FC<{
               min={0}
               onChange={(e) => setBudget(Number(e.target.value))}
             />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            {intl.formatMessage({
+              id: 'dashboard.ads.create.token',
+            })}
+            (Optional)
+          </div>
+          <div className={styles.value}>
+            <div className={style.tokenAndAmountDetails}>
+              <div
+                className={style.tokenDetails}
+                onClick={() => {
+                  setSelectModal(true);
+                }}
+              >
+                <Image
+                  src='/images/logo-round-core.svg'
+                  preview={false}
+                  className={style.chainIcon}
+                />
+                <span className={style.tokenDetailsTokenName}>AD3</span>
+                <DownOutlined className={style.tokenDetailsArrow} />
+              </div>
+              <div className={style.amountDetails}>
+                <Input
+                  placeholder='0.00'
+                  type='number'
+                  size='large'
+                  value={tokenAmount}
+                  onChange={(e) => {
+                    setTokenAmount(e.target.value);
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className={styles.field}>
@@ -382,7 +422,14 @@ const Create: React.FC<{
             </Button>
           </>
         }
-        close={() => { setCreateTag(false) }}
+        close={() => {
+          setCreateTag(false)
+        }}
+      />
+
+      <SelectToken
+        selectModal={selectModal}
+        setSelectModal={setSelectModal}
       />
     </>
   )
