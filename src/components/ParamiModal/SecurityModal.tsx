@@ -158,7 +158,7 @@ const SecurityModal: React.FC<{
           </div>
         </div>
       </div>
-      {!wallet?.passphrase && (
+      {!passphrase && (
         <div
           style={{
             display: 'flex',

@@ -16,6 +16,7 @@ export default {
     'account.export.exportMnemonic': 'Export Mnemonic',
     'account.export.exportRecoveryLink': 'Export Recovery Link',
     'account.export.warning': 'Write down and keep them somewhere safe. Anyone with access to it will also have access to your account! No one will ask you for this information, including our customer service.',
+    'account.export.mnemonic.title': 'Here are your mnemonic words',
     'account.security.passphrase.changeSuccess': 'Modified successfully',
     'account.security.title': 'Security',
     'account.security.subtitle': 'Most Secure (Recommended)',

@@ -1,5 +1,5 @@
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
-import { Button, Card, Input, message, notification, Alert } from 'antd';
+import { Button, Card, Input, message, notification, Alert, Divider } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
@@ -97,6 +97,17 @@ const Mnemonic: React.FC = () => {
         visable={modalVisable}
         content={
           <>
+            <Divider>
+              {intl.formatMessage({
+                id: 'account.export.mnemonic.title',
+              })}
+            </Divider>
+            <Input
+              size="large"
+              value={mnemonic}
+              readOnly
+              className={style.secretInput}
+            />
             <Alert
               message={intl.formatMessage({
                 id: 'account.export.warning',
@@ -104,12 +115,6 @@ const Mnemonic: React.FC = () => {
               type="warning"
               className={style.secretAlert}
               showIcon
-            />
-            <Input
-              size="large"
-              value={mnemonic}
-              readOnly
-              className={style.secretInput}
             />
           </>
         }

@@ -1,5 +1,5 @@
-const { decodeAddress, encodeAddress } = require('@polkadot/keyring');
-const { hexToU8a, isHex } = require('@polkadot/util');
+import { decodeAddress, encodeAddress } from '@polkadot/keyring';
+import { hexToU8a, isHex } from '@polkadot/util';
 
 export const isETHAddress = (address: any) => {
     return /^0x[a-fA-F0-9]{40}$/.test(address);
