@@ -8,7 +8,7 @@ export default {
     'stake.add.flowability.title': 'Liquidity Mining',
     'stake.add.flowability.select': 'Select Asset',
     'stake.add.selectAssets': 'Select Asset',
-    'stake.add.number.label': 'Amount',
+    'stake.add.number.label': 'AD3 Amount',
     'stake.add.number.available': 'available',
     'stake.add.number.placeholder': 'No less than 1',
     'stake.all': 'All',

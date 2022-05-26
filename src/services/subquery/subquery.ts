@@ -244,12 +244,12 @@ export async function getStashOfDid(did: string) {
     return data.data.did.stashAccount;
 }
 
-export const getAssetsList = async (account: string) => {
+export const getAssetsList = async (did: string) => {
     const query = `query{
 		members(
 			filter:{
-				id: {
-					includes:"${account}"
+				did: {
+					equalTo:"${did}"
 				}
 			}
 		){
@@ -276,7 +276,3 @@ export const getAssetsList = async (account: string) => {
     return data.data.members.nodes as any[];
 };
 
-export async function tmpGetAssetsList(did: string) {
-    const address = await getStashOfDid(did);
-    return await getAssetsList(address);
-}

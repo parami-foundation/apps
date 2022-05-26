@@ -8,6 +8,10 @@ import routes from './routes';
 const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
+  define:{
+    "process.env.UMI_ENV": process.env.UMI_ENV, // * 本地开发环境：dev，qa环境：qa，生产环境prod
+    "process.env.name": '自定义name',
+  },
   hash: true,
   antd: {},
   dva: {

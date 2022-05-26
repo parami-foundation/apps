@@ -74,10 +74,11 @@ export default () => {
     }
 
     useEffect(() => {
-        if (apiWs && !wallet?.account) {
+        if (!!apiWs && !!wallet?.account) {
             getTokenList();
         }
-    }, [apiWs, !wallet?.account]);
+    }, [apiWs, wallet]);
+
 
     return {
         LPs,
