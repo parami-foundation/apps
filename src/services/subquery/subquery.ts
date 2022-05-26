@@ -52,7 +52,7 @@ export const OwnerDidOfNft = async (nftId: any) => {
   }
 
   const data = await res.json();
-  return data.data.asset.ownerDid;
+  return data.data.asset?.ownerDid;
 };
 
 // 7 days 
