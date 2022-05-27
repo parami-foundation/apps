@@ -13,7 +13,7 @@ import { BuyCurrency, BuyToken } from '@/services/parami/Swap';
 
 const { Title } = Typography;
 
-const Trade: React.FC<{
+const Swap: React.FC<{
 	avatar: string;
 	asset: any;
 	nft: any;
@@ -46,7 +46,7 @@ const Trade: React.FC<{
 						}
 					} catch (e: any) {
 						notification.error({
-							message: e.message,
+							message: e.message || e,
 							duration: null,
 						});
 						setSubmitting(false);
@@ -63,7 +63,7 @@ const Trade: React.FC<{
 						}
 					} catch (e: any) {
 						notification.error({
-							message: e.message,
+							message: e.message || e,
 							duration: null,
 						});
 						setSubmitting(false);
@@ -308,4 +308,4 @@ const Trade: React.FC<{
 	)
 }
 
-export default Trade;
+export default Swap;
