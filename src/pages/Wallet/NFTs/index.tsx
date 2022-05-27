@@ -146,7 +146,14 @@ const NFTs: React.FC = () => {
 								{nftList.map((item: any) => {
 									if (!item.minted) {
 										return (
-											<div className={`${style.nftItem} ${style.unmint}`}>
+											<div
+												className={`${style.nftItem} ${style.unmint}`}
+												onClick={() => {
+													if (item?.deposit < FloatStringToBigInt('1000', 18)) {
+														window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+													}
+												}}
+											>
 												<div className={style.card}>
 													<div className={style.cardWrapper}>
 														<div className={style.cardBox}>
