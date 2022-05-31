@@ -11,6 +11,7 @@ import RegistryABI from '../abi/ERC721WRegistry.json';
 import WContractABI from '../abi/ERC721WContract.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
+import {fetchErc721TokenURIMetaData, normalizeToHttp} from "@/utils/erc721";
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -56,10 +57,11 @@ const ImportNFTModal: React.FC<{
             (async () => {
               const tokenId: string = await wContract.tokenByIndex(i);
               const tokenUri: string = await wContract.tokenURI(tokenId);
+              const metadata = await fetchErc721TokenURIMetaData(tokenUri);
               return {
                 contract: address,
                 tokenId: tokenId,
-                tokenURI: tokenUri,
+                imageUrl: normalizeToHttp(metadata.image),
                 name: name,
               };
             })(),
@@ -153,9 +155,6 @@ const ImportNFTModal: React.FC<{
           ) : (
             <div className={style.nftsList}>
               {tokenData.map((item: Erc721) => {
-                // FIXME: (ruibin) handle different tokenUri schemes here: base64, image uri, ipfs uri.
-                // const json = Buffer.from(item.tokenURI.substring(29), 'base64').toString('utf8');
-                // const result = JSON.parse(json);
                 return (
                   <div className={style.nftItem} key={item.contract + item.tokenId}>
                     <div className={style.card}>
@@ -165,7 +164,7 @@ const ImportNFTModal: React.FC<{
                             className={style.cover}
                             ref={coverRef}
                             style={{
-                              // backgroundImage: `url(${result?.image})`,
+                              backgroundImage: `url(${item.imageUrl})`,
                               height: coverWidth,
                               minHeight: '20vh',
                             }}
