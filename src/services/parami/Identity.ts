@@ -113,7 +113,7 @@ export const QueryAccountFromDid = async (did: string) => {
 	const data = await window.apiWs.query.did.metadata(hex);
 
 	if (!data.isEmpty) {
-		const result = data.toHuman() as Object;
+		const result = data.toHuman() as any;
 		const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
 		return { ...result, avatar, nickname };
 	}
