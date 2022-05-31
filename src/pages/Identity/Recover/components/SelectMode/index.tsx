@@ -75,7 +75,7 @@ const SelectMode: React.FC<{
 
   return (
     <Card className={styles.card}>
-      <img src={'/images/icon/link.svg'} className={style.topIcon} />
+      <img src={'/images/icon/idcard.svg'} className={style.topIcon} />
       <Title
         className={style.title}
       >

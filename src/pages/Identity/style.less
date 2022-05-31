@@ -75,7 +75,7 @@
 
 .description {
   line-height: 150%;
-  margin: 25px 0px;
+  margin: 10px 0px;
   font-size: 16px;
   color: rgb(114, 114, 122);
   font-weight: 400;
@@ -93,11 +93,34 @@
   border-radius: 8px;
   padding: 15px;
 
-  .recoveryLinkInput {
-    line-height: 2rem;
-    font-weight: 900;
-    background-color: rgb(39, 39, 41) !important;
-    color: #fff !important;
+  .seedPhrase {
+    flex-wrap: wrap;
+    user-select: all;
+    display: flex;
+
+    .singlePhrase {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      background: rgb(255, 237, 227);
+      padding: 10px;
+      word-break: break-all;
+      margin: 5px;
+      flex: 1 1 0%;
+      min-width: 180px;
+
+      .singlePhraseIndex {
+        color: #ff9d66;
+        width: 30px;
+        margin-right: 10px;
+      }
+
+      .singlePhraseWord {
+        color: #e75200;
+        font-weight: 900;
+      }
+    }
   }
 
   .copyButton {

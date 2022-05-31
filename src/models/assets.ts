@@ -18,10 +18,10 @@ export default () => {
     if (!apiWs || !wallet?.account) {
       return;
     }
- 
+
     const entries = await getAssetsList(wallet.did!);
     if (!!entries) {
-      if(entries.length===0){
+      if (entries.length === 0) {
         setAssetsArr([]);
       }
       for (const entry of entries) {

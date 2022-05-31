@@ -3,7 +3,7 @@ import styles from '@/pages/wallet.less';
 import NotSupport from '../NotSupport';
 import BeforeStart from './components/BeforeStart';
 import QuickSign from './components/QuickSign';
-import RecoveryLink from './components/RecoveryLink';
+import Mnemonic from './components/Mnemonic';
 import VerifyIdentity from './components/VerifyIdentity';
 import { CreateAccount, CreateMnemonic } from '@/services/parami/Identity';
 import { useAccess, history, useModel } from 'umi';
@@ -104,7 +104,7 @@ const Create: React.FC = () => {
           />
         }
         {step === 2 &&
-          <RecoveryLink
+          <Mnemonic
             mnemonic={mnemonic}
             passphrase={passphrase}
             setStep={setStep}

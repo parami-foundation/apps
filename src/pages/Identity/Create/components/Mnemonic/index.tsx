@@ -12,7 +12,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 
 const { Title } = Typography;
 
-const RecoveryLink: React.FC<{
+const Mnemonic: React.FC<{
   mnemonic: string;
   passphrase: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -22,14 +22,9 @@ const RecoveryLink: React.FC<{
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [copied, setCopied] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [verifyLink, setVerifyLink] = useState<string>();
-
-  const recoverWithLink = `${window.location.origin}/recover/#${encodeURI(
-    mnemonic as string,
-  )}`;
+  const [verifyMnemonic, setVerifyMnemonic] = useState<string>();
 
   const intl = useIntl();
-  const { TextArea } = Input;
 
   // Create Keystore
   const createKeystore = async (password: string) => {
@@ -60,16 +55,9 @@ const RecoveryLink: React.FC<{
   const handleSubmit = async () => {
     setSubmitting(true);
 
-    const messageContent = `${intl.formatMessage({
-      id: 'identity.recoveryLink.sendMessage',
-    }, {
-      link: recoverWithLink,
-    })}`;
-
     const shareData = {
       title: 'Para Metaverse Identity',
-      text: messageContent,
-      url: recoverWithLink
+      text: mnemonic,
     };
 
     setSubmitting(false);
@@ -93,19 +81,24 @@ const RecoveryLink: React.FC<{
   return (
     <>
       <Card className={styles.card}>
-        <img src={'/images/icon/link.svg'} className={style.topIcon} />
+        <img src={'/images/icon/mnemonic.svg'} className={style.topIcon} />
         <Title
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'identity.recoveryLink.title',
+            id: 'identity.mnemonic.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'identity.recoveryLink.description',
+            id: 'identity.mnemonic.description',
           }, {
-            strong: <strong>{intl.formatMessage({ id: 'identity.recoveryLink.description.strong' })}</strong>
+            strong:
+              <strong>
+                {intl.formatMessage({
+                  id: 'identity.mnemonic.description.strong'
+                })}
+              </strong>
           })}
         </p>
         <Divider />
@@ -115,11 +108,11 @@ const RecoveryLink: React.FC<{
             spinning={!mnemonic}
             wrapperClassName={style.recoveryLinkSpinWrapper}
             tip={intl.formatMessage({
-              id: 'identity.recoveryLink.placeholder',
+              id: 'identity.mnemonic.placeholder',
             })}
           >
             <CopyToClipboard
-              text={recoverWithLink}
+              text={mnemonic}
               onCopy={() => {
                 if (!!mnemonic) {
                   message.success(
@@ -131,20 +124,25 @@ const RecoveryLink: React.FC<{
                 }
               }}
             >
-              <TextArea
-                autoSize
-                size="large"
-                placeholder={intl.formatMessage({
-                  id: 'identity.recoveryLink.placeholder',
-                })}
-                value={!mnemonic ? intl.formatMessage({ id: 'identity.recoveryLink.placeholder' }) : recoverWithLink}
-                readOnly
-                className={style.recoveryLinkInput}
-              />
+              <div className={style.seedPhrase}>
+                {mnemonic.split(' ').map((word, index) => (
+                  <span
+                    key={index + 1}
+                    className={style.singlePhrase}
+                  >
+                    <span className={style.singlePhraseIndex}>
+                      {index + 1}
+                    </span>
+                    <span className={style.singlePhraseWord}>
+                      {word}
+                    </span>
+                  </span>
+                ))}
+              </div>
             </CopyToClipboard>
             <Divider />
             <CopyToClipboard
-              text={recoverWithLink}
+              text={mnemonic}
               onCopy={() => {
                 if (!!mnemonic) {
                   message.success(
@@ -164,7 +162,7 @@ const RecoveryLink: React.FC<{
                 icon={<CopyOutlined />}
               >
                 {intl.formatMessage({
-                  id: 'identity.recoveryLink.copyRecoveryLink',
+                  id: 'identity.mnemonic.copyMnemonics',
                 })}
               </Button>
             </CopyToClipboard>
@@ -206,21 +204,21 @@ const RecoveryLink: React.FC<{
       <BigModal
         visable={showModal}
         title={intl.formatMessage({
-          id: 'identity.recoveryLink.verifyRecoveryLink',
+          id: 'identity.mnemonic.verifyMnemonics',
         })}
         content={
           <>
             <div className={style.field}>
               <Title level={4}>
                 {intl.formatMessage({
-                  id: 'identity.recoveryLink.verifyRecoveryLink.description',
+                  id: 'identity.mnemonic.verifyMnemonics.description',
                 })}
               </Title>
               <Input
                 size="large"
                 bordered
-                onChange={(e) => setVerifyLink(e.target.value)}
-                placeholder={`${window.location.origin}/recover/#...`}
+                onChange={(e) => setVerifyMnemonic(e.target.value)}
+                placeholder={'Enter your mnemonic likes apple banana orange...'}
               />
             </div>
             <div className={style.buttons}>
@@ -230,7 +228,7 @@ const RecoveryLink: React.FC<{
                 shape="round"
                 size="large"
                 className={style.button}
-                disabled={verifyLink !== recoverWithLink}
+                disabled={verifyMnemonic !== mnemonic}
                 onClick={() => handleSubmit()}
                 loading={submitting}
               >
@@ -248,4 +246,4 @@ const RecoveryLink: React.FC<{
   );
 };
 
-export default RecoveryLink;
+export default Mnemonic;

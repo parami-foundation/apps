@@ -27,12 +27,21 @@ const Support: React.FC<{
 
 	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
-			const didHexString = didToHex(did);
-			const info: any = await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
-			setModal(false);
-			setSubmitting(false);
-			if (preTx && account) {
-				return info
+			try {
+				const didHexString = didToHex(did);
+				const info: any = await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+				setModal(false);
+				setSubmitting(false);
+				if (preTx && account) {
+					return info
+				}
+			} catch (e: any) {
+				notification.error({
+					message: e.message || e,
+					duration: null,
+				});
+				setSubmitting(false);
+				return;
 			}
 		} else {
 			notification.error({

@@ -4,7 +4,6 @@ import { useIntl, useModel } from 'umi';
 import style from '../style.less';
 import Skeleton from '@/components/Skeleton';
 import Mnemonic from './Mnemonic';
-import RecoveryLink from './RecoveryLink';
 
 const Export: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -34,7 +33,6 @@ const Export: React.FC = () => {
 					<>
 						<div className={style.export}>
 							<Mnemonic />
-							<RecoveryLink />
 						</div>
 					</>
 				}

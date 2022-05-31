@@ -5,7 +5,7 @@ import styles from '@/pages/wallet.less';
 import style from '../../../style.less';
 import { QueryAccountExist, QueryAccountFromMnemonic, QueryDID } from '@/services/parami/Identity';
 
-const InputLink: React.FC<{
+const InputMnemonic: React.FC<{
   mnemonic: string;
   setStep: React.Dispatch<React.SetStateAction<number>>;
   setAccount: React.Dispatch<React.SetStateAction<string>>;
@@ -127,49 +127,38 @@ const InputLink: React.FC<{
           maxHeight: '100%',
         }}
       >
-        <img src={'/images/icon/link.svg'} className={style.topIcon} />
+        <img src={'/images/icon/mnemonic.svg'} className={style.topIcon} />
         <Title
           className={style.title}
         >
           {intl.formatMessage({
-            id: 'identity.selectMode.title',
+            id: 'identity.inputMnemonic.title',
           })}
         </Title>
         <p className={style.description}>
           {intl.formatMessage({
-            id: 'identity.selectMode.description',
+            id: 'identity.inputMnemonic.description',
           })}
         </p>
         <Divider />
         <div className={style.field}>
           <Title level={4}>
             {intl.formatMessage({
-              id: 'identity.selectMode.inputURL',
+              id: 'identity.inputMnemonic.inputURL',
             })}
           </Title>
           <Input
             size="large"
             bordered
             onChange={(e) => {
-              const inputHash = e.target.value.indexOf('#') > -1 ? e.target.value.split('#')[1] : null;
               const inputMnenomics = e.target.value.indexOf(' ') > -1 ? e.target.value : null;
-              if (!!inputHash) {
-                if (inputHash.indexOf(';') > -1) {
-                  const mnemonicArray = inputHash.split(';');
-                  importMnemonic = mnemonicArray[1]?.replace(/%20/g, ' ');
-                  setMnemonic(importMnemonic);
-                } else {
-                  importMnemonic = inputHash?.replace(/%20/g, ' ');
-                  setMnemonic(importMnemonic);
-                }
-              }
               if (!!inputMnenomics) {
                 importMnemonic = inputMnenomics;
                 setMnemonic(inputMnenomics);
               }
             }}
             disabled={loading}
-            placeholder={`Mnemonics or ${window.location.origin}/recover/#...`}
+            placeholder={'Enter your mnemonic likes apple banana orange...'}
           />
         </div>
         <div className={style.buttons}>
@@ -193,4 +182,4 @@ const InputLink: React.FC<{
   );
 };
 
-export default InputLink;
+export default InputMnemonic;
