@@ -1,6 +1,7 @@
 import { Keyring } from '@polkadot/api';
 import { DecodeKeystoreWithPwd } from './Crypto';
 import { subCallback } from './Subscription';
+import { BigNumber }  from "ethers";
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -78,8 +79,8 @@ export const KickNFT = async (password: string, keystore: string, preTx?: boolea
   return await subCallback(ex, payUser);
 };
 
-export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.port(network, namespace, tokenID);
+export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: BigNumber, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.port(network, namespace, tokenID.toHexString());
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);

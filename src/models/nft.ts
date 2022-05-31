@@ -1,8 +1,9 @@
 import { useModel } from 'umi';
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import wrapABI from '@/pages/Wallet/NFTs/abi/ParamiHyperlink.json';
+import wrapABI from '@/pages/Wallet/NFTs/abi/ERC721WContract.json';
 import { infuraProvider } from '@/config/web3provider';
+import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
 
 export default () => {
 	const apiWs = useModel('apiWs');
@@ -56,12 +57,14 @@ export default () => {
 					deposit: BigInt(deposit.toString()),
 				});
 			} else {
-				const provider = new ethers.providers.JsonRpcProvider(infuraProvider[4]);
-				const wrapContract = await new ethers.Contract(external?.namespace, wrapABI.abi, provider);
-				const tokenURI = await wrapContract?.tokenURI(external?.token);
-				const name = await wrapContract?.getOriginalName(external?.token);
-				const json = Buffer.from(tokenURI?.substring(29), 'base64').toString('utf8');
-				const result = JSON.parse(json);
+        const provider = new ethers.providers.JsonRpcProvider(infuraProvider[4]);
+		    const wrapContract = new ethers.Contract(external?.namespace, wrapABI.abi, provider);
+
+				const [tokenURI, name] = await Promise.all([wrapContract.tokenURI(external?.token), wrapContract.name()]);
+        const tokenUriMetaData = await fetchErc721TokenURIMetaData(tokenURI);
+        console.log("token uri meta data", tokenUriMetaData);
+
+
 				portNFTMap.set(nftId, {
 					id: nftId,
 					name: asset?.name || name,
@@ -70,7 +73,7 @@ export default () => {
 					network: external?.network,
 					namespace: external?.namespace,
 					token: external?.token,
-					tokenURI: result?.image,
+					tokenURI: normalizeToHttp(tokenUriMetaData.image),
 					deposit: BigInt(deposit.toString()),
 				});
 			}

@@ -1,7 +1,8 @@
 type Erc721 = {
+    contract: string,
     tokenId: string,
     name: string,
-    tokenURI: string
+    imageUrl: string
 };
 
 type Selected = {
