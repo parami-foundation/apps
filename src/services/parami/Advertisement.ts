@@ -23,7 +23,7 @@ export const GetSlotAdOf = async (nftId: string): Promise<any> => {
         return null;
     }
     const res = slot.toHuman() as any;
-    const ad = await window.apiWs.query.ad.metadata(res.ad);
+    const ad = await window.apiWs.query.ad.metadata(res.adId);
     if (ad.isEmpty) {
         return null;
     }
