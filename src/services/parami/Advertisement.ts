@@ -45,10 +45,10 @@ export const GetSlotAdOfByAssetID = async (assetID: string): Promise<any> => {
     return res;
 };
 
-export const CreateAds = async (budget: string, tags: any[], metadata: string, rewardRate: string, lifetime: number, account: any) => {
+export const CreateAds = async (budget: string, tags: any[], metadata: string, rewardRate: string, lifetime: number, payoutBase: string, payoutMin: string, payoutMax: string, account: any) => {
     const ddl = await window.apiWs.query.system.number();
     const injector = await web3FromSource(account.meta.source);
-    const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl));
+    const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl), payoutBase, payoutMin, payoutMax);
 
     return await subWeb3Callback(tx, injector, account);
 };
