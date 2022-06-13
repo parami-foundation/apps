@@ -147,8 +147,8 @@ export const getChartsData = async (ADid: string, budget: bigint) => {
   let viewer = 0;
   let index = 0;
   for (let i = 0; i < result.length; i++) {
-    cost += BigInt(result[i].reward.replaceAll(',', ''));
-    cost += BigInt(result[i].award.replaceAll(',', ''));
+    cost += BigInt(result[i].reward?.replaceAll(',', ''));
+    cost += BigInt(result[i].award?.replaceAll(',', ''));
     viewer++;
     const timestamp = result[i].timestampInSecond;
     tmp.time = formatTimestamp(timestamp);
@@ -246,7 +246,7 @@ export async function getStashOfDid(did: string) {
 }
 
 export const getAssetsList = async (did: string) => {
-    const query = `query{
+  const query = `query{
 		members(
 			filter:{
 				did: {

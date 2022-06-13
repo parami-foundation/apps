@@ -32,7 +32,7 @@ export function CompareArray(A: any[], B: any[]) {
 }
 
 export const guid = () => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'?.replace(/[xy]/g, function (c) {
     const r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
@@ -267,11 +267,11 @@ export const inputToBn = (input: string) => {
       result = new BN(-1);
     }
 
-    const div = new BN(input.toString().replace(/\.\d*$/, ''));
+    const div = new BN(input.toString()?.replace(/\.\d*$/, ''));
     const modString = input
       .toString()
-      .replace(/^\d+\./, '')
-      .substr(0, decimals);
+      ?.replace(/^\d+\./, '')
+      ?.substr(0, decimals);
     const mod = new BN(modString);
 
     result = div
@@ -280,7 +280,7 @@ export const inputToBn = (input: string) => {
 
     return result;
   }
-  result = new BN(input.toString().replace(/[^\d]/g, '')).mul(BN_TEN.pow(siPower));
+  result = new BN(input.toString()?.replace(/[^\d]/g, '')).mul(BN_TEN.pow(siPower));
 
   return result;
 };

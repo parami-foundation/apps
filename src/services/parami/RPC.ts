@@ -30,8 +30,8 @@ export const DrylySellCurrency = async (tokenId: string, currency: string) => {
 };
 
 export const GetAdRemain = async (slot: any) => {
-  const remainToken = await (window.apiWs.rpc as any).swap.drylySellCurrency(slot.nft, slot.remain.replace(/,/g, ''));
-  return BigInt(remainToken.toHuman()) + BigInt(slot.tokens.replace(/,/g, ''));
+  const remainToken = await (window.apiWs.rpc as any).swap.drylySellCurrency(slot.nft, slot.remain?.replace(/,/g, ''));
+  return BigInt(remainToken.toHuman()) + BigInt(slot.fractionsRemain?.replace(/,/g, ''));
 };
 
 export const DrylyAddLiquidity = async (assetId: string, amount: string) => {

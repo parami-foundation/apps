@@ -35,6 +35,7 @@ const Advertisement: React.FC<{
 	const [passphrase, setPassphrase] = useState<string>('');
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [guide, setGuide] = useState<boolean>(true);
+	const [stamp, setStamp] = useState<string>('');
 
 	const intl = useIntl();
 
@@ -46,7 +47,6 @@ const Advertisement: React.FC<{
 	const scopes = scope ?? '';
 	const sign = scopes.indexOf('sign') > -1;
 
-	let stamp: string = '';
 	const handleStamp = async () => {
 		if (!!wallet && !!wallet?.keystore) {
 			const timestamp = Date.now() / 1000 | 0;
@@ -67,12 +67,12 @@ const Advertisement: React.FC<{
 			const plain = `${base64url(header)}.${base64url(payload)}`;
 
 			if (!sign) {
-				stamp = `${plain}.`;
+				setStamp(`${plain}.`);
 				return;
 			}
 
 			const instanceKeyring = new Keyring({ type: 'sr25519' });
-			const decodedMnemonic = DecodeKeystoreWithPwd(passphrase, wallet?.keystore);
+			const decodedMnemonic = DecodeKeystoreWithPwd(wallet?.passphrase || passphrase, wallet?.keystore);
 			if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
 				message.error(
 					intl.formatMessage({
@@ -86,7 +86,7 @@ const Advertisement: React.FC<{
 			const signature = keypair.sign(plain);
 			const ticket = `${plain}.${base64url(signature)}`;
 
-			stamp = ticket;
+			setStamp(ticket);
 		} else {
 			notification.error({
 				key: 'accessDenied',
@@ -109,8 +109,10 @@ const Advertisement: React.FC<{
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
 
 	useEffect(() => {
-		handleStamp();
-	}, []);
+		if (!!wallet && !!wallet?.keystore) {
+			handleStamp();
+		}
+	}, [wallet, wallet?.keystore]);
 
 	useEffect(() => {
 		if (!loading) {
