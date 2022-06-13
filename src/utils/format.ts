@@ -98,14 +98,14 @@ export function FloatStringToBigInt(value: string, decimals: number): bigint {
 
 export const base64url = (buffer) => {
 	return Buffer.from(buffer)
-		.toString('base64')
-		.replace(/\+/g, '-')
-		.replace(/\//g, '_')
-		.replace(/\=+$/m, '');
+		?.toString('base64')
+		?.replace(/\+/g, '-')
+		?.replace(/\//g, '_')
+		?.replace(/\=+$/m, '');
 };
 
 export const deleteComma = (value: string) => {
-	return value.replace(/,/g, '');
+	return value?.replace(/,/g, '');
 };
 
 export const formatBoolean = (value: string | null | undefined) => {

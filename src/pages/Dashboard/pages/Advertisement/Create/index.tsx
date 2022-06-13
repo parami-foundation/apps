@@ -1,15 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Image } from 'antd';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Tooltip } from 'antd';
-import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { CreateAds } from '@/services/parami/Advertisement';
 import { CreateTag, ExistTag } from '@/services/parami/Tag';
-import SelectToken from './SelectToken';
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +15,9 @@ const Create: React.FC<{
   const { dashboard } = useModel('currentUser');
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [budget, setBudget] = useState<number>(0);
+  const [payoutBase, setPayoutBase] = useState<number>(0);
+  const [payoutMin, setPayoutMin] = useState<number>(0);
+  const [payoutMax, setPayoutMax] = useState<number>(0);
   const [tags, setTags] = useState<string[]>([]);
   const [metadata, setMetadata] = useState<string>();
   const [rewardRate, setRewardRate] = useState<number>(0);
@@ -26,9 +27,6 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
-  const [selectModal, setSelectModal] = useState<boolean>(false);
-  const [tokenAmount, setTokenAmount] = useState<string>('');
-  const [tokenSelect, setTokenSelect] = useState<any>();
 
   const tagInputRef = useRef<Input>(null);
 
@@ -116,7 +114,7 @@ const Create: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), JSON.parse(dashboard?.accountMeta));
+        await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -157,43 +155,6 @@ const Create: React.FC<{
               min={0}
               onChange={(e) => setBudget(Number(e.target.value))}
             />
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.title}>
-            {intl.formatMessage({
-              id: 'dashboard.ads.create.token',
-            })}
-            (Optional)
-          </div>
-          <div className={styles.value}>
-            <div className={style.tokenAndAmountDetails}>
-              <div
-                className={style.tokenDetails}
-                onClick={() => {
-                  setSelectModal(true);
-                }}
-              >
-                <Image
-                  src='/images/logo-round-core.svg'
-                  preview={false}
-                  className={style.chainIcon}
-                />
-                <span className={style.tokenDetailsTokenName}>AD3</span>
-                <DownOutlined className={style.tokenDetailsArrow} />
-              </div>
-              <div className={style.amountDetails}>
-                <Input
-                  placeholder='0.00'
-                  type='number'
-                  size='large'
-                  value={tokenAmount}
-                  onChange={(e) => {
-                    setTokenAmount(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
           </div>
         </div>
         <div className={styles.field}>
@@ -375,6 +336,60 @@ const Create: React.FC<{
             </Select>
           </div>
         </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            {intl.formatMessage({
+              id: 'dashboard.ads.create.payoutBase',
+            })}(Token)
+          </div>
+          <div className={styles.value}>
+            <Input
+              className={styles.withAfterInput}
+              placeholder="0.00"
+              size='large'
+              type='number'
+              maxLength={18}
+              min={0}
+              onChange={(e) => setPayoutBase(Number(e.target.value))}
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            {intl.formatMessage({
+              id: 'dashboard.ads.create.payoutMin',
+            })}(Token)
+          </div>
+          <div className={styles.value}>
+            <Input
+              className={styles.withAfterInput}
+              placeholder="0.00"
+              size='large'
+              type='number'
+              maxLength={18}
+              min={payoutMax}
+              onChange={(e) => setPayoutMin(Number(e.target.value))}
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            {intl.formatMessage({
+              id: 'dashboard.ads.create.payoutMax',
+            })}(Token)
+          </div>
+          <div className={styles.value}>
+            <Input
+              className={styles.withAfterInput}
+              placeholder="0.00"
+              size='large'
+              type='number'
+              maxLength={18}
+              min={0}
+              onChange={(e) => setPayoutMax(Number(e.target.value))}
+            />
+          </div>
+        </div>
         <div
           className={styles.field}
           style={{
@@ -426,12 +441,6 @@ const Create: React.FC<{
         close={() => {
           setCreateTag(false)
         }}
-      />
-
-      <SelectToken
-        selectModal={selectModal}
-        setSelectModal={setSelectModal}
-        setTokenSelect={setTokenSelect}
       />
     </>
   )
