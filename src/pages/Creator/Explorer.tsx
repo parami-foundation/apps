@@ -304,6 +304,7 @@ const Explorer: React.FC = () => {
           >
             <Advertisement
               ad={ad}
+              nftId={params?.nftID}
               viewer={viewer}
               referer={referer}
               asset={asset}
