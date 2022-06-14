@@ -20,6 +20,7 @@ import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
+	nftId: string;
 	viewer: any;
 	referer: any;
 	asset: any;
@@ -28,7 +29,7 @@ const Advertisement: React.FC<{
 	adData: any;
 	remain: bigint;
 	loading: boolean;
-}> = ({ ad, viewer, referer, asset, avatar, did, adData, remain, loading }) => {
+}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain, loading }) => {
 	const { wallet } = useModel('currentUser');
 	const [infoModal, setInfoModal] = useState<boolean>(false);
 	const [chartModal, setChartModal] = useState<boolean>(false);
@@ -103,7 +104,7 @@ const Advertisement: React.FC<{
 			return
 		}
 
-		window.open(`${ad?.link}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}`);
+		window.open(`${ad?.link}&nftId=${nftId}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}`);
 	};
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
