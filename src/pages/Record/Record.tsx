@@ -155,7 +155,7 @@ const Record: React.FC = () => {
   const getRecord = async () => {
     if (!!wallet && !!wallet.did) {
       try {
-        const res: any = await AssetTransactionHistory(wallet?.did);
+        const res: any = await AssetTransactionHistory(wallet?.did, `${wallet?.account}`);
         setAllData(res);
       } catch (e: any) {
         notification.error({
