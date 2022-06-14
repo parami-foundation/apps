@@ -19,7 +19,7 @@ export default () => {
       return;
     }
 
-    const entries = await getAssetsList(wallet.did!);
+    const entries = await getAssetsList(wallet.did!, wallet.account!);
     if (!!entries) {
       if (entries.length === 0) {
         setAssetsArr([]);

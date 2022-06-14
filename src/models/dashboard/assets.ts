@@ -18,7 +18,7 @@ export default () => {
     if (!apiWs) {
       return;
     }
-    const entries = await getAssetsList(dashboard.did!);
+    const entries = await getAssetsList(dashboard.did!, dashboard.account!);
     if (!!entries) {
       if (entries.length === 0) {
         setAssetsArr([]);
