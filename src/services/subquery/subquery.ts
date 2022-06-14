@@ -33,11 +33,15 @@ export const doGraghQuery = async (query: string) => {
 };
 
 export const OwnerDidOfNft = async (nftId: any) => {
-  const query = `query{
-		asset(id: "${nftId}") {
-			ownerDid
-		}
-    }`;
+  const query = `query {
+    nfts(
+      filter: { assetId: { equalTo: "${nftId}" } }
+    ) {
+      nodes {
+        kolDid
+      }
+    }
+  }`;
   const res = await doGraghQuery(query);
 
   // Network exception
@@ -52,7 +56,7 @@ export const OwnerDidOfNft = async (nftId: any) => {
   }
 
   const data = await res.json();
-  return data.data.asset?.ownerDid;
+  return data.data.nfts.nodes[0].kolDid;
 };
 
 // 7 days 
@@ -94,13 +98,13 @@ export const AdvertisementRewards = async (ADid: string) => {
 };
 
 // first 50
-export const AssetTransactionHistory = async (did: string) => {
+export const AssetTransactionHistory = async (did: string, stashAccount: string) => {
   const query = `query {
 		assetTransactions(
 			orderBy: TIMESTAMP_IN_SECOND_DESC
 			first:50
 			filter: 
-			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}] }) {
+			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}, { fromDid: { equalTo: "${stashAccount}" } }, { toDid: { equalTo: "${stashAccount}" }}] }) {
 				nodes {
 				block
 				assetId
@@ -245,14 +249,11 @@ export async function getStashOfDid(did: string) {
   return data.data.did.stashAccount;
 }
 
-export const getAssetsList = async (did: string) => {
+//{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}, { fromDid: { equalTo: "${stashAccount}" } }, { toDid: { equalTo: "${stashAccount}" }}] }
+export const getAssetsList = async (did: string, stashAccount: string) => {
   const query = `query{
 		members(
-			filter:{
-				did: {
-					equalTo:"${did}"
-				}
-			}
+			filter: { or: [{ did: { equalTo:"${did}"}}, { did: { equalTo:"${stashAccount}"}}] }
 		){
 			nodes{
 				id
