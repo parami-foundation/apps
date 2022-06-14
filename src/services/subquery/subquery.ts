@@ -94,13 +94,13 @@ export const AdvertisementRewards = async (ADid: string) => {
 };
 
 // first 50
-export const AssetTransactionHistory = async (did: string) => {
+export const AssetTransactionHistory = async (did: string, stashAccount: string) => {
   const query = `query {
 		assetTransactions(
 			orderBy: TIMESTAMP_IN_SECOND_DESC
 			first:50
 			filter: 
-			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}] }) {
+			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}, { fromDid: { equalTo: "${stashAccount}" } }, { toDid: { equalTo: "${stashAccount}" }}] }) {
 				nodes {
 				block
 				assetId
