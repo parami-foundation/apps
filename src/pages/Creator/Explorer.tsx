@@ -367,6 +367,32 @@ const Explorer: React.FC = () => {
             <div className={style.buttons}>
               <Button
                 block
+                size='large'
+                type='primary'
+                shape='round'
+                className={style.button}
+                onClick={() => {
+                  history.push(config.page.createPage);
+                }}
+              >
+                <div className={style.title}>
+                  {intl.formatMessage({
+                    id: 'index.createAccount',
+                  })}
+                </div>
+                <span className={style.desc}>
+                  {intl.formatMessage({
+                    id: 'index.createAccount.desc',
+                  })}
+                </span>
+              </Button>
+              <Divider>
+                {intl.formatMessage({
+                  id: 'index.or',
+                })}
+              </Divider>
+              <Button
+                block
                 ghost
                 size='large'
                 type='link'
@@ -384,32 +410,6 @@ const Explorer: React.FC = () => {
                 <span className={style.desc}>
                   {intl.formatMessage({
                     id: 'index.importAccount.desc',
-                  })}
-                </span>
-              </Button>
-              <Divider>
-                {intl.formatMessage({
-                  id: 'index.or',
-                })}
-              </Divider>
-              <Button
-                block
-                size='large'
-                type='primary'
-                shape='round'
-                className={style.button}
-                onClick={() => {
-                  history.push(config.page.createPage);
-                }}
-              >
-                <div className={style.title}>
-                  {intl.formatMessage({
-                    id: 'index.createAccount',
-                  })}
-                </div>
-                <span className={style.desc}>
-                  {intl.formatMessage({
-                    id: 'index.createAccount.desc',
                   })}
                 </span>
               </Button>
