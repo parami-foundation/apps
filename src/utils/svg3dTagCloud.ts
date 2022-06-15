@@ -517,4 +517,8 @@ export const SVG3DTagCloud = (element, params) => {
 
     //---
     init();
+
+    return () => {
+        window.removeEventListener('resize', resizeHandler);
+    }
 };
