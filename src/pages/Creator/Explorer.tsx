@@ -8,7 +8,7 @@ import Swap from './Explorer/Swap';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
 import { hexToDid, didToHex, parseAmount } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
-import { Image, notification, Button } from 'antd';
+import { Image, notification, Button, Divider } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/Advertisement';
@@ -363,20 +363,58 @@ const Explorer: React.FC = () => {
           id: 'error.identity.notUser',
         })}
         content={
-          <Button
-            block
-            type='primary'
-            shape='round'
-            size='large'
-            onClick={() => {
-              history.push(config.page.createPage);
-            }}
-          >
-            {intl.formatMessage({
-              id: 'error.identity.notUser.button',
-              defaultMessage: 'Create a new identity',
-            })}
-          </Button>
+          <div className={style.notUser}>
+            <div className={style.buttons}>
+              <Button
+                block
+                ghost
+                size='large'
+                type='link'
+                shape='round'
+                className={`${style.button} ${style.buttonImport}`}
+                onClick={() => {
+                  history.push(config.page.recoverPage);
+                }}
+              >
+                <div className={style.title}>
+                  {intl.formatMessage({
+                    id: 'index.importAccount',
+                  })}
+                </div>
+                <span className={style.desc}>
+                  {intl.formatMessage({
+                    id: 'index.importAccount.desc',
+                  })}
+                </span>
+              </Button>
+              <Divider>
+                {intl.formatMessage({
+                  id: 'index.or',
+                })}
+              </Divider>
+              <Button
+                block
+                size='large'
+                type='primary'
+                shape='round'
+                className={style.button}
+                onClick={() => {
+                  history.push(config.page.createPage);
+                }}
+              >
+                <div className={style.title}>
+                  {intl.formatMessage({
+                    id: 'index.createAccount',
+                  })}
+                </div>
+                <span className={style.desc}>
+                  {intl.formatMessage({
+                    id: 'index.createAccount.desc',
+                  })}
+                </span>
+              </Button>
+            </div>
+          </div>
         }
         close={undefined}
         footer={false}
