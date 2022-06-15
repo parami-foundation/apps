@@ -45,13 +45,17 @@ const Tags: React.FC = () => {
   };
 
   useEffect(() => {
+    let destroy;
     if (allTagsArr) {
       try {
-        SVG3DTagCloud(document.getElementById('tagcloud'), settings);
+        destroy = SVG3DTagCloud(document.getElementById('tagcloud'), settings);
       }
       catch (e) {
         console.log(e)
       }
+    }
+    return () => {
+      destroy && destroy();
     }
   }, [allTagsArr, SVG3DTagCloud]);
 
