@@ -195,14 +195,22 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
-                if (!!ethAccount && !!ethSignedMsg) {
+                let Account: string = '';
+                let SignedMsg: string = '';
+                if (!address && !signed) {
+                  const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
+                  Account = ethAccount;
+                  SignedMsg = ethSignedMsg;
+                  setAddress(ethAccount);
+                  setSigned(ethSignedMsg);
+                }
+                if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
-                    description: ethSignedMsg,
+                    description: signed || SignedMsg,
                     duration: 2
                   });
-                  const info: any = await LinkBlockChain(bindPlatform, ethAccount, ethSignedMsg, passphrase, wallet?.keystore, preTx, account);
+                  const info: any = await LinkBlockChain(bindPlatform, address || Account, signed || SignedMsg, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
                   if (preTx && account) {
                     return info
@@ -231,14 +239,22 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
-                if (!!bscAccount && !!bscSignedMsg) {
+                let Account: string = '';
+                let SignedMsg: string = '';
+                if (!address && !signed) {
+                  const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
+                  Account = bscAccount;
+                  SignedMsg = bscSignedMsg;
+                  setAddress(bscAccount);
+                  setSigned(bscSignedMsg);
+                }
+                if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
-                    description: bscSignedMsg,
+                    description: signed || SignedMsg,
                     duration: 2
                   });
-                  const info: any = await LinkBlockChain(bindPlatform, bscAccount, bscSignedMsg, passphrase, wallet?.keystore, preTx, account);
+                  const info: any = await LinkBlockChain(bindPlatform, address || Account, signed || SignedMsg, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
                   if (preTx && account) {
                     return info
@@ -267,14 +283,22 @@ const BindModal: React.FC<{
           switch (app) {
             case 'sollet':
               try {
-                const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
-                if (!!acct && !!signedMsg) {
+                let Account: string = '';
+                let SignedMsg: string = '';
+                if (!address && !signed) {
+                  const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
+                  Account = acct;
+                  SignedMsg = signedMsg;
+                  setAddress(acct);
+                  setSigned(signedMsg);
+                }
+                if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
-                    description: `0x00${signedMsg}`,
+                    description: `0x00${signed || SignedMsg}`,
                     duration: 2
                   })
-                  const info: any = await LinkBlockChain(bindPlatform, acct, `0x00${signedMsg}`, passphrase, wallet?.keystore, preTx, account);
+                  const info: any = await LinkBlockChain(bindPlatform, address || Account, `0x00${signed || SignedMsg}`, passphrase, wallet?.keystore, preTx, account);
                   setBindModal(false);
                   if (preTx && account) {
                     return info

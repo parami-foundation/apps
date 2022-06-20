@@ -91,7 +91,10 @@ const SecurityModal: React.FC<{
             shape="round"
             size="large"
             className={styles.button}
-            onClick={() => { setVisable(false) }}
+            onClick={() => {
+              setVisable(false);
+              window.location.reload();
+            }}
             loading={submitting}
           >
             {intl.formatMessage({

@@ -20,9 +20,8 @@ const NFTs: React.FC = () => {
 	const [importModal, setImportModal] = useState<boolean>(false);
 	const [mintModal, setMintModal] = useState<boolean>(false);
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-	const [secModal, setSecModal] = useState(false);
-	const [passphrase, setPassphrase] = useState('');
-	const [mode, setMode] = useState<string>('create');
+	const [secModal, setSecModal] = useState<boolean>(false);
+	const [passphrase, setPassphrase] = useState<string>('');
 	const [mintItem, setMintItem] = useState<any>({});
 
 	const intl = useIntl();
@@ -30,31 +29,15 @@ const NFTs: React.FC = () => {
 	const coverRef: any = useRef();
 
 	const handleSubmit = async (preTx?: boolean, account?: string) => {
-		if (preTx && account) {
-			return;
-		}
-
 		if (!!wallet && !!wallet.keystore) {
 			setSubmitLoading(true);
 			try {
-				switch (mode) {
-					case 'create':
-						const info: any = await KickNFT(passphrase, wallet?.keystore, preTx, account);
-						setSubmitLoading(false);
-						if (preTx && account) {
-							return info
-						}
-						getNFTs();
-						break;
-					case 'import':
-						connect();
-						setImportModal(true);
-						setSubmitLoading(false);
-						break;
-					case 'mint':
-						setMintModal(true);
-						setSubmitLoading(false);
+				const info: any = await KickNFT(passphrase, wallet?.keystore, preTx, account);
+				setSubmitLoading(false);
+				if (preTx && account) {
+					return info
 				}
+				getNFTs();
 			} catch (e: any) {
 				notification.error({
 					message: e.message,
@@ -111,7 +94,6 @@ const NFTs: React.FC = () => {
 												className={style.button}
 												loading={submitLoading}
 												onClick={() => {
-													setMode('create');
 													setSecModal(true);
 												}}
 											>
@@ -129,8 +111,9 @@ const NFTs: React.FC = () => {
 												className={style.button}
 												loading={submitLoading}
 												onClick={async () => {
-													setMode('import');
-													setSecModal(true);
+													await connect();
+													setImportModal(true);
+													setSubmitLoading(false);
 												}}
 											>
 												{intl.formatMessage({
@@ -197,8 +180,7 @@ const NFTs: React.FC = () => {
 																			size='middle'
 																			onClick={() => {
 																				setMintItem(item);
-																				setMode('mint');
-																				setSecModal(true);
+																				setMintModal(true);
 																			}}
 																		>
 																			{intl.formatMessage({
@@ -290,7 +272,6 @@ const NFTs: React.FC = () => {
 											loading={submitLoading}
 											disabled={!!kickNFT.length}
 											onClick={() => {
-												setMode('create');
 												setSecModal(true);
 											}}
 										>
@@ -305,9 +286,10 @@ const NFTs: React.FC = () => {
 										<Button
 											className={style.importNFT}
 											loading={submitLoading}
-											onClick={() => {
-												setMode('import');
-												setSecModal(true);
+											onClick={async () => {
+												await connect();
+												setImportModal(true);
+												setSubmitLoading(false);
 											}}
 										>
 											<FaFileImport
@@ -328,13 +310,11 @@ const NFTs: React.FC = () => {
 			<Import
 				importModal={importModal}
 				setImportModal={setImportModal}
-				passphrase={passphrase}
 			/>
 
 			<Mint
 				mintModal={mintModal}
 				setMintModal={setMintModal}
-				passphrase={passphrase}
 				item={mintItem}
 			/>
 
