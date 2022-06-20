@@ -94,6 +94,14 @@
     component: './Stake/Staking',
   },
   {
+    path: '/creator',
+    name: 'creator',
+    icon: 'CrownOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Creator/NFTs',
+  },
+  {
     path: '/visa',
     name: 'visa',
     icon: 'FileProtectOutlined',

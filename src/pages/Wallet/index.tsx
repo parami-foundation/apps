@@ -1,18 +1,13 @@
 import React from 'react';
-import { useState } from 'react';
 import { Card } from 'antd';
-import classNames from 'classnames';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import Balance from './Balance';
 import Record from './Record';
 import Tags from './Tags';
-import NFTs from './NFTs';
 
 const Wallet: React.FC = () => {
-  const [tab, setTab] = useState<string>('balance');
-
   const intl = useIntl();
 
   return (
@@ -28,31 +23,14 @@ const Wallet: React.FC = () => {
           >
             <div className={styles.tabSelector}>
               <div
-                className={classNames(styles.tabItem, tab === 'balance' ? '' : styles.inactive)}
-                onClick={() => setTab('balance')}
+                className={styles.tabItem}
               >
                 {intl.formatMessage({
                   id: 'wallet.dashboard.balance',
                 })}
               </div>
-              <div
-                className={classNames(
-                  styles.tabItem,
-                  tab === 'nfts' ? '' : styles.inactive,
-                )}
-                onClick={() => setTab('nfts')}
-              >
-                {intl.formatMessage({
-                  id: 'wallet.dashboard.nfts',
-                })}
-              </div>
             </div>
-            {tab === 'balance' && (
-              <Balance />
-            )}
-            {tab === 'nfts' && (
-              <NFTs />
-            )}
+            <Balance />
           </Card>
         </div>
         <div className={style.right}>
