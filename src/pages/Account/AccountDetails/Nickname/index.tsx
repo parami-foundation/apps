@@ -13,8 +13,8 @@ const Nickname: React.FC<{
 	const { nickname, setNickname } = useModel('user');
 	const { wallet } = useModel('currentUser');
 	const [loading, setLoading] = useState<boolean>(false);
-	const [secModal, setSecModal] = useState(false);
-	const [passphrase, setPassphrase] = useState('');
+	const [secModal, setSecModal] = useState<boolean>(false);
+	const [passphrase, setPassphrase] = useState<string>('');
 
 	const intl = useIntl();
 
