@@ -19,7 +19,7 @@ const BigModal: React.FC<{
       title={
         title ? (
           <Title
-            level={3}
+            level={5}
             className={styles.title}
           >
             {title}
