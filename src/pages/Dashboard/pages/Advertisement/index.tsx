@@ -39,13 +39,6 @@ const Advertisement: React.FC = () => {
 		},
 		{
 			title: intl.formatMessage({
-				id: 'dashboard.ads.item.budget',
-			}),
-			dataIndex: 'budget',
-			key: 'budget',
-		},
-		{
-			title: intl.formatMessage({
 				id: 'dashboard.ads.item.tag',
 			}),
 			dataIndex: 'tag',
@@ -98,7 +91,13 @@ const Advertisement: React.FC = () => {
 					>
 						Bid
 					</a>
-					<a
+					<Tooltip
+						placement="topLeft"
+						title="comming soon"
+					>
+						View
+					</Tooltip>
+					{/* <a
 						key="view"
 						onClick={() => {
 							setAdItem(item);
@@ -106,7 +105,7 @@ const Advertisement: React.FC = () => {
 						}}
 					>
 						View
-					</a>
+					</a> */}
 				</Space>
 			),
 		},

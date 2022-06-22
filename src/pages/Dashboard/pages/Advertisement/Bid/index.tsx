@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image } from 'antd';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
@@ -9,8 +9,8 @@ import Marquee from 'react-fast-marquee';
 import { didToHex, parseAmount } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { BigIntToFloatString, deleteComma } from '@/utils/format';
-import { BidSlot, GetSlotAdOfByAssetID } from '@/services/parami/Advertisement';
-import { GetAssetInfo } from '@/services/parami/Assets';
+import { BidSlot, GetSlotOfNft } from '@/services/parami/Advertisement';
+import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { DownOutlined } from '@ant-design/icons';
 import SelectToken from './SelectToken';
 
@@ -22,7 +22,7 @@ const Bid: React.FC<{
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [did, setDid] = useState<string>();
   const [nftInfo, setNftInfo] = useState<any>({});
-  const [currentAd, setCurrentAd] = useState<any>({});
+  const [currentPrice, setCurrentPrice] = useState<string>('');
   const [assetId, setAssetId] = useState<string>('');
   const [price, setPrice] = useState<number>();
   const [confirmNFT, setConfirmNFT] = useState<boolean>(false);
@@ -72,14 +72,20 @@ const Bid: React.FC<{
     setNftInfo(nftMetadata);
   };
 
-  const getSlotAdOf = async () => {
+  const searchNFTbyId = async () => {
     try {
-      const ad = await GetSlotAdOfByAssetID(assetId);
-      if (ad?.ad) {
-        setCurrentAd(ad);
-      } else {
-        setCurrentAd({});
-      }
+      const nftMetadataRaw = await GetNFTMetaData(assetId);
+      const nftMetadata: any = nftMetadataRaw?.toHuman();
+      if (nftMetadataRaw.isEmpty || !nftMetadata?.minted) {
+        notification.error({
+          message: intl.formatMessage({
+            id: 'error.nft.notFound',
+          }),
+          duration: null,
+        });
+        return;
+      };
+      setNftInfo(nftMetadata);
       setConfirmNFT(true);
     } catch (e: any) {
       notification.error({
@@ -88,13 +94,14 @@ const Bid: React.FC<{
       });
       return;
     }
-  };
+  }
 
   const handleSubmit = async () => {
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await BidSlot(adItem.id, assetId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
+        console.log('submit', tokenSelect, tokenAmount);
+        await BidSlot(adItem.id, assetId, parseAmount((price as number).toString()), tokenSelect, parseAmount(tokenAmount), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);
         window.location.reload();
@@ -116,6 +123,20 @@ const Bid: React.FC<{
       })
     }
   };
+
+  // nft id -> remain price
+  useEffect(() => {
+    const getCurrentPrice = async (nftId) => {
+      const slot = await GetSlotOfNft(nftId);
+      const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
+      setCurrentPrice(balance.balance);
+    }
+    if (assetId && confirmNFT) {
+      getCurrentPrice(assetId).catch((e) => {
+        console.log('error:', e);
+      });
+    }
+  }, [assetId, confirmNFT])
 
   return (
     <>
@@ -173,13 +194,13 @@ const Bid: React.FC<{
                   message.error('Please Input NFT ID');
                   return;
                 }
-                await getSlotAdOf();
+                await searchNFTbyId();
               }}
               value={assetId}
             />
           </div>
         </div>
-        {!!Object.keys(currentAd).length && (
+        {!!currentPrice.length && (
           <div className={styles.field}>
             <div className={styles.title}>
               {intl.formatMessage({
@@ -191,7 +212,7 @@ const Bid: React.FC<{
                 readOnly
                 disabled
                 size='large'
-                value={`${formatBalance(deleteComma(currentAd?.remain), { withUnit: 'AD3' }, 18)}`}
+                value={`${formatBalance(deleteComma(currentPrice), { decimals: 18 })}`}
               />
             </div>
           </div>
@@ -212,10 +233,10 @@ const Bid: React.FC<{
             <Input
               value={price}
               className={styles.withAfterInput}
-              placeholder={!!Object.keys(currentAd).length ? (Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2).toString() : ''}
+              placeholder={!!currentPrice.length ? (Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2).toString() : ''}
               size='large'
               type='number'
-              min={!!Object.keys(currentAd).length ? Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2 : 0}
+              min={!!currentPrice.length ? Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2 : 0}
               onChange={(e) => {
                 setPrice(Number(e.target.value));
               }}

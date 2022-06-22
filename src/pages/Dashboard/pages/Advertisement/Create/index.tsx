@@ -14,7 +14,6 @@ const Create: React.FC<{
 }> = ({ setCreateModal }) => {
   const { dashboard } = useModel('currentUser');
   const [submiting, setSubmiting] = useState<boolean>(false);
-  const [budget, setBudget] = useState<number>(0);
   const [payoutBase, setPayoutBase] = useState<number>(0);
   const [payoutMin, setPayoutMin] = useState<number>(0);
   const [payoutMax, setPayoutMax] = useState<number>(0);
@@ -114,7 +113,7 @@ const Create: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await CreateAds(parseAmount(budget.toString()), tags, metadata as string, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
+        await CreateAds(tags, metadata as string, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -139,24 +138,6 @@ const Create: React.FC<{
   return (
     <>
       <div className={styles.modalBody}>
-        <div className={styles.field}>
-          <div className={styles.title}>
-            {intl.formatMessage({
-              id: 'dashboard.ads.create.budget',
-            })}(AD3)
-          </div>
-          <div className={styles.value}>
-            <Input
-              className={styles.withAfterInput}
-              placeholder="0.00"
-              size='large'
-              type='number'
-              maxLength={18}
-              min={0}
-              onChange={(e) => setBudget(Number(e.target.value))}
-            />
-          </div>
-        </div>
         <div className={styles.field}>
           <div className={styles.title}>
             {intl.formatMessage({
@@ -318,17 +299,17 @@ const Create: React.FC<{
                 setLifetime(Number(value));
               }}
             >
-              <Option value={3 * 24 * 60 * 60 / 6}>
+              <Option value={3 * 24 * 60 * 60 / 12}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.3days',
                 })}
               </Option>
-              <Option value={7 * 24 * 60 * 60 / 6}>
+              <Option value={7 * 24 * 60 * 60 / 12}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.7days',
                 })}
               </Option>
-              <Option value={15 * 24 * 60 * 60 / 6}>
+              <Option value={15 * 24 * 60 * 60 / 12}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.15days',
                 })}
@@ -401,7 +382,7 @@ const Create: React.FC<{
             size='large'
             shape='round'
             type='primary'
-            disabled={!budget || !tags || !metadata || !lifetime}
+            disabled={!tags || !metadata || !lifetime}
             loading={submiting}
             onClick={() => {
               handleSubmit()
