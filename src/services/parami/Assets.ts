@@ -14,7 +14,6 @@ export const GetAssetsHolders = async (assetId: string) => {
 };
 
 export const GetBalanceOfBudgetPot = async (potId: string, assetId: string) => {
-  console.log('we are not here', potId, assetId);
   const balance = await window.apiWs.query.assets.account(Number(assetId), potId);
   if (balance.isEmpty) {
     return null;

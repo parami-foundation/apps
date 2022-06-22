@@ -40,7 +40,7 @@ const List: React.FC<{
             data.push({
               ...nftInfo,
               ad: adInfo?.ad,
-              budget: adInfo?.budget,
+              budget: adInfo?.budget, // remove this
               created: adInfo?.created,
               remain: adInfo?.remain,
               tokens: nftInfo?.tokens,

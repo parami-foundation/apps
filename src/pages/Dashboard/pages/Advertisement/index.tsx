@@ -248,22 +248,24 @@ const Advertisement: React.FC = () => {
 				}}
 			/>
 
-			<BigModal
-				visable={bidModal}
-				title={intl.formatMessage({
-					id: 'dashboard.ads.bid',
-				})}
-				content={
-					<Bid
-						adItem={adItem}
-						setBidModal={setBidModal}
-					/>
-				}
-				footer={false}
-				close={() => {
-					setBidModal(false);
-				}}
-			/>
+			{bidModal && (
+				<BigModal
+					visable={true}
+					title={intl.formatMessage({
+						id: 'dashboard.ads.bid',
+					})}
+					content={
+						<Bid
+							adItem={adItem}
+							setBidModal={setBidModal}
+						/>
+					}
+					footer={false}
+					close={() => {
+						setBidModal(false);
+					}}
+				/>
+			)}
 
 			<BigModal
 				visable={listModal}
