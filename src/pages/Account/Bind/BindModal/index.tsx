@@ -169,6 +169,10 @@ const BindModal: React.FC<{
   const handleSubmit = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet?.keystore) {
       setLoading(true);
+
+      let Account: string = '';
+      let SignedMsg: string = '';
+
       switch (bindPlatform) {
         // SNS
         case 'Discord':
@@ -195,8 +199,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                let Account: string = '';
-                let SignedMsg: string = '';
                 if (!address && !signed) {
                   const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
                   Account = ethAccount;
@@ -239,8 +241,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                let Account: string = '';
-                let SignedMsg: string = '';
                 if (!address && !signed) {
                   const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
                   Account = bscAccount;
@@ -283,8 +283,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'sollet':
               try {
-                let Account: string = '';
-                let SignedMsg: string = '';
                 if (!address && !signed) {
                   const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
                   Account = acct;
