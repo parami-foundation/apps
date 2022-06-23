@@ -89,3 +89,16 @@ if (pwa) {
 
   clearCache();
 }
+
+// ga
+const gaKey = 'G-1FKB5YPBY7';
+const gaScript = document.createElement('script');
+gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${gaKey}`;
+gaScript.async = true;
+gaScript.onload = () => {
+  (window as any).dataLayer = (window as any).dataLayer || [];
+  (window as any).dataLayer.push(['js', new Date()]);
+  (window as any).dataLayer.push(['config', gaKey]);
+}
+
+document.getElementsByTagName('head')[0].appendChild(gaScript);
