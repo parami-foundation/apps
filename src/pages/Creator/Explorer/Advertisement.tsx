@@ -29,13 +29,12 @@ const Advertisement: React.FC<{
 	adData: any;
 	remain: bigint;
 	loading: boolean;
-}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain, loading }) => {
+}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain }) => {
 	const { wallet } = useModel('currentUser');
 	const [infoModal, setInfoModal] = useState<boolean>(false);
 	const [chartModal, setChartModal] = useState<boolean>(false);
 	const [passphrase, setPassphrase] = useState<string>('');
 	const [secModal, setSecModal] = useState<boolean>(false);
-	const [guide, setGuide] = useState<boolean>(true);
 	const [stamp, setStamp] = useState<string>('');
 
 	const intl = useIntl();
@@ -115,14 +114,6 @@ const Advertisement: React.FC<{
 		}
 	}, [wallet, wallet?.keystore]);
 
-	useEffect(() => {
-		if (!loading) {
-			setTimeout(() => {
-				setGuide(false);
-			}, 8000);
-		}
-	}, [loading]);
-
 	return (
 		<>
 			<div className={style.container}>
@@ -193,10 +184,6 @@ const Advertisement: React.FC<{
 						<div className={style.adMedia}>
 							<div
 								className={style.guideClickContainer}
-								style={{
-									opacity: guide ? 1 : 0,
-									zIndex: guide ? 3 : -1,
-								}}
 								onClick={() => {
 									if (sign) {
 										setSecModal(true);
@@ -234,6 +221,7 @@ const Advertisement: React.FC<{
 									cursor: 'pointer',
 									width: '100%',
 								}}
+								className={style.adMediaImg}
 								onClick={() => {
 									if (sign) {
 										setSecModal(true);
@@ -263,7 +251,9 @@ const Advertisement: React.FC<{
 			<span className={style.countDown}>
 				<span
 					style={{
-						fontSize: '1.3rem'
+						display: 'flex',
+						fontSize: '1.3rem',
+						textAlign: 'center',
 					}}
 				>
 					{intl.formatMessage({
