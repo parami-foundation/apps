@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
@@ -8,6 +8,10 @@ import { parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { CreateAds } from '@/services/parami/Advertisement';
 import { CreateTag, ExistTag } from '@/services/parami/Tag';
+import FormFieldTitle from '@/components/FormFieldTitle';
+import FormErrorMsg from '@/components/FormErrorMsg';
+
+const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -17,6 +21,8 @@ const Create: React.FC<{
   const [payoutBase, setPayoutBase] = useState<number>(0);
   const [payoutMin, setPayoutMin] = useState<number>(0);
   const [payoutMax, setPayoutMax] = useState<number>(0);
+  const [payoutMinError, setPayoutMinError] = useState<string>('');
+  const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [metadata, setMetadata] = useState<string>();
   const [rewardRate, setRewardRate] = useState<number>(0);
@@ -135,14 +141,30 @@ const Create: React.FC<{
     }
   };
 
+  useEffect(() => {
+    setPayoutMaxError('');
+    setPayoutMinError('');
+    if (payoutMax < payoutMin) {
+      setPayoutMaxError('Payout Max cannot be less than Payout Min')
+    }
+  }, [payoutMax]);
+
+  useEffect(() => {
+    setPayoutMaxError('');
+    setPayoutMinError('');
+    if (payoutMin > payoutMax) {
+      setPayoutMinError('Payout Min cannot be more than Payout Max')
+    }
+  }, [payoutMin]);
+
   return (
     <>
       <div className={styles.modalBody}>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.tag',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
             {tags.map((tag, index) => {
@@ -245,9 +267,9 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.metadata',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
@@ -260,9 +282,9 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.rewardRate',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
@@ -278,15 +300,9 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.lifetime',
-            })}
-            <br />
-            <small>
-              {intl.formatMessage({
-                id: 'dashboard.ads.create.lifetime.desc',
-              })}
-            </small>
+            })} required />
           </div>
           <div className={styles.value}>
             <Select
@@ -299,17 +315,17 @@ const Create: React.FC<{
                 setLifetime(Number(value));
               }}
             >
-              <Option value={3 * 24 * 60 * 60 / 12}>
+              <Option value={3 * NUM_BLOCKS_PER_DAY}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.3days',
                 })}
               </Option>
-              <Option value={7 * 24 * 60 * 60 / 12}>
+              <Option value={7 * NUM_BLOCKS_PER_DAY}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.7days',
                 })}
               </Option>
-              <Option value={15 * 24 * 60 * 60 / 12}>
+              <Option value={15 * NUM_BLOCKS_PER_DAY}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.15days',
                 })}
@@ -319,9 +335,9 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.payoutBase',
-            })}(Token)
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
@@ -337,38 +353,41 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.create.payoutMin',
-            })}(Token)
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
-              className={styles.withAfterInput}
-              placeholder="0.00"
-              size='large'
-              type='number'
-              maxLength={18}
-              min={payoutMax}
-              onChange={(e) => setPayoutMin(Number(e.target.value))}
-            />
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.title}>
-            {intl.formatMessage({
-              id: 'dashboard.ads.create.payoutMax',
-            })}(Token)
-          </div>
-          <div className={styles.value}>
-            <Input
-              className={styles.withAfterInput}
+              className={`${styles.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
               placeholder="0.00"
               size='large'
               type='number'
               maxLength={18}
               min={0}
+              max={payoutMax}
+              onChange={(e) => setPayoutMin(Number(e.target.value))}
+            />
+            {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={intl.formatMessage({
+              id: 'dashboard.ads.create.payoutMax',
+            })} required />
+          </div>
+          <div className={styles.value}>
+            <Input
+              className={`${styles.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
+              placeholder="0.00"
+              size='large'
+              type='number'
+              maxLength={18}
+              min={payoutMin}
               onChange={(e) => setPayoutMax(Number(e.target.value))}
             />
+            {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
           </div>
         </div>
         <div
@@ -382,7 +401,7 @@ const Create: React.FC<{
             size='large'
             shape='round'
             type='primary'
-            disabled={!tags || !metadata || !lifetime}
+            disabled={!tags || !metadata || !lifetime || !rewardRate || !payoutBase || !!payoutMaxError || !!payoutMinError}
             loading={submiting}
             onClick={() => {
               handleSubmit()

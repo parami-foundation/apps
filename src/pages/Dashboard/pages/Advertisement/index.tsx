@@ -232,21 +232,23 @@ const Advertisement: React.FC = () => {
 				}}
 			/>
 
-			<BigModal
-				visable={createModal}
-				title={intl.formatMessage({
-					id: 'dashboard.ads.create',
-				})}
-				content={
-					<Create
-						setCreateModal={setCreateModal}
-					/>
-				}
-				footer={false}
-				close={() => {
-					setCreateModal(false);
-				}}
-			/>
+			{createModal && (
+				<BigModal
+					visable={true}
+					title={intl.formatMessage({
+						id: 'dashboard.ads.create',
+					})}
+					content={
+						<Create
+							setCreateModal={setCreateModal}
+						/>
+					}
+					footer={false}
+					close={() => {
+						setCreateModal(false);
+					}}
+				/>
+			)}
 
 			{bidModal && (
 				<BigModal

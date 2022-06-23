@@ -13,6 +13,8 @@ import { BidSlot, GetSlotOfNft } from '@/services/parami/Advertisement';
 import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { DownOutlined } from '@ant-design/icons';
 import SelectToken from './SelectToken';
+import FormErrorMsg from '@/components/FormErrorMsg';
+import FormFieldTitle from '@/components/FormFieldTitle';
 
 const Bid: React.FC<{
   adItem: any;
@@ -112,6 +114,7 @@ const Bid: React.FC<{
       return balance.balance;
     }
     
+    setDidErrorMsg('');
     setCurrentPrice('');
     setNftIdErrorMsg('');
     if (nftId) {
@@ -147,9 +150,9 @@ const Bid: React.FC<{
         <Divider>Find NFT ID from DID</Divider>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.did',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
@@ -161,15 +164,15 @@ const Bid: React.FC<{
               placeholder={'did:ad3:......'}
               value={did}
             />
-            {didErrorMsg && <span className={style.inputErrorMsg}>{didErrorMsg}</span>}
+            {didErrorMsg && <FormErrorMsg msg={didErrorMsg} />}
           </div>
         </div>
         <Divider />
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.nftID',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
             <Input
@@ -180,15 +183,15 @@ const Bid: React.FC<{
               }}
               value={nftId}
             />
-            {nftIdErrorMsg && <span className={style.inputErrorMsg}>{nftIdErrorMsg}</span>}
+            {nftIdErrorMsg && <FormErrorMsg msg={nftIdErrorMsg} />}
           </div>
         </div>
         {!!currentPrice.length && (
           <div className={styles.field}>
             <div className={styles.title}>
-              {intl.formatMessage({
+              <FormFieldTitle title={intl.formatMessage({
                 id: 'dashboard.ads.launch.currentPrice',
-              })}
+              })} required />
             </div>
             <div className={styles.value}>
               <Input
@@ -202,9 +205,9 @@ const Bid: React.FC<{
         )}
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.offer',
-            })}
+            })} required />
             <br />
             <small>
               {`The bid must be higher than ${minPrice} (20% higher than the current price)`}
@@ -221,14 +224,14 @@ const Bid: React.FC<{
                 setPrice(Number(e.target.value));
               }}
             />
-            {priceErrorMsg && <span className={style.inputErrorMsg}>{priceErrorMsg}</span>}
+            {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
           </div>
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.token',
-            })}
+            })} />
             <br />
             <small>
               {intl.formatMessage({
