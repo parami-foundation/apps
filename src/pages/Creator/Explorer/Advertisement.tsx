@@ -251,7 +251,9 @@ const Advertisement: React.FC<{
 			<span className={style.countDown}>
 				<span
 					style={{
-						fontSize: '1.3rem'
+						display: 'flex',
+						fontSize: '1.3rem',
+						textAlign: 'center',
 					}}
 				>
 					{intl.formatMessage({
