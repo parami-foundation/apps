@@ -36,6 +36,9 @@ const BindModal: React.FC<{
   const intl = useIntl();
   const { TextArea } = Input;
 
+  let Account: string = '';
+  let SignedMsg: string = '';
+
   const handleStamp = async () => {
     if (!!wallet && !!wallet?.keystore) {
       const { query } = history.location;
@@ -170,9 +173,6 @@ const BindModal: React.FC<{
     if (!!wallet && !!wallet?.keystore) {
       setLoading(true);
 
-      let Account: string = '';
-      let SignedMsg: string = '';
-
       switch (bindPlatform) {
         // SNS
         case 'Discord':
@@ -199,13 +199,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                if (!address && !signed) {
-                  const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
-                  Account = ethAccount;
-                  SignedMsg = ethSignedMsg;
-                  setAddress(ethAccount);
-                  setSigned(ethSignedMsg);
-                }
                 if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
@@ -241,13 +234,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'walletconnect':
               try {
-                if (!address && !signed) {
-                  const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
-                  Account = bscAccount;
-                  SignedMsg = bscSignedMsg;
-                  setAddress(bscAccount);
-                  setSigned(bscSignedMsg);
-                }
                 if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
@@ -283,13 +269,6 @@ const BindModal: React.FC<{
           switch (app) {
             case 'sollet':
               try {
-                if (!address && !signed) {
-                  const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
-                  Account = acct;
-                  SignedMsg = signedMsg;
-                  setAddress(acct);
-                  setSigned(signedMsg);
-                }
                 if ((!!address && !!signed) || (!!Account && !!SignedMsg)) {
                   notification.info({
                     message: 'Got an signed message',
@@ -501,7 +480,21 @@ const BindModal: React.FC<{
                 style={{
                   backgroundColor: '#3B99FC',
                 }}
-                onClick={() => {
+                onClick={async () => {
+                  if (bindPlatform === 'Ethereum' && !address && !signed) {
+                    const { account: ethAccount, signedMsg: ethSignedMsg } = await signETHMessage(origin);
+                    Account = ethAccount;
+                    SignedMsg = ethSignedMsg;
+                    setAddress(ethAccount);
+                    setSigned(ethSignedMsg);
+                  }
+                  if (bindPlatform === 'Binance' && !address && !signed) {
+                    const { account: bscAccount, signedMsg: bscSignedMsg } = await signBSCMessage(origin);
+                    Account = bscAccount;
+                    SignedMsg = bscSignedMsg;
+                    setAddress(bscAccount);
+                    setSigned(bscSignedMsg);
+                  }
                   setApp('walletconnect');
                   setSecModal(true);
                 }}
@@ -554,7 +547,14 @@ const BindModal: React.FC<{
                 style={{
                   backgroundColor: '#512da8',
                 }}
-                onClick={() => {
+                onClick={async () => {
+                  if (!address && !signed) {
+                    const { account: acct, signedMsg }: any = await solanaSignMessage(origin);
+                    Account = acct;
+                    SignedMsg = signedMsg;
+                    setAddress(acct);
+                    setSigned(signedMsg);
+                  }
                   setApp('sollet');
                   setSecModal(true);
                 }}
