@@ -13,7 +13,7 @@ export const config = {
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://staging.parami.io/airdrop",
   } : {
-    "socketServer": "wss://rpc-na.parami.io/ws",
+    "socketServer": "wss://rpc-na1.parami.io/ws",
     "subqueryServer": "https://graph.parami.io/",
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",
