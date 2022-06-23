@@ -13,7 +13,7 @@ const SecurityModal: React.FC<{
   passphrase: string;
   setPassphrase: React.Dispatch<React.SetStateAction<string>>;
   func?: any;
-  changePassphrase?: boolean;
+  changePassphrase?: boolean | false;
 }> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
@@ -24,21 +24,24 @@ const SecurityModal: React.FC<{
   const intl = useIntl();
 
   const inputVerify = (e: any) => {
-    if (e) {
+    if (!!e) {
       setPassphrase(e.target.value);
     } else {
       setPassphrase('');
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setSubmitting(true);
-    if (!passphrase || passphrase.length < 6) {
+    if (!!wallet?.passphrase) {
+      setPassphrase(wallet?.passphrase);
+    }
+    if ((!passphrase || passphrase.length < 6) && !wallet?.passphrase) {
       setSubmitting(false);
       return;
     }
-    if (func) {
-      func();
+    if (!!func) {
+      await func();
     }
     setVisable(false);
     setSubmitting(false);
@@ -49,6 +52,8 @@ const SecurityModal: React.FC<{
       const info = await func(true, wallet.account);
       if (!!info) {
         setGasFee(info.partialFee);
+      } else if (!changePassphrase) {
+        await handleSubmit();
       }
     }
   };
@@ -86,7 +91,10 @@ const SecurityModal: React.FC<{
             shape="round"
             size="large"
             className={styles.button}
-            onClick={() => { setVisable(false) }}
+            onClick={() => {
+              setVisable(false);
+              window.location.reload();
+            }}
             loading={submitting}
           >
             {intl.formatMessage({
@@ -125,40 +133,42 @@ const SecurityModal: React.FC<{
             className={styles.alertContainer}
           />
         )}
-        <div className={styles.field}>
-          <div className={styles.labal}>
-            {intl.formatMessage({
-              id: 'modal.security.gas',
-            })}
-            <span className={styles.small}>
-              ({intl.formatMessage({
-                id: 'modal.security.estimated',
-              })})
-            </span>
-            <Tooltip
-              placement="bottom"
-              title={intl.formatMessage({
-                id: 'modal.security.gas.tooltip',
-                defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
+        {!!gasFee && (
+          <div className={styles.field}>
+            <div className={styles.labal}>
+              {intl.formatMessage({
+                id: 'modal.security.gas',
               })}
-            >
-              <ExclamationCircleFilled
-                className={styles.labalIcon}
+              <span className={styles.small}>
+                ({intl.formatMessage({
+                  id: 'modal.security.estimated',
+                })})
+              </span>
+              <Tooltip
+                placement="bottom"
+                title={intl.formatMessage({
+                  id: 'modal.security.gas.tooltip',
+                  defaultMessage: 'Gas fees are paid to crypto miners who process transactions on the network. Parami does not profit from gas fees.',
+                })}
+              >
+                <ExclamationCircleFilled
+                  className={styles.labalIcon}
+                />
+              </Tooltip>
+            </div>
+            <div className={styles.value}>
+              <AD3
+                value={gasFee}
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 900,
+                }}
               />
-            </Tooltip>
+            </div>
           </div>
-          <div className={styles.value}>
-            <AD3
-              value={gasFee}
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 900,
-              }}
-            />
-          </div>
-        </div>
+        )}
       </div>
-      {!passphrase && (
+      {(!wallet?.passphrase || changePassphrase) && (
         <div
           style={{
             display: 'flex',

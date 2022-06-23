@@ -6,17 +6,18 @@ import { Button, notification } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
 import { registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
-import { BigNumber, ethers } from 'ethers';
+import type { BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
 import WContractABI from '../abi/ERC721WContract.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
-import {fetchErc721TokenURIMetaData, normalizeToHttp} from "@/utils/erc721";
+import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
+import SecurityModal from '@/components/ParamiModal/SecurityModal';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
-  passphrase: string;
-}> = ({ setImportModal, passphrase }) => {
+}> = ({ setImportModal }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
   const { getNFTs } = useModel('nft');
@@ -24,6 +25,9 @@ const ImportNFTModal: React.FC<{
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
   const [coverWidth, setCoverWidth] = useState<number>(0);
+  const [secModal, setSecModal] = useState<boolean>(false);
+  const [passphrase, setPassphrase] = useState<string>('');
+  const [mintItem, setMintItem] = useState<Erc721>();
   const {
     Account,
     Signer,
@@ -74,16 +78,16 @@ const ImportNFTModal: React.FC<{
     return results.flatMap((r) => r);
   };
 
-  const importNft = async (item: Erc721, preTx?: boolean, account?: string) => {
-    if (!!wallet && !!wallet.keystore) {
+  const importNft = async (preTx?: boolean, account?: string) => {
+    if (!!wallet && !!wallet.keystore && !!mintItem) {
       setSubmitLoading(true);
       try {
         const info: any = await PortNFT(
           passphrase,
           wallet?.keystore,
           'Ethereum',
-          item.contract,
-          item.tokenId,
+          mintItem.contract,
+          mintItem.tokenId,
           preTx,
           account,
         );
@@ -120,7 +124,7 @@ const ImportNFTModal: React.FC<{
       if (!Provider || !Signer) {
         return;
       }
-       getNftsOfSigner(Signer).then((r) => {
+      getNftsOfSigner(Signer).then((r) => {
         console.debug("nfts of signer", r);
         setTokenData(r);
         setLoading(false);
@@ -187,8 +191,9 @@ const ImportNFTModal: React.FC<{
                                 shape='round'
                                 size='middle'
                                 loading={submitLoading}
-                                onClick={async () => {
-                                  await importNft(item);
+                                onClick={() => {
+                                  setMintItem(item);
+                                  setSecModal(true);
                                 }}
                               >
                                 {intl.formatMessage({
@@ -207,6 +212,13 @@ const ImportNFTModal: React.FC<{
           )
         }
       />
+      <SecurityModal
+        visable={secModal}
+        setVisable={setSecModal}
+        passphrase={passphrase}
+        setPassphrase={setPassphrase}
+        func={importNft}
+      />
     </div>
   )
 };
@@ -214,8 +226,7 @@ const ImportNFTModal: React.FC<{
 const Import: React.FC<{
   importModal: boolean;
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
-  passphrase: string;
-}> = ({ importModal, setImportModal, passphrase }) => {
+}> = ({ importModal, setImportModal }) => {
   const intl = useIntl();
 
   return (
@@ -227,7 +238,6 @@ const Import: React.FC<{
       content={
         <ImportNFTModal
           setImportModal={setImportModal}
-          passphrase={passphrase}
         />
       }
       footer={false}

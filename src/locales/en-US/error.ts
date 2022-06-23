@@ -15,6 +15,7 @@ export default {
     'error.identity.notUser': 'Not a Parami user?',
     'error.identity.notUser.desc': 'You are not currently registered and can\'t get any benefits.',
     'error.avatar.empty': 'Please set your avatar first',
+    'error.avatar.small': 'Avatar is too small, please upload a larger one (min. 200x200)',
     'error.broswer.notSupport.title': 'Open this page using the system browser',
     'error.broswer.notSupport': 'Your current browser or software is not supported. Please open the link in the system browser.',
     'error.share.failed': 'You must save your RecoveryLink first!',
@@ -29,4 +30,5 @@ export default {
     'error.controller.notMatch': 'The controller address does not match, a new controller account will be created for you.',
     'error.avatar.largeSize': 'The avatar is too large, please upload a smaller one',
     'error.accessDenied': 'Access denied, please use your RecoveryLink to restore your account',
+    'error.nft.NetworkNotLinked': 'This NFT is not linked to the network',
 };

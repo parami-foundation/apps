@@ -1,6 +1,6 @@
 type Erc721 = {
     contract: string,
-    tokenId: string,
+    tokenId: BigNumber,
     name: string,
     imageUrl: string
 };

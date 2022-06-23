@@ -3,7 +3,7 @@ import { b64toBlob } from '@/utils/common';
 import React, { useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import generateRoundAvatar from '@/utils/encode';
-import { Button, message, Spin, Upload, notification } from 'antd';
+import { Button, Spin, Upload, notification } from 'antd';
 import { uploadAvatar, uploadIPFS } from '@/services/parami/IPFS';
 import style from '../style.less';
 import MyAvatar from '@/components/Avatar/MyAvatar';
@@ -29,6 +29,24 @@ const Modal: React.FC<{
       if (wallet?.did === null) {
         history.push(config.page.createPage);
       };
+      const reader = new FileReader();
+      reader.readAsDataURL(info.file.originFileObj);
+      reader.addEventListener('load', event => {
+        const loadedImageUrl = event?.target?.result;
+        const img = new Image();
+        img.src = loadedImageUrl as string;
+        img.addEventListener('load', () => {
+          const { width, height } = img;
+          if (width < 200 || height < 200) {
+            notification.error({
+              message: intl.formatMessage({
+                id: 'error.avatar.small',
+              }),
+            });
+            return;
+          }
+        });
+      });
       generateRoundAvatar(URL.createObjectURL(info.file.originFileObj), '', '', wallet?.did)
         .then(async (img) => {
           const file = (img as string).substring(22);
@@ -42,9 +60,11 @@ const Modal: React.FC<{
   const UploadAvatar = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore) {
       if (!File) {
-        message.error(intl.formatMessage({
-          id: 'error.avatar.empty',
-        }));
+        notification.error({
+          message: intl.formatMessage({
+            id: 'error.avatar.empty',
+          }),
+        });
         return;
       }
       try {

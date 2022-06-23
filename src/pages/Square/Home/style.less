@@ -1,120 +1,120 @@
 .squareContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-items: flex-start;
+  width: 100%;
+  padding-top: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  max-width: 1200px;
+
+  .pageHeader {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
-    justify-items: flex-start;
     width: 100%;
-    padding-top: 20px;
-    padding-left: 30px;
-    padding-right: 30px;
-    max-width: 1200px;
+    text-align: left;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
 
-    .pageHeader {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        align-items: center;
+    .pageHeaderIcon {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+  }
+
+  .squareRow {
+    width: 100%;
+
+    .card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+      overflow: hidden;
+
+      .avatar {
+        position: absolute;
+        z-index: 3;
+        width: 70px;
+        height: 70px;
+      }
+
+      .mask {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
-        text-align: left;
-        font-size: 2rem;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        z-index: 2;
+      }
+
+      .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: 1;
+        filter: blur(2px);
+      }
+
+      .tokenName {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(255,255,255,0.7);
+        border-radius: 10px;
+        padding: 5px 10px;
         font-weight: 900;
-        margin-bottom: 2rem;
+        font-size: 0.5rem;
+        z-index: 3;
+      }
 
-        .pageHeaderIcon {
-            width: 40px;
-            height: 40px;
+      .info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        position: absolute;
+        bottom: 15px;
+        left: 15px;
+        font-size: 0.8rem;
+        font-weight: 900;
+        color: #fff;
+        width: 85%;
+        text-shadow: 0 0 3px #000;
+        z-index: 3;
+
+        .tokenPrice {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 5px;
+
+          .tokenPriceIcon {
             margin-right: 10px;
+            margin-top: -3px;
+          }
         }
-    }
 
-    .squareRow {
-        width: 100%;
-
-        .card {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 16px;
-            overflow: hidden;
-
-            .avatar {
-                position: absolute;
-                z-index: 3;
-                width: 70px;
-                height: 70px;
-            }
-
-            .mask {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.3);
-                z-index: 2;
-            }
-
-            .background {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-size: cover;
-                background-position: center;
-                z-index: 1;
-                filter: blur(2px);
-            }
-
-            .tokenName {
-                position: absolute;
-                top: 15px;
-                right: 15px;
-                background: rgba(255,255,255,0.7);
-                border-radius: 10px;
-                padding: 5px 10px;
-                font-weight: 900;
-                font-size: 0.5rem;
-                z-index: 3;
-            }
-
-            .info {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: flex-start;
-                position: absolute;
-                bottom: 15px;
-                left: 15px;
-                font-size: 0.8rem;
-                font-weight: 900;
-                color: #fff;
-                width: 85%;
-                text-shadow: 0 0 3px #000;
-                z-index: 3;
-
-                .tokenPrice {
-                    display: flex;
-                    flex-direction: row;
-                    justify-content: center;
-                    align-items: center;
-                    margin-bottom: 5px;
-
-                    .tokenPriceIcon {
-                        margin-right: 10px;
-                        margin-top: -3px;
-                    }
-                }
-
-                .tokenOwner {
-                    overflow: hidden;
-                    white-space: nowrap; 
-                    text-overflow: ellipsis;
-                    width: 100%;
-                }
-            }
+        .tokenOwner {
+          overflow: hidden;
+          white-space: nowrap; 
+          text-overflow: ellipsis;
+          width: 100%;
         }
+      }
     }
+  }
 }

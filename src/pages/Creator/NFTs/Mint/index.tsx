@@ -7,17 +7,19 @@ import { DownOutlined } from '@ant-design/icons';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { MintNFT } from '@/services/parami/NFT';
 import { useModel } from 'umi';
+import SecurityModal from '@/components/ParamiModal/SecurityModal';
 
 const MintNFTModal: React.FC<{
 	item: any;
 	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
-	passphrase: string;
-}> = ({ item, setMintModal, passphrase }) => {
+}> = ({ item, setMintModal }) => {
 	const { getNFTs } = useModel('nft');
 	const { wallet } = useModel('currentUser');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [name, setName] = useState<string>('');
 	const [symbol, setSymbol] = useState<string>('');
+	const [secModal, setSecModal] = useState<boolean>(false);
+	const [passphrase, setPassphrase] = useState<string>('');
 
 	const intl = useIntl();
 
@@ -31,7 +33,7 @@ const MintNFTModal: React.FC<{
 				if (preTx && account) {
 					return info
 				}
-				await getNFTs();
+				getNFTs();
 			} catch (e: any) {
 				notification.error({
 					message: e.message,
@@ -80,6 +82,7 @@ const MintNFTModal: React.FC<{
 						onChange={(a) => { setSymbol(a.target.value) }}
 						disabled={loading}
 						prefix={'$'}
+						maxLength={4}
 					/>
 				</div>
 			</div>
@@ -165,8 +168,8 @@ const MintNFTModal: React.FC<{
 					className={style.button}
 					loading={loading}
 					disabled={!name || !symbol}
-					onClick={async () => {
-						await handleMint();
+					onClick={() => {
+						setSecModal(true);
 					}}
 				>
 					{intl.formatMessage({
@@ -174,6 +177,14 @@ const MintNFTModal: React.FC<{
 					})}
 				</Button>
 			</div>
+
+			<SecurityModal
+				visable={secModal}
+				setVisable={setSecModal}
+				passphrase={passphrase}
+				setPassphrase={setPassphrase}
+				func={handleMint}
+			/>
 		</div>
 	)
 }
@@ -181,9 +192,8 @@ const MintNFTModal: React.FC<{
 const Mint: React.FC<{
 	mintModal: boolean
 	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
-	passphrase: string;
 	item: any;
-}> = ({ mintModal, setMintModal, passphrase, item }) => {
+}> = ({ mintModal, setMintModal, item }) => {
 	const intl = useIntl();
 
 	return (
@@ -196,7 +206,6 @@ const Mint: React.FC<{
 				<MintNFTModal
 					setMintModal={setMintModal}
 					item={item}
-					passphrase={passphrase}
 				/>
 			}
 			footer={false}

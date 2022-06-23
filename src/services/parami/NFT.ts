@@ -1,7 +1,7 @@
 import { Keyring } from '@polkadot/api';
 import { DecodeKeystoreWithPwd } from './Crypto';
 import { subCallback } from './Subscription';
-import { BigNumber }  from "ethers";
+import { BigNumber } from "ethers";
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
