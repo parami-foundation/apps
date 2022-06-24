@@ -16,6 +16,15 @@ export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   return data;
 };
 
+export const GetSlotOfNft = async (nftId: string) => {
+  const slot = await window.apiWs.query.ad.slotOf(nftId);
+  if (slot.isEmpty) {
+    return null;
+  }
+  const res = slot.toHuman() as any;
+  return res;
+}
+
 export const GetSlotAdOf = async (nftId: string): Promise<any> => {
   const slot = await window.apiWs.query.ad.slotOf(nftId);
   if (slot.isEmpty) {
@@ -44,18 +53,18 @@ export const GetSlotAdOfByAssetID = async (assetID: string): Promise<any> => {
   return res;
 };
 
-export const CreateAds = async (budget: string, tags: any[], metadata: string, rewardRate: string, lifetime: number, payoutBase: string, payoutMin: string, payoutMax: string, account: any) => {
-  const ddl = await window.apiWs.query.system.number();
+export const CreateAds = async (tags: any[], metadata: string, rewardRate: string, lifetime: number, payoutBase: string, payoutMin: string, payoutMax: string, account: any) => {
+  const currentBlockNum = await window.apiWs.query.system.number();
   const injector = await web3FromSource(account.meta.source);
-  const tx = window.apiWs.tx.ad.create(budget, tags, metadata, rewardRate, lifetime + Number(ddl), payoutBase, payoutMin, payoutMax);
+  const tx = window.apiWs.tx.ad.create(tags, metadata, rewardRate, lifetime + Number(currentBlockNum), payoutBase, payoutMin, payoutMax);
 
   return await subWeb3Callback(tx, injector, account);
 };
 
-export const BidSlot = async (adId: string, nftID: string, amount: string, account: any) => {
+export const BidSlot = async (adId: string, nftID: string, amount: string, tokenSelect, tokenAmount, account: any) => { // todo: type this
   console.log(account)
   const injector = await web3FromSource(account.meta.source);
-  const tx = window.apiWs.tx.ad.bid(adId, nftID, amount);
+  const tx = window.apiWs.tx.ad.bidWithFraction(adId, nftID, amount, tokenSelect, tokenAmount);
 
   return await subWeb3Callback(tx, injector, account);
 };

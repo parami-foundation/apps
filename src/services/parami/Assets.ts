@@ -12,3 +12,12 @@ export const GetAssetsHolders = async (assetId: string) => {
   const accounts = await window.apiWs.query.assets.account.entries(assetId);
   return accounts;
 };
+
+export const GetBalanceOfBudgetPot = async (potId: string, assetId: string) => {
+  const balance = await window.apiWs.query.assets.account(Number(assetId), potId);
+  if (balance.isEmpty) {
+    return null;
+  }
+  const res = balance.toHuman() as any;
+  return res;
+}

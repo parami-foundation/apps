@@ -1,7 +1,5 @@
 import { GetEndtimeOf } from '@/services/parami/Advertisement';
 import { GetTagsOf } from '@/services/parami/Tag';
-import { deleteComma } from '@/utils/format';
-import { formatBalance } from '@polkadot/util';
 import { useState, useEffect } from 'react';
 import { useModel } from 'umi';
 
@@ -25,7 +23,6 @@ export default () => {
 
         data.push({
           id: adList[adItem],
-          budget: formatBalance(deleteComma(metadata.budget), { withUnit: 'AD3' }, 18),
           tag: await GetTagsOf(adList[adItem]),
           metadata: metadata.metadata,
           rewardRate: metadata.rewardRate,

@@ -5,7 +5,7 @@
   "description": "A parami(AD3) blockchain offcial app",
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
-    "build": "umi build",
+    "build": "cross-env GA_KEY=G-1FKB5YPBY7 umi build",
     "build:env": "cross-env REACT_APP_ENV=dev MOCK=none UMI_ENV=dev umi build",
     "deploy": "yarn build && yarn gh-pages",
     "dev": "yarn start:dev",

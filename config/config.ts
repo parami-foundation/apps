@@ -63,5 +63,8 @@ export default defineConfig({
       .rule('mjs-rule')
       .test(/.m?js/)
       .resolve.set('fullySpecified', false);
-  }
+  },
+  plugins: [
+    './src/plugins/ga-plugin'
+  ],
 });

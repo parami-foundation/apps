@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image } from 'antd';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { useIntl, useModel } from 'umi';
-import { Alert, Button, Divider, Input, message, notification } from 'antd';
+import { Alert, Button, Divider, Input, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
 import Marquee from 'react-fast-marquee';
 import { didToHex, parseAmount } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { BigIntToFloatString, deleteComma } from '@/utils/format';
-import { BidSlot, GetSlotAdOfByAssetID } from '@/services/parami/Advertisement';
-import { GetAssetInfo } from '@/services/parami/Assets';
+import { BidSlot, GetSlotOfNft } from '@/services/parami/Advertisement';
+import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { DownOutlined } from '@ant-design/icons';
 import SelectToken from './SelectToken';
+import FormErrorMsg from '@/components/FormErrorMsg';
+import FormFieldTitle from '@/components/FormFieldTitle';
 
 const Bid: React.FC<{
   adItem: any;
@@ -21,80 +23,26 @@ const Bid: React.FC<{
   const { dashboard } = useModel('currentUser');
   const [submiting, setSubmiting] = useState<boolean>(false);
   const [did, setDid] = useState<string>();
-  const [nftInfo, setNftInfo] = useState<any>({});
-  const [currentAd, setCurrentAd] = useState<any>({});
-  const [assetId, setAssetId] = useState<string>('');
+  const [didErrorMsg, setDidErrorMsg] = useState<string>('');
+  const [currentPrice, setCurrentPrice] = useState<string>('');
+  const [nftId, setNftId] = useState<string>('');
+  const [nftIdErrorMsg, setNftIdErrorMsg] = useState<string>('');
   const [price, setPrice] = useState<number>();
-  const [confirmNFT, setConfirmNFT] = useState<boolean>(false);
+  const [priceErrorMsg, setPriceErrorMsg] = useState<string>();
   const [selectModal, setSelectModal] = useState<boolean>(false);
   const [tokenAmount, setTokenAmount] = useState<string>('');
   const [tokenSelect, setTokenSelect] = useState<any>();
 
   const intl = useIntl();
-  const { Search } = Input;
 
-  const queryDid = async () => {
-    const didHexString = didToHex(did!);
-
-    const nftID = await GetPreferredNFT(didHexString);
-    if (nftID.isEmpty) {
-      notification.error({
-        key: 'userNotFound',
-        message: intl.formatMessage({
-          id: 'error.identity.notFound',
-        }),
-        duration: null,
-      });
-      return;
-    };
-    const nftMetadataRaw = await GetNFTMetaData(nftID.toString());
-    const nftMetadata: any = nftMetadataRaw?.toHuman();
-    if (nftMetadataRaw.isEmpty || !nftMetadata?.minted) {
-      notification.error({
-        message: intl.formatMessage({
-          id: 'error.nft.notFound',
-        }),
-        duration: null,
-      });
-      return;
-    };
-    const assetDataRaw = await GetAssetInfo(nftMetadata?.tokenAssetId);
-    if (assetDataRaw.isEmpty) {
-      notification.error({
-        message: intl.formatMessage({
-          id: 'error.nft.notFound',
-        }),
-        duration: null,
-      });
-      return;
-    }
-    setAssetId(nftID.toString());
-    setNftInfo(nftMetadata);
-  };
-
-  const getSlotAdOf = async () => {
-    try {
-      const ad = await GetSlotAdOfByAssetID(assetId);
-      if (ad?.ad) {
-        setCurrentAd(ad);
-      } else {
-        setCurrentAd({});
-      }
-      setConfirmNFT(true);
-    } catch (e: any) {
-      notification.error({
-        message: e.message || e,
-        duration: null,
-      });
-      return;
-    }
-  };
+  const minPrice = Math.max(Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2, 1);
 
   const handleSubmit = async () => {
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await BidSlot(adItem.id, assetId, parseAmount((price as number).toString()), JSON.parse(dashboard?.accountMeta));
+        console.log('submit', tokenSelect, tokenAmount);
+        await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), tokenSelect, parseAmount(tokenAmount), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);
         window.location.reload();
@@ -117,116 +65,173 @@ const Bid: React.FC<{
     }
   };
 
+  useEffect(() => {
+    const queryDid = async () => {
+      const didHexString = didToHex(did!);
+      const nftID = await GetPreferredNFT(didHexString);
+      if (nftID.isEmpty) {
+        setDidErrorMsg(intl.formatMessage({
+          id: 'error.identity.notFound',
+        }));
+        setNftId('');
+        return;
+      };
+      setNftId(nftID.toString());
+    };
+
+    setDidErrorMsg('');
+    if (did) {
+      queryDid().catch(e => {
+        notification.error({
+          message: e.message || e,
+          duration: null,
+        });
+      });
+    }
+  }, [did])
+
+  useEffect(() => {
+    const getCurrentPrice = async () => {
+      const nftMetadataRaw = await GetNFTMetaData(nftId);
+      const nftMetadata: any = nftMetadataRaw?.toHuman();
+      if (nftMetadataRaw.isEmpty || !nftMetadata?.minted) {
+        return;
+      };
+      const assetDataRaw = await GetAssetInfo(nftMetadata?.tokenAssetId);
+      if (assetDataRaw.isEmpty) {
+        return;
+      }
+
+      const slot = await GetSlotOfNft(nftId);
+      if (!slot) {
+        return '0';
+      }
+      const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
+      if (!balance) {
+        return;
+      }
+
+      return balance.balance;
+    }
+    
+    setDidErrorMsg('');
+    setCurrentPrice('');
+    setNftIdErrorMsg('');
+    if (nftId) {
+      getCurrentPrice().then(price => {
+        if (price === undefined) {
+          setNftIdErrorMsg(intl.formatMessage({
+            id: 'error.nft.invalid',
+          }));
+          return;
+        }
+        setCurrentPrice(price);
+      }).catch((e) => {
+        notification.error({
+          message: e.message || e,
+          duration: null,
+        });
+      });
+    }
+  }, [nftId]);
+
+  useEffect(() => {
+    setPriceErrorMsg('');
+    if (price !== undefined && price < minPrice) {
+      setPriceErrorMsg('price too low');
+    }
+
+    // todo: validate max amount
+  }, [price]);
+
   return (
     <>
       <div className={styles.modalBody}>
         <Divider>Find NFT ID from DID</Divider>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.did',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
-            <Search
-              key={nftInfo?.id}
+            <Input
               size='large'
-              className="tag-input"
-              enterButton={intl.formatMessage({
-                id: 'common.search',
-              })}
+              className={`${didErrorMsg ? style.inputError : ''}`}
               onChange={(e) => {
                 setDid(e.target.value);
-              }}
-              onSearch={async () => {
-                if (!did) {
-                  message.error('Please Input DID');
-                  return;
-                }
-                await queryDid();
               }}
               placeholder={'did:ad3:......'}
               value={did}
             />
+            {didErrorMsg && <FormErrorMsg msg={didErrorMsg} />}
           </div>
         </div>
         <Divider />
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.nftID',
-            })}
+            })} required />
           </div>
           <div className={styles.value}>
-            <Search
-              key={nftInfo?.id}
+            <Input
               size='large'
-              className="tag-input"
-              enterButton={intl.formatMessage({
-                id: 'common.confirm',
-              })}
+              className={`${nftIdErrorMsg ? style.inputError : ''}`}
               onChange={(e) => {
-                setAssetId(e.target.value);
+                setNftId(e.target.value);
               }}
-              onSearch={async () => {
-                if (!assetId) {
-                  message.error('Please Input NFT ID');
-                  return;
-                }
-                await getSlotAdOf();
-              }}
-              value={assetId}
+              value={nftId}
             />
+            {nftIdErrorMsg && <FormErrorMsg msg={nftIdErrorMsg} />}
           </div>
         </div>
-        {!!Object.keys(currentAd).length && (
+        {!!currentPrice.length && (
           <div className={styles.field}>
             <div className={styles.title}>
-              {intl.formatMessage({
+              <FormFieldTitle title={intl.formatMessage({
                 id: 'dashboard.ads.launch.currentPrice',
-              })}
+              })} required />
             </div>
             <div className={styles.value}>
               <Input
                 readOnly
                 disabled
                 size='large'
-                value={`${formatBalance(deleteComma(currentAd?.remain), { withUnit: 'AD3' }, 18)}`}
+                value={`${formatBalance(deleteComma(currentPrice), { decimals: 18 })}`}
               />
             </div>
           </div>
         )}
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.offer',
-            })}
+            })} required />
             <br />
             <small>
-              {intl.formatMessage({
-                id: 'dashboard.ads.launch.offer.tip',
-              })}
+              {`The bid must be higher than ${minPrice} (20% higher than the current price)`}
             </small>
           </div>
           <div className={styles.value}>
             <Input
               value={price}
-              className={styles.withAfterInput}
-              placeholder={!!Object.keys(currentAd).length ? (Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2).toString() : ''}
+              className={`${styles.withAfterInput} ${priceErrorMsg ? style.inputError : ''}`}
               size='large'
               type='number'
-              min={!!Object.keys(currentAd).length ? Number(BigIntToFloatString(deleteComma(currentAd?.remain), 18)) * 1.2 : 0}
+              min={minPrice ? minPrice : 0}
               onChange={(e) => {
                 setPrice(Number(e.target.value));
               }}
             />
+            {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
           </div>
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            {intl.formatMessage({
+            <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.token',
-            })}
+            })} />
             <br />
             <small>
               {intl.formatMessage({
@@ -276,25 +281,25 @@ const Bid: React.FC<{
             }
           />
         </div>
-        {confirmNFT && (
-          <div className={styles.field}>
-            <Button
-              block
-              type="primary"
-              shape="round"
-              size="large"
-              className={styles.button}
-              loading={submiting}
-              onClick={() => {
-                handleSubmit();
-              }}
-            >
-              {intl.formatMessage({
-                id: 'common.submit',
-              })}
-            </Button>
-          </div>
-        )}
+
+        <div className={styles.field}>
+          <Button
+            block
+            type="primary"
+            shape="round"
+            size="large"
+            className={styles.button}
+            disabled={!nftId || !currentPrice.length || !price || !!nftIdErrorMsg || !!priceErrorMsg}
+            loading={submiting}
+            onClick={() => {
+              handleSubmit();
+            }}
+          >
+            {intl.formatMessage({
+              id: 'common.submit',
+            })}
+          </Button>
+        </div>
       </div>
 
       <SelectToken

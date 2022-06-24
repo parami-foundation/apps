@@ -39,13 +39,6 @@ const Advertisement: React.FC = () => {
 		},
 		{
 			title: intl.formatMessage({
-				id: 'dashboard.ads.item.budget',
-			}),
-			dataIndex: 'budget',
-			key: 'budget',
-		},
-		{
-			title: intl.formatMessage({
 				id: 'dashboard.ads.item.tag',
 			}),
 			dataIndex: 'tag',
@@ -98,7 +91,13 @@ const Advertisement: React.FC = () => {
 					>
 						Bid
 					</a>
-					<a
+					<Tooltip
+						placement="topLeft"
+						title="comming soon"
+					>
+						View
+					</Tooltip>
+					{/* <a
 						key="view"
 						onClick={() => {
 							setAdItem(item);
@@ -106,7 +105,7 @@ const Advertisement: React.FC = () => {
 						}}
 					>
 						View
-					</a>
+					</a> */}
 				</Space>
 			),
 		},
@@ -233,38 +232,42 @@ const Advertisement: React.FC = () => {
 				}}
 			/>
 
-			<BigModal
-				visable={createModal}
-				title={intl.formatMessage({
-					id: 'dashboard.ads.create',
-				})}
-				content={
-					<Create
-						setCreateModal={setCreateModal}
-					/>
-				}
-				footer={false}
-				close={() => {
-					setCreateModal(false);
-				}}
-			/>
+			{createModal && (
+				<BigModal
+					visable={true}
+					title={intl.formatMessage({
+						id: 'dashboard.ads.create',
+					})}
+					content={
+						<Create
+							setCreateModal={setCreateModal}
+						/>
+					}
+					footer={false}
+					close={() => {
+						setCreateModal(false);
+					}}
+				/>
+			)}
 
-			<BigModal
-				visable={bidModal}
-				title={intl.formatMessage({
-					id: 'dashboard.ads.bid',
-				})}
-				content={
-					<Bid
-						adItem={adItem}
-						setBidModal={setBidModal}
-					/>
-				}
-				footer={false}
-				close={() => {
-					setBidModal(false);
-				}}
-			/>
+			{bidModal && (
+				<BigModal
+					visable={true}
+					title={intl.formatMessage({
+						id: 'dashboard.ads.bid',
+					})}
+					content={
+						<Bid
+							adItem={adItem}
+							setBidModal={setBidModal}
+						/>
+					}
+					footer={false}
+					close={() => {
+						setBidModal(false);
+					}}
+				/>
+			)}
 
 			<BigModal
 				visable={listModal}
