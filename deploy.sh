@@ -8,7 +8,10 @@ if [ $? -eq 0 ]; then
     cp index.html 404.html
     git init .
     git branch -M gh-pages
-    git remote add origin git@github.com:parami-protocol/apps.git
+    if [ "$1" = "staging" ]; then
+        git remote add origin git@github.com:parami-protocol/apps-staging.git
+    else
+        git remote add origin git@github.com:parami-protocol/apps.git
     git add -f .
     git commit -m "Deploy"
     git push -f origin gh-pages
