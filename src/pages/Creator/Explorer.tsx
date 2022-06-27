@@ -15,7 +15,7 @@ import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAvatar } from '@/services/parami/HTTP';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
+import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { GetAdRemain, GetUserInfo, DrylySellToken } from '@/services/parami/RPC';
 
 const Explorer: React.FC = () => {
@@ -36,7 +36,7 @@ const Explorer: React.FC = () => {
   const [viewer, setViewer] = useState<any>();
   const [referer, setRefererr] = useState<any>();
   const [member, setMember] = useState<any>();
-  const [remain, setRemain] = useState<any>();
+  const [remain, setRemain] = useState<bigint>();
 
   const intl = useIntl();
   const access = useAccess();
@@ -89,8 +89,8 @@ const Explorer: React.FC = () => {
 
       setAd(adJson);
 
-      const remainData = await GetAdRemain(slot);
-      setRemain(remainData);
+      const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
+      setRemain(BigInt(balance?.balance?.replaceAll(',', '') || '0'));
 
     } catch (e: any) {
       notification.error({
