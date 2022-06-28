@@ -27,9 +27,9 @@ const Advertisement: React.FC<{
 	avatar: string;
 	did: string;
 	adData: any;
-	remain: bigint;
-	loading: boolean;
-}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain }) => {
+	remain: bigint | undefined;
+	adImageOnLoad: () => void
+}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain = 0, adImageOnLoad = () => {} }) => {
 	const { wallet } = useModel('currentUser');
 	const [infoModal, setInfoModal] = useState<boolean>(false);
 	const [chartModal, setChartModal] = useState<boolean>(false);
@@ -229,6 +229,7 @@ const Advertisement: React.FC<{
 										gotoAdPage();
 									}
 								}}
+								onLoad={adImageOnLoad}
 							/>
 						</div>
 					</div>

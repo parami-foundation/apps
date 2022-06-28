@@ -9,6 +9,11 @@ export const GetUserInfo = async (did: string) => {
   return { ...user, avatar, nickname };
 };
 
+export const GetSimpleUserInfo = async (did: string) => {
+  const [avatar, nickname] = await (window.apiWs.rpc as any).did.batchGetMetadata(did, ['pic', 'name']);
+  return { avatar, nickname };
+}
+
 export const DrylyBuyToken = async (tokenId: string, tokens: string) => {
   const value = await (window.apiWs.rpc as any).swap.drylyBuyTokens(tokenId, tokens);
   return value.toHuman();

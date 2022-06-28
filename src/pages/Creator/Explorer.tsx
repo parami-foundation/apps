@@ -16,7 +16,7 @@ import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/sub
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAvatar } from '@/services/parami/HTTP';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
-import { GetAdRemain, GetUserInfo, DrylySellToken } from '@/services/parami/RPC';
+import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -31,7 +31,8 @@ const Explorer: React.FC = () => {
   const [assetPrice, setAssetPrice] = useState<string>('');
   const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
   const [notAccess, setNotAccess] = useState<boolean>(false);
-  const [adData, setAdData] = useState<any>({});
+  const [adSlot, setAdSlot] = useState<any>();
+  const [adData, setAdData] = useState<any>();
   const [ad, setAd] = useState<Type.AdInfo>(null);
   const [viewer, setViewer] = useState<any>();
   const [referer, setRefererr] = useState<any>();
@@ -58,155 +59,71 @@ const Explorer: React.FC = () => {
   const did = !!params?.kol ? 'did' + params?.kol : hexToDid(wallet.did!);
   const didHex = didToHex(did);
 
-  // Get Advertisement Info
-  const GetADInfo = async () => {
-    try {
-      const slot = await GetSlotAdOf(params.nftID);
-      if (!slot) return;
-      const data = slot.ad;
-      if (!data?.metadata) return;
-      setAdData(data);
+  const errorHandler = (e) => {
+    notification.error({
+      message: e.message,
+      duration: null,
+    });
+  }
 
-      if (data?.metadata?.indexOf('ipfs://') < 0) return;
+  const queryAdSlot = async () => {
+    const slot = await GetSlotAdOf(params.nftID);
+    if (!slot) return;
+    setAdSlot(slot);
+  }
 
-      const hash = data?.metadata?.substring(7);
+  const queryViewers = async (data) => {
+    const viewers = await getAdViewerCounts(data?.id);
+    setViewer(viewers);
+  }
 
-      const viewers = await getAdViewerCounts(data?.id);
-      setViewer(viewers);
+  const queryReferers = async (data) => {
+    const referers = await getAdvertisementRefererCounts(data?.id);
+    setRefererr(referers);
+  }
 
-      const referers = await getAdvertisementRefererCounts(data?.id);
-      setRefererr(referers);
+  const queryAdJson = async (data) => {
+    if (data?.metadata?.indexOf('ipfs://') < 0) return;
 
-      const res = await fetch(config.ipfs.endpoint + hash);
-      const adJson: Type.AdInfo = await res.json();
+    const hash = data?.metadata?.substring(7);
 
-      if (!adJson) return;
+    const res = await fetch(config.ipfs.endpoint + hash);
+    const adJson: Type.AdInfo = await res.json();
 
-      adJson.link = adJson.link + '?kol=' + didToHex(did);
-      if (!!referrer) {
-        adJson.link += '&referrer=' + referrer;
-      };
+    if (!adJson) return;
 
-      setAd(adJson);
+    adJson.link = adJson.link + '?kol=' + didToHex(did);
+    if (!!referrer) {
+      adJson.link += '&referrer=' + referrer;
+    };
 
-      const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
-      setRemain(BigInt(balance?.balance?.replaceAll(',', '') || '0'));
+    setAd(adJson);
+  }
 
-    } catch (e: any) {
-      notification.error({
-        message: e.message,
-        duration: null,
-      });
-      return;
+  const queryBalance = async (slot) => {
+    const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
+    setRemain(BigInt(balance?.balance?.replaceAll(',', '') || '0'));
+  }
+
+  useEffect(() => {
+    if (adSlot) {
+      try {
+        queryBalance(adSlot);
+
+        const adData = adSlot.ad;
+        if (!adData?.metadata) return;
+        setAdData(adData);
+
+        queryViewers(adData);
+        queryReferers(adData);
+        queryAdJson(adData);
+      } catch (e) {
+        errorHandler(e);
+      }
     }
-  };
+  }, [adSlot])
 
-  // Query user info and asset info
-  const QueryUserAndAsset = async () => {
-    setLoading(true);
-    try {
-      const userData = await GetUserInfo(didHex);
-      if (!userData) {
-        notification.error({
-          message: intl.formatMessage({
-            id: 'error.identity.notFound',
-          }),
-          duration: null,
-        });
-        history.goBack();
-        return;
-      };
-      setUser(userData);
-
-      // Query user avatar
-      if (userData?.avatar.indexOf('ipfs://') > -1) {
-        const hash = userData?.avatar?.substring(7);
-        const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
-
-        // Network exception
-        if (!response) {
-          notification.error({
-            key: 'networkException',
-            message: 'Network exception',
-            description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-            duration: null,
-          });
-          setLoading(false);
-        }
-
-        if (response?.status === 200) {
-          setAvatar(window.URL.createObjectURL(data));
-        }
-      };
-
-      // Set page title
-      document.title = `${userData?.nickname.toString() || did} - Para Metaverse Identity`;
-
-      const nftInfoData = await GetNFTMetaData(params?.nftID);
-
-      // If don't have any nft
-      if (nftInfoData?.isEmpty) {
-        notification.error({
-          message: intl.formatMessage({
-            id: 'error.nft.notFound',
-          }),
-          duration: null,
-        })
-        history.goBack();
-        return;
-      }
-
-      const nftInfo: any = nftInfoData?.toHuman();
-      setNft(nftInfo);
-
-      if (nftInfo?.owner !== didHex) {
-        notification.error({
-          message: intl.formatMessage({
-            id: 'error.nft.notFound',
-          }),
-          duration: null,
-        })
-        history.goBack();
-        return;
-      }
-
-      const assetData = await GetAssetInfo(nftInfo?.tokenAssetId as string);
-      // If don't mint any nft
-      if (assetData.isEmpty) {
-        setKOL(false);
-        return;
-      }
-
-      const assetInfo = assetData.toHuman() as any;
-      setAsset(assetInfo);
-
-      const value = await DrylySellToken(nftInfo?.tokenAssetId, parseAmount('1'));
-      setAssetPrice(value.toString());
-
-      const assetDetail = await GetAssetDetail(nftInfo?.tokenAssetId);
-
-      const supply: string = assetDetail.unwrap().supply.toString();
-      setTotalSupply(BigInt(supply));
-
-      const members = await GetAssetsHolders(nftInfo?.tokenAssetId);
-      setMember(members);
-
-      await GetADInfo();
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 2000);
-    } catch (e: any) {
-      notification.error({
-        message: e.message,
-        duration: null,
-      });
-      setLoading(false);
-      return;
-    }
-  };
-
-  const QueryPreferred = async () => {
+  const queryPreferred = async () => {
     try {
       const nftID = await GetPreferredNFT(didHex);
       if (nftID.isEmpty) {
@@ -223,9 +140,127 @@ const Explorer: React.FC = () => {
     }
   };
 
+  const queryUser = async () => {
+    const userData = await GetSimpleUserInfo(didHex);
+    if (!userData) {
+      notification.error({
+        message: intl.formatMessage({
+          id: 'error.identity.notFound',
+        }),
+        duration: null,
+      });
+      history.goBack();
+      return;
+    };
+    setUser(userData);
+  }
+
+  const queryAvatar = async () => {
+    // Query user avatar
+    if (user?.avatar.indexOf('ipfs://') > -1) {
+      const hash = user?.avatar?.substring(7);
+      const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+
+      // Network exception
+      if (!response) {
+        notification.error({
+          key: 'networkException',
+          message: 'Network exception',
+          description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+          duration: null,
+        });
+        setLoading(false);
+      }
+
+      if (response?.status === 200) {
+        setAvatar(window.URL.createObjectURL(data));
+      }
+    };
+  }
+
+  useEffect(() => {
+    if (user) {
+      // Set page title
+      document.title = `${user?.nickname.toString() || did} - Para Metaverse Identity`;
+      queryAvatar().catch(errorHandler);
+    }
+  }, [user]);
+
+  const queryNftMetaData = async () => {
+    const nftInfoData = await GetNFTMetaData(params?.nftID);
+
+    // If don't have any nft
+    if (nftInfoData?.isEmpty) {
+      notification.error({
+        message: intl.formatMessage({
+          id: 'error.nft.notFound',
+        }),
+        duration: null,
+      })
+      history.goBack();
+      return;
+    }
+
+    const nftInfo: any = nftInfoData?.toHuman();
+
+    if (nftInfo?.owner !== didHex) {
+      notification.error({
+        message: intl.formatMessage({
+          id: 'error.nft.notFound',
+        }),
+        duration: null,
+      })
+      history.goBack();
+      return;
+    }
+
+    setNft(nftInfo);
+  }
+
+  useEffect(() => {
+    const queryAssetInfo = async () => {
+      const assetData = await GetAssetInfo(nft?.tokenAssetId as string);
+      // If don't mint any nft
+      if (assetData.isEmpty) {
+        setKOL(false);
+        return;
+      }
+
+      const assetInfo = assetData.toHuman() as any;
+      setAsset(assetInfo);
+    }
+
+    const queryAssetPrice = async () => {
+      const value = await DrylySellToken(nft?.tokenAssetId, parseAmount('1'));
+      setAssetPrice(value.toString());
+    }
+
+    const queryTotalSupply = async () => {
+      const assetDetail = await GetAssetDetail(nft?.tokenAssetId);
+      const supply: string = assetDetail.unwrap().supply.toString();
+      setTotalSupply(BigInt(supply));
+    }
+
+    const queryMember = async () => {
+      const members = await GetAssetsHolders(nft?.tokenAssetId);
+      setMember(members);
+    }
+    
+    if (nft) {
+      try {
+        queryAssetInfo();
+        queryAssetPrice();
+        queryTotalSupply();
+        queryMember();
+      } catch (e) {
+        errorHandler(e);
+      }
+    }
+  }, [nft])
+
   useEffect(() => {
     if (apiWs && !params?.nftID) {
-      QueryPreferred();
+      queryPreferred();
     };
 
     if (!access.canWalletUser) {
@@ -234,7 +269,13 @@ const Explorer: React.FC = () => {
     };
 
     if (apiWs) {
-      QueryUserAndAsset();
+      try {
+        queryNftMetaData();
+        queryAdSlot();
+        queryUser();
+      } catch (e) {
+        errorHandler(e);
+      }
     };
   }, [apiWs]);
 
@@ -256,7 +297,7 @@ const Explorer: React.FC = () => {
                 height: loading ? 200 : 30,
                 animation: loading ? 1 : 0,
                 position: loading ? 'fixed' : 'absolute',
-                display: loading || Object.keys(adData).length ? 'flex' : 'none',
+                display: loading || (adData && Object.keys(adData).length) ? 'flex' : 'none',
               }}
               preview={false}
             />
@@ -293,7 +334,7 @@ const Explorer: React.FC = () => {
             />
           </div>
         )}
-        {(KOL && Object.keys(adData).length > 0) && (
+        {(KOL && adData && Object.keys(adData).length > 0) && (
           <div
             className={styles.pageContainer}
             style={{
@@ -312,7 +353,9 @@ const Explorer: React.FC = () => {
               did={did}
               adData={adData}
               remain={remain}
-              loading={loading}
+              adImageOnLoad={() => {
+                setLoading(false)
+              }}
             />
           </div>
         )}
