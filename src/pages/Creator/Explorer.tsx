@@ -229,26 +229,35 @@ const Explorer: React.FC = () => {
       const assetInfo = assetData.toHuman() as any;
       setAsset(assetInfo);
     }
-
-    const queryAssetPrice = async () => {
-      const value = await DrylySellToken(nft?.tokenAssetId, parseAmount('1'));
-      setAssetPrice(value.toString());
-    }
-
-    const queryTotalSupply = async () => {
-      const assetDetail = await GetAssetDetail(nft?.tokenAssetId);
-      const supply: string = assetDetail.unwrap().supply.toString();
-      setTotalSupply(BigInt(supply));
-    }
-
-    const queryMember = async () => {
-      const members = await GetAssetsHolders(nft?.tokenAssetId);
-      setMember(members);
-    }
     
     if (nft) {
       try {
         queryAssetInfo();
+      } catch (e) {
+        errorHandler(e);
+      }
+    }
+  }, [nft]);
+
+  const queryAssetPrice = async () => {
+    const value = await DrylySellToken(nft?.tokenAssetId, parseAmount('1'));
+    setAssetPrice(value.toString());
+  }
+
+  const queryTotalSupply = async () => {
+    const assetDetail = await GetAssetDetail(nft?.tokenAssetId);
+    const supply: string = assetDetail.unwrap().supply.toString();
+    setTotalSupply(BigInt(supply));
+  }
+
+  const queryMember = async () => {
+    const members = await GetAssetsHolders(nft?.tokenAssetId);
+    setMember(members);
+  }
+
+  useEffect(() => {
+    if (nft && asset) {
+      try {
         queryAssetPrice();
         queryTotalSupply();
         queryMember();
@@ -256,7 +265,13 @@ const Explorer: React.FC = () => {
         errorHandler(e);
       }
     }
-  }, [nft])
+  }, [nft, asset]);
+
+  useEffect(() => {
+    if (asset) {
+      queryAdSlot().catch(errorHandler);
+    }
+  }, [asset])
 
   useEffect(() => {
     if (apiWs && !params?.nftID) {
@@ -271,7 +286,6 @@ const Explorer: React.FC = () => {
     if (apiWs) {
       try {
         queryNftMetaData();
-        queryAdSlot();
         queryUser();
       } catch (e) {
         errorHandler(e);
@@ -321,7 +335,7 @@ const Explorer: React.FC = () => {
             </div>
           </>
         )}
-        {!KOL && access.canWalletUser && did !== hexToDid(wallet.did!) && (
+        {!KOL && access.canWalletUser && did !== hexToDid(wallet.did!) && nft && (
           <div
             className={styles.pageContainer}
             style={{
@@ -330,7 +344,7 @@ const Explorer: React.FC = () => {
             }}
           >
             <Support
-              did={did}
+              nft={nft}
             />
           </div>
         )}

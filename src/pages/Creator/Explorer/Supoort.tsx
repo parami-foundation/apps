@@ -4,7 +4,6 @@ import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { didToHex } from '@/utils/common';
 import { SupportDAO } from '@/services/parami/NFT';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { FloatStringToBigInt } from '@/utils/format';
@@ -13,8 +12,8 @@ import AD3 from '@/components/Token/AD3';
 const { Title } = Typography;
 
 const Support: React.FC<{
-	did: string,
-}> = ({ did }) => {
+	nft: any,
+}> = ({ nft }) => {
 	const { balance } = useModel('balance');
 	const { wallet } = useModel('currentUser');
 	const [submitting, setSubmitting] = useState(false);
@@ -28,8 +27,7 @@ const Support: React.FC<{
 	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet?.keystore) {
 			try {
-				const didHexString = didToHex(did);
-				const info: any = await SupportDAO(didHexString, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+				const info: any = await SupportDAO(nft.tokenAssetId, FloatStringToBigInt(number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
 				setModal(false);
 				setSubmitting(false);
 				if (preTx && account) {
