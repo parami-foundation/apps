@@ -2,6 +2,9 @@ import { formatBoolean } from '@/utils/format';
 import { useModel } from 'umi';
 import { notification } from 'antd';
 import { useEffect } from 'react';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import Keyring from '@polkadot/keyring';
+import config from '@/config/config';
 
 export default () => {
   const apiWs = useModel('apiWs');
@@ -50,6 +53,29 @@ export default () => {
       QueryAccountExist(dashboardAccount);
     }
   }, [apiWs]);
+
+  useEffect(() => {
+    const logout = () => {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.location.href = config.page.homePage;
+    }
+
+    // validate account
+    if (walletPassphrase && walletKeystore) {
+      const decrypted = DecodeKeystoreWithPwd(walletPassphrase, walletKeystore);
+      if (!decrypted) {
+        logout();
+        return;
+      }
+
+      const keyring = new Keyring({ type: 'sr25519' });
+      const { address } = keyring.addFromUri(decrypted);
+      if (address !== walletAccount) {
+        logout();
+      }
+    }
+  }, [])
 
   return {
     common: {
