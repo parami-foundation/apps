@@ -54,29 +54,6 @@ export default () => {
     }
   }, [apiWs]);
 
-  useEffect(() => {
-    const logout = () => {
-      localStorage.clear();
-      sessionStorage.clear();
-      window.location.href = config.page.homePage;
-    }
-
-    // validate account
-    if (walletPassphrase && walletKeystore) {
-      const decrypted = DecodeKeystoreWithPwd(walletPassphrase, walletKeystore);
-      if (!decrypted) {
-        logout();
-        return;
-      }
-
-      const keyring = new Keyring({ type: 'sr25519' });
-      const { address } = keyring.addFromUri(decrypted);
-      if (address !== walletAccount) {
-        logout();
-      }
-    }
-  }, [])
-
   return {
     common: {
       languageCode,
