@@ -219,7 +219,7 @@ const NFTs: React.FC = () => {
 																			) : (
 																				<Progress
 																					percent={
-																						Number(BigIntToFloatString(item?.deposit, 18)) / 1000
+																						parseFloat((Number(BigIntToFloatString(item?.deposit, 18)) / 1000 * 100).toFixed(2))
 																					}
 																					strokeColor='#ff5b00'
 																					className={style.progress}
