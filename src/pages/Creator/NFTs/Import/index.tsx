@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, notification } from 'antd';
+import { Button, notification, Alert } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
 import { registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
@@ -14,6 +14,7 @@ import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import ethNet from '@/config/ethNet';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,11 +29,13 @@ const ImportNFTModal: React.FC<{
   const [secModal, setSecModal] = useState<boolean>(false);
   const [passphrase, setPassphrase] = useState<string>('');
   const [mintItem, setMintItem] = useState<Erc721>();
+  const [chainWarning, setChainWarning] = useState<string>('');
   const {
     Account,
     Signer,
     Provider,
     ChainId,
+    ChainName
   } = useModel("web3");
 
   const intl = useIntl();
@@ -118,7 +121,7 @@ const ImportNFTModal: React.FC<{
 
   useEffect(() => {
     if (!!Account) {
-      if (ChainId !== 1 && ChainId !== 4) {
+      if (ChainId !== 4) {
         return;
       }
       if (!Provider || !Signer) {
@@ -138,8 +141,19 @@ const ImportNFTModal: React.FC<{
     }
   }, [coverRef]);
 
+  useEffect(() => {
+		if (ChainId && ChainName && ChainId !== 4) {
+			if (ChainId !== 4) {
+				setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[4]}.`);
+			} else {
+				setChainWarning('');
+			}
+		}
+	}, [ChainId, ChainName]);
+
   return (
     <div className={style.importContainer}>
+      {chainWarning && <Alert className={style.chainWarning} message={chainWarning} type="warning" showIcon />}
       <Skeleton
         loading={!apiWs || loading}
         height={200}
