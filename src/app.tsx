@@ -9,7 +9,6 @@ import { access } from '@/access';
 import type { VoidFn } from '@polkadot/api/types';
 import type { ApiPromise } from '@polkadot/api';
 import NoFoundPage from './pages/404';
-import { initWebSocket } from './utils/websocket';
 import { QueryCurrentUser } from './services/parami/currentUser';
 import { Merge } from './services/parami/Merge';
 
@@ -32,8 +31,6 @@ export async function getInitialState(): Promise<{
   await Merge();
 
   const currentInfo = await QueryCurrentUser();
-
-  await initWebSocket(config.main.socketServer);
 
   if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.wallet?.inProcess === 'createAccount') {
     window.location.href = config.page.createPage;
