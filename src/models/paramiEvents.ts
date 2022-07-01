@@ -14,7 +14,7 @@ export default () => {
       setEvents(events);
     });
     return unsub;
-  }, []);
+  }, [apiWs]);
 
   return {
     Events,
