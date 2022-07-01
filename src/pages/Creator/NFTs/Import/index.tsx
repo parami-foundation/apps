@@ -32,7 +32,7 @@ const ImportNFTModal: React.FC<{
   const [mintItem, setMintItem] = useState<Erc721>();
   const [chainWarning, setChainWarning] = useState<string>('');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
-  const [eventsUnsub, setEventsUnsub] = useState<(VoidFn)>(() => { });
+  const [eventsUnsub, setEventsUnsub] = useState<(VoidFn)>();
   const {
     Account,
     Signer,
@@ -111,7 +111,7 @@ const ImportNFTModal: React.FC<{
         });
 
         const unsub = await SubParamiEvents();
-        setEventsUnsub(unsub as VoidFn);
+        setEventsUnsub(() => unsub);
       } catch (e: any) {
         console.log(e);
         notification.error({
@@ -184,8 +184,11 @@ const ImportNFTModal: React.FC<{
         }
       })
     }
-    return eventsUnsub;
   }, [Events])
+
+  useEffect(() => {
+    return () => eventsUnsub && eventsUnsub();
+  }, [eventsUnsub])
 
   return (
     <div className={style.importContainer}>
