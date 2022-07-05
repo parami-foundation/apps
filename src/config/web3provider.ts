@@ -4,12 +4,12 @@ export const providerOptions = {
     walletconnect: {
         package: WalletConnectProvider, // required
         options: {
-            infuraId: '836f7f85d3104fae9263dee3bcac66c9' // required
+            infuraId: 'eca99940fe244068a87095aa826a34fa' // required
         }
     }
 };
 
-export const infuraId = '836f7f85d3104fae9263dee3bcac66c9';
+export const infuraId = 'eca99940fe244068a87095aa826a34fa';
 
 export const infuraProvider = {
     1: 'https://mainnet.infura.io/v3/' + infuraId,

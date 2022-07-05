@@ -4,6 +4,7 @@ import { useModel } from "umi";
 
 export default () => {
 	const apiWs = useModel('apiWs');
+	const { wallet } = useModel('currentUser');
 	const { blockNumber } = useModel('blockNumber');
 	const [linkedInfo, setLinkedInfo] = useState<Record<string, any>>({});
 	const [lastNumber, setLastNumber] = useState<any>(0);
@@ -11,7 +12,7 @@ export default () => {
 
 	const platforms = ['Telegram', 'Discord', 'Twitter', 'Bitcoin', 'Ethereum', 'Binance', 'Eosio', 'Solana', 'Kusama', 'Polkadot', 'Tron'];
 
-	const did = localStorage.getItem('did') as string;
+	const did = wallet.did as string;
 
 	const getLinkedInfo = async () => {
 		if (!apiWs) {

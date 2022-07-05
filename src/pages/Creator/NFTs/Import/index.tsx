@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, notification } from 'antd';
+import { Button, notification, Alert } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
 import { registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
@@ -14,13 +14,15 @@ import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import ethNet from '@/config/ethNet';
+import { VoidFn } from '@polkadot/api/types';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setImportModal }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
-  const { getNFTs } = useModel('nft');
+  const { nftList } = useModel('nft');
   const [loading, setLoading] = useState<boolean>(true);
   const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
@@ -28,11 +30,15 @@ const ImportNFTModal: React.FC<{
   const [secModal, setSecModal] = useState<boolean>(false);
   const [passphrase, setPassphrase] = useState<string>('');
   const [mintItem, setMintItem] = useState<Erc721>();
+  const [chainWarning, setChainWarning] = useState<string>('');
+  const { Events, SubParamiEvents } = useModel('paramiEvents');
+  const [eventsUnsub, setEventsUnsub] = useState<(VoidFn)>();
   const {
     Account,
     Signer,
     Provider,
     ChainId,
+    ChainName
   } = useModel("web3");
 
   const intl = useIntl();
@@ -96,7 +102,16 @@ const ImportNFTModal: React.FC<{
         if (preTx && account) {
           return info
         }
-        getNFTs();
+
+        notification.info({
+          key: 'importNFTprocessing',
+          message: `Importing NFT...`,
+          description: 'This might take up to a minute',
+          duration: null
+        });
+
+        const unsub = await SubParamiEvents();
+        setEventsUnsub(() => unsub);
       } catch (e: any) {
         console.log(e);
         notification.error({
@@ -118,15 +133,18 @@ const ImportNFTModal: React.FC<{
 
   useEffect(() => {
     if (!!Account) {
-      if (ChainId !== 1 && ChainId !== 4) {
+      if (ChainId !== 4) {
         return;
       }
       if (!Provider || !Signer) {
         return;
       }
       getNftsOfSigner(Signer).then((r) => {
-        console.debug("nfts of signer", r);
-        setTokenData(r);
+        setTokenData(r.filter(nft => {
+          return !(nftList ?? []).find(importedNft => {
+            return importedNft.name === nft.name && importedNft.token === nft.tokenId?.toHexString();
+          });
+        }));
         setLoading(false);
       });
     }
@@ -138,8 +156,43 @@ const ImportNFTModal: React.FC<{
     }
   }, [coverRef]);
 
+  useEffect(() => {
+    if (ChainId && ChainName && ChainId !== 4) {
+      if (ChainId !== 4) {
+        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[4]}.`);
+      } else {
+        setChainWarning('');
+      }
+    }
+  }, [ChainId, ChainName]);
+
+  useEffect(() => {
+    if (Events?.length) {
+      Events.forEach(record => {
+        const { event } = record;
+        if (`${event?.section}:${event?.method}` === 'nft:Created') {
+          if (event?.data[0].toString() === wallet?.did) {
+            notification.success({
+              key: 'importNFTsuccess',
+              message: `Import NFT success!`,
+              description: 'Reloading your NFTs...',
+            });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        }
+      })
+    }
+  }, [Events])
+
+  useEffect(() => {
+    return () => eventsUnsub && eventsUnsub();
+  }, [eventsUnsub])
+
   return (
     <div className={style.importContainer}>
+      {chainWarning && <Alert className={style.chainWarning} message={chainWarning} type="warning" showIcon />}
       <Skeleton
         loading={!apiWs || loading}
         height={200}
