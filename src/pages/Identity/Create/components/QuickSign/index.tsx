@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../../../style.less';
-import TelegramLoginButton from 'react-telegram-login';
 import config from '@/config/config';
 import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
+import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 
 const QuickSign: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -86,13 +86,13 @@ const QuickSign: React.FC<{
           spinning={!apiWs}
           indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
         >
-          <TelegramLoginButton
+          <CustomTelegramLoginButton
             dataOnauth={(response) => {
               response.bot = config.airdropService.telegram.botName;
               handleQuickCreate(response, 'Telegram');
             }}
             botName={config.airdropService.telegram.botName}
-          />
+          ></CustomTelegramLoginButton>
           <DiscordLoginButton
             dataOauth={(response) => { handleQuickCreate(response, 'Discord') }}
             clientId={config.airdropService.discord.clientId}

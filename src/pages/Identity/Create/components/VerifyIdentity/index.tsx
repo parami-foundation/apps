@@ -9,7 +9,6 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import TelegramLoginButton from 'react-telegram-login';
 import { GetAvatar, LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import generateRoundAvatar from '@/utils/encode';
@@ -20,6 +19,7 @@ import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
 import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
+import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 
 let unsub: VoidFn | null = null;
 
@@ -470,7 +470,7 @@ const VerifyIdentity: React.FC<{
                 id: 'identity.beforeStart.faucet',
               })}
             </Divider>
-            <TelegramLoginButton
+            <CustomTelegramLoginButton
               dataOnauth={(response) => {
                 response.bot = config.airdropService.telegram.botName;
                 handleLoginWithAirdrop(response, 'Telegram');
