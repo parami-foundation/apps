@@ -26,7 +26,7 @@ const Deposit: React.FC<{
     Provider,
     Signer,
   } = useModel('web3');
-  const { Events, SubParamiEvents } = useModel('dashboard.paramiEvents');
+  const { Events, SubParamiEvents } = useModel('paramiEvents');
   const { DataHash, SubBridgeEvents, UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
   const { balance } = useModel('dashboard.balance');
   const { Ad3Contract, BridgeContract } = useModel('contracts');
