@@ -10,7 +10,6 @@ export const GetAssetDetail = async (assetId: string) => {
 
 export const GetAssetsHolders = async (assetId: string) => {
   const accounts = await window.apiWs.query.assets.account.entries(assetId);
-  console.log('GetAssetsHolders', accounts);
   return accounts;
 };
 
