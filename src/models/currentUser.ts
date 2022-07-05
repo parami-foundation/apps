@@ -2,6 +2,9 @@ import { formatBoolean } from '@/utils/format';
 import { useModel } from 'umi';
 import { notification } from 'antd';
 import { useEffect } from 'react';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import Keyring from '@polkadot/keyring';
+import config from '@/config/config';
 
 export default () => {
   const apiWs = useModel('apiWs');

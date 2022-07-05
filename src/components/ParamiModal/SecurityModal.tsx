@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Button, Input, Modal, Tooltip, Typography } from 'antd';
+import { Alert, Button, Input, Modal, notification, Tooltip, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import styles from './style.less';
 import AD3 from '../Token/AD3';
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import Keyring from '@polkadot/keyring';
+import config from '@/config/config';
 
 const { Title } = Typography;
 
@@ -40,6 +43,33 @@ const SecurityModal: React.FC<{
       setSubmitting(false);
       return;
     }
+
+    // validate passphrase
+    const pwd = wallet?.passphrase || passphrase;
+    if (pwd && wallet?.keystore) {
+      const decrypted = DecodeKeystoreWithPwd(pwd, wallet.keystore);
+      if (!decrypted) {
+        notification.error({
+          key: 'passphraseError',
+          message: intl.formatMessage({
+            id: 'error.passphrase.error',
+          }),
+          duration: null,
+        });
+        setPassphrase('');
+        setSubmitting(false);
+        return;
+      }
+
+      const keyring = new Keyring({ type: 'sr25519' });
+      const { address } = keyring.addFromUri(decrypted);
+      if (wallet?.account && wallet.account !== address) {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = config.page.homePage;
+      }
+    }
+
     if (!!func) {
       await func();
     }
