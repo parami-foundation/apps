@@ -68,7 +68,10 @@ const Explorer: React.FC = () => {
 
   const queryAdSlot = async () => {
     const slot = await GetSlotAdOf(params.nftID);
-    if (!slot) return;
+    if (!slot) {
+      setLoading(false);
+      return;
+    }
     setAdSlot(slot);
   }
 
