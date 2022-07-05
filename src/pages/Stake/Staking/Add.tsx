@@ -100,8 +100,11 @@ const Add: React.FC<{
         const data: any[] = [];
         if (!!assets) {
             for (const assetsID in assets) {
-                const { balance }: any = await apiWs.query.assets.account(Number(assetsID), wallet?.account);
-                if (!!balance && balance > 0 && !assets[assetsID].name.endsWith('LP*')) {
+                const res: any = await apiWs.query.assets.account(Number(assetsID), wallet?.account);
+                const { balance } = res.toHuman() ?? { balance: '' };
+                const balanceBigInt = BigInt(balance.replaceAll(',', ''));
+
+                if (!!balanceBigInt && balanceBigInt > 0 && !assets[assetsID].name.endsWith('LP*')) {
                     let icon: any;
                     const did = await OwnerDidOfNft(assetsID);
                     const info = await GetUserInfo(did);
@@ -113,7 +116,7 @@ const Add: React.FC<{
                         id: assetsID,
                         token: assets[assetsID].name,
                         symbol: assets[assetsID].symbol,
-                        balance: balance.toString(),
+                        balance: balanceBigInt.toString(),
                         icon,
                     });
                 }

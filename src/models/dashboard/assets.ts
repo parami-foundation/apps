@@ -30,9 +30,10 @@ export default () => {
         if (!!metadata && !metadata?.name.endsWith('LP*')) {
           const assetId = entry?.assetId;
           apiWs.query.assets.account(Number(assetId), dashboard?.account, async (result: any) => {
-            const { balance } = result;
+            const { balance = '' } = result.toHuman();
+            const balanceBigInt = BigInt(balance.replaceAll(',', ''));
 
-            const ad3 = await DrylySellToken(assetId, balance);
+            const ad3 = await DrylySellToken(assetId, balanceBigInt.toString());
             const did = await OwnerDidOfNft(assetId);
             const kol = await GetUserInfo(did);
             let icon: any;
@@ -57,9 +58,9 @@ export default () => {
 
             let changes = BigInt(0);
             if (!assets.has(assetId)) {
-              changes = BigInt(balance);
+              changes = balanceBigInt;
             } else {
-              changes = BigInt(balance) - BigInt(assets.get(assetId).balance);
+              changes = balanceBigInt - BigInt(assets.get(assetId).balance);
             }
 
             // TODO: time events(first)
@@ -71,12 +72,12 @@ export default () => {
               });
             }
 
-            if (!!balance && balance > 0 && !metadata?.name.endsWith('LP*')) {
+            if (!!balanceBigInt && balanceBigInt > 0 && !metadata?.name.endsWith('LP*')) {
               assets.set(assetId, {
                 id: assetId,
                 token: metadata?.name,
                 symbol: metadata?.symbol,
-                balance: `${balance}`,
+                balance: balanceBigInt.toString(),
                 ad3: `${ad3}`,
                 icon,
               });
