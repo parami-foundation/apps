@@ -10,7 +10,7 @@ const CustomTelegramLoginButton: React.FC<{
   return (
     <div className={styles.telegramButton}>
       <TelegramLoginButton
-        dataOauth={dataOnauth}
+        dataOnauth={dataOnauth}
         botName={botName}
         className={styles.telegramLoginBtn}
       ></TelegramLoginButton>
