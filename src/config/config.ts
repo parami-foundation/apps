@@ -31,7 +31,7 @@ export const config = {
   },
   "airdropService": {
     "telegram": {
-      "botName": isDev ? "ParamiCommunityBot" : "paramiofficialbot",
+      "botName": isDev ? "parami_staging_bot" : "paramiofficialbot",
     },
     "discord": {
       "clientId": "928193512619536465",

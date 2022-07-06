@@ -50,7 +50,7 @@ const DiscordLoginButton: React.FC<{
           src={DISCORD_ICON}
           className={styles.loginIcon}
         />
-        Log in with Discord
+        Create by Discord
       </button>
     </div>
   )
