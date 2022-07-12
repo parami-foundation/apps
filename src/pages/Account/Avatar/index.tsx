@@ -75,10 +75,13 @@ const Avatar: React.FC = () => {
 					</>
 				}
 			/>
-			<Edit
-				modalVisable={modalVisable}
-				setModalVisable={setModalVisable}
-			/>
+			{modalVisable && (
+				<Edit
+					modalVisable={true}
+					setModalVisable={setModalVisable}
+				/>
+			)}
+
 		</>
 	)
 }

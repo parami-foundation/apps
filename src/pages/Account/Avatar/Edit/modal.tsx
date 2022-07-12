@@ -47,7 +47,7 @@ const Modal: React.FC<{
           }
         });
       });
-      generateRoundAvatar(URL.createObjectURL(info.file.originFileObj), '', '', wallet?.did)
+      generateRoundAvatar(URL.createObjectURL(info.file.originFileObj), wallet?.did)
         .then(async (img) => {
           const file = (img as string).substring(22);
           setFile(b64toBlob(file, 'image/png'));
