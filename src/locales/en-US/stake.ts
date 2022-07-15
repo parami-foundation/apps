@@ -33,4 +33,5 @@ export default {
     'stake.mining.redeem': 'Redeem',
     'stake.redeem.ad3tokenAmount': 'AD3 Amount to redeem',
     'stake.add.pleaseSelect': 'Please Select',
+    'stake.lpTokenList.lpTokenId': 'LP Token Id'
 };
