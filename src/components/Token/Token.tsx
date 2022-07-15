@@ -7,7 +7,7 @@ const Token: React.FC<{
   symbol?: string,
 }> = ({ value, symbol }) => {
   return (
-    <div className={styles.did}>
+    <div className={styles.ad3}>
       {value ? formatWithoutUint(value) : '--'}
       {/* {BigIntToFloatString(value, 18)} */}
       {symbol && (<span className={styles.unit}>&nbsp;${symbol}</span>)}
