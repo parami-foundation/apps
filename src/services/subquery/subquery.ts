@@ -132,9 +132,12 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
 
   const transactions = data.data.assetTransactions.nodes as AssetTransaction[];
 
-  const assetIds: string[] = Array.from(new Set(transactions.map(asset => asset.assetId)));
+  const assetIds: string[] = Array.from(new Set(transactions.map(asset => asset.assetId))).filter(id => id !== 'AD3');
+
+  const symbols = [{ assetId: 'AD3', assetSymbol: 'AD3' }];
+  
   if (assetIds.length) {
-    const filterCondition = assetIds.filter(id => id !== 'AD3').map(id => `{ assetId: { equalTo: "${id}" }}`).join(',');
+    const filterCondition = assetIds.map(id => `{ assetId: { equalTo: "${id}" }}`).join(',');
     const query = `query {
       nfts (
         filter: { or: [${filterCondition}]}
@@ -159,12 +162,13 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
         duration: null,
       });
     } else {
-      const nfts = [...nftData.data?.nfts?.nodes ?? [], { assetId: 'AD3', assetSymbol: 'AD3' }];
-      transactions.forEach(tx => {
-        tx.assetSymbol = nfts.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
-      });
+      symbols.push(...(nftData.data?.nfts?.nodes ?? []))
     }
   }
+
+  transactions.forEach(tx => {
+    tx.assetSymbol = symbols.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
+  });
 
   return transactions;
 };
