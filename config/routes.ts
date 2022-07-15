@@ -183,6 +183,14 @@
     component: './Creator/Explorer',
   },
   {
+    path: '/downloads',
+    name: 'downloads',
+    hideInMenu: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Downloads/Downloads',
+  },
+  {
     component: './404',
   },
 ];
