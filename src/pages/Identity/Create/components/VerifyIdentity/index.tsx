@@ -107,7 +107,7 @@ const VerifyIdentity: React.FC<{
             return;
           }
 
-          generateRoundAvatar(URL.createObjectURL(avatarData), '', '', Data?.did)
+          generateRoundAvatar(URL.createObjectURL(avatarData), Data?.did)
             .then(async (img) => {
               const imgBlob = (img as string).substring(22);
               try {
