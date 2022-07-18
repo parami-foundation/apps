@@ -384,3 +384,10 @@ export function dealWithDid(value: AssetTransaction, did: string) {
   const tmp = value.fromDid === did ? value.toDid : value.fromDid;
   return tmp.indexOf('0x') >= 0 ? hexToDid(tmp) : tmp;
 }
+
+export function stringToBigInt(value: string) {
+  if (!value) {
+    return BigInt(0);
+  }
+  return BigInt(value.replaceAll(',', ''));
+}
