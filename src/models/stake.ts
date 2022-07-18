@@ -53,7 +53,7 @@ export default () => {
 
                     await apiWs.query.assets.metadata(Number(LPInfo.tokenId), async (tokenMetadata: any) => {
                         const tokenMeta = tokenMetadata.toHuman();
-                        if (!allLPs[LPInfo.tokenId]) {
+                        if (!allLPs.get(LPInfo.tokenId)) {
                             allLPs.set(LPInfo.tokenId, {
                                 id: LPInfo.tokenId,
                                 name: tokenMeta.name,

@@ -11,7 +11,8 @@ import { DrylyRemoveLiquidity } from '@/services/parami/RPC';
 const Rows: React.FC<{
 	collapse: boolean;
 	nfts: any[];
-}> = ({ collapse, nfts }) => {
+	rewardTokenSymbol?: string;
+}> = ({ collapse, nfts, rewardTokenSymbol }) => {
 	const { getTokenList } = useModel('stake');
 	const { wallet } = useModel('currentUser');
 	const [claimSecModal, setClaimSecModal] = useState(false);
@@ -93,8 +94,8 @@ const Rows: React.FC<{
 									<div className={style.nftItemBlock}>
 										<div className={style.title}>
 											{intl.formatMessage({
-												id: 'stake.nftList.nftID',
-												defaultMessage: 'NFTId',
+												id: 'stake.lpTokenList.lpTokenId',
+												defaultMessage: 'LP Token Id',
 											})}
 										</div>
 										<div className={style.value}>
@@ -116,10 +117,10 @@ const Rows: React.FC<{
 									<div className={style.nftReward}>
 										<div className={style.nftItemBlock}>
 											<div className={style.title}>
-												Reward(AD3)
+												Reward({rewardTokenSymbol ?? 'AD3'})
 											</div>
 											<div className={style.value}>
-												{nft?.reward}
+												<Token value={nft?.reward} />
 											</div>
 										</div>
 										<Button

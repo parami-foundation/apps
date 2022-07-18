@@ -5,6 +5,7 @@ import { Button, Card, Image, Tooltip } from 'antd';
 import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import Rows from './Rows';
 import Token from '@/components/Token/Token';
+import { stringToBigInt } from '@/utils/common';
 const ICON_AD3 = '/images/logo-round-core.svg';
 
 const PairItem: React.FC<{
@@ -15,7 +16,7 @@ const PairItem: React.FC<{
 
 	let totalLiquidity: bigint = BigInt(0);
 	lp?.nfts.map((nft) => {
-		totalLiquidity = totalLiquidity + nft.amount;
+		totalLiquidity = totalLiquidity + stringToBigInt(nft.amount);
 	});
 
 	return (
@@ -81,6 +82,7 @@ const PairItem: React.FC<{
 						</div>
 					</div>
 					<Rows
+						rewardTokenSymbol={lp?.symbol}
 						collapse={Collapse}
 						nfts={lp.nfts}
 					/>
