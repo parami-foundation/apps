@@ -108,7 +108,6 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
 				nodes {
 				block
 				assetId
-				assetSymbol
 				fromDid
 				toDid
 				amount
@@ -130,7 +129,48 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
   }
 
   const data = await res.json();
-  return data.data.assetTransactions.nodes as AssetTransaction[];
+
+  const transactions = data.data.assetTransactions.nodes as AssetTransaction[];
+
+  const assetIds: string[] = Array.from(new Set(transactions.map(asset => asset.assetId))).filter(id => id !== 'AD3');
+
+  const symbols = [{ assetId: 'AD3', assetSymbol: 'AD3' }];
+  
+  if (assetIds.length) {
+    const filterCondition = assetIds.map(id => `{ assetId: { equalTo: "${id}" }}`).join(',');
+    const query = `query {
+      nfts (
+        filter: { or: [${filterCondition}]}
+        )
+          {
+          nodes {
+            assetId
+            assetSymbol
+          }
+        }
+    }`;
+
+    const nftQuery = await doGraghQuery(query);
+    const nftData = await nftQuery.json();
+
+    // Network exception
+    if (!nftData) {
+      notification.error({
+        key: 'networkException',
+        message: 'Graph Query nfts Error',
+        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+        duration: null,
+      });
+    } else {
+      symbols.push(...(nftData.data?.nfts?.nodes ?? []))
+    }
+  }
+
+  transactions.forEach(tx => {
+    tx.assetSymbol = symbols.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
+  });
+
+  return transactions;
 };
 
 export const getChartsData = async (ADid: string, budget: bigint) => {
