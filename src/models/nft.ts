@@ -58,31 +58,35 @@ export default () => {
 					deposit: BigInt(deposit.toString()),
 				});
 			} else {
-				const web3Modal = new Web3Modal({
-					network: 'rinkeby',
-					cacheProvider: true,
-					providerOptions,
-				});
-				const provider = await web3Modal.connect();
-				const web3Provider = new providers.Web3Provider(provider);
-				const wrapContract = new ethers.Contract(external?.namespace, wrapABI.abi, web3Provider);
+				try {
+					const web3Modal = new Web3Modal({
+						cacheProvider: true,
+						providerOptions,
+					});
+					const provider = await web3Modal.connect();
+					const web3Provider = new providers.Web3Provider(provider);
+					const wrapContract = new ethers.Contract(external?.namespace, wrapABI.abi, web3Provider);
 
-				const [tokenURI, name] = await Promise.all([wrapContract.tokenURI(external?.token), wrapContract.name()]);
-				const tokenUriMetaData = await fetchErc721TokenURIMetaData(tokenURI);
-				console.log("token uri meta data", tokenUriMetaData);
+					const [tokenURI, name] = await Promise.all([wrapContract.tokenURI(external?.token), wrapContract.name()]);
+					const tokenUriMetaData = await fetchErc721TokenURIMetaData(tokenURI);
+					console.log("token uri meta data", tokenUriMetaData);
 
 
-				portNFTMap.set(nftId, {
-					id: nftId,
-					name: asset?.name || name,
-					symbol: asset?.symbol,
-					minted: minted,
-					network: external?.network,
-					namespace: external?.namespace,
-					token: external?.token,
-					tokenURI: normalizeToHttp(tokenUriMetaData.image),
-					deposit: BigInt(deposit.toString()),
-				});
+					portNFTMap.set(nftId, {
+						id: nftId,
+						name: asset?.name || name,
+						symbol: asset?.symbol,
+						minted: minted,
+						network: external?.network,
+						namespace: external?.namespace,
+						token: external?.token,
+						tokenURI: normalizeToHttp(tokenUriMetaData.image),
+						deposit: BigInt(deposit.toString()),
+					});
+				} catch (e) {
+					// If the NFT is not on the chain which user currently connecting to, ignore it.
+					console.log(`Skip fetching nft data. Address:${external?.namespace}, TokenId:${external?.token}`);
+				}
 			}
 		}
 

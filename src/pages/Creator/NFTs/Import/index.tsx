@@ -45,8 +45,8 @@ const ImportNFTModal: React.FC<{
 
   const coverRef: any = useRef();
 
-  const getNftsOfSigner = async (signer: JsonRpcSigner): Promise<Erc721[]> => {
-    const registry = new ethers.Contract(registryAddresses, RegistryABI.abi, signer);
+  const getNftsOfSigner = async (signer: JsonRpcSigner, chainId: 1 | 4): Promise<Erc721[]> => {
+    const registry = new ethers.Contract(registryAddresses[chainId], RegistryABI.abi, signer);
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
     console.debug('wrapped contracts', wContracts);
@@ -133,13 +133,13 @@ const ImportNFTModal: React.FC<{
 
   useEffect(() => {
     if (!!Account) {
-      if (ChainId !== 4) {
+      if (ChainId !== 4 && ChainId !== 1) {
         return;
       }
       if (!Provider || !Signer) {
         return;
       }
-      getNftsOfSigner(Signer).then((r) => {
+      getNftsOfSigner(Signer, ChainId).then((r) => {
         setTokenData(r.filter(nft => {
           return !(nftList ?? []).find(importedNft => {
             return importedNft.name === nft.name && importedNft.token === nft.tokenId?.toHexString();
@@ -157,9 +157,9 @@ const ImportNFTModal: React.FC<{
   }, [coverRef]);
 
   useEffect(() => {
-    if (ChainId && ChainName && ChainId !== 4) {
-      if (ChainId !== 4) {
-        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[4]}.`);
+    if (ChainId && ChainName) {
+      if (ChainId !== 4 && ChainId !== 1) {
+        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[1]} or ${ethNet[4]}.`);
       } else {
         setChainWarning('');
       }
