@@ -41,7 +41,6 @@ export default () => {
 
     const disconnect = useCallback(async () => {
         const web3Modal = new Web3Modal({
-            network: ChainId === 1 ? '' : 'rinkeby',
             cacheProvider: true,
             providerOptions,
         });
@@ -56,11 +55,10 @@ export default () => {
             message.error(e.message);
             setNoProvider(true);
         }
-    }, [ChainId]);
+    }, []);
 
     const connect = useCallback(async () => {
         const web3Modal = new Web3Modal({
-            network: ChainId === 1 ? '' : 'rinkeby',
             cacheProvider: true,
             providerOptions,
         });
@@ -100,7 +98,7 @@ export default () => {
             message.error(e.message || e);
             setNoProvider(true);
         }
-    }, [ChainId]);
+    }, []);
 
     return {
         Account,
