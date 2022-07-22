@@ -14,7 +14,15 @@ export default () => {
       .catch(err => console.error(err));
   }, [Account, ChainId]);
 
+  const retrieveAsset = useCallback((address: string, tokenId: number) => {
+    const options = { method: 'GET' };
+    return fetch(`${OpenseaApiServer}/api/os/asset/${address}/${tokenId}?chainId=${ChainId}`, options)
+      .then(response => response.json())
+      .catch(err => console.error(err));
+  }, [ChainId])
+
   return {
-    retrieveAssets
+    retrieveAssets,
+    retrieveAsset
   };
 }
