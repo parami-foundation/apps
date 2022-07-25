@@ -1,15 +1,12 @@
 import { useModel } from 'umi';
 import { useEffect, useState } from 'react';
-import { ethers, providers } from 'ethers';
-import wrapABI from '@/pages/Creator/NFTs/abi/ERC721WContract.json';
-import { providerOptions } from '@/config/web3provider';
-import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
-import Web3Modal from 'web3modal';
 
 export default () => {
 	const apiWs = useModel('apiWs');
 	const { wallet } = useModel('currentUser');
 	const { avatar } = useModel('user');
+	const { connect } = useModel('web3');
+	const { retrieveAsset } = useModel('openseaApi');
 	const [kickNFTMap, setKickNFTMap] = useState<Map<string, any>>(new Map());
 	const [portNFTMap, setPortNFTMap] = useState<Map<string, any>>(new Map());
 	const [nftMap, setNftMap] = useState<Map<string, any>>(new Map());
@@ -24,6 +21,8 @@ export default () => {
 		if (!apiWs) {
 			return;
 		}
+
+		await connect();
 
 		const allEntries = await apiWs.query.nft.metadata.entries();
 		const tmpAssets = {};
@@ -58,31 +57,26 @@ export default () => {
 					deposit: BigInt(deposit.toString()),
 				});
 			} else {
-				const web3Modal = new Web3Modal({
-					network: 'rinkeby',
-					cacheProvider: true,
-					providerOptions,
-				});
-				const provider = await web3Modal.connect();
-				const web3Provider = new providers.Web3Provider(provider);
-				const wrapContract = new ethers.Contract(external?.namespace, wrapABI.abi, web3Provider);
+				try {
+					const nft = await retrieveAsset(external?.namespace, parseInt(external?.token, 16));
+					if (nft) {
+						portNFTMap.set(nftId, {
+							id: nftId,
+							name: asset?.name || nft?.name,
+							symbol: asset?.symbol,
+							minted: minted,
+							network: external?.network,
+							namespace: external?.namespace,
+							token: external?.token,
+							tokenURI: nft?.image_url,
+							deposit: BigInt(deposit.toString()),
+						});
+					}
 
-				const [tokenURI, name] = await Promise.all([wrapContract.tokenURI(external?.token), wrapContract.name()]);
-				const tokenUriMetaData = await fetchErc721TokenURIMetaData(tokenURI);
-				console.log("token uri meta data", tokenUriMetaData);
-
-
-				portNFTMap.set(nftId, {
-					id: nftId,
-					name: asset?.name || name,
-					symbol: asset?.symbol,
-					minted: minted,
-					network: external?.network,
-					namespace: external?.namespace,
-					token: external?.token,
-					tokenURI: normalizeToHttp(tokenUriMetaData.image),
-					deposit: BigInt(deposit.toString()),
-				});
+				} catch (e) {
+					// If the NFT is not on the chain which user currently connecting to, ignore it.
+					console.log(`Skip fetching nft data. Address:${external?.namespace}, TokenId:${external?.token}`);
+				}
 			}
 		}
 

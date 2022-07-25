@@ -41,7 +41,6 @@ export default () => {
 
     const disconnect = useCallback(async () => {
         const web3Modal = new Web3Modal({
-            network: 'rinkeby',
             cacheProvider: true,
             providerOptions,
         });
@@ -60,7 +59,6 @@ export default () => {
 
     const connect = useCallback(async () => {
         const web3Modal = new Web3Modal({
-            network: 'rinkeby',
             cacheProvider: true,
             providerOptions,
         });

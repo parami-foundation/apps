@@ -6,13 +6,10 @@ import { Button, notification, Alert } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
 import { registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
-import type { BigNumber } from 'ethers';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
-import WContractABI from '../abi/ERC721WContract.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
-import { fetchErc721TokenURIMetaData, normalizeToHttp } from "@/utils/erc721";
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import ethNet from '@/config/ethNet';
 import { VoidFn } from '@polkadot/api/types';
@@ -40,48 +37,25 @@ const ImportNFTModal: React.FC<{
     ChainId,
     ChainName
   } = useModel("web3");
+  const { retrieveAssets } = useModel('openseaApi');
 
   const intl = useIntl();
 
   const coverRef: any = useRef();
 
-  const getNftsOfSigner = async (signer: JsonRpcSigner): Promise<Erc721[]> => {
-    const registry = new ethers.Contract(registryAddresses, RegistryABI.abi, signer);
+  const getNftsOfSigner = async (signer: JsonRpcSigner, chainId: 1 | 4) => {
+    const registry = new ethers.Contract(registryAddresses[chainId], RegistryABI.abi, signer);
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
-    console.debug('wrapped contracts', wContracts);
 
-    // TODO: (ruibin) if we have a lots of wrapped contracts, performance coule be degraded.
-    const results: Erc721[][] = await Promise.all(
-      wContracts.map(async (address) => {
-        const wContract = new ethers.Contract(address, WContractABI.abi, signer);
-        const [balance, name]: [BigNumber, string] = await Promise.all([
-          wContract.balanceOf(signer.getAddress()),
-          wContract.name(),
-        ]);
-        console.debug('balance, name', balance, name);
-
-        const tokenInfo: Promise<Erc721>[] = [];
-        for (let i = 0; i < balance.toNumber(); i++) {
-          tokenInfo.push(
-            (async () => {
-              const tokenId: string = await wContract.tokenByIndex(i);
-              const tokenUri: string = await wContract.tokenURI(tokenId);
-              const metadata = await fetchErc721TokenURIMetaData(tokenUri);
-              return {
-                contract: address,
-                tokenId: tokenId,
-                imageUrl: normalizeToHttp(metadata.image),
-                name: name,
-              };
-            })(),
-          );
-        }
-        return await Promise.all(tokenInfo);
-      }),
-    );
-
-    return results.flatMap((r) => r);
+    const resp = await retrieveAssets(wContracts);
+    const assets = resp?.assets ?? [];
+    return assets.map(asset => ({
+      contract: asset.asset_contract?.address,
+      tokenId: BigNumber.from(asset.token_id),
+      imageUrl: asset.image_url,
+      name: asset.name
+    } as Erc721));
   };
 
   const importNft = async (preTx?: boolean, account?: string) => {
@@ -133,13 +107,13 @@ const ImportNFTModal: React.FC<{
 
   useEffect(() => {
     if (!!Account) {
-      if (ChainId !== 4) {
+      if (ChainId !== 4 && ChainId !== 1) {
         return;
       }
       if (!Provider || !Signer) {
         return;
       }
-      getNftsOfSigner(Signer).then((r) => {
+      getNftsOfSigner(Signer, ChainId).then((r) => {
         setTokenData(r.filter(nft => {
           return !(nftList ?? []).find(importedNft => {
             return importedNft.name === nft.name && importedNft.token === nft.tokenId?.toHexString();
@@ -148,7 +122,7 @@ const ImportNFTModal: React.FC<{
         setLoading(false);
       });
     }
-  }, [Account, Provider, Signer, ChainId]);
+  }, [Account, Provider, Signer, ChainId, retrieveAssets]);
 
   useEffect(() => {
     if (tokenData.length) {
@@ -157,9 +131,9 @@ const ImportNFTModal: React.FC<{
   }, [coverRef]);
 
   useEffect(() => {
-    if (ChainId && ChainName && ChainId !== 4) {
-      if (ChainId !== 4) {
-        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[4]}.`);
+    if (ChainId && ChainName) {
+      if (ChainId !== 4 && ChainId !== 1) {
+        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[1]} or ${ethNet[4]}.`);
       } else {
         setChainWarning('');
       }
