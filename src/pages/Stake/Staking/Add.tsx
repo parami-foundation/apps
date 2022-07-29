@@ -10,7 +10,7 @@ import config from '@/config/config';
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
-import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity, GetUserInfo } from '@/services/parami/RPC';
 
 const SelectAssets: React.FC<{
@@ -255,32 +255,12 @@ const Add: React.FC<{
                             onChange={(e) => {
                                 setNumber(e.target.value);
                                 DrylyAddLiquidity(token.id, FloatStringToBigInt(e.target.value, 18).toString()).then((res: any) => {
-                                    console.log(res,tokenBalance);
                                     setTokenAmount(res);
                                 });
                             }}
                             disabled={submitting || !Object.keys(token).length}
                             type='number'
                         />
-                        {/* <Button
-                            size='large'
-                            type='primary'
-                            shape='round'
-                            onClick={() => {
-
-                                DrylyAddLiquidity(token.id, ad3Balance?.free).then((res: any) => {
-                                    console.log(res);
-                                    const smallOne = res > tokenBalance ? tokenBalance : res;
-                                    setNumber(BigIntToFloatString(smallOne, 18));
-                                    setTokenAmount(res);
-                                });
-                            }}
-                            disabled={!tokenBalance}
-                        >
-                            {intl.formatMessage({
-                                id: 'stake.all',
-                            })}
-                        </Button> */}
                     </div>
                 </div>
                 <div className={styles.field}>
@@ -329,7 +309,10 @@ const Add: React.FC<{
                         size='large'
                         className={styles.button}
                         loading={submitting}
-                        disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) || FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) || BigInt(tokenAmount[0]) > (tokenBalance)}
+                        disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) || 
+                            FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) || 
+                            tokenAmount.length === 0 ||
+                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > tokenBalance)}
                         onClick={() => {
                             setSubmitting(true);
                             setSecModal(true);
