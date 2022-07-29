@@ -9,16 +9,13 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { GetAvatar, LoginWithAirdrop } from '@/services/parami/HTTP';
+import { LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
-import generateRoundAvatar from '@/utils/encode';
-import { uploadIPFS } from '@/services/parami/IPFS';
-import { b64toBlob } from '@/utils/common';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
 import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
-import { QueryDID, RegisterDID, BatchNicknameAndAvatar, GetExistentialDeposit } from '@/services/parami/Identity';
+import { QueryDID, RegisterDID, GetExistentialDeposit } from '@/services/parami/Identity';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 
 let unsub: VoidFn | null = null;
@@ -40,7 +37,6 @@ const VerifyIdentity: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const [step, setStep] = useState<number>(2);
   const [balance, setBalance] = useState<bigint>(BigInt(0));
-  const [avatarNicknameEvents, setAvatarNicknameEvents] = useState<any>();
   const [ExistentialDeposit, setExistentialDeposit] = useState<string>();
 
   const intl = useIntl();
@@ -55,7 +51,7 @@ const VerifyIdentity: React.FC<{
       window.location.href = initialState?.currentInfo?.wallet?.redirect || config.page.walletPage;
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
-    }, 10);
+    }, 1000);
   };
 
   // Login With Airdrop
@@ -93,35 +89,7 @@ const VerifyIdentity: React.FC<{
           localStorage.setItem('parami:wallet:did', Data?.did);
         }
 
-        if (!!Data?.nickname && !!Data?.avatar) {
-          const { response: avatarResp, data: avatarData } = await GetAvatar(Data?.avatar);
-
-          // Network exception
-          if (!avatarResp) {
-            notification.error({
-              key: 'networkException',
-              message: 'Network exception',
-              description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-              duration: null,
-            });
-            return;
-          }
-
-          generateRoundAvatar(URL.createObjectURL(avatarData), Data?.did)
-            .then(async (img) => {
-              const imgBlob = (img as string).substring(22);
-              try {
-                const { response: uploadResp, data: uploadData } = await uploadIPFS(b64toBlob(imgBlob, 'image/png'));
-                if (uploadResp?.ok) {
-                  const events = await BatchNicknameAndAvatar(Data?.nickname || 'Airdrop User', `ipfs://${uploadData.Hash}`, passphrase, keystore);
-                  setAvatarNicknameEvents(events);
-                }
-              } catch (e: any) {
-                setAvatarNicknameEvents(e.message);
-                setStep(5);
-              }
-            });
-        }
+        setStep(5);
         return;
       }
 
@@ -260,15 +228,11 @@ const VerifyIdentity: React.FC<{
   }, [apiWs, account]);
 
   useEffect(() => {
-    if (!!avatarNicknameEvents && !!qsTicket) {
+    if (!!did) {
       goto();
       return;
     }
-    if (!qsTicket && !!did) {
-      goto();
-      return;
-    }
-  }, [avatarNicknameEvents, qsTicket, did]);
+  }, [did]);
 
   useEffect(() => {
     if (passphrase === '' || account === '' || keystore === '') {
