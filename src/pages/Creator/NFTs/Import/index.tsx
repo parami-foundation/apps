@@ -48,9 +48,8 @@ const ImportNFTModal: React.FC<{
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
 
-    const resp = await retrieveAssets(wContracts);
-    const assets = resp?.assets ?? [];
-    return assets.map(asset => ({
+    const assets = await retrieveAssets({contractAddresses: wContracts});
+    return (assets ?? []).map(asset => ({
       contract: asset.asset_contract?.address,
       tokenId: BigNumber.from(asset.token_id),
       imageUrl: asset.image_url,
@@ -116,7 +115,7 @@ const ImportNFTModal: React.FC<{
       getNftsOfSigner(Signer, ChainId).then((r) => {
         setTokenData(r.filter(nft => {
           return !(nftList ?? []).find(importedNft => {
-            return importedNft.name === nft.name && importedNft.token === nft.tokenId?.toHexString();
+            return importedNft.namespace === nft.contract && importedNft.token === nft.tokenId?.toHexString();
           });
         }));
         setLoading(false);

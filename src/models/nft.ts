@@ -6,10 +6,7 @@ export default () => {
 	const { wallet } = useModel('currentUser');
 	const { avatar } = useModel('user');
 	const { connect } = useModel('web3');
-	const { retrieveAsset } = useModel('openseaApi');
-	const [kickNFTMap, setKickNFTMap] = useState<Map<string, any>>(new Map());
-	const [portNFTMap, setPortNFTMap] = useState<Map<string, any>>(new Map());
-	const [nftMap, setNftMap] = useState<Map<string, any>>(new Map());
+	const { retrieveAssets } = useModel('openseaApi');
 
 	const [kickNFT, setKickNFT] = useState<any[]>([]);
 	const [portNFT, setPortNFT] = useState<any[]>([]);
@@ -21,6 +18,8 @@ export default () => {
 		if (!apiWs) {
 			return;
 		}
+
+		setLoading(true);
 
 		await connect();
 
@@ -35,10 +34,11 @@ export default () => {
 			}
 		}
 
-		for (const index in tmpAssets) {
-			const nftId = tmpAssets[index].classId;
-			const tokenAssetId = tmpAssets[index].tokenAssetId;
-			const minted = tmpAssets[index].minted;
+		Promise.all(Object.keys(tmpAssets).map(async key => {
+			const tempAsset = tmpAssets[key];
+			const nftId = tempAsset.classId;
+			const tokenAssetId = tempAsset.tokenAssetId;
+			const minted = tempAsset.minted;
 
 			const externalData = await apiWs.query.nft.external(nftId);
 			const external: any = externalData.toHuman();
@@ -47,47 +47,68 @@ export default () => {
 			const assetData = await apiWs.query.assets.metadata(tokenAssetId);
 			const asset: any = assetData.toHuman();
 
-			if (externalData.isEmpty) {
-				kickNFTMap.set(nftId, {
-					id: nftId,
-					name: asset?.name || 'My NFT',
-					symbol: asset?.symbol,
-					minted: minted,
-					tokenURI: avatar || '/images/logo-square-core.svg',
-					deposit: BigInt(deposit.toString()),
+			return {
+				nftId,
+				external,
+				asset,
+				deposit,
+				minted
+			};
+		})).then(async nfts => {
+			const kickNFTMap = new Map();
+			const kickNFTs = nfts.filter(assetData => !assetData.external);
+			if (kickNFTs.length) {
+				kickNFTs.forEach(kickNFT => {
+					kickNFTMap.set(kickNFT.nftId, {
+						id: kickNFT.nftId,
+						name: kickNFT.asset?.name || 'My NFT',
+						symbol: kickNFT.asset?.symbol,
+						minted: kickNFT.minted,
+						tokenURI: avatar || '/images/logo-square-core.svg',
+						deposit: BigInt(kickNFT.deposit.toString()),
+					});
 				});
-			} else {
-				try {
-					const nft = await retrieveAsset(external?.namespace, parseInt(external?.token, 16));
-					if (nft) {
-						portNFTMap.set(nftId, {
-							id: nftId,
-							name: asset?.name || nft?.name,
-							symbol: asset?.symbol,
-							minted: minted,
-							network: external?.network,
-							namespace: external?.namespace,
-							token: external?.token,
-							tokenURI: nft?.image_url,
-							deposit: BigInt(deposit.toString()),
-						});
-					}
-
-				} catch (e) {
-					// If the NFT is not on the chain which user currently connecting to, ignore it.
-					console.log(`Skip fetching nft data. Address:${external?.namespace}, TokenId:${external?.token}`);
-				}
 			}
-		}
 
-		setKickNFTMap(kickNFTMap);
-		setPortNFTMap(portNFTMap);
-		setNftMap(new Map([...kickNFTMap, ...portNFTMap]));
+			const portNFTMap = new Map();
+			const externalNFTs = nfts.filter(nft => nft.external?.namespace && nft.external?.token);
 
-		setKickNFT([...kickNFTMap.values()]);
-		setPortNFT([...portNFTMap.values()]);
-		setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
-		setLoading(false);
+			if (externalNFTs.length) {
+				const contractAddresses = externalNFTs.map(nft => nft.external?.namespace).filter(Boolean);
+				const tokenIds = externalNFTs.map(nft => parseInt(nft.external?.token, 16)).filter(id => id >= 0);
+
+				const portNFTs = await retrieveAssets({
+					contractAddresses,
+					tokenIds
+				});
+
+				externalNFTs.forEach(externalNFT => {
+					const osNFT = portNFTs.find(nft =>
+						parseInt(nft.token_id, 10) === parseInt(externalNFT.external?.token, 16) && nft.asset_contract?.address === externalNFT.external?.namespace);
+					if (osNFT) {
+						portNFTMap.set(externalNFT.nftId, {
+							id: externalNFT.nftId,
+							name: externalNFT.asset?.name || osNFT?.name,
+							symbol: externalNFT.asset?.symbol,
+							minted: externalNFT.minted,
+							network: externalNFT.external?.network,
+							namespace: externalNFT.external?.namespace,
+							token: externalNFT.external?.token,
+							tokenURI: osNFT?.image_url,
+							deposit: BigInt(externalNFT.deposit.toString()),
+						})
+					}
+				});
+			}
+
+			setKickNFT([...kickNFTMap.values()]);
+			setPortNFT([...portNFTMap.values()]);
+			setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+			setLoading(false);
+		}).catch(e => {
+			console.error(e);
+			setLoading(false);
+		});
 	};
 
 	useEffect(() => {
@@ -97,9 +118,6 @@ export default () => {
 	}, [apiWs, avatar]);
 
 	return {
-		kickNFTMap,
-		portNFTMap,
-		nftMap,
 		kickNFT,
 		portNFT,
 		nftList,

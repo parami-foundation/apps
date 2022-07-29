@@ -67,7 +67,7 @@ const SelectAsset: React.FC<{
           </span>
         </div>
         {
-          assetsArr.map((item: any) => {
+          (assetsArr ?? []).map((item: any) => {
             return (
               <div
                 className={styles.field}

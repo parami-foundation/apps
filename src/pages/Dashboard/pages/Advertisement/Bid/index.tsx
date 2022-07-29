@@ -116,7 +116,6 @@ const Bid: React.FC<{
     
     setDidErrorMsg('');
     setCurrentPrice('');
-    setNftIdErrorMsg('');
     if (nftId) {
       getCurrentPrice().then(price => {
         if (price === undefined) {
@@ -125,6 +124,7 @@ const Bid: React.FC<{
           }));
           return;
         }
+        setNftIdErrorMsg('');
         setCurrentPrice(price);
       }).catch((e) => {
         notification.error({

@@ -6,11 +6,40 @@ const OpenseaApiServer = 'https://ipfs.parami.io';
 export default () => {
   const { Account, ChainId } = useModel('web3');
 
-  const retrieveAssets = useCallback((contractAddresses: string[] = []) => {
+  const retrieveAssets = useCallback((searchParams = {}) => {
+    if (!Account || !ChainId) {
+      return Promise.resolve([]);
+    }
+    
     const options = { method: 'GET' };
-    return fetch(`${OpenseaApiServer}/api/os/assets?chainId=${ChainId}&owner=${Account}&order_direction=desc&offset=0&limit=25&include_orders=false`
-      + (contractAddresses.length ? `&${contractAddresses.map(addr => `asset_contract_addresses=${addr}`).join('&')}` : ''), options)
-      .then(response => response.json())
+    const params = new URLSearchParams();
+
+    if (searchParams.contractAddresses?.length) {
+      searchParams.contractAddresses.forEach(address => params.append('asset_contract_addresses', address));
+    }
+    delete searchParams.contractAddresses;
+
+    if (searchParams.tokenIds?.length) {
+      searchParams.tokenIds.forEach(tokenId => params.append('token_ids', `${tokenId}`));
+    }
+    delete searchParams.tokenIds;
+
+    searchParams = {
+      chainId: `${ChainId}`,
+      owner: Account,
+      order_direction: 'desc',
+      offset: '0',
+      limit: '25',
+      include_orders: 'false',
+      ...searchParams
+    };
+
+    for (const key in searchParams) {
+      params.append(key, searchParams[key]);
+    }
+    
+    return fetch(`${OpenseaApiServer}/api/os/assets?${params.toString()}`, options)
+      .then(response => response.json()).then(resp => resp?.assets ?? [])
       .catch(err => console.error(err));
   }, [Account, ChainId]);
 
