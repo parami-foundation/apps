@@ -41,7 +41,7 @@ export default () => {
 			const minted = tempAsset.minted;
 
 			const externalData = await apiWs.query.nft.external(nftId);
-			const external: any = externalData.toHuman();
+			const external: any = externalData.toJSON();
 			const deposit = await apiWs.query.nft.deposit(nftId);
 
 			const assetData = await apiWs.query.assets.metadata(tokenAssetId);
@@ -115,7 +115,7 @@ export default () => {
 		if (!!apiWs) {
 			getNFTs();
 		}
-	}, [apiWs, avatar]);
+	}, [apiWs, avatar, retrieveAssets]);
 
 	return {
 		kickNFT,
