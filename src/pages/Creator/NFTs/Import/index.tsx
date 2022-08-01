@@ -4,7 +4,7 @@ import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, notification, Alert } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
-import { registryAddresses } from '../config';
+import { HCollectionAddress, registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
 import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
@@ -48,7 +48,7 @@ const ImportNFTModal: React.FC<{
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
 
-    const assets = await retrieveAssets({contractAddresses: wContracts});
+    const assets = await retrieveAssets({contractAddresses: [...wContracts, HCollectionAddress[chainId]]});
     return (assets ?? []).map(asset => ({
       contract: asset.asset_contract?.address,
       tokenId: BigNumber.from(asset.token_id),

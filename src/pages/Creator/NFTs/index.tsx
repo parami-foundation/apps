@@ -122,7 +122,7 @@ const NFTs: React.FC = () => {
 														className={style.button}
 														loading={submitLoading}
 														onClick={() => {
-															setSecModal(true);
+															window.open('https://wnft.parami.io/');
 														}}
 													>
 														{intl.formatMessage({
@@ -298,9 +298,8 @@ const NFTs: React.FC = () => {
 												<Button
 													className={style.createNFT}
 													loading={submitLoading}
-													disabled={!!kickNFT.length}
 													onClick={() => {
-														setSecModal(true);
+														window.open('https://wnft.parami.io/');
 													}}
 												>
 													<FaFolderPlus
