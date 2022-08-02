@@ -1,4 +1,4 @@
-import { Button, Col, notification, Progress, Row, Typography, Image } from 'antd';
+import { Button, Col, notification, Progress, Row, Typography, Image, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
@@ -63,6 +63,13 @@ const NFTs: React.FC = () => {
 			setCoverWidth(coverRef?.current?.clientWidth);
 		}
 	}, [coverRef]);
+
+	const statusInfo = (label: string, value: string) => {
+		return (<div className={style.status}>
+			<div className={style.label}>{label}</div>
+			<div className={style.value}>{value}</div>
+		</div>);
+	}
 
 	return (
 		<>
@@ -235,7 +242,10 @@ const NFTs: React.FC = () => {
 											} else {
 												return (
 													<div className={style.nftItem}>
-														<div className={style.card}>
+														<div className={style.card}
+															onClick={() => {
+																window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+															}}>
 															<div className={style.cardWrapper}>
 																<div className={style.cardBox}>
 																	<div
@@ -269,20 +279,32 @@ const NFTs: React.FC = () => {
 																				Minted
 																			</div>
 																		</div>
+																		<div className={style.unlockProgress}>
+																			<Tooltip title="Tokens will be gradually unlocked over 6 months" color={'#ff5b00'}>
+																				<Progress
+																					success={{ percent: 15, strokeColor: '#ff5b00' }}
+																					percent={50}
+																					strokeColor='#fc9860'
+																					showInfo
+																					className={style.progress}
+																				/>
+																			</Tooltip>
+																		</div>
+																		{statusInfo('Total Value', '100k')}
+																		{statusInfo('Total Claimed', '40k')}
+																		{statusInfo('Ready for Claim', '3k')}
 																		<div className={style.action}>
 																			<Button
 																				block
 																				type='primary'
 																				shape='round'
 																				size='middle'
-																				onClick={() => {
-																					window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+																				onClick={(e) => {
+																					e.stopPropagation();
+																					console.log('Claim Tokens');
 																				}}
 																			>
-																				{intl.formatMessage({
-																					id: 'wallet.nfts.gotoNFTDAO',
-																					defaultMessage: 'NFT DAO',
-																				})}
+																				Claim Tokens
 																			</Button>
 																		</div>
 																	</div>
