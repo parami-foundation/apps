@@ -4,14 +4,10 @@ import { useCallback, useState } from 'react';
 export default () => {
 	const apiWs = useModel('apiWs');
 	const { wallet } = useModel('currentUser');
-	const { avatar } = useModel('user');
 	const { connect } = useModel('web3');
 	const { retrieveAssets } = useModel('openseaApi');
 
-	const [kickNFT, setKickNFT] = useState<any[]>([]);
-	const [portNFT, setPortNFT] = useState<any[]>([]);
 	const [nftList, setNftList] = useState<any[]>([]);
-
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const getNFTs = useCallback(async () => {
@@ -55,21 +51,6 @@ export default () => {
 				minted
 			};
 		})).then(async nfts => {
-			const kickNFTMap = new Map();
-			const kickNFTs = nfts.filter(assetData => !assetData.external);
-			if (kickNFTs.length) {
-				kickNFTs.forEach(kickNFT => {
-					kickNFTMap.set(kickNFT.nftId, {
-						id: kickNFT.nftId,
-						name: kickNFT.asset?.name || 'My NFT',
-						symbol: kickNFT.asset?.symbol,
-						minted: kickNFT.minted,
-						tokenURI: avatar || '/images/logo-square-core.svg',
-						deposit: BigInt(kickNFT.deposit.toString()),
-					});
-				});
-			}
-
 			const portNFTMap = new Map();
 			const externalNFTs = nfts.filter(nft => nft.external?.namespace && nft.external?.token);
 
@@ -101,9 +82,7 @@ export default () => {
 				});
 			}
 
-			setKickNFT([...kickNFTMap.values()]);
-			setPortNFT([...portNFTMap.values()]);
-			setNftList([...new Map([...kickNFTMap, ...portNFTMap]).values()]);
+			setNftList([...portNFTMap.values()]);
 			setLoading(false);
 		}).catch(e => {
 			console.error(e);
@@ -112,8 +91,6 @@ export default () => {
 	}, [apiWs, retrieveAssets]);
 
 	return {
-		kickNFT,
-		portNFT,
 		nftList,
 		loading,
 		getNFTs: (!apiWs || !retrieveAssets) ? null : getNFTs,
