@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 import Keyring from '@polkadot/keyring';
 import config from '@/config/config';
+import { UserLogout } from '@/utils/user.util';
 
 export default () => {
   const apiWs = useModel('apiWs');
@@ -39,9 +40,11 @@ export default () => {
       notification.error({
         key: 'accessDenied',
         message: 'Access Denied',
-        description: 'The account does not exist',
-        duration: null,
+        description: 'The account does not exist. Logging out...',
       });
+      setTimeout(() => {
+        UserLogout();
+      }, 500);
     }
   };
 
