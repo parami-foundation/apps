@@ -27,6 +27,10 @@ const NFTs: React.FC = () => {
 	const coverRef: any = useRef();
 
 	useEffect(() => {
+		connect && connect();
+	}, [connect])
+
+	useEffect(() => {
 		getNFTs && getNFTs();
 	}, [getNFTs]);
 

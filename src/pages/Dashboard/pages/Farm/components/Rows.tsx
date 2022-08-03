@@ -39,7 +39,7 @@ const Rows: React.FC<{
 		setPendingStake(pendingStake);
 		console.log(`handle Stake ${tokenId}`);
 		const incentiveKey = {
-			rewardToken: contractAddresses.ad3[ChainId],
+			rewardToken: contractAddresses.ad3[ChainId ?? 1],
 			pool: poolAddress,
 			startTime: pair.incentives[incentiveIndex].startTime,
 			endTime: pair.incentives[incentiveIndex].endTime,
