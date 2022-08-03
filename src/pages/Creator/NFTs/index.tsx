@@ -16,7 +16,7 @@ const NFTs: React.FC = () => {
 	const apiWs = useModel('apiWs');
 	const { wallet } = useModel('currentUser');
 	const { connect } = useModel('web3');
-	const { kickNFT, nftList, loading, getNFTs } = useModel('nft');
+	const { nftList, loading, getNFTs } = useModel('nft');
 	const [coverWidth, setCoverWidth] = useState<number>(0);
 	const [importModal, setImportModal] = useState<boolean>(false);
 	const [mintModal, setMintModal] = useState<boolean>(false);
@@ -30,6 +30,10 @@ const NFTs: React.FC = () => {
 
 	const coverRef: any = useRef();
 
+	useEffect(() => {
+		getNFTs && getNFTs();
+	}, [getNFTs]);
+
 	const handleSubmit = async (preTx?: boolean, account?: string) => {
 		if (!!wallet && !!wallet.keystore) {
 			setSubmitLoading(true);
@@ -39,7 +43,7 @@ const NFTs: React.FC = () => {
 				if (preTx && account) {
 					return info
 				}
-				getNFTs();
+				getNFTs && getNFTs();
 			} catch (e: any) {
 				notification.error({
 					message: e.message,

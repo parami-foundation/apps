@@ -1,5 +1,5 @@
 import { useModel } from 'umi';
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export default () => {
 	const apiWs = useModel('apiWs');
@@ -12,10 +12,10 @@ export default () => {
 	const [portNFT, setPortNFT] = useState<any[]>([]);
 	const [nftList, setNftList] = useState<any[]>([]);
 
-	const [loading, setLoading] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
 
-	const getNFTs = async () => {
-		if (!apiWs) {
+	const getNFTs = useCallback(async () => {
+		if (!apiWs || !retrieveAssets) {
 			return;
 		}
 
@@ -109,19 +109,13 @@ export default () => {
 			console.error(e);
 			setLoading(false);
 		});
-	};
-
-	useEffect(() => {
-		if (!!apiWs) {
-			getNFTs();
-		}
-	}, [apiWs, avatar, retrieveAssets]);
+	}, [apiWs, retrieveAssets]);
 
 	return {
 		kickNFT,
 		portNFT,
 		nftList,
 		loading,
-		getNFTs,
+		getNFTs: (!apiWs || !retrieveAssets) ? null : getNFTs,
 	}
 }
