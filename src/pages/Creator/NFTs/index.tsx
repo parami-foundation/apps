@@ -64,8 +64,9 @@ const NFTs: React.FC = () => {
 		}
 	}, [coverRef]);
 
-	const statusInfo = (label: string, value: string) => {
+	const statusInfo = (label: string, value: string, color: string) => {
 		return (<div className={style.status}>
+			<div className={style.legend} style={{background: `${color}`}}></div>
 			<div className={style.label}>{label}</div>
 			<div className={style.value}>{value}</div>
 		</div>);
@@ -290,9 +291,9 @@ const NFTs: React.FC = () => {
 																				/>
 																			</Tooltip>
 																		</div>
-																		{statusInfo('Total Value', '100k')}
-																		{statusInfo('Total Claimed', '40k')}
-																		{statusInfo('Ready for Claim', '3k')}
+																		{statusInfo('Total Value', '100k', '#fff')}
+																		{statusInfo('Total Claimed', '40k', '#ff5b00')}
+																		{statusInfo('Ready for Claim', '3k', '#fc9860')}
 																		<div className={style.action}>
 																			<Button
 																				block
