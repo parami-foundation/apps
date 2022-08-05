@@ -27,7 +27,6 @@ const Deposit: React.FC<{
   } = useModel('web3');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
   const [eventsUnsub, setEventsUnsub] = useState<() => void>();
-  const { SubBridgeEvents, UnsubBridgeEvents, ProposalEvent } = useModel('dashboard.bridgeEvents');
   const { balance } = useModel('dashboard.balance');
   const { Ad3Contract, BridgeContract } = useModel('contracts');
   const [freeBalance, setFreeBalance] = useState<string>('');
@@ -36,7 +35,7 @@ const Deposit: React.FC<{
   const [waitingParami, setWaitingParami] = useState<boolean>(false);
   const [destinationAddress, setDestinationAddress] = useState<string>('');
   const [selectModal, setSelectModal] = useState<boolean>(false);
-  
+
   const intl = useIntl();
 
   let unsubParami;
@@ -129,20 +128,13 @@ const Deposit: React.FC<{
 
       const nonce = BigInt(ethRes.logs[2].topics[3]);
       setTxNonce(nonce);
+      setETHHash(ethRes.transactionHash);
       setStep(2);
 
       // Step 3
       setWaitingParami(true);
       unsubParami = await SubParamiEvents();
       setEventsUnsub(() => unsubParami);
-
-      if (BridgeContract) {
-        SubBridgeEvents(BridgeContract);
-      } else {
-        notification.error({
-          message: 'No bridge contract',
-        });
-      };
     } catch (e: any) {
       notification.error({
         message: e.message || e,
@@ -163,13 +155,7 @@ const Deposit: React.FC<{
           notification.success({
             message: 'Deposit Success',
           });
-          setParamiHash(item.transactionHash);
-          // if (!!DataHash) {
-          //   setETHHash(DataHash);
-          // };
-          if (BridgeContract) {
-            UnsubBridgeEvents(BridgeContract);
-          };
+          setParamiHash('0x1234'); // todo: cannot get tx hash this way. Subscribe to account change instead.
         }
       }
     }
