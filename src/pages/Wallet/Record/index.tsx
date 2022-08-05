@@ -72,15 +72,15 @@ const Record: React.FC = () => {
 									if (index >= 5) return null;
 									return (
 										<Timeline.Item
-											color={value.fromDid === wallet?.did ? "red" : "green"}
-											dot={value.fromDid === wallet?.did ? <LogoutOutlined /> : <LoginOutlined />}
+											color={value.out ? "red" : "green"}
+											dot={value.out ? <LogoutOutlined /> : <LoginOutlined />}
 											className={style.timelineItem}
 											key={value.timestampInSecond}
 										>
 											<div className={style.body}>
 												<div className={style.left}>
 													<div className={style.desc}>
-														{value.fromDid === wallet?.did ? '-' : '+'}
+														{value.out ? '-' : '+'}
 														<Token value={value.amount} symbol={value.assetSymbol} />
 													</div>
 													<div className={style.receiver}>
