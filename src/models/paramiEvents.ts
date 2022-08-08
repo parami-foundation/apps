@@ -10,9 +10,17 @@ export default () => {
       return;
     }
 
-    const unsub = await apiWs.query.system.events((events) => {
-      setEvents(events);
+    const unsub = await apiWs.rpc.chain.subscribeNewHeads(async (header) => {
+      const blockHash = await apiWs.rpc.chain.getBlockHash(header.number.unwrap());
+      const at = await apiWs.at(blockHash);
+      const events = await at.query.system.events();
+      const hash = blockHash.toString();
+      setEvents(events.map(event => ({
+        ...event,
+        blockHash: hash
+      })));
     });
+
     return unsub;
   }, [apiWs]);
 

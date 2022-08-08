@@ -10,6 +10,7 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
 import SelectToken from './SelectToken';
+import { decodeAddress } from '@polkadot/util-crypto';
 
 const Deposit: React.FC<{
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -84,7 +85,7 @@ const Deposit: React.FC<{
       }
     }
 
-    recipient = utils.hexlify(utils.toUtf8Bytes(recipient));
+    recipient = `0x${Buffer.from(decodeAddress(recipient)).toString("hex")}`;
 
     const data =
       "0x" +
@@ -155,7 +156,7 @@ const Deposit: React.FC<{
           notification.success({
             message: 'Deposit Success',
           });
-          setParamiHash('0x1234'); // todo: cannot get tx hash this way. Subscribe to account change instead.
+          setParamiHash(item.blockHash);
         }
       }
     }
