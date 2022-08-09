@@ -132,18 +132,11 @@ const ImportNFTModal: React.FC<{
       setImportStep(1);
       try {
         const adLink = `${window.location.origin}/${hexToDid(wallet.did!)}/${nftId}`;
-        const paramiLinkAddress = ParamiLinkContractAddress[ChainId];
-        const hContract = new ethers.Contract(mintItem.contract, HContractABI.abi, Signer);
 
-        const paramiLinkAuthorized = await hContract.isSlotManager(mintItem.tokenId, paramiLinkAddress);
-        if (paramiLinkAuthorized) {
-          const paramiLinkContract = new ethers.Contract(paramiLinkAddress, ParamiLinkABI.abi, Signer);
-          const setLinkResp = await paramiLinkContract.setWNFTLink(hContract.address, mintItem.tokenId, adLink);
-          await setLinkResp.wait();
-        } else {
-          const authAndSetLink = await hContract.authorizeSlotToWithValue(mintItem.tokenId, ParamiLinkContractAddress[ChainId], adLink);
-          await authAndSetLink.wait();
-        }
+        const paramiLinkContract = new ethers.Contract(ParamiLinkContractAddress[ChainId], ParamiLinkABI.abi, Signer);
+        const setLinkResp = await paramiLinkContract.setHNFTLink(mintItem.contract, mintItem.tokenId, adLink);
+        await setLinkResp.wait();
+
         notification.success({
           message: 'Import HNFT Success!',
           description: 'Reloading your NFTs...'
