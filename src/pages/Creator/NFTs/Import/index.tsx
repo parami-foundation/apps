@@ -2,17 +2,20 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, notification, Alert } from 'antd';
+import { Button, notification, Alert, Modal, Steps, Spin } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
 import { HCollectionAddress, registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
 import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
+import HContractABI from '../abi/ERC721HCollection.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import ethNet from '@/config/ethNet';
 import { VoidFn } from '@polkadot/api/types';
+
+const { Step } = Steps;
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,6 +39,7 @@ const ImportNFTModal: React.FC<{
     ChainName
   } = useModel("web3");
   const { retrieveAssets } = useModel('openseaApi');
+  const [importStep, setImportStep] = useState<number>(0);
 
   const intl = useIntl();
 
@@ -46,7 +50,7 @@ const ImportNFTModal: React.FC<{
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
 
-    const assets = await retrieveAssets({contractAddresses: [...wContracts, HCollectionAddress[chainId]]});
+    const assets = await retrieveAssets({ contractAddresses: [...wContracts, HCollectionAddress[chainId]] });
     return (assets ?? []).map(asset => ({
       contract: asset.asset_contract?.address,
       tokenId: BigNumber.from(asset.token_id),
@@ -74,12 +78,13 @@ const ImportNFTModal: React.FC<{
           return info
         }
 
-        notification.info({
-          key: 'importNFTprocessing',
-          message: `Importing NFT...`,
-          description: 'This might take up to a minute',
-          duration: null
-        });
+        setImportStep(0);
+        // notification.info({
+        //   key: 'importNFTprocessing',
+        //   message: `Importing NFT...`,
+        //   description: 'This might take up to a minute',
+        //   duration: null
+        // });
 
         const unsub = await SubParamiEvents();
         setEventsUnsub(() => unsub);
@@ -137,14 +142,21 @@ const ImportNFTModal: React.FC<{
         const { event } = record;
         if (`${event?.section}:${event?.method}` === 'nft:Created') {
           if (event?.data[0].toString() === wallet?.did) {
-            notification.success({
-              key: 'importNFTsuccess',
-              message: `Import NFT success!`,
-              description: 'Reloading your NFTs...',
-            });
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
+            const nftId = event?.data[1].toString();
+
+            const hContract = new ethers.Contract(mintItem!.contract, HContractABI.abi, Signer!);
+            hContract.authorizeSlotToWithValue(mintItem?.tokenId, )
+            
+            // authorize and setlink...
+            
+            // notification.success({
+            //   key: 'importNFTsuccess',
+            //   message: `Import NFT success!`,
+            //   description: 'Reloading your NFTs...',
+            // });
+            // setTimeout(() => {
+            //   window.location.reload();
+            // }, 1000);
           }
         }
       })
@@ -237,6 +249,29 @@ const ImportNFTModal: React.FC<{
         setPassphrase={setPassphrase}
         func={importNft}
       />
+
+      {(importStep === 0 || importStep === 1) && (
+        <Modal
+          visible
+          title='Importing'
+          footer={null}
+          closable={false}
+        >
+          <Steps
+            progressDot
+            size='small'
+            current={importStep}
+          >
+            <Step title="Import HNFT" />
+            <Step title="Setup Hyperlink" />
+          </Steps>
+          <div className={style.loadingContainer}>
+            <Spin />
+            {importStep === 0 && <p>Importing your HNFT. Please wait.</p>}
+            {importStep === 1 && <p>Setting-up your hyperlink. Please confirm in your wallet.</p>}
+          </div>
+        </Modal>
+      )}
     </div>
   )
 };
