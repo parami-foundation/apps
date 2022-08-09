@@ -25,7 +25,7 @@ export default () => {
     const [BridgeContract, setBridgeContract] = useState<ethers.Contract | null>(null);
     // Init contract instances
     useEffect(() => {
-        if (ChainId !== 1 && ChainId !== 4) {
+        if (!ChainId) {
             setAd3Contract(null);
             setWethContract(null);
             setStakeContract(null);
@@ -36,18 +36,28 @@ export default () => {
         }
 
         if (!Provider || !Signer) return;
-        const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
-        const weth = new ethers.Contract(contractAddresses.weth[ChainId], WETHAbi, Signer);
-        const stakeManager = new ethers.Contract(contractAddresses.stake[ChainId], StakeManagerAbi, Signer);
-        const factory = new ethers.Contract(contractAddresses.uniswapFactory[ChainId], IUniswapV3FactoryABI.abi, Signer);
-        const lp = new ethers.Contract(contractAddresses.nonfungiblePositionManager[ChainId], LP_ABI, Signer);
-        const bridge = new ethers.Contract(contractAddresses.bridge[ChainId], BRIDGE_ABI, Signer);
-        setAd3Contract(ad3);
-        setWethContract(weth);
-        setStakeContract(stakeManager);
-        setFactoryContract(factory);
-        setLPContract(lp);
-        setBridgeContract(bridge);
+
+        if (ChainId === 3) {
+            const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
+            setAd3Contract(ad3);
+
+            const bridge = new ethers.Contract(contractAddresses.bridge[ChainId], BRIDGE_ABI, Signer);
+            setBridgeContract(bridge);
+        } else {
+            const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
+            const weth = new ethers.Contract(contractAddresses.weth[ChainId], WETHAbi, Signer);
+            const stakeManager = new ethers.Contract(contractAddresses.stake[ChainId], StakeManagerAbi, Signer);
+            const factory = new ethers.Contract(contractAddresses.uniswapFactory[ChainId], IUniswapV3FactoryABI.abi, Signer);
+            const lp = new ethers.Contract(contractAddresses.nonfungiblePositionManager[ChainId], LP_ABI, Signer);
+            const bridge = new ethers.Contract(contractAddresses.bridge[ChainId], BRIDGE_ABI, Signer);
+            setAd3Contract(ad3);
+            setWethContract(weth);
+            setStakeContract(stakeManager);
+            setFactoryContract(factory);
+            setLPContract(lp);
+            setBridgeContract(bridge);
+        }
+
 
         return () => {
             setAd3Contract(null);

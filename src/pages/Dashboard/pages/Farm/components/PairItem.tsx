@@ -13,6 +13,7 @@ import ERC20_ABI from '@/pages/Dashboard/pages/Farm/abi/ERC20.json';
 import { getIncentiveId, tryParseTick } from '../api/parami/util';
 import { CompareArray } from '@/utils/common';
 import { formatBalance } from '@polkadot/util';
+import { isMainnetOrRinkeby } from '@/utils/chain.util';
 const ICON_AD3 = '/images/logo-round-core.svg';
 
 const PairItem: React.FC<{
@@ -45,7 +46,7 @@ const PairItem: React.FC<{
 	const [Token1, setToken1] = useState<Token | undefined>(undefined);
 
 	const getToken = async (address: string) => {
-		if (ChainId !== 1 && ChainId !== 4 || !Signer) return undefined
+		if (!isMainnetOrRinkeby(ChainId) || !Signer) return undefined
 		const erc20_rw = new ethers.Contract(address, ERC20_ABI, Signer);
 		const name = await erc20_rw.name();
 		const symbol = await erc20_rw.symbol();
@@ -60,7 +61,7 @@ const PairItem: React.FC<{
 	};
 
 	const initToken = async () => {
-		const newToken = await getToken(contractAddresses.ad3[ChainId]);
+		const newToken = await getToken(contractAddresses.ad3[ChainId ?? 1]);
 		const newCoin = await getToken(pair.coinAddress);
 		console.log(newToken, newCoin);
 		setToken0(newToken);
