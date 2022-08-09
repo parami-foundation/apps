@@ -24,7 +24,7 @@ const ProcessModal: React.FC<{
   const { ChainId } = useModel('web3');
 
   const openEtherscan = useCallback(() => {
-    window.open(`${EtherscanPrefix[ChainId]}${ethHash}`, '_blank');
+    window.open(`${EtherscanPrefix[ChainId ?? 1]}${ethHash}`, '_blank');
   }, [ChainId, ethHash]);
   
   return <BigModal

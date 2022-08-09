@@ -3,7 +3,7 @@ import { providers } from 'ethers';
 import { useCallback, useEffect, useState } from "react";
 import Web3Modal from 'web3modal';
 import ethNet from "@/config/ethNet";
-import { message } from 'antd';
+import { message, notification } from 'antd';
 
 const providerOptions = {
     // Example with WalletConnect provider
@@ -21,13 +21,16 @@ interface ProviderRpcError {
     data?: unknown;
 }
 
+type SupportedChainId = 1 | 3 | 4;
+const chainIdSupported = (chainId: number): chainId is SupportedChainId => chainId === 1 || chainId === 3 || chainId === 4;
+
 export default () => {
     const [Account, setAccount] = useState<string>('');
     const [Provider, setProvider] = useState<any>(null);
     const [Web3Provider, setWeb3Provider] = useState<providers.Web3Provider | null>(null);
     const [Signer, setSigner] = useState<providers.JsonRpcSigner | null>(null);
     const [BlockNumber, setBlockNumber] = useState<number>(0);
-    const [ChainId, setChainId] = useState<number>();
+    const [ChainId, setChainId] = useState<SupportedChainId>();
     const [ChainName, setChainName] = useState<string>('');
     const [Network, setNetwork] = useState<providers.Network>();
     const [NoProvider, setNoProvider] = useState<boolean>(false);
@@ -73,8 +76,15 @@ export default () => {
             const network = await web3Provider.getNetwork();
             setNetwork(network);
             const chainId = await signer.getChainId();
-            setChainId(chainId);
-            setChainName(ethNet[chainId]);
+            if (chainIdSupported(chainId)) {
+                setChainId(chainId);
+                setChainName(ethNet[chainId]);
+            } else {
+                notification.warning({
+                    message: 'Unsupported ChainId',
+                    description: `ChainId: ${chainId}`
+                });
+            }
 
             provider.on('accountsChanged', function (accounts: string[]) {
                 if (accounts.length === 0) {
@@ -85,8 +95,7 @@ export default () => {
                 const newSign = web3Provider.getSigner()
                 setSigner(newSign);
             });
-            provider.on('chainChanged', (newChainId: number) => {
-                setChainId(Number(newChainId));
+            provider.on('chainChanged', (_newChainId: number) => {
                 window.location.reload();
             });
             provider.on('disconnect', (error: ProviderRpcError) => {

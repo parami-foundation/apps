@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import { Image, Typography } from 'antd';
 import styles from '@/pages/dashboard.less';
@@ -11,7 +11,7 @@ import SelectWallet from '../../components/SelectWallet';
 import ProcessModal from './ProcessModal';
 
 const Bridge: React.FC = () => {
-    const { Account } = useModel('web3');
+    const { Account, connect } = useModel('web3');
     const [tab, setTab] = useState<'deposit' | 'withdraw'>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
     const [step, setStep] = useState<number>(1);
@@ -21,6 +21,10 @@ const Bridge: React.FC = () => {
     const intl = useIntl();
 
     const { Title } = Typography;
+
+    useEffect(() => {
+        connect();
+    }, []);
 
     return (
         <>

@@ -16,6 +16,7 @@ import PairItem from './components/PairItem';
 import ERC20_ABI from './abi/ERC20.json';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
 import SelectWallet from '../../components/SelectWallet';
+import { isMainnetOrRinkeby } from '@/utils/chain.util';
 
 const Farm: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -46,7 +47,7 @@ const Farm: React.FC = () => {
 	} = useModel('contracts');
 
 	useEffect(() => {
-		if (ChainId !== 1 && ChainId !== 4) {
+		if (!isMainnetOrRinkeby(ChainId)) {
 			notification.error({
 				message: 'Unsupported Chain',
 				description: 'This feature is only supported on mainnet and rinkeby',
@@ -61,7 +62,7 @@ const Farm: React.FC = () => {
 	}, [ChainId, Account]);
 
 	useEffect(() => {
-		if (ChainId !== 1 && ChainId !== 4) {
+		if (!isMainnetOrRinkeby(ChainId)) {
 			return;
 		}
 		const p: any[] = [];
@@ -83,7 +84,7 @@ const Farm: React.FC = () => {
 
 	// get LPContract's balance
 	const getLPBalance = async () => {
-		if (ChainId !== 1 && ChainId !== 4) {
+		if (!isMainnetOrRinkeby(ChainId)) {
 			return;
 		}
 		if (Signer && Pools.length > 0) {
@@ -110,7 +111,7 @@ const Farm: React.FC = () => {
 	// update AD3 price && set pools
 	const getPoolsAndPrice = useCallback(async () => {
 		if (FactoryContract && ChainId !== undefined) {
-			if (ChainId !== 1 && ChainId !== 4) {
+			if (!isMainnetOrRinkeby(ChainId)) {
 				return;
 			}
 			const promises = pairsData.map(async (pair) => {

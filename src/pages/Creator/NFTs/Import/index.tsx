@@ -13,6 +13,7 @@ import Skeleton from '@/components/Skeleton';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import ethNet from '@/config/ethNet';
 import { VoidFn } from '@polkadot/api/types';
+import { isMainnetOrRinkeby } from '@/utils/chain.util';
 
 const ImportNFTModal: React.FC<{
   setImportModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,7 +42,7 @@ const ImportNFTModal: React.FC<{
 
   const coverRef: any = useRef();
 
-  const getNftsOfSigner = useCallback(async (signer: JsonRpcSigner, chainId: 1 | 4) => {
+  const getNftsOfSigner = useCallback(async (signer: JsonRpcSigner, chainId) => {
     const registry = new ethers.Contract(registryAddresses[chainId], RegistryABI.abi, signer);
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
@@ -103,7 +104,7 @@ const ImportNFTModal: React.FC<{
   };
 
   useEffect(() => {
-    if (Signer && (ChainId === 1 || ChainId === 4) && retrieveAssets) {
+    if (Signer && ChainId && retrieveAssets) {
       getNftsOfSigner(Signer, ChainId).then((r) => {
         setTokenData(r.filter(nft => {
           return !(nftList ?? []).find(importedNft => {
@@ -123,7 +124,7 @@ const ImportNFTModal: React.FC<{
 
   useEffect(() => {
     if (ChainId && ChainName) {
-      if (ChainId !== 4 && ChainId !== 1) {
+      if (!isMainnetOrRinkeby(ChainId)) {
         setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[1]} or ${ethNet[4]}.`);
       } else {
         setChainWarning('');

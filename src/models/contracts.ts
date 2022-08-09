@@ -25,7 +25,7 @@ export default () => {
     const [BridgeContract, setBridgeContract] = useState<ethers.Contract | null>(null);
     // Init contract instances
     useEffect(() => {
-        if (ChainId !== 1 && ChainId !== 4 && ChainId !== 3) {
+        if (!ChainId) {
             setAd3Contract(null);
             setWethContract(null);
             setStakeContract(null);
