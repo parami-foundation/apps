@@ -81,7 +81,7 @@ const InputAmount: React.FC<{
         </div>
         <div className={styles.balance}>
           <span className={styles.token}>
-            <Token value={token.balance} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
+            <Token value={Object.keys(token).length ? token.balance : balance?.free} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
           </span>
         </div>
       </div>
@@ -93,7 +93,7 @@ const InputAmount: React.FC<{
           size="large"
           className={styles.button}
           loading={submitting}
-          disabled={FloatStringToBigInt(number, 18) <= BigInt(0) || FloatStringToBigInt(number, 18) > BigInt(token.balance)}
+          disabled={FloatStringToBigInt(number, 18) <= BigInt(0) || FloatStringToBigInt(number, 18) > BigInt(Object.keys(token).length ? token.balance : balance?.free)}
           onClick={() => handleSubmit()}
         >
           {intl.formatMessage({

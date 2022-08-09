@@ -1,10 +1,7 @@
 import { formatBoolean } from '@/utils/format';
 import { useModel } from 'umi';
-import { notification } from 'antd';
 import { useEffect } from 'react';
-import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
-import Keyring from '@polkadot/keyring';
-import config from '@/config/config';
+import { QueryAccountExist } from '@/services/parami/Identity';
 
 export default () => {
   const apiWs = useModel('apiWs');
@@ -28,22 +25,6 @@ export default () => {
   const dashboardDID = localStorage.getItem('parami:dashboard:did');
   const dashboardAccounts = localStorage.getItem('parami:dashboard:accounts');
   const dashboardAssets = localStorage.getItem('parami:dashboard:assets');
-
-  const QueryAccountExist = async (account: string) => {
-    if (!apiWs) {
-      return;
-    }
-
-    const existDID = await apiWs.query.did.didOf(account);
-    if (existDID.isEmpty) {
-      notification.error({
-        key: 'accessDenied',
-        message: 'Access Denied',
-        description: 'The account does not exist',
-        duration: null,
-      });
-    }
-  };
 
   useEffect(() => {
     if (!!apiWs && !!walletAccount && !!walletDID) {

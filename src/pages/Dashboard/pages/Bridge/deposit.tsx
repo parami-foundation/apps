@@ -4,13 +4,14 @@ import { Button, Image, Input, Tooltip, notification } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { BigNumber, utils } from 'ethers';
-import { decodeAddress } from '@polkadot/util-crypto';
 import config from './config';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
 import SelectToken from './SelectToken';
+import { decodeAddress } from '@polkadot/util-crypto';
+import { contractAddresses } from '../Farm/config';
 
 const Deposit: React.FC<{
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,9 +26,10 @@ const Deposit: React.FC<{
     ChainName,
     Provider,
     Signer,
+    ChainId
   } = useModel('web3');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
-  const { DataHash, SubBridgeEvents, UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
+  const [eventsUnsub, setEventsUnsub] = useState<() => void>();
   const { balance } = useModel('dashboard.balance');
   const { Ad3Contract, BridgeContract } = useModel('contracts');
   const [freeBalance, setFreeBalance] = useState<string>('');
@@ -104,15 +106,21 @@ const Deposit: React.FC<{
 
     try {
       setLoading(true);
+      notification.info({
+        message: 'Approve Token Access'
+      });
       await (
         await Ad3Contract?.approve(
-          config.ERC20HandlerContract.address,
+          contractAddresses.erc20handler[ChainId!],
           BigNumber.from(
             utils.parseUnits(amount.toString(), 18)
           )
         )
       ).wait();
 
+      notification.info({
+        message: 'Deposit Token'
+      });
       const ethRes = await (
         await BridgeContract?.deposit(
           config.bridge.destinationChainId,
@@ -123,19 +131,13 @@ const Deposit: React.FC<{
 
       const nonce = BigInt(ethRes.logs[2].topics[3]);
       setTxNonce(nonce);
+      setETHHash(ethRes.transactionHash);
       setStep(2);
 
       // Step 3
       setWaitingParami(true);
       unsubParami = await SubParamiEvents();
-
-      if (BridgeContract) {
-        SubBridgeEvents(BridgeContract);
-      } else {
-        notification.error({
-          message: 'No bridge contract',
-        });
-      };
+      setEventsUnsub(() => unsubParami);
     } catch (e: any) {
       notification.error({
         message: e.message || e,
@@ -152,21 +154,15 @@ const Deposit: React.FC<{
         if (isDepositSuccessEvent(item, txNonce)) {
           setWaitingParami(false);
           setStep(3);
-          unsubParami();
+          eventsUnsub && eventsUnsub();
           notification.success({
             message: 'Deposit Success',
           });
-          setParamiHash(item.transactionHash);
-          if (!!DataHash) {
-            setETHHash(DataHash);
-          };
-          if (BridgeContract) {
-            UnsubBridgeEvents(BridgeContract);
-          };
+          setParamiHash(item.blockHash);
         }
       }
     }
-  }, [Events, txNonce, waitingParami]);
+  }, [Events, txNonce, waitingParami, eventsUnsub]);
 
   useEffect(() => {
     if (!Account || !Ad3Contract) return;

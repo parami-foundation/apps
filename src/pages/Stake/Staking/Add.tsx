@@ -12,6 +12,7 @@ import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity, GetUserInfo } from '@/services/parami/RPC';
+import { isLPAsset } from '@/utils/assets.util';
 
 const SelectAssets: React.FC<{
     setToken: React.Dispatch<React.SetStateAction<any>>,
@@ -104,7 +105,7 @@ const Add: React.FC<{
                 const { balance } = res.toHuman() ?? { balance: '' };
                 const balanceBigInt = BigInt(balance.replaceAll(',', ''));
 
-                if (!!balanceBigInt && balanceBigInt > 0 && !assets[assetsID].name.endsWith('LP*')) {
+                if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(assets[assetsID])) {
                     let icon: any;
                     const did = await OwnerDidOfNft(assetsID);
                     const info = await GetUserInfo(did);

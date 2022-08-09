@@ -1,6 +1,8 @@
 import { didToHex } from "@/utils/common";
+import { UserLogout } from "@/utils/user.util";
 import Keyring from "@polkadot/keyring";
 import { mnemonicGenerate } from "@polkadot/util-crypto";
+import { notification } from "antd";
 import { DecodeKeystoreWithPwd, EncodeKeystoreWithPwd } from "./Crypto";
 import { subCallback } from "./Subscription";
 
@@ -97,14 +99,18 @@ export const GetExistentialDeposit = async () => {
 };
 
 export const QueryAccountExist = async (account: string) => {
-	const accountInfo = await window.apiWs.query.system.account(account);
-	if (accountInfo.isEmpty) {
+	const existDID = await window.apiWs.query.did.didOf(account);
+	if (existDID.isEmpty) {
+		notification.error({
+			key: 'accessDenied',
+			message: 'Access Denied',
+			description: 'The account does not exist. Logging out...',
+		});
+		setTimeout(() => {
+			UserLogout();
+		}, 500);
 		return false;
 	}
-	if (accountInfo.toHuman()?.nonce === 0) {
-		return false;
-	}
-
 	return true;
 };
 

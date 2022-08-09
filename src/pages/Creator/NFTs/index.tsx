@@ -1,11 +1,9 @@
-import { Button, Col, notification, Progress, Row, Typography, Image } from 'antd';
+import { Button, Col, Progress, Row, Typography, Image, Tooltip } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
-import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { KickNFT } from '@/services/parami/NFT';
 import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
@@ -16,13 +14,11 @@ const NFTs: React.FC = () => {
 	const apiWs = useModel('apiWs');
 	const { wallet } = useModel('currentUser');
 	const { connect } = useModel('web3');
-	const { kickNFT, nftList, loading, getNFTs } = useModel('nft');
+	const { nftList, loading, getNFTs } = useModel('nft');
 	const [coverWidth, setCoverWidth] = useState<number>(0);
 	const [importModal, setImportModal] = useState<boolean>(false);
 	const [mintModal, setMintModal] = useState<boolean>(false);
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
-	const [secModal, setSecModal] = useState<boolean>(false);
-	const [passphrase, setPassphrase] = useState<string>('');
 	const [mintItem, setMintItem] = useState<any>({});
 
 	const intl = useIntl();
@@ -30,39 +26,27 @@ const NFTs: React.FC = () => {
 
 	const coverRef: any = useRef();
 
-	const handleSubmit = async (preTx?: boolean, account?: string) => {
-		if (!!wallet && !!wallet.keystore) {
-			setSubmitLoading(true);
-			try {
-				const info: any = await KickNFT(passphrase, wallet?.keystore, preTx, account);
-				setSubmitLoading(false);
-				if (preTx && account) {
-					return info
-				}
-				getNFTs();
-			} catch (e: any) {
-				notification.error({
-					message: e.message,
-					duration: null,
-				});
-				setSubmitLoading(false);
-			}
-		} else {
-			notification.error({
-				key: 'accessDenied',
-				message: intl.formatMessage({
-					id: 'error.accessDenied',
-				}),
-				duration: null,
-			});
-		}
-	};
+	useEffect(() => {
+		connect && connect();
+	}, [connect])
+
+	useEffect(() => {
+		getNFTs && getNFTs();
+	}, [getNFTs]);
 
 	useEffect(() => {
 		if (!!nftList?.length) {
 			setCoverWidth(coverRef?.current?.clientWidth);
 		}
 	}, [coverRef]);
+
+	const statusInfo = (label: string, value: string, color: string) => {
+		return (<div className={style.status}>
+			<div className={style.legend} style={{background: `${color}`}}></div>
+			<div className={style.label}>{label}</div>
+			<div className={style.value}>{value}</div>
+		</div>);
+	}
 
 	return (
 		<>
@@ -120,9 +104,8 @@ const NFTs: React.FC = () => {
 														shape='round'
 														size='large'
 														className={style.button}
-														loading={submitLoading}
 														onClick={() => {
-															setSecModal(true);
+															window.open('https://wnft.parami.io/');
 														}}
 													>
 														{intl.formatMessage({
@@ -235,7 +218,10 @@ const NFTs: React.FC = () => {
 											} else {
 												return (
 													<div className={style.nftItem}>
-														<div className={style.card}>
+														<div className={style.card}
+															onClick={() => {
+																window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+															}}>
 															<div className={style.cardWrapper}>
 																<div className={style.cardBox}>
 																	<div
@@ -269,20 +255,32 @@ const NFTs: React.FC = () => {
 																				Minted
 																			</div>
 																		</div>
+																		<div className={style.unlockProgress}>
+																			<Tooltip title="Tokens will be gradually unlocked over 6 months" color={'#ff5b00'}>
+																				<Progress
+																					success={{ percent: 15, strokeColor: '#ff5b00' }}
+																					percent={50}
+																					strokeColor='#fc9860'
+																					showInfo
+																					className={style.progress}
+																				/>
+																			</Tooltip>
+																		</div>
+																		{statusInfo('Total Value', '100k', '#fff')}
+																		{statusInfo('Total Claimed', '40k', '#ff5b00')}
+																		{statusInfo('Ready for Claim', '3k', '#fc9860')}
 																		<div className={style.action}>
 																			<Button
 																				block
 																				type='primary'
 																				shape='round'
 																				size='middle'
-																				onClick={() => {
-																					window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+																				onClick={(e) => {
+																					e.stopPropagation();
+																					console.log('Claim Tokens');
 																				}}
 																			>
-																				{intl.formatMessage({
-																					id: 'wallet.nfts.gotoNFTDAO',
-																					defaultMessage: 'NFT DAO',
-																				})}
+																				Claim Tokens
 																			</Button>
 																		</div>
 																	</div>
@@ -297,10 +295,8 @@ const NFTs: React.FC = () => {
 											<div className={style.card}>
 												<Button
 													className={style.createNFT}
-													loading={submitLoading}
-													disabled={!!kickNFT.length}
 													onClick={() => {
-														setSecModal(true);
+														window.open('https://wnft.parami.io/');
 													}}
 												>
 													<FaFolderPlus
@@ -344,14 +340,6 @@ const NFTs: React.FC = () => {
 						mintModal={mintModal}
 						setMintModal={setMintModal}
 						item={mintItem}
-					/>
-
-					<SecurityModal
-						visable={secModal}
-						setVisable={setSecModal}
-						passphrase={passphrase}
-						setPassphrase={setPassphrase}
-						func={handleSubmit}
 					/>
 				</div>
 			</div>
