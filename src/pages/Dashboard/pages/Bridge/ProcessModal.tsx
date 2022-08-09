@@ -5,14 +5,9 @@ import style from './style.less';
 import config from '@/config/config';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useModel } from 'umi';
+import { EtherscanPrefix } from '@/config/ethereumNetwork';
 
 const { Step } = Steps;
-
-const EtherscanPrefix = {
-  1: 'https://etherscan.io/tx/',
-  3: 'https://ropsten.etherscan.io/tx/',
-  4: 'https://rinkeby.etherscan.io/tx/'
-}
 
 const ProcessModal: React.FC<{
   tab: 'deposit' | 'withdraw',

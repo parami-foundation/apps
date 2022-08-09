@@ -2,7 +2,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import { providers } from 'ethers';
 import { useCallback, useEffect, useState } from "react";
 import Web3Modal from 'web3modal';
-import ethNet from "@/config/ethNet";
+import { EthNetworkName } from "@/config/ethereumNetwork";
 import { message, notification } from 'antd';
 
 const providerOptions = {
@@ -78,7 +78,7 @@ export default () => {
             const chainId = await signer.getChainId();
             if (chainIdSupported(chainId)) {
                 setChainId(chainId);
-                setChainName(ethNet[chainId]);
+                setChainName(EthNetworkName[chainId]);
             } else {
                 notification.warning({
                     message: 'Unsupported ChainId',

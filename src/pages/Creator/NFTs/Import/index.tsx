@@ -11,7 +11,7 @@ import RegistryABI from '../abi/ERC721WRegistry.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import ethNet from '@/config/ethNet';
+import { EthNetworkName } from '@/config/ethereumNetwork';
 import { VoidFn } from '@polkadot/api/types';
 import { isMainnetOrRinkeby } from '@/utils/chain.util';
 
@@ -125,7 +125,7 @@ const ImportNFTModal: React.FC<{
   useEffect(() => {
     if (ChainId && ChainName) {
       if (!isMainnetOrRinkeby(ChainId)) {
-        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${ethNet[1]} or ${ethNet[4]}.`);
+        setChainWarning(`Your wallet is connected to the ${ChainName}. To import NFT, please switch to ${EthNetworkName[1]} or ${EthNetworkName[4]}.`);
       } else {
         setChainWarning('');
       }
