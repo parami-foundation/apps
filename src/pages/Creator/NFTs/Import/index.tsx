@@ -4,17 +4,19 @@ import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, notification, Alert, Modal, Steps, Spin } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
-import { HCollectionAddress, registryAddresses } from '../config';
+import { HCollectionAddress, registryAddresses, ParamiLinkContractAddress } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
 import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
 import HContractABI from '../abi/ERC721HCollection.json';
+import ParamiLinkABI from '../abi/ParamiLink.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { EthNetworkName } from '@/config/ethereumNetwork';
 import { VoidFn } from '@polkadot/api/types';
 import { isMainnetOrRinkeby } from '@/utils/chain.util';
+import { hexToDid } from '@/utils/common';
 
 const { Step } = Steps;
 
@@ -23,9 +25,8 @@ const ImportNFTModal: React.FC<{
 }> = ({ setImportModal }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
-  const { nftList } = useModel('nft');
+  const { nftList, getNFTs } = useModel('nft');
   const [loading, setLoading] = useState<boolean>(true);
-  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const [tokenData, setTokenData] = useState<Erc721[]>([]);
   const [coverWidth, setCoverWidth] = useState<number>(0);
   const [secModal, setSecModal] = useState<boolean>(false);
@@ -40,7 +41,7 @@ const ImportNFTModal: React.FC<{
     ChainName
   } = useModel("web3");
   const { retrieveAssets } = useModel('openseaApi');
-  const [importStep, setImportStep] = useState<number>(0);
+  const [importStep, setImportStep] = useState<number>();
 
   const intl = useIntl();
 
@@ -62,7 +63,6 @@ const ImportNFTModal: React.FC<{
 
   const importNft = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore && !!mintItem) {
-      setSubmitLoading(true);
       try {
         const info: any = await PortNFT(
           passphrase,
@@ -73,29 +73,19 @@ const ImportNFTModal: React.FC<{
           preTx,
           account,
         );
-        setSubmitLoading(false);
         setImportModal(false);
         if (preTx && account) {
           return info
         }
 
         setImportStep(0);
-        // notification.info({
-        //   key: 'importNFTprocessing',
-        //   message: `Importing NFT...`,
-        //   description: 'This might take up to a minute',
-        //   duration: null
-        // });
-
         const unsub = await SubParamiEvents();
         setEventsUnsub(() => unsub);
       } catch (e: any) {
-        console.log(e);
         notification.error({
           message: intl.formatMessage({ id: e }),
           duration: null,
         });
-        setSubmitLoading(false);
       }
     } else {
       notification.error({
@@ -137,6 +127,35 @@ const ImportNFTModal: React.FC<{
     }
   }, [ChainId, ChainName]);
 
+  const authorizeAndSetlink = useCallback(async (nftId: string) => {
+    if (mintItem && Signer && ChainId) {
+      setImportStep(1);
+      try {
+        const adLink = `${window.location.origin}/${hexToDid(wallet.did!)}/${nftId}`;
+        const paramiLinkAddress = ParamiLinkContractAddress[ChainId];
+        const hContract = new ethers.Contract(mintItem.contract, HContractABI.abi, Signer);
+
+        const paramiLinkAuthorized = await hContract.isSlotManager(mintItem.tokenId, paramiLinkAddress);
+        if (paramiLinkAuthorized) {
+          const paramiLinkContract = new ethers.Contract(paramiLinkAddress, ParamiLinkABI.abi, Signer);
+          const setLinkResp = await paramiLinkContract.setWNFTLink(hContract.address, mintItem.tokenId, adLink);
+          await setLinkResp.wait();
+        } else {
+          const authAndSetLink = await hContract.authorizeSlotToWithValue(mintItem.tokenId, ParamiLinkContractAddress[ChainId], adLink);
+          await authAndSetLink.wait();
+        }
+        notification.success({
+          message: 'Import HNFT Success!',
+          description: 'Reloading your NFTs...'
+        });
+      } catch (e) {
+        console.error('Hyperlink Setup Error', JSON.stringify(e));
+      }
+      getNFTs();
+      setImportStep(undefined);
+    }
+  }, [mintItem, Signer, ChainId, getNFTs]);
+
   useEffect(() => {
     if (Events?.length) {
       Events.forEach(record => {
@@ -144,20 +163,7 @@ const ImportNFTModal: React.FC<{
         if (`${event?.section}:${event?.method}` === 'nft:Created') {
           if (event?.data[0].toString() === wallet?.did) {
             const nftId = event?.data[1].toString();
-
-            const hContract = new ethers.Contract(mintItem!.contract, HContractABI.abi, Signer!);
-            hContract.authorizeSlotToWithValue(mintItem?.tokenId, )
-            
-            // authorize and setlink...
-            
-            // notification.success({
-            //   key: 'importNFTsuccess',
-            //   message: `Import NFT success!`,
-            //   description: 'Reloading your NFTs...',
-            // });
-            // setTimeout(() => {
-            //   window.location.reload();
-            // }, 1000);
+            authorizeAndSetlink(nftId);
           }
         }
       })
@@ -221,7 +227,6 @@ const ImportNFTModal: React.FC<{
                                 type='primary'
                                 shape='round'
                                 size='middle'
-                                loading={submitLoading}
                                 onClick={() => {
                                   setMintItem(item);
                                   setSecModal(true);
