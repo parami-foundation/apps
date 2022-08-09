@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Image, Typography } from 'antd';
+import { Image, notification, Typography } from 'antd';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import classNames from 'classnames';
@@ -11,7 +11,7 @@ import SelectWallet from '../../components/SelectWallet';
 import ProcessModal from './ProcessModal';
 
 const Bridge: React.FC = () => {
-    const { Account, connect } = useModel('web3');
+    const { Account, connect, ChainId } = useModel('web3');
     const [tab, setTab] = useState<'deposit' | 'withdraw'>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
     const [step, setStep] = useState<number>(1);
@@ -25,6 +25,17 @@ const Bridge: React.FC = () => {
     useEffect(() => {
         connect();
     }, []);
+
+    useEffect(() => {
+        if (ChainId) {
+            if (ChainId !== 3) {
+                notification.warning({
+                    message: 'Parami Bridge currently only supports Ropsten Testnet',
+                    description: 'Please switch network in your wallet'
+                })
+            }
+        }
+    }, [ChainId])
 
     return (
         <>

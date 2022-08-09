@@ -11,6 +11,7 @@ import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
 import SelectToken from './SelectToken';
 import { decodeAddress } from '@polkadot/util-crypto';
+import { contractAddresses } from '../Farm/config';
 
 const Deposit: React.FC<{
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +26,7 @@ const Deposit: React.FC<{
     ChainName,
     Provider,
     Signer,
+    ChainId
   } = useModel('web3');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
   const [eventsUnsub, setEventsUnsub] = useState<() => void>();
@@ -109,7 +111,7 @@ const Deposit: React.FC<{
       });
       await (
         await Ad3Contract?.approve(
-          config.ERC20HandlerContract.address, // ropsten testnet
+          contractAddresses.erc20handler[ChainId!],
           BigNumber.from(
             utils.parseUnits(amount.toString(), 18)
           )

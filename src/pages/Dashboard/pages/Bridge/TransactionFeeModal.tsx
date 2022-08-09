@@ -20,9 +20,6 @@ const TransactionFeeModal: React.FC<{
   useEffect(() => {
     getAD3ToETHTransferFee().then(res => {
       setTransferFee(res)
-      if (res) {
-        setReceiveAmount((FloatStringToBigInt(amount, 18) - BigInt(res.fee.replaceAll(',', ''))).toString())
-      }
     });
   }, [amount])
 
