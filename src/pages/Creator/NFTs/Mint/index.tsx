@@ -33,7 +33,7 @@ const MintNFTModal: React.FC<{
 				if (preTx && account) {
 					return info
 				}
-				getNFTs();
+				getNFTs && getNFTs();
 			} catch (e: any) {
 				notification.error({
 					message: e.message,

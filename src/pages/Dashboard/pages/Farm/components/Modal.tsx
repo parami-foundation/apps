@@ -176,7 +176,7 @@ const AddModal: React.FC<{
 							window.open(
 								`https://app.uniswap.org/#/add/${pair.coin === 'ETH'
 									? 'ETH'
-									: pair.coinAddress}/${contractAddresses.ad3[ChainId]}/3000`
+									: pair.coinAddress}/${contractAddresses.ad3[ChainId ?? 1]}/3000`
 							)
 						}}
 					>
