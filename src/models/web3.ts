@@ -27,7 +27,7 @@ export default () => {
     const [Web3Provider, setWeb3Provider] = useState<providers.Web3Provider | null>(null);
     const [Signer, setSigner] = useState<providers.JsonRpcSigner | null>(null);
     const [BlockNumber, setBlockNumber] = useState<number>(0);
-    const [ChainId, setChainId] = useState<number>(1);
+    const [ChainId, setChainId] = useState<number>();
     const [ChainName, setChainName] = useState<string>('');
     const [Network, setNetwork] = useState<providers.Network>();
     const [NoProvider, setNoProvider] = useState<boolean>(false);
@@ -36,8 +36,7 @@ export default () => {
         Web3Provider?.on('block', (blockNo: number) => {
             setBlockNumber(blockNo);
         });
-        setChainName(ethNet[ChainId]);
-    }, [ChainId, ChainName, Web3Provider]);
+    }, [Web3Provider]);
 
     const disconnect = useCallback(async () => {
         const web3Modal = new Web3Modal({
@@ -75,6 +74,7 @@ export default () => {
             setNetwork(network);
             const chainId = await signer.getChainId();
             setChainId(chainId);
+            setChainName(ethNet[chainId]);
 
             provider.on('accountsChanged', function (accounts: string[]) {
                 if (accounts.length === 0) {

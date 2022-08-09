@@ -2,6 +2,7 @@ import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/HTTP";
 import { GetUserInfo, DrylySellToken } from "@/services/parami/RPC";
 import { getAssetsList, OwnerDidOfNft } from "@/services/subquery/subquery";
+import { isLPAsset } from "@/utils/assets.util";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
@@ -26,8 +27,8 @@ export default () => {
       for (const entry of entries) {
         const metadataRaw = await apiWs.query.assets.metadata(entry?.assetId);
         const metadata: any = metadataRaw.toHuman();
-        //todo: filter LP*
-        if (!!metadata && !metadata?.name.endsWith('LP*')) {
+
+        if (!!metadata && !isLPAsset(metadata)) {
           const assetId = entry?.assetId;
           apiWs.query.assets.account(Number(assetId), dashboard?.account, async (result: any) => {
             const { balance = '' } = result.toHuman() ?? {};
@@ -73,7 +74,7 @@ export default () => {
                 });
               }
 
-              if (!!balanceBigInt && balanceBigInt > 0 && !metadata?.name.endsWith('LP*')) {
+              if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(metadata)) {
                 assets.set(assetId, {
                   id: assetId,
                   token: metadata?.name,

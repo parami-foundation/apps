@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import style from './style.less';
 import { useIntl } from 'umi';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, notification, Alert } from 'antd';
 import { PortNFT } from '@/services/parami/NFT';
-import { registryAddresses } from '../config';
+import { HCollectionAddress, registryAddresses } from '../config';
 import { useModel } from '@@/plugin-model/useModel';
 import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
@@ -31,9 +31,7 @@ const ImportNFTModal: React.FC<{
   const { Events, SubParamiEvents } = useModel('paramiEvents');
   const [eventsUnsub, setEventsUnsub] = useState<(VoidFn)>();
   const {
-    Account,
     Signer,
-    Provider,
     ChainId,
     ChainName
   } = useModel("web3");
@@ -43,19 +41,19 @@ const ImportNFTModal: React.FC<{
 
   const coverRef: any = useRef();
 
-  const getNftsOfSigner = async (signer: JsonRpcSigner, chainId: 1 | 4) => {
+  const getNftsOfSigner = useCallback(async (signer: JsonRpcSigner, chainId: 1 | 4) => {
     const registry = new ethers.Contract(registryAddresses[chainId], RegistryABI.abi, signer);
     const wrappedContracts: string[] = await registry.getWrappedContracts();
     const wContracts: string[] = await Promise.all(wrappedContracts.map(addr => registry.getERC721wAddressFor(addr)));
 
-    const assets = await retrieveAssets({contractAddresses: wContracts});
+    const assets = await retrieveAssets({contractAddresses: [...wContracts, HCollectionAddress[chainId]]});
     return (assets ?? []).map(asset => ({
       contract: asset.asset_contract?.address,
       tokenId: BigNumber.from(asset.token_id),
       imageUrl: asset.image_url,
       name: asset.name
     } as Erc721));
-  };
+  }, [retrieveAssets, Signer, ChainId]);
 
   const importNft = async (preTx?: boolean, account?: string) => {
     if (!!wallet && !!wallet.keystore && !!mintItem) {
@@ -105,13 +103,7 @@ const ImportNFTModal: React.FC<{
   };
 
   useEffect(() => {
-    if (!!Account) {
-      if (ChainId !== 4 && ChainId !== 1) {
-        return;
-      }
-      if (!Provider || !Signer) {
-        return;
-      }
+    if (Signer && (ChainId === 1 || ChainId === 4) && retrieveAssets) {
       getNftsOfSigner(Signer, ChainId).then((r) => {
         setTokenData(r.filter(nft => {
           return !(nftList ?? []).find(importedNft => {
@@ -121,7 +113,7 @@ const ImportNFTModal: React.FC<{
         setLoading(false);
       });
     }
-  }, [Account, Provider, Signer, ChainId, retrieveAssets]);
+  }, [Signer, ChainId, retrieveAssets]);
 
   useEffect(() => {
     if (tokenData.length) {

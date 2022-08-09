@@ -50,6 +50,10 @@ export default () => {
       .catch(err => console.error(err));
   }, [ChainId])
 
+  if (!ChainId || !Account) {
+    return {};
+  }
+
   return {
     retrieveAssets,
     retrieveAsset

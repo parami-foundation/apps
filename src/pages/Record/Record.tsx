@@ -25,15 +25,15 @@ const All: React.FC<{
         {allData.map((value) => {
           return (
             <Timeline.Item
-              color={value.fromDid === wallet?.did ? "red" : "green"}
-              dot={value.fromDid === wallet?.did ? <LogoutOutlined /> : <LoginOutlined />}
+              color={value.out ? "red" : "green"}
+              dot={value.out ? <LogoutOutlined /> : <LoginOutlined />}
               className={style.timelineItem}
               key={value.timestampInSecond}
             >
               <div className={style.body}>
                 <div className={style.left}>
                   <div className={style.desc}>
-                    {value.fromDid === wallet?.did ? '-' : '+'}
+                    {value.out ? '-' : '+'}
                     <Token value={value.amount} symbol={value.assetSymbol} />
                   </div>
                   <div className={style.receiver}>
@@ -65,12 +65,10 @@ const All: React.FC<{
 const Send: React.FC<{
   allData: AssetTransaction[],
 }> = ({ allData }) => {
-  const { wallet } = useModel('currentUser');
-
   return (
     <>
       <Timeline className={style.timeline}>
-        {allData.map((value) => value.fromDid === wallet?.did && (
+        {allData.map((value) => value.out && (
           <Timeline.Item
             color="red"
             className={style.timelineItem}
@@ -106,12 +104,10 @@ const Send: React.FC<{
 const Receive: React.FC<{
   allData: AssetTransaction[],
 }> = ({ allData }) => {
-  const { wallet } = useModel('currentUser');
-
   return (
     <>
       <Timeline className={style.timeline}>
-        {allData.map((value) => value.toDid === wallet?.did && (
+        {allData.map((value) => !value.out && (
           <Timeline.Item
             color="green"
             className={style.timelineItem}
