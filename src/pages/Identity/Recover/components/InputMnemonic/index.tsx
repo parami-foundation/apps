@@ -46,12 +46,6 @@ const InputMnemonic: React.FC<{
       const exist = await QueryAccountExist(address);
 
       if (!exist) {
-        notification.error({
-          key: 'identitynotFound',
-          message: intl.formatMessage({
-            id: 'error.identity.notFound',
-          }),
-        });
         setLoading(false);
         return;
       };

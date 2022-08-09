@@ -11,6 +11,7 @@ export type AssetTransaction = {
   toDid: string
   amount: string
   timestampInSecond: number
+  out: boolean
 };
 
 const formatTimestamp = (timestamp: number): string => {
@@ -168,6 +169,7 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
 
   transactions.forEach(tx => {
     tx.assetSymbol = symbols.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
+    tx.out = tx.fromDid === did || tx.fromDid === stashAccount
   });
 
   return transactions;

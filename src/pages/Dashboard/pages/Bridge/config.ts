@@ -9,6 +9,6 @@ export default {
         "id": "0x000000000000000000000000000000a56889c89dddcbb363cbd6a8d11de9e100",
     },
     "ERC20HandlerContract": {
-        "address": "0xDcBa51799a9d411Af5400e760573aBbf3611d725",
+        "address": "0x4A00CC0DA9333658CAC63Ddc074681BfF218aeFD",
     }
 }

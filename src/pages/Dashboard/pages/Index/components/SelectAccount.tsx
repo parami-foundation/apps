@@ -14,12 +14,6 @@ const SelectAccount: React.FC<{
 		try {
 			const exist = await QueryAccountExist(accountMeta?.address);
 			if (!exist) {
-				notification.error({
-					key: 'accessDenied',
-					message: 'Access Denied',
-					description: 'The account does not exist',
-					duration: null,
-				})
 				return;
 			}
 			localStorage.setItem('parami:dashboard:account', accountMeta?.address)
@@ -30,14 +24,6 @@ const SelectAccount: React.FC<{
 				localStorage.setItem('parami:dashboard:did', didData);
 
 				window.location.href = config.page.dashboard.didPage;
-				return;
-			} else {
-				notification.error({
-					key: 'accessDenied',
-					message: 'Access Denied',
-					description: 'The account does not exist',
-					duration: null,
-				});
 				return;
 			}
 		} catch (e: any) {

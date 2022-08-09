@@ -9,6 +9,7 @@ import { BigNumber } from 'ethers';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import SelectToken from './SelectToken';
+import TransactionFeeModal from './TransactionFeeModal';
 
 const Withdraw: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +25,7 @@ const Withdraw: React.FC<{
 		Signer,
 	} = useModel('web3');
 	const { dashboard } = useModel('currentUser');
-	const { DepositNonce, DataHash, SubBridgeEvents, UnsubBridgeEvents } = useModel('dashboard.bridgeEvents');
+	const { SubBridgeEvents, UnsubBridgeEvents, ProposalEvent } = useModel('dashboard.bridgeEvents');
 	const { balance } = useModel('dashboard.balance');
 	const { Ad3Contract, BridgeContract } = useModel('contracts');
 	const [freeBalance, setFreeBalance] = useState<string>('');
@@ -32,6 +33,7 @@ const Withdraw: React.FC<{
 	const [amount, setAmount] = useState<string>('');
 	const [destinationAddress, setDestinationAddress] = useState<string>();
 	const [selectModal, setSelectModal] = useState<boolean>(false);
+	const [transferFeeModal, setTransferFeeModal] = useState<boolean>(false);
 
 	const intl = useIntl();
 
@@ -57,11 +59,15 @@ const Withdraw: React.FC<{
 			return;
 		}
 
+		setTransferFeeModal(true);
+	};
+
+	const withdraw = async () => {
 		try {
 			setLoading(true);
 			const paramiRes: any = await AD3ToETH(JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
 			setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
-			setParamiHash(paramiRes.chainBridge.FungibleTransfer[0][0]);
+			setParamiHash(paramiRes.blockHash);
 			setStep(2);
 
 			if (BridgeContract) {
@@ -78,23 +84,23 @@ const Withdraw: React.FC<{
 			});
 			setLoading(false);
 		}
-	};
+	}
 
 	useEffect(() => {
-		if (DepositNonce === txNonce) {
+		if (ProposalEvent?.depositNonce === txNonce && ProposalEvent?.status === 'Executed') {
 			setStep(3);
 			setTxNonce(BigInt(0));
 			notification.success({
 				message: 'Withdraw Success',
 			});
-			if (DataHash) {
-				setETHHash(DataHash);
+			if (ProposalEvent.txHash) {
+				setETHHash(ProposalEvent.txHash);
 			};
 			if (BridgeContract) {
 				UnsubBridgeEvents(BridgeContract);
 			}
 		}
-	}, [BridgeContract, DepositNonce, UnsubBridgeEvents, txNonce, DataHash]);
+	}, [BridgeContract, ProposalEvent, UnsubBridgeEvents, txNonce]);
 
 	useEffect(() => {
 		if (!Account || !Ad3Contract) return;
@@ -125,12 +131,12 @@ const Withdraw: React.FC<{
 						<span className={style.balanceDetailsLabel}>
 							{intl.formatMessage({
 								id: 'dashboard.bridge.balance',
-								defaultMessage: 'Balance',
+								defaultMessage: 'Balance Available',
 							})}:
 						</span>
-						<Tooltip placement="top" title={BigIntToFloatString(balance?.total, 18)}>
+						<Tooltip placement="top" title={BigIntToFloatString(balance?.free, 18)}>
 							<span className={style.balanceDetailsBalance}>
-								<AD3 value={balance?.total} />
+								<AD3 value={balance?.free} />
 							</span>
 						</Tooltip>
 					</div>
@@ -165,7 +171,7 @@ const Withdraw: React.FC<{
 							type='link'
 							size='small'
 							onClick={() => {
-								setAmount(BigIntToFloatString(balance?.total, 18));
+								setAmount(BigIntToFloatString(balance?.free, 18));
 							}}
 						>
 							{intl.formatMessage({
@@ -250,7 +256,7 @@ const Withdraw: React.FC<{
 				onClick={() => {
 					handleSubmit();
 				}}
-				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(freeBalance)}
+				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(balance?.free)}
 			>
 				{intl.formatMessage({
 					id: 'dashboard.bridge.transfer',
@@ -263,6 +269,17 @@ const Withdraw: React.FC<{
 				setSelectModal={setSelectModal}
 				chain={'parami'}
 			/>
+
+			{transferFeeModal && (
+				<TransactionFeeModal
+					onCancel={() => setTransferFeeModal(false)}
+					onConfirm={() => {
+						setTransferFeeModal(false);
+						withdraw();
+					}}
+					amount={amount}
+				/>
+			)}
 		</>
 	)
 }

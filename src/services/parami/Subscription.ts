@@ -36,7 +36,9 @@ export const subCallback = (cb: SubmittableExtrinsic<"promise", any>, payUser: K
 						description: status.asInBlock.toHex(),
 					});
 
-					const map = {};
+					const map = {
+						blockHash: status.asInBlock.toHex()
+					};
 					events.forEach(({ event: { data, method, section } }) => {
 						if (section === 'system' && method === 'ExtrinsicFailed') {
 							notification.error({
@@ -105,7 +107,9 @@ export const subWeb3Callback = (cb: SubmittableExtrinsic<"promise", any>, inject
 					description: status.asInBlock.toHex(),
 				});
 
-				const map = {};
+				const map = {
+					blockHash: status.asInBlock.toHex()
+				};
 				events.forEach(({ event: { data, method, section } }) => {
 					if (section === 'system' && method === 'ExtrinsicFailed') {
 						notification.error({

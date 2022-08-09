@@ -4,8 +4,8 @@ import { Avatar, Divider, Typography } from 'antd';
 import { useIntl, useModel } from 'umi';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
-import config from '@/config/config';
 import Did from '../Did/did';
+import { UserLogout } from '@/utils/user.util';
 
 const { Title } = Typography;
 
@@ -19,12 +19,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
   const { nickname, avatar } = useModel('user');
 
   const intl = useIntl();
-
-  const loginOut = async () => {
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = config.page.homePage;
-  };
 
   const menuHeaderDropdown = (
     <div className={styles.menuContainer}>
@@ -44,7 +38,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
       <Divider />
       <div
         className={styles.logout}
-        onClick={() => { loginOut() }}
+        onClick={() => { UserLogout() }}
       >
         <LogoutOutlined
           style={{

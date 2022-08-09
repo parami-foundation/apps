@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
-import { Image, Spin, Steps, Tooltip, Typography } from 'antd';
+import { Image, notification, Typography } from 'antd';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import classNames from 'classnames';
@@ -8,13 +8,11 @@ import Deposit from './deposit';
 import Withdraw from './withdraw';
 import ETHAddress from '../../components/ETHAddress/ETHAddress';
 import SelectWallet from '../../components/SelectWallet';
-import BigModal from '@/components/ParamiModal/BigModal';
-import { LoadingOutlined } from '@ant-design/icons';
-import config from '@/config/config';
+import ProcessModal from './ProcessModal';
 
 const Bridge: React.FC = () => {
-    const { Account } = useModel('web3');
-    const [tab, setTab] = useState<string>('deposit');
+    const { Account, connect, ChainId } = useModel('web3');
+    const [tab, setTab] = useState<'deposit' | 'withdraw'>('deposit');
     const [loading, setLoading] = useState<boolean>(false);
     const [step, setStep] = useState<number>(1);
     const [ethHash, setETHHash] = useState<string>();
@@ -23,7 +21,21 @@ const Bridge: React.FC = () => {
     const intl = useIntl();
 
     const { Title } = Typography;
-    const { Step } = Steps;
+
+    useEffect(() => {
+        connect();
+    }, []);
+
+    useEffect(() => {
+        if (ChainId) {
+            if (ChainId !== 3) {
+                notification.warning({
+                    message: 'Parami Bridge currently only supports Ropsten Testnet',
+                    description: 'Please switch network in your wallet'
+                })
+            }
+        }
+    }, [ChainId])
 
     return (
         <>
@@ -121,165 +133,19 @@ const Bridge: React.FC = () => {
             ) : (
                 <SelectWallet />
             )}
-            <BigModal
-                visable={loading}
-                content={
-                    <div className={style.processContainer}>
-                        {tab === 'deposit' && (
-                            <>
-                                <Steps
-                                    progressDot
-                                    size='small'
-                                    current={step}
-                                >
-                                    <Step title="Enter information" />
-                                    <Step title="Ethereum chain" />
-                                    <Step title="Parami chain" />
-                                    <Step title="Tokens transferred" />
-                                </Steps>
-                                <div className={style.title}>
-                                    {step === 1 && (
-                                        <span>Ethereum chain</span>
-                                    )}
-                                    {step === 2 && (
-                                        <span>Parami chain</span>
-                                    )}
-                                    {step === 3 && (
-                                        <span>Tokens transferred</span>
-                                    )}
-                                </div>
-                                <div
-                                    className={style.cardContainer}
-                                >
-                                    {ethHash && paramiHash ? (
-                                        <div className={style.listHash}>
-                                            <div className={style.field}>
-                                                <span className={style.title}>
-                                                    Parami chain
-                                                </span>
-                                                <span
-                                                    className={style.value}
-                                                    onClick={() => {
-                                                        window.open(`${config.explorer.block}/${paramiHash}`, '_blank');
-                                                    }}
-                                                >
-                                                    <Tooltip
-                                                        placement="topLeft"
-                                                        title={paramiHash}
-                                                    >
-                                                        {paramiHash}
-                                                    </Tooltip>
-                                                </span>
-                                            </div>
-                                            <div className={style.field}>
-                                                <span className={style.title}>
-                                                    ETH chain
-                                                </span>
-                                                <span
-                                                    className={style.value}
-                                                    onClick={() => {
-                                                        window.open(`https://etherscan.io/tx/${ethHash}`, '_blank');
-                                                    }}
-                                                >
-                                                    <Tooltip
-                                                        placement="topLeft"
-                                                        title={ethHash}
-                                                    >
-                                                        {ethHash}
-                                                    </Tooltip>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <Spin
-                                            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-                                            tip={'Transfering...'}
-                                        />
-                                    )}
-                                </div>
-                            </>
-                        )}
-                        {tab === 'withdraw' && (
-                            <>
-                                <Steps
-                                    progressDot
-                                    size='small'
-                                    current={step}
-                                >
-                                    <Step title="Enter information" />
-                                    <Step title="Parami chain" />
-                                    <Step title="Ethereum chain" />
-                                    <Step title="Tokens transferred" />
-                                </Steps>
-                                <div className={style.title}>
-                                    {step === 1 && (
-                                        <span>Parami chain</span>
-                                    )}
-                                    {step === 2 && (
-                                        <span>Ethereum chain</span>
-                                    )}
-                                    {step === 3 && (
-                                        <span>Tokens transferred</span>
-                                    )}
-                                </div>
-                                <div
-                                    className={style.cardContainer}
-                                >
-                                    {ethHash && paramiHash ? (
-                                        <div className={style.listHash}>
-                                            <div className={style.field}>
-                                                <span className={style.title}>
-                                                    Parami chain
-                                                </span>
-                                                <span
-                                                    className={style.value}
-                                                    onClick={() => {
-                                                        window.open(`${config.explorer.block}/${paramiHash}`, '_blank');
-                                                    }}
-                                                >
-                                                    <Tooltip
-                                                        placement="topLeft"
-                                                        title={paramiHash}
-                                                    >
-                                                        {paramiHash}
-                                                    </Tooltip>
-                                                </span>
-                                            </div>
-                                            <div className={style.field}>
-                                                <span className={style.title}>
-                                                    ETH chain
-                                                </span>
-                                                <span
-                                                    className={style.value}
-                                                    onClick={() => {
-                                                        window.open(`https://etherscan.io/tx/${ethHash}`, '_blank');
-                                                    }}
-                                                >
-                                                    <Tooltip
-                                                        placement="topLeft"
-                                                        title={ethHash}
-                                                    >
-                                                        {ethHash}
-                                                    </Tooltip>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <Spin
-                                            indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
-                                            tip={'Transfering...'}
-                                        />
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                }
-                footer={false}
-                close={ethHash && paramiHash ? () => {
+
+            {loading && <ProcessModal
+                tab={tab}
+                step={step}
+                ethHash={ethHash}
+                paramiHash={paramiHash}
+                onClose={() => {
                     setLoading(false);
-                } : undefined}
-            />
+                    setStep(1);
+                    setETHHash('');
+                    setParamiHash('');
+                }}
+             />}
         </>
     )
 }
