@@ -1,10 +1,15 @@
 
 export const registryAddresses = {
-  1: '0xecAb9043EEaf6CD621519c19D7E250fD2a056bFf', // mainnet
-  4: '0xbf9009DB1E3934F48a5Ce038cC3aca8a20e3cD8E' // rinkeby
+  1: '0xecAb9043EEaf6CD621519c19D7E250fD2a056bFf',
+  4: '0xAe3F861851Fa7BDD04A8cba2ceB46eCB64c68785'
 }
 
 export const HCollectionAddress = {
   1: '0x27783A7EfE772338245890331d9519016958bEE5',
-  4: '0x0a55482af06d17973eb1ffbb5e379845f2d2c631'
+  4: '0x478e54b433ad5774964e76bc56cdf03161c4ece5'
+}
+
+export const ParamiLinkContractAddress = {
+  1: '0xEC5ecECBd5375575503130ce6a01166eC875FEcD',
+  4: '0x75EE8Ce53Bd26C21405Def16Dd416C90054E7146'
 }
