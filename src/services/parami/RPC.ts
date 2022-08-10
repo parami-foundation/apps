@@ -53,3 +53,8 @@ export const CalculateLPReward = async (LPTokenId: string) => {
   const reward = await (window.apiWs.rpc as any).swap.calculateReward(LPTokenId);
   return reward.toHuman();
 };
+
+export const GetClaimInfo = async (did: string, nftId: string) => {
+  const claimInfo = await (window.apiWs.rpc as any).nft.getClaimInfo(nftId, did);
+  return claimInfo.toHuman(); // [total, totalUnlocked, canClaim]
+}

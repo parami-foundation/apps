@@ -159,6 +159,22 @@ export const config = {
         type: 'Vec<String>',
       },
     } as any,
+    nft: {
+      getClaimInfo: {
+        description: 'getClaimInfo',
+        params: [
+          {
+            name: 'nft_id',
+            type: 'u64',
+          },
+          {
+            name: 'claimer',
+            type: 'H160',
+          }
+        ],
+        type: '(String, String, String)',
+      }
+    } as any,
     swap: {
       drylyAddLiquidity: {
         description: 'Dryly add liquidity to the pool',

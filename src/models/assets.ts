@@ -19,7 +19,7 @@ export default () => {
     if (!apiWs || !wallet?.account) {
       return;
     }
-
+    
     const entries = await getAssetsList(wallet.did!, wallet.account!);
     if (!!entries) {
       if (entries.length === 0) {
