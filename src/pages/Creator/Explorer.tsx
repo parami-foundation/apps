@@ -388,6 +388,7 @@ const Explorer: React.FC = () => {
             did={did}
             user={user}
             asset={asset}
+            nftId={params?.nftID}
           />
         </div>
         <div
@@ -405,12 +406,6 @@ const Explorer: React.FC = () => {
                 totalSupply={totalSupply}
                 viewer={viewer}
                 member={member}
-              />
-              <Swap
-                avatar={avatar}
-                nft={nft}
-                asset={asset}
-                assetPrice={assetPrice}
               />
             </>
           )}

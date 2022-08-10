@@ -191,6 +191,14 @@
     component: './Downloads/Downloads',
   },
   {
+    path: '/swap/:nftId',
+    name: 'Swap',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Swap/Swap',
+  },
+  {
     component: './404',
   },
 ];

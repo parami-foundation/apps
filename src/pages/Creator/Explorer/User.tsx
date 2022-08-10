@@ -1,16 +1,18 @@
 import Did from '@/components/Did/did';
-import { Card, Col, Divider, Row, Statistic, Typography, Image } from 'antd';
+import { Card, Col, Divider, Row, Statistic, Typography, Image, Button } from 'antd';
 import React from 'react';
-import { useIntl } from 'umi';
+import { useIntl, history } from 'umi';
 import styles from './style.less';
 import { didToHex } from '@/utils/common';
+import { SwapOutlined } from '@ant-design/icons';
 
 const User: React.FC<{
 	avatar: string;
 	did: string;
 	user: any;
 	asset: any;
-}> = ({ avatar, did, user, asset }) => {
+	nftId: string;
+}> = ({ avatar, did, user, asset, nftId }) => {
 
 	const intl = useIntl();
 
@@ -79,6 +81,14 @@ const User: React.FC<{
 													textAlign: 'center',
 												}}
 											/>
+											<Button
+												type='primary'
+												shape='round'
+												size='large'
+												icon={<SwapOutlined />}
+												onClick={() => {
+													history.push(`/swap/${nftId}`);
+												}}>Swap Token</Button>
 										</Col>
 									</Row>
 								</div>
