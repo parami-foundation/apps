@@ -19,8 +19,7 @@ export default () => {
     if (!apiWs || !wallet?.account) {
       return;
     }
-    let result = await (apiWs.rpc as any).nft.getClaimInfo('2', '0x85ca71d0be8a7b0106b6c281548d6afcd039ef01');
-    alert(`get_claim_info's result is ${result.toHuman()}`);
+    
     const entries = await getAssetsList(wallet.did!, wallet.account!);
     if (!!entries) {
       if (entries.length === 0) {

@@ -1,5 +1,19 @@
 import { useModel } from 'umi';
 import { useCallback, useState } from 'react';
+import { GetClaimInfo } from '@/services/parami/RPC';
+
+export interface NFTItem {
+	id: string;
+	name: string;
+	symbol: string;
+	minted: boolean;
+	network: string;
+	namespace: string;
+	token: string;
+	tokenURI: string;
+	deposit: bigint;
+	claimInfo: string[];
+}
 
 export default () => {
 	const apiWs = useModel('apiWs');
@@ -7,7 +21,7 @@ export default () => {
 	const { connect } = useModel('web3');
 	const { retrieveAssets } = useModel('openseaApi');
 
-	const [nftList, setNftList] = useState<any[]>([]);
+	const [nftList, setNftList] = useState<NFTItem[]>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const getNFTs = useCallback(async () => {
@@ -59,6 +73,21 @@ export default () => {
 						tokenIds
 					});
 
+					const mintedNFTs = externalNFTs.filter(nft => nft.minted);
+					const claimInfo = (await Promise.all(mintedNFTs.map(async nft => {
+						try {
+							return await GetClaimInfo(wallet.did!, nft.nftId);
+						} catch (e) {
+							console.error('GetClaimInfo Error', nft.nftId, e);
+							return [];
+						}
+					}))).map((info, index) => {
+						return {
+							nftId: mintedNFTs[index].nftId,
+							info
+						}
+					});
+
 					externalNFTs.forEach(externalNFT => {
 						const osNFT = portNFTs.find(nft =>
 							parseInt(nft.token_id, 10) === parseInt(externalNFT.external?.token, 16) && nft.asset_contract?.address === externalNFT.external?.namespace);
@@ -73,6 +102,7 @@ export default () => {
 								token: externalNFT.external?.token,
 								tokenURI: osNFT?.image_url,
 								deposit: BigInt(externalNFT.deposit.toString()),
+								claimInfo: claimInfo.find(info => info.nftId === externalNFT.nftId)?.info
 							})
 						}
 					});
