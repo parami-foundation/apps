@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { AssetTransactionHistory } from '@/services/subquery/subquery';
 import type { AssetTransaction } from '@/services/subquery/subquery';
 import SimpleDateTime from 'react-simple-timestamp-to-date';
-import { dealWithDid, hexToDid } from '@/utils/common';
+import { getTxAddress, hexToDid } from '@/utils/common';
 import Token from '@/components/Token/Token';
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import config from '@/config/config';
@@ -44,9 +44,9 @@ const All: React.FC<{
                   <div className={style.address}>
                     <Tooltip
                       placement="topLeft"
-                      title={dealWithDid(value, wallet.did!)}
+                      title={getTxAddress(value, wallet.account!)}
                     >
-                      {dealWithDid(value, wallet.did!)}
+                      {getTxAddress(value, wallet.account!)}
                     </Tooltip>
                   </div>
                   <div className={style.time}>
@@ -85,8 +85,8 @@ const Send: React.FC<{
               </div>
               <div className={style.right}>
                 <div className={style.address}>
-                  <Tooltip placement="topLeft" title={value.toDid.indexOf('0x') >= 0 ? hexToDid(value.toDid) : value.toDid}>
-                    {value.toDid.indexOf('0x') >= 0 ? hexToDid(value.toDid) : value.toDid}
+                  <Tooltip placement="topLeft" title={value.toAccountId.indexOf('0x') >= 0 ? hexToDid(value.toAccountId) : value.toAccountId}>
+                    {value.toAccountId.indexOf('0x') >= 0 ? hexToDid(value.toAccountId) : value.toAccountId}
                   </Tooltip>
                 </div>
                 <div className={style.time}>
@@ -124,8 +124,8 @@ const Receive: React.FC<{
               </div>
               <div className={style.right}>
                 <div className={style.address}>
-                  <Tooltip placement="topLeft" title={value.fromDid.indexOf('0x') >= 0 ? hexToDid(value.fromDid) : value.fromDid}>
-                    {value.fromDid.indexOf('0x') >= 0 ? hexToDid(value.fromDid) : value.fromDid}
+                  <Tooltip placement="topLeft" title={value.fromAccountId.indexOf('0x') >= 0 ? hexToDid(value.fromAccountId) : value.fromAccountId}>
+                    {value.fromAccountId.indexOf('0x') >= 0 ? hexToDid(value.fromAccountId) : value.fromAccountId}
                   </Tooltip>
                 </div>
                 <div className={style.time}>
@@ -151,7 +151,7 @@ const Record: React.FC = () => {
   const getRecord = async () => {
     if (!!wallet && !!wallet.did) {
       try {
-        const res: any = await AssetTransactionHistory(wallet?.did, `${wallet?.account}`);
+        const res: any = await AssetTransactionHistory(`${wallet?.account}`);
         setAllData(res);
       } catch (e: any) {
         notification.error({

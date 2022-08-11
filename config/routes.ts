@@ -191,7 +191,15 @@
     component: './Downloads/Downloads',
   },
   {
-    path: '/swap/:nftId',
+    path: '/swap',
+    name: 'Swap',
+    icon: 'CrownOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Swap/Swap',
+  },
+  {
+    path: '/swap/:assetId',
     name: 'Swap',
     hideInMenu: true,
     access: 'canUser',

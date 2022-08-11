@@ -1,30 +1,23 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams, useModel, useIntl } from 'umi';
+import { useParams, useModel, useIntl, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './Swap.less';
 import { Spin, Card, Typography, Image, InputNumber, Button, Space, notification } from 'antd';
-import { DrylyBuyCurrency, DrylyBuyToken, DrylySellCurrency, DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
+import { DrylyBuyCurrency, DrylyBuyToken, DrylySellCurrency, DrylySellToken } from '@/services/parami/RPC';
 import AD3 from '@/components/Token/AD3';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DownOutlined } from '@ant-design/icons';
 import Token from '@/components/Token/Token';
-import { GetNFTMetaData } from '@/services/parami/NFT';
 import { BuyCurrency, BuyToken } from '@/services/parami/Swap';
-import { GetAvatar } from '@/services/parami/HTTP';
 import config from '@/config/config';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { parseAmount } from '@/utils/common';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import { OwnerDidOfNft } from '@/services/subquery/subquery';
+import { GetUserInfo } from '@/services/parami/RPC';
+import SelectAsset from './components/SelectAsset/SelectAsset';
 
 const { Title } = Typography;
-
-type NftInfo = {
-    owner: string;
-    pot: string;
-    classId: string;
-    minted: boolean;
-    tokenAssetId: string;
-}
 
 type Asset = {
     deposit: number;
@@ -35,57 +28,45 @@ type Asset = {
 }
 
 const Swap: React.FC = () => {
-    const [nftInfo, setNftInfo] = useState<NftInfo>();
-    const [avatar, setAvatar] = useState<string>('')
-    const [asset, setAsset] = useState<Asset>();
-    const [assetPrice, setAssetPrice] = useState<string>();
     const apiWs = useModel('apiWs');
-
     const { wallet } = useModel('currentUser');
     const { balance } = useModel('balance');
     const { assets } = useModel('assets');
+
+    const [tokenIcon, setTokenIcon] = useState<string>('');
+    const [asset, setAsset] = useState<Asset>();
+    const [assetPrice, setAssetPrice] = useState<string>();
     const [loading, setLoading] = useState<boolean>(true);
     const [mode, setMode] = useState<string>('ad3ToToken');
     const [ad3Number, setAd3Number] = useState<string>('');
     const [tokenNumber, setTokenNumber] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
+    const [selectAssetModal, setSelectAssetModal] = useState<boolean>(false);
 
     const intl = useIntl();
 
-    const params: { nftId: string } = useParams();
+    const params: { assetId: string } = useParams();
 
-    const queryAsset = async (nftId: string) => {
-        const nftMetaData = await GetNFTMetaData(nftId);
-        if (nftMetaData.isEmpty) {
-            notification.error({
-                message: 'Loading NFT Error',
-                description: `nftId: ${nftId}`
-            });
-            return;
+    const queryIcon = async (assetId: string) => {
+        try {
+            const did = await OwnerDidOfNft(assetId);
+            const info = await GetUserInfo(did);
+            if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
+                const hash = info?.avatar.substring(7);
+                setTokenIcon(config.ipfs.endpoint + hash);
+            };
+        } catch (e) {
+            console.error(e);
         }
+    }
 
-        const nftInfo = nftMetaData.toHuman() as NftInfo;
-        setNftInfo(nftInfo);
-
-        const userData = await GetSimpleUserInfo(nftInfo.owner);
-        if (userData?.avatar.indexOf('ipfs://') > -1) {
-            const hash = userData?.avatar?.substring(7);
-            const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
-            if (!response) {
-                console.error('Fetching Avatar Error: No Response');
-            }
-
-            if (response?.status === 200) {
-                setAvatar(window.URL.createObjectURL(data));
-            }
-        }
-
-        const assetData = await GetAssetInfo(nftInfo.tokenAssetId);
+    const queryAsset = async (assetId: string) => {
+        const assetData = await GetAssetInfo(assetId);
         if (assetData.isEmpty) {
             notification.error({
                 message: 'Loading Asset Error',
-                description: `tokenAssetId: ${nftInfo.tokenAssetId}`
+                description: `tokenAssetId: ${assetId}`
             });
             return;
         }
@@ -93,30 +74,29 @@ const Swap: React.FC = () => {
         const assetInfo = assetData.toHuman() as Asset;
         setAsset(assetInfo);
 
-        const value = await DrylySellToken(nftInfo.tokenAssetId, parseAmount('1'));
+        const value = await DrylySellToken(assetId, parseAmount('1'));
         setAssetPrice(value.toString());
         setLoading(false);
     }
 
     useEffect(() => {
-        if (!params?.nftId) {
-            notification.info({
-                message: 'No nftId'
-            })
+        if (!params?.assetId) {
+            setSelectAssetModal(true);
             return;
         }
         if (apiWs) {
-            queryAsset(params.nftId);
+            queryAsset(params?.assetId);
+            queryIcon(params?.assetId);
         }
     }, [params, apiWs]);
 
     const handleSubmit = async (preTx?: boolean, account?: string) => {
-        if (!!wallet && !!wallet?.keystore && !!nftInfo?.tokenAssetId) {
+        if (!!wallet && !!wallet?.keystore && !!params?.assetId) {
             setLoading(true);
             switch (mode) {
                 case 'ad3ToToken':
                     try {
-                        const info: any = await BuyToken(nftInfo?.tokenAssetId, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+                        const info: any = await BuyToken(params?.assetId, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
                         setLoading(false);
 
                         if (preTx && account) {
@@ -133,7 +113,7 @@ const Swap: React.FC = () => {
                     break;
                 case 'tokenToAd3':
                     try {
-                        const info: any = await BuyCurrency(nftInfo?.tokenAssetId, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+                        const info: any = await BuyCurrency(params?.assetId, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore, preTx, account);
                         setLoading(false);
 
                         if (preTx && account) {
@@ -162,36 +142,34 @@ const Swap: React.FC = () => {
     };
 
     const handleAD3InputChange = useCallback((e) => {
-        if (nftInfo?.tokenAssetId) {
+        if (params?.assetId) {
             if (mode === 'ad3ToToken') {
-                // setAd3Number(e);
-                DrylySellCurrency(nftInfo?.tokenAssetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+                DrylySellCurrency(params?.assetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
                     setTokenNumber(BigIntToFloatString(res, 18));
                 });
             }
             if (mode === 'tokenToAd3') {
-                // setFlat(e);
-                DrylyBuyCurrency(nftInfo?.tokenAssetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+                DrylyBuyCurrency(params?.assetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
                     setTokenNumber(BigIntToFloatString(res, 18));
                 });
             }
         }
-    }, [nftInfo, mode]);
+    }, [params, mode]);
 
     const handleTokenInputChange = useCallback((e) => {
-        if (nftInfo?.tokenAssetId) {
+        if (params?.assetId) {
             if (mode === 'tokenToAd3') {
-                DrylySellToken(nftInfo?.tokenAssetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+                DrylySellToken(params?.assetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
                     setAd3Number(BigIntToFloatString(res, 18));
                 });
             }
             if (mode === 'ad3ToToken') {
-                DrylyBuyToken(nftInfo?.tokenAssetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
+                DrylyBuyToken(params?.assetId, FloatStringToBigInt(e, 18).toString()).then((res: any) => {
                     setAd3Number(BigIntToFloatString(res, 18));
                 });
             }
         }
-    }, [nftInfo]);
+    }, [params]);
 
     const setAD3Max = useCallback(() => {
         const ad3BalanceStr = BigIntToFloatString(balance?.free, 18);
@@ -200,12 +178,12 @@ const Swap: React.FC = () => {
     }, [balance, mode, handleAD3InputChange]);
 
     const setTokenMax = useCallback(() => {
-        if (nftInfo?.tokenAssetId && assets) {
-            const tokenBalanceStr = BigIntToFloatString(assets.get(nftInfo?.tokenAssetId)?.balance, 18);
+        if (params?.assetId && assets) {
+            const tokenBalanceStr = BigIntToFloatString(assets.get(params?.assetId)?.balance, 18);
             setTokenNumber(tokenBalanceStr);
             handleTokenInputChange(tokenBalanceStr);
         }
-    }, [mode, nftInfo, assets, handleTokenInputChange]);
+    }, [mode, params, assets, handleTokenInputChange]);
 
     return (
         <>
@@ -302,15 +280,16 @@ const Swap: React.FC = () => {
                                     setTokenNumber('');
                                 }}
                             />
-                            <div className={style.pairCoinsItem}>
+                            <div className={`${style.pairCoinsItem} ${style.tokenCoin}`}>
                                 <div className={style.pairCoinsSelect}>
-                                    <div className={style.pairCoin}>
+                                    <div className={style.pairCoin} onClick={() => setSelectAssetModal(true)}>
                                         <Image
-                                            src={avatar || '/images/logo-round-core.svg'}
+                                            src={tokenIcon || '/images/logo-round-core.svg'}
                                             preview={false}
                                             className={style.pairCoinsItemIcon}
                                         />
                                         <span className={style.pairCoinsItemLabel}>{asset?.symbol}</span>
+                                        <DownOutlined className={style.downIcon} />
                                     </div>
                                     <InputNumber
                                         autoFocus={false}
@@ -331,7 +310,7 @@ const Swap: React.FC = () => {
                                         {intl.formatMessage({
                                             id: 'creator.explorer.trade.balance',
                                             defaultMessage: 'Balance'
-                                        })}: <Token value={assets.get(nftInfo?.tokenAssetId ?? '')?.balance ?? ''} symbol={asset?.symbol} />
+                                        })}: <Token value={assets.get(params?.assetId ?? '')?.balance ?? ''} symbol={asset?.symbol} />
                                     </span>
                                     <Button
                                         type='link'
@@ -381,6 +360,14 @@ const Swap: React.FC = () => {
                 setPassphrase={setPassphrase}
                 func={handleSubmit}
             />
+
+            {selectAssetModal && <SelectAsset
+                onClose={() => setSelectAssetModal(false)}
+                onSelectAsset={assetId => {
+                    history.push(`/swap/${assetId}`);
+                    setSelectAssetModal(false);
+                }}
+            ></SelectAsset>}
         </>
     )
 };

@@ -387,7 +387,7 @@ const Explorer: React.FC = () => {
             did={did}
             user={user}
             asset={asset}
-            nftId={params?.nftID}
+            assetId={nft?.tokenAssetId}
           />
         </div>
         <div

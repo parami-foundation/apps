@@ -11,8 +11,8 @@ const User: React.FC<{
 	did: string;
 	user: any;
 	asset: any;
-	nftId: string;
-}> = ({ avatar, did, user, asset, nftId }) => {
+	assetId: string;
+}> = ({ avatar, did, user, asset, assetId }) => {
 
 	const intl = useIntl();
 
@@ -87,7 +87,7 @@ const User: React.FC<{
 												size='large'
 												icon={<SwapOutlined />}
 												onClick={() => {
-													history.push(`/swap/${nftId}`);
+													history.push(`/swap/${assetId}`);
 												}}>Swap Token</Button>
 										</Col>
 									</Row>
