@@ -14,7 +14,7 @@ export const config = {
     "airdropServer": "https://staging.parami.io/airdrop",
   } : {
     "socketServer": "wss://rpc-na1.parami.io/ws",
-    "subqueryServer": "https://api.subquery.network/sq/coderfengyun/parami-scaner",
+    "subqueryServer": "https://graph.parami.io",
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://airdrop.parami.io",
