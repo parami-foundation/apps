@@ -193,7 +193,7 @@
   {
     path: '/swap',
     name: 'Swap',
-    icon: 'CrownOutlined',
+    icon: 'SwapOutlined',
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './Swap/Swap',
