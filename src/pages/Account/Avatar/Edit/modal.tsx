@@ -71,10 +71,10 @@ const Modal: React.FC<{
         const { response, data } = await uploadIPFS(File);
         if (response.ok) {
           const info: any = await uploadAvatar(`ipfs://${data.Hash}`, passphrase, wallet?.keystore, preTx, account);
-          setModalVisable(false);
           if (preTx && account) {
             return info
           }
+          setModalVisable(false);
         } else if (response.status === 405) {
           notification.error({
             message: intl.formatMessage({
