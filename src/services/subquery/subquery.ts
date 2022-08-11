@@ -7,8 +7,8 @@ export type AssetTransaction = {
   assetId: string
   block: string
   assetSymbol: string
-  fromDid: string
-  toDid: string
+  fromAccountId: string
+  toAccountId: string
   amount: string
   timestampInSecond: number
   out: boolean
@@ -99,18 +99,18 @@ export const AdvertisementRewards = async (ADid: string) => {
 };
 
 // first 50
-export const AssetTransactionHistory = async (did: string, stashAccount: string) => {
+export const AssetTransactionHistory = async (stashAccount: string) => {
   const query = `query {
 		assetTransactions(
 			orderBy: TIMESTAMP_IN_SECOND_DESC
 			first:50
-			filter: 
-			{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}, { fromDid: { equalTo: "${stashAccount}" } }, { toDid: { equalTo: "${stashAccount}" }}] }) {
+			filter: { fromAccountId: { equalTo: "${stashAccount}" } }
+      ) {
 				nodes {
 				block
 				assetId
-				fromDid
-				toDid
+				fromAccountId
+				toAccountId
 				amount
 				timestampInSecond
 		}
@@ -169,7 +169,7 @@ export const AssetTransactionHistory = async (did: string, stashAccount: string)
 
   transactions.forEach(tx => {
     tx.assetSymbol = symbols.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
-    tx.out = tx.fromDid === did || tx.fromDid === stashAccount
+    tx.out = tx.fromAccountId === stashAccount
   });
 
   return transactions;
@@ -292,10 +292,10 @@ export async function getStashOfDid(did: string) {
 }
 
 //{ or: [{ fromDid: { equalTo: "${did}" } }, { toDid: { equalTo: "${did}" }}, { fromDid: { equalTo: "${stashAccount}" } }, { toDid: { equalTo: "${stashAccount}" }}] }
-export const getAssetsList = async (did: string, stashAccount: string) => {
+export const getAssetsList = async (stashAccount: string) => {
   const query = `query{
 		members(
-			filter: { or: [{ did: { equalTo:"${did}"}}, { did: { equalTo:"${stashAccount}"}}] }
+			filter: { accountId: { equalTo:"${stashAccount}"}}
 		){
 			nodes{
 				id

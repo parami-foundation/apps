@@ -7,10 +7,10 @@ import config from '@/config/config';
 import type { AssetTransaction } from '@/services/subquery/subquery';
 import { AssetTransactionHistory } from '@/services/subquery/subquery';
 import SimpleDateTime from 'react-simple-timestamp-to-date';
-import { dealWithDid } from '@/utils/common';
 import Token from '@/components/Token/Token';
 import { LoginOutlined, LogoutOutlined } from '@ant-design/icons';
 import Skeleton from '@/components/Skeleton';
+import { getTxAddress } from '@/utils/common';
 
 const { Title } = Typography;
 
@@ -24,7 +24,7 @@ const Record: React.FC = () => {
 	const transList = async () => {
 		if (!!wallet && !!wallet.did) {
 			try {
-				const res: any = await AssetTransactionHistory(wallet?.did, wallet?.account);
+				const res: any = await AssetTransactionHistory(wallet?.account);
 				setAllData(res);
 			} catch (e: any) {
 				notification.error({
@@ -89,12 +89,12 @@ const Record: React.FC = () => {
 												</div>
 												<div className={style.right}>
 													<div className={style.address}>
-														<Tooltip placement="topLeft" title={dealWithDid(value, wallet?.did)}>
+														<Tooltip placement="topLeft" title={getTxAddress(value, wallet?.account)}>
 															{
-																dealWithDid(value, wallet?.did)
+																getTxAddress(value, wallet?.account)
 															}
 														</Tooltip>
-														{dealWithDid(value, wallet?.did)}
+														{getTxAddress(value, wallet?.account)}
 													</div>
 													<div className={style.time}>
 														<SimpleDateTime dateSeparator="/" timeSeparator=":" format="YMD">{value.timestampInSecond}</SimpleDateTime>

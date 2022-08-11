@@ -191,6 +191,22 @@
     component: './Downloads/Downloads',
   },
   {
+    path: '/swap',
+    name: 'Swap',
+    icon: 'SwapOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Swap/Swap',
+  },
+  {
+    path: '/swap/:assetId',
+    name: 'Swap',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Swap/Swap',
+  },
+  {
     component: './404',
   },
 ];

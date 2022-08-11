@@ -380,9 +380,9 @@ export const blobTob64 = (blob) => {
   });
 }
 
-export function dealWithDid(value: AssetTransaction, did: string) {
-  const tmp = value.fromDid === did ? value.toDid : value.fromDid;
-  return tmp.indexOf('0x') >= 0 ? hexToDid(tmp) : tmp;
+export function getTxAddress(value: AssetTransaction, account: string) {
+  const address = value.fromAccountId === account ? value.toAccountId : value.fromAccountId;
+  return address;
 }
 
 export function stringToBigInt(value: string) {

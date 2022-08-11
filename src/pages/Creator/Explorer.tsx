@@ -4,7 +4,6 @@ import Stat from './Explorer/Stat';
 import User from './Explorer/User';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
-import Swap from './Explorer/Swap';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
 import { hexToDid, didToHex, parseAmount } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
@@ -388,6 +387,7 @@ const Explorer: React.FC = () => {
             did={did}
             user={user}
             asset={asset}
+            assetId={nft?.tokenAssetId}
           />
         </div>
         <div
@@ -405,12 +405,6 @@ const Explorer: React.FC = () => {
                 totalSupply={totalSupply}
                 viewer={viewer}
                 member={member}
-              />
-              <Swap
-                avatar={avatar}
-                nft={nft}
-                asset={asset}
-                assetPrice={assetPrice}
               />
             </>
           )}
