@@ -32,7 +32,7 @@ const VerifyIdentity: React.FC<{
   setDID: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ qsTicket, qsPlatform, passphrase, account, keystore, did, setQsTicket, setQsPlatform, setDID }) => {
   const apiWs = useModel('apiWs');
-  const { initialState, refresh } = useModel('@@initialState');
+  const { refresh } = useModel('@@initialState');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [step, setStep] = useState<number>(2);
@@ -45,12 +45,13 @@ const VerifyIdentity: React.FC<{
   const { TextArea } = Input;
 
   // Goto redirect page
-  const goto = () => {
-    refresh();
+  const goto = async () => {
+    await refresh();
     setTimeout(() => {
-      window.location.href = initialState?.currentInfo?.wallet?.redirect || config.page.walletPage;
+      const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
+      window.location.href = redirect;
     }, 1000);
   };
 

@@ -281,7 +281,7 @@ const Explorer: React.FC = () => {
     };
 
     if (!access.canWalletUser) {
-      localStorage.setItem('redirect', window.location.href);
+      localStorage.setItem('parami:wallet:redirect', window.location.href);
       setNotAccess(true);
     };
 
