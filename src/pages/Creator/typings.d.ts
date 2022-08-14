@@ -6,6 +6,7 @@ declare namespace Type {
         link: string,
         media: string,
         title: string,
-        desc: string
+        desc: string,
+        poster: string
     } | null;
 }
