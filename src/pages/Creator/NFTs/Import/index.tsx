@@ -8,7 +8,6 @@ import { HCollectionAddress, registryAddresses, ParamiLinkContractAddress } from
 import { useModel } from '@@/plugin-model/useModel';
 import { BigNumber, ethers } from 'ethers';
 import RegistryABI from '../abi/ERC721WRegistry.json';
-import HContractABI from '../abi/ERC721HCollection.json';
 import ParamiLinkABI from '../abi/ParamiLink.json';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import Skeleton from '@/components/Skeleton';
