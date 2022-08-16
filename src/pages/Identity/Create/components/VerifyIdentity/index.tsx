@@ -96,7 +96,7 @@ const VerifyIdentity: React.FC<{
 
       if (Resp?.status === 401) {
         notification.error({
-          message: 'Bind Failed',
+          message: `${Data}`,
           description: `Cannot get your profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead. Click here for details.`,
           duration: null,
           onClick: () => {
@@ -110,7 +110,7 @@ const VerifyIdentity: React.FC<{
 
       if (Resp?.status === 409) {
         notification.error({
-          message: 'The account has been used',
+          message: `${Data}`,
           description: `Your ${qsPlatform || platform} account has been used. Please try to deposit manually.`,
           duration: null,
         })
