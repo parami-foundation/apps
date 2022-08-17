@@ -13,7 +13,8 @@ const BigModal: React.FC<{
   footer: ReactNode,
   close?: () => void,
   bodyStyle?: React.CSSProperties,
-}> = ({ visable, title, content, footer, close, bodyStyle }) => {
+  width?: number | string
+}> = ({ visable, title, content, footer, close, bodyStyle, width }) => {
   return (
     <Modal
       title={
@@ -44,7 +45,7 @@ const BigModal: React.FC<{
       className={styles.modal}
       centered
       visible={visable}
-      width={650}
+      width={width ?? 650}
       footer={footer}
       bodyStyle={bodyStyle}
     >
