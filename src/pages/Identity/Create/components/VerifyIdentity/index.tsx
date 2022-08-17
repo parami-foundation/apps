@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { LoginWithAirdrop } from '@/services/parami/HTTP';
+import { BindSocialAccount, LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
@@ -44,12 +44,10 @@ const VerifyIdentity: React.FC<{
   // Goto redirect page
   const goto = async () => {
     await refresh();
-    setTimeout(() => {
-      const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
+    const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
       window.location.href = redirect;
-    }, 1000);
   };
 
   // Login With Airdrop
@@ -159,6 +157,7 @@ const VerifyIdentity: React.FC<{
       return;
     }
 
+    // quickSign ? setStep(4) : setStep(5);
     setStep(5);
   };
 
@@ -203,6 +202,37 @@ const VerifyIdentity: React.FC<{
     }
   };
 
+  const bindSocialAccount = async (quickSign, did) => {
+    try {
+      const { response, data } = await BindSocialAccount({
+        ticket: quickSign?.ticket,
+        site: quickSign?.platform,
+        did,
+      });
+      
+      if (response?.status === 204) {
+        notification.success({
+          message: 'Bind social account success!'
+        })
+      } else {
+        notification.warning({
+          message: data,
+          description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+          duration: 10,
+        });
+      }
+    } catch (e: any) {
+      notification.warning({
+        message: e.message || e,
+        description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+        duration: 10,
+      });
+    }
+
+    setStep(5);
+    goto();
+  }
+
   // Compute Existential Deposit
   const getExistentialDeposit = async () => {
     const existentialDeposit = await GetExistentialDeposit();
@@ -218,8 +248,13 @@ const VerifyIdentity: React.FC<{
 
   useEffect(() => {
     if (!!did) {
+      // 
+      // if (!quickSign) {
+      //   goto();
+      // } else {
+      //   bindSocialAccount(quickSign, did);
+      // }
       goto();
-      return;
     }
   }, [did]);
 
@@ -268,6 +303,7 @@ const VerifyIdentity: React.FC<{
               <Step title="Generate Passphrase" icon={step === 1 ? <LoadingOutlined /> : false} />
               <Step title="Deposit" icon={step === 2 ? <LoadingOutlined /> : false} />
               <Step title="Create DID" icon={step === 3 ? <LoadingOutlined /> : false} />
+              {/* {quickSign && <Step title="Bind Social Account" icon={step === 4 ? <LoadingOutlined /> : false} />} */}
               <Step title="Completing" icon={step === 5 ? <LoadingOutlined /> : false} />
             </Steps>
           )}

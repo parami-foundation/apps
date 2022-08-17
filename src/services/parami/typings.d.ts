@@ -15,6 +15,12 @@ declare namespace API {
 		wallet?: string;
 	};
 
+	type BindSocial = {
+		ticket?: {};
+		site?: string;
+		did?: string;
+	}
+
 	type AirdropLoginResp = {
 		avatar?: string;
 		nickname?: string;
