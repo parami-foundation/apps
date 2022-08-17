@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styles from '@/pages/wallet.less';
 import NotSupport from '../NotSupport';
-import BeforeStart from './components/BeforeStart';
 import QuickSign from './components/QuickSign';
-import Mnemonic from './components/Mnemonic';
 import VerifyIdentity from './components/VerifyIdentity';
 import { CreateAccount, CreateMnemonic } from '@/services/parami/Identity';
 import { useAccess, history, useModel } from 'umi';
 import config from '@/config/config';
 import isiOSSafari from '@/utils/isSafaiApp';
 import InApp from 'detect-inapp';
+import { guid } from '@/utils/common';
+import { CreateKeystore } from '@/services/parami/Identity';
+import { notification } from 'antd';
 
 const inapp = new InApp(navigator.userAgent || navigator.vendor || (window as any).opera);
 
@@ -17,28 +18,46 @@ const Create: React.FC = () => {
   const apiWs = useModel('apiWs');
   const { initialState } = useModel('@@initialState');
   const [step, setStep] = useState<number>(1);
-  const [qsTicket, setQsTicket] = useState<any>();
-  const [qsPlatform, setQsPlatform] = useState<string>();
+  const [quickSign, setQuickSign] = useState<{ platform: string, ticket: any }>();
 
   // Account Info
   const [passphrase, setPassphrase] = useState<string>('');
   const [keystore, setKeystore] = useState<string>('');
   const [account, setAccount] = useState<string>('');
   const [did, setDID] = useState<string>('');
-  const [mnemonic, setMnemonic] = useState<string>('');
 
   const access = useAccess();
   const walletInfo = initialState?.currentInfo?.wallet;
 
   // Create Account
   const createAccount = async () => {
-    const { mnemonic: newMnemonic } = await CreateMnemonic();
-    setMnemonic(newMnemonic);
+    try {
+      const { mnemonic: newMnemonic } = await CreateMnemonic();
+      // setMnemonic(newMnemonic);
 
-    const { address } = await CreateAccount(newMnemonic);
-    setAccount(address);
+      const { address } = await CreateAccount(newMnemonic);
+      setAccount(address);
 
-    localStorage.setItem('parami:wallet:account', address);
+      localStorage.setItem('parami:wallet:account', address);
+
+      const passphrase = guid().substring(0, 6);
+      setPassphrase(passphrase);
+      localStorage.setItem('parami:wallet:passphrase', passphrase);
+
+      const { keystore } = await CreateKeystore(
+        newMnemonic,
+        passphrase,
+      );
+      setKeystore(keystore);
+      localStorage.setItem('parami:wallet:keystore', keystore);
+    } catch (e: any) {
+      notification.error({
+        message: 'Create Account Failed',
+        description: e.message || e,
+        duration: null,
+      });
+      return;
+    }
   };
 
   useEffect(() => {
@@ -62,7 +81,6 @@ const Create: React.FC = () => {
       setAccount(walletInfo.account);
       setKeystore(walletInfo.keystore);
       setPassphrase(walletInfo.passphrase);
-      setStep(3);
       return;
     };
 
@@ -91,37 +109,19 @@ const Create: React.FC = () => {
           <NotSupport
           />
         }
-        {step === 0 &&
-          <BeforeStart
-            setStep={setStep}
-          />
-        }
         {step === 1 &&
           <QuickSign
             setStep={setStep}
-            setQsTicket={setQsTicket}
-            setQsPlatform={setQsPlatform}
-          />
-        }
-        {step === 2 &&
-          <Mnemonic
-            mnemonic={mnemonic}
-            passphrase={passphrase}
-            setStep={setStep}
-            setPassphrase={setPassphrase}
-            setKeystore={setKeystore}
+            setQuickSign={setQuickSign}
           />
         }
         {step === 3 &&
           <VerifyIdentity
-            qsTicket={qsTicket}
-            qsPlatform={qsPlatform}
+            quickSign={quickSign}
             passphrase={passphrase}
             account={account}
             keystore={keystore}
             did={did}
-            setQsTicket={setQsTicket}
-            setQsPlatform={setQsPlatform}
             setDID={setDID}
           />
         }
