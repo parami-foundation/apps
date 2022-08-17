@@ -33,7 +33,6 @@ const Create: React.FC = () => {
   const createAccount = async () => {
     try {
       const { mnemonic: newMnemonic } = await CreateMnemonic();
-      // setMnemonic(newMnemonic);
 
       const { address } = await CreateAccount(newMnemonic);
       setAccount(address);

@@ -45,6 +45,7 @@ declare namespace API {
 			customPassphrase?: boolean;
 			inProcess?: string | null;
 			redirect?: string | null;
+			mnemonicExported?: string | null;
 		};
 
 		dashboard: {

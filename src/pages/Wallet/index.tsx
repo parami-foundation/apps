@@ -6,11 +6,13 @@ import style from './style.less';
 import Balance from './Balance';
 import Record from './Record';
 import Tags from './Tags';
+import ExportMnemonicAlert from '@/components/ExportMnemonicAlert/ExportMnemonicAlert';
 
 const Wallet: React.FC = () => {
   const intl = useIntl();
 
-  return (
+  return (<>
+    <ExportMnemonicAlert />
     <div className={styles.mainTopContainer}>
       <div className={style.indexContainer}>
         <div className={style.left}>
@@ -39,6 +41,7 @@ const Wallet: React.FC = () => {
         </div>
       </div>
     </div>
+  </>
   );
 };
 

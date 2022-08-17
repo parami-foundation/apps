@@ -18,6 +18,7 @@ export default () => {
   const walletCustomPassphrase = localStorage.getItem('parami:wallet:customPassphrase');
   const walletInProcess = localStorage.getItem('parami:wallet:inProcess');
   const walletRedirect = localStorage.getItem('parami:wallet:redirect');
+  const walletMnemonicExported = localStorage.getItem('parami:wallet:mnemonicExported');
 
   // Dashboard Info
   const dashboardAccountMeta = localStorage.getItem('parami:dashboard:accountMeta');
@@ -48,6 +49,7 @@ export default () => {
       customPassphrase: formatBoolean(walletCustomPassphrase),
       inProcess: walletInProcess,
       redirect: walletRedirect,
+      mnemonicExported: walletMnemonicExported
     },
     dashboard: {
       accountMeta: dashboardAccountMeta,
