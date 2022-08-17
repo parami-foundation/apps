@@ -104,7 +104,7 @@ export const AssetTransactionHistory = async (stashAccount: string) => {
 		assetTransactions(
 			orderBy: TIMESTAMP_IN_SECOND_DESC
 			first:50
-			filter: { fromAccountId: { equalTo: "${stashAccount}" } }
+			filter: { or: [{fromAccountId: { equalTo: "${stashAccount}" }}, {toAccountId: { equalTo: "${stashAccount}" }}] }
       ) {
 				nodes {
 				block

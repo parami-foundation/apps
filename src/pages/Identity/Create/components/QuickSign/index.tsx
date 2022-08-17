@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Spin, Typography } from 'antd';
+import { Button, Card, Divider, Spin, Tooltip, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
@@ -7,24 +7,34 @@ import config from '@/config/config';
 import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
+import './QuickSign.less';
+
+const MockTicket = JSON.parse('{"ticket":{"id":5573444153,"first_name":"Kai","last_name":"Kang","username":"kaikangeth","photo_url":"https://t.me/i/userpic/320/bfHsri02p76Kp11vrXz90rXYmoZ-z3pF21HNlCBlqZ1wDFOrDPdZ5_5cyhOJ9Gi9.jpg","auth_date":1660645030,"hash":"a53ca48b2bf15de8c05c5f383864cccecf25d46f716abe99225d66dd07a86f6e","bot":"parami_staging_bot"},"site":"Telegram","wallet":"5FniEcA5be4y6AyqygtDHzjc6WXybac8ZKjdq8oY3aAe5Xtb"}').ticket;
 
 const QuickSign: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;
-  setQsTicket: React.Dispatch<any>;
-  setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
-}> = ({ setStep, setQsTicket, setQsPlatform }) => {
+  setQuickSign: React.Dispatch<React.SetStateAction<{ platform: string; ticket: any } | undefined>>
+}> = ({ setStep, setQuickSign }) => {
   const apiWs = useModel('apiWs');
   const [loading, setLoading] = useState<boolean>(true);
 
   const intl = useIntl();
   const { Title } = Typography;
 
+  const handleMockSign = () => {
+    setQuickSign({
+      platform: 'Telegram',
+      ticket: MockTicket
+    });
+    setStep(3);
+  }
+
   const handleQuickCreate = async (response, platform) => {
-    setLoading(true);
-    setQsPlatform(platform);
-    setQsTicket(response);
-    setStep(2);
-    setLoading(false);
+    setQuickSign({
+      platform,
+      ticket: response
+    });
+    setStep(3);
   };
 
   useEffect(() => {
@@ -86,6 +96,16 @@ const QuickSign: React.FC<{
           spinning={!apiWs}
           indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
         >
+          <Tooltip title="Comming soon">
+            <span className='twitter-login-btn' onClick={handleMockSign}>
+              <img
+                src="/images/sns/twitter-white.svg"
+                className='twitter-icon'
+              />
+              Create by Twitter
+            </span>
+          </Tooltip>
+
           <CustomTelegramLoginButton
             dataOnauth={(response) => {
               response.bot = config.airdropService.telegram.botName;
@@ -111,8 +131,9 @@ const QuickSign: React.FC<{
             shape="round"
             size="large"
             className={style.button}
+            style={{ maxWidth: '240px' }}
             loading={!apiWs}
-            onClick={() => setStep(2)}
+            onClick={() => setStep(3)}
           >
             {intl.formatMessage({
               id: 'identity.quicksign.manual',

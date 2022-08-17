@@ -1,0 +1,115 @@
+.topIcon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  margin: 0 auto;
+}
+
+.title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 900;
+  color: rgb(36, 39, 42);
+  font-size: calc(30px + 8 * ((100vw - 300px) / 1300));
+  overflow-wrap: break-word;
+}
+
+.description {
+  line-height: 150%;
+  margin: 10px 0px;
+  font-size: 16px;
+  color: rgb(114, 114, 122);
+  font-weight: 400;
+}
+
+.recoveryLinkContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-shadow: rgba(0, 0, 0, 0.07) 0 45px 56px, rgba(0, 0, 0, 0.043) 0 10.0513px 12.5083px, rgba(0, 0, 0, 0.027) 0 2.99255px 3.72406px;
+  border-radius: 8px;
+  padding: 15px;
+
+  .seedPhrase {
+    flex-wrap: wrap;
+    user-select: all;
+    display: flex;
+
+    .singlePhrase {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-start;
+      background: rgb(255, 237, 227);
+      padding: 10px;
+      word-break: break-all;
+      margin: 5px;
+      flex: 1 1 0%;
+      min-width: 180px;
+
+      .singlePhraseIndex {
+        color: #ff9d66;
+        width: 30px;
+        margin-right: 10px;
+      }
+
+      .singlePhraseWord {
+        color: #e75200;
+        font-weight: 900;
+      }
+    }
+  }
+
+  .copyButton {
+    color: #ff5b00;
+    border-color: rgb(240, 240, 241);
+    background: rgb(240, 240, 241);
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 12px 6px;
+    text-transform: none;
+    box-shadow: unset;
+    font-weight: 900;
+  }
+
+  .recoveryLinkSpinWrapper {
+    width: 100%;
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 30px;
+  margin-bottom: 30px;
+
+  .button {
+    min-width: 200px;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 12px 6px;
+    text-transform: none;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}

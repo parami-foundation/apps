@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { LoginWithAirdrop } from '@/services/parami/HTTP';
+import { BindSocialAccount, LoginWithAirdrop } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
@@ -21,16 +21,13 @@ import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLogin
 let unsub: VoidFn | null = null;
 
 const VerifyIdentity: React.FC<{
-  qsTicket?: any;
-  qsPlatform?: string | undefined;
+  quickSign: { platform: string; ticket: any } | undefined;
   passphrase: string;
   account: string;
   keystore: string;
   did: string;
-  setQsTicket: React.Dispatch<any>;
-  setQsPlatform: React.Dispatch<React.SetStateAction<string | undefined>>;
   setDID: React.Dispatch<React.SetStateAction<string>>;
-}> = ({ qsTicket, qsPlatform, passphrase, account, keystore, did, setQsTicket, setQsPlatform, setDID }) => {
+}> = ({ passphrase, account, keystore, did, setDID, quickSign }) => {
   const apiWs = useModel('apiWs');
   const { refresh } = useModel('@@initialState');
   const [modalVisable, setModalVisable] = useState<boolean>(false);
@@ -47,24 +44,20 @@ const VerifyIdentity: React.FC<{
   // Goto redirect page
   const goto = async () => {
     await refresh();
-    setTimeout(() => {
-      const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
+    const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
       window.location.href = redirect;
-    }, 1000);
   };
 
   // Login With Airdrop
   const handleLoginWithAirdrop = async (ticket, platform) => {
     setLoading(true);
-    setQsPlatform(platform);
-    setQsTicket(ticket);
 
     try {
       const { response: Resp, data: Data } = await LoginWithAirdrop({
         ticket: ticket,
-        site: qsPlatform || platform,
+        site: platform,
         wallet: account,
       });
 
@@ -83,21 +76,14 @@ const VerifyIdentity: React.FC<{
         notification.success({
           message: 'Airdrop Success',
         })
-        setStep(4);
-
-        if (!!Data?.did) {
-          setDID(Data?.did);
-          localStorage.setItem('parami:wallet:did', Data?.did);
-        }
-
-        setStep(5);
+        setStep(3);
         return;
       }
 
       if (Resp?.status === 401) {
         notification.error({
-          message: 'Bind Failed',
-          description: `Cannot get your profile picture or username. Please check your ${qsPlatform || platform} privacy setting, or verify by making a deposit instead. Click here for details.`,
+          message: `${Data}`,
+          description: `Cannot get your profile picture or username. Please check your ${platform} privacy setting, or verify by making a deposit instead. Click here for details.`,
           duration: null,
           onClick: () => {
             window.open("https://parami.notion.site/Setting-up-Telegram-to-bind-Parami-f2b43b04c87c4467841499b3d5732b99");
@@ -110,8 +96,8 @@ const VerifyIdentity: React.FC<{
 
       if (Resp?.status === 409) {
         notification.error({
-          message: 'The account has been used',
-          description: `Your ${qsPlatform || platform} account has been used. Please try to deposit manually.`,
+          message: `${Data}`,
+          description: `Your ${platform} account has been used. Please try to deposit manually.`,
           duration: null,
         })
         setLoading(false);
@@ -171,6 +157,7 @@ const VerifyIdentity: React.FC<{
       return;
     }
 
+    // quickSign ? setStep(4) : setStep(5);
     setStep(5);
   };
 
@@ -199,9 +186,9 @@ const VerifyIdentity: React.FC<{
   };
 
   // From Quick Sign
-  const airdrop = async () => {
+  const airdrop = async (quickSign: { platform: string; ticket: any }) => {
     try {
-      await handleLoginWithAirdrop(qsTicket, qsPlatform);
+      await handleLoginWithAirdrop(quickSign.ticket, quickSign.platform);
       if (unsub === null) {
         listenBalance();
       }
@@ -214,6 +201,37 @@ const VerifyIdentity: React.FC<{
       return;
     }
   };
+
+  const bindSocialAccount = async (quickSign, did) => {
+    try {
+      const { response, data } = await BindSocialAccount({
+        ticket: quickSign?.ticket,
+        site: quickSign?.platform,
+        did,
+      });
+      
+      if (response?.status === 204) {
+        notification.success({
+          message: 'Bind social account success!'
+        })
+      } else {
+        notification.warning({
+          message: data,
+          description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+          duration: 10,
+        });
+      }
+    } catch (e: any) {
+      notification.warning({
+        message: e.message || e,
+        description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+        duration: 10,
+      });
+    }
+
+    setStep(5);
+    goto();
+  }
 
   // Compute Existential Deposit
   const getExistentialDeposit = async () => {
@@ -230,8 +248,13 @@ const VerifyIdentity: React.FC<{
 
   useEffect(() => {
     if (!!did) {
+      // 
+      // if (!quickSign) {
+      //   goto();
+      // } else {
+      //   bindSocialAccount(quickSign, did);
+      // }
       goto();
-      return;
     }
   }, [did]);
 
@@ -239,11 +262,11 @@ const VerifyIdentity: React.FC<{
     if (passphrase === '' || account === '' || keystore === '') {
       return;
     }
-    if (qsTicket) {
-      airdrop()
+    if (quickSign) {
+      airdrop(quickSign)
       return;
     };
-  }, [passphrase, account, keystore]);
+  }, [passphrase, account, keystore, quickSign]);
 
   useEffect(() => {
     if (!!ExistentialDeposit && balance >= FloatStringToBigInt(ExistentialDeposit, 18)) {
@@ -280,9 +303,7 @@ const VerifyIdentity: React.FC<{
               <Step title="Generate Passphrase" icon={step === 1 ? <LoadingOutlined /> : false} />
               <Step title="Deposit" icon={step === 2 ? <LoadingOutlined /> : false} />
               <Step title="Create DID" icon={step === 3 ? <LoadingOutlined /> : false} />
-              {qsTicket && qsPlatform && (
-                <Step title="Bind Account" icon={step === 4 ? <LoadingOutlined /> : false} />
-              )}
+              {/* {quickSign && <Step title="Bind Social Account" icon={step === 4 ? <LoadingOutlined /> : false} />} */}
               <Step title="Completing" icon={step === 5 ? <LoadingOutlined /> : false} />
             </Steps>
           )}
