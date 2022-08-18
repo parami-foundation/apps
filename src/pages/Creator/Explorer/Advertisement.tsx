@@ -103,7 +103,7 @@ const Advertisement: React.FC<{
 			return
 		}
 
-		window.open(`${ad?.link}&nftId=${nftId}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}`);
+		window.open(`${ad?.link}&nftId=${nftId}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}&poster=${ad?.poster}`);
 	};
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);

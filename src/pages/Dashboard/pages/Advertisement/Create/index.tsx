@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Button, Input, message, notification, Select, Tag, Tooltip } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Tooltip, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
@@ -10,6 +10,8 @@ import { CreateAds } from '@/services/parami/Advertisement';
 import { CreateTag, ExistTag } from '@/services/parami/Tag';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import FormErrorMsg from '@/components/FormErrorMsg';
+import config from '@/config/config';
+import { uploadIPFS } from '@/services/parami/IPFS';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
@@ -24,7 +26,12 @@ const Create: React.FC<{
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
-  const [metadata, setMetadata] = useState<string>();
+  const [title, setTitle] = useState<string>();
+  const [link, setLink] = useState<string>('https://weekly.parami.io/');
+  const [description, setDescription] = useState<string>();
+  const [mediaUrl, setMediaUrl] = useState<string>();
+  const [posterUrl, setPosterUrl] = useState<string>();
+
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
   const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
@@ -119,7 +126,21 @@ const Create: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await CreateAds(tags, metadata as string, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
+        let adMetadata = {
+          title,
+          link,
+          desc: description,
+          media: mediaUrl,
+          poster: posterUrl
+        };
+    
+        const bufferred = await Buffer.from(JSON.stringify(adMetadata));
+        const { response, data } = await uploadIPFS(bufferred);
+        if (!response.ok) {
+          throw('Create Metadata Error');
+        }
+
+        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -156,6 +177,20 @@ const Create: React.FC<{
       setPayoutMinError('Payout Min cannot be more than Payout Max')
     }
   }, [payoutMin]);
+
+  const handleUploadOnChange = (imageType: string) => {
+    return (info) => {
+      if (info.file.status === 'done') {
+        const ipfsHash = info.file.response.Hash;
+        const imageUrl = config.ipfs.endpoint + ipfsHash;
+        imageType === 'media' ? setMediaUrl(imageUrl) : setPosterUrl(imageUrl);
+        return;
+      }
+      if (info.file.status === 'error') {
+        message.error('Upload Image Error');
+      }
+    }
+  }
 
   return (
     <>
@@ -267,17 +302,79 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            <FormFieldTitle title={intl.formatMessage({
-              id: 'dashboard.ads.create.metadata',
-            })} required />
+            <FormFieldTitle title={'Title'} required />
           </div>
           <div className={styles.value}>
             <Input
               size='large'
-              onChange={(e) => setMetadata(`ipfs://${e.target.value}`)}
-              placeholder='<CID>/<path>'
-              prefix={'ipfs://'}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder='Advertisement Title'
             />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Link'} required />
+          </div>
+          <div className={styles.value}>
+            <Input
+              size='large'
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder='https://weekly.parami.io/'
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Description'} required />
+          </div>
+          <div className={styles.value}>
+            <Input
+              size='large'
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder='Advertisement Description'
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Media'} required />
+          </div>
+          <div className={styles.value}>
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action={config.ipfs.upload}
+              onChange={handleUploadOnChange('media')}
+            >
+              {mediaUrl ? <img src={mediaUrl} style={{ width: '100%' }} /> : <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>}
+            </Upload>
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Poster'} required />
+          </div>
+          <div className={styles.value}>
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action={config.ipfs.upload}
+              onChange={handleUploadOnChange('poster')}
+            >
+              {posterUrl ? <img src={posterUrl} style={{ width: '100%' }} /> : <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>}
+            </Upload>
           </div>
         </div>
         <div className={styles.field}>
@@ -401,7 +498,7 @@ const Create: React.FC<{
             size='large'
             shape='round'
             type='primary'
-            disabled={!tags || !metadata || !lifetime || !rewardRate || !payoutBase || !!payoutMaxError || !!payoutMinError}
+            disabled={!tags || !lifetime || !rewardRate || !payoutBase || !!payoutMaxError || !!payoutMinError}
             loading={submiting}
             onClick={() => {
               handleSubmit()

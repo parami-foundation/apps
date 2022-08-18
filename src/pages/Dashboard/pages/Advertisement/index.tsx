@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { useIntl, useModel } from 'umi';
-import { Button, Statistic, Table, Tooltip, notification, Space, Card } from 'antd';
+import { Button, Statistic, Table, Tooltip, notification, Space, Card, Popover } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect } from 'react';
@@ -13,6 +13,8 @@ import Create from './Create';
 import Bid from './Bid';
 import List from './List';
 import { IsAdvertiser } from '@/services/parami/Advertisement';
+import { AdListItem } from '@/models/dashboard/advertisement';
+import type { ColumnsType } from 'antd/es/table';
 
 const Advertisement: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -27,7 +29,7 @@ const Advertisement: React.FC = () => {
 
 	const intl = useIntl();
 
-	const columns = [
+	const columns: ColumnsType<AdListItem> = [
 		{
 			title: intl.formatMessage({
 				id: 'dashboard.ads.item.id',
@@ -48,16 +50,17 @@ const Advertisement: React.FC = () => {
 			title: intl.formatMessage({
 				id: 'dashboard.ads.item.metadata',
 			}),
-			dataIndex: 'metadata',
 			key: 'metadata',
-			render: (text: any) => (
-				<Tooltip
-					placement="topLeft"
-					title={text}
-				>
-					{text}
-				</Tooltip>
-			),
+			render: (adItem: AdListItem) => {
+				return (<>
+					<Popover content={
+						<>{Object.keys(adItem.metadata).map(key => {
+							return <p><b>{key}</b>: {adItem.metadata[key].toString()}</p>
+						})}
+						</>
+					}>{adItem.metadataIpfs}</Popover>
+				</>);
+			},
 			ellipsis: true,
 		},
 		{
@@ -78,9 +81,8 @@ const Advertisement: React.FC = () => {
 			title: intl.formatMessage({
 				id: 'dashboard.ads.item.action',
 			}),
-			valueType: 'option',
 			key: 'option',
-			render: (item: any) => (
+			render: (item: AdListItem) => (
 				<Space>
 					<a
 						key="bid"
