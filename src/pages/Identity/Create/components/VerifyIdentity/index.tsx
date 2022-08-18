@@ -17,6 +17,7 @@ import type { VoidFn } from '@polkadot/api/types';
 import DiscordLoginButton from '@/components/Discord';
 import { QueryDID, RegisterDID, GetExistentialDeposit } from '@/services/parami/Identity';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
+import TwitterLoginButton from '@/components/TwitterLoginButton/TwitterLoginButton';
 
 let unsub: VoidFn | null = null;
 
@@ -456,6 +457,7 @@ const VerifyIdentity: React.FC<{
                 id: 'identity.beforeStart.faucet',
               })}
             </Divider>
+            <TwitterLoginButton></TwitterLoginButton>
             <CustomTelegramLoginButton
               dataOnauth={(response) => {
                 response.bot = config.airdropService.telegram.botName;

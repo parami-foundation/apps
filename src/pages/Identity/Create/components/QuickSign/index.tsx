@@ -8,8 +8,9 @@ import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 import './QuickSign.less';
-
-const MockTicket = JSON.parse('{"ticket":{"id":5573444153,"first_name":"Kai","last_name":"Kang","username":"kaikangeth","photo_url":"https://t.me/i/userpic/320/bfHsri02p76Kp11vrXz90rXYmoZ-z3pF21HNlCBlqZ1wDFOrDPdZ5_5cyhOJ9Gi9.jpg","auth_date":1660645030,"hash":"a53ca48b2bf15de8c05c5f383864cccecf25d46f716abe99225d66dd07a86f6e","bot":"parami_staging_bot"},"site":"Telegram","wallet":"5FniEcA5be4y6AyqygtDHzjc6WXybac8ZKjdq8oY3aAe5Xtb"}').ticket;
+import { useParams } from 'umi';
+import TwitterLoginButton from '@/components/TwitterLoginButton/TwitterLoginButton';
+import qs from 'qs';
 
 const QuickSign: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -21,13 +22,24 @@ const QuickSign: React.FC<{
   const intl = useIntl();
   const { Title } = Typography;
 
-  const handleMockSign = () => {
-    setQuickSign({
-      platform: 'Telegram',
-      ticket: MockTicket
-    });
-    setStep(3);
-  }
+  const params: {
+    platfrom: string;
+  } = useParams();
+
+  useEffect(() => {
+    if (params?.platfrom === 'twitter') {
+      const url = new URL(window.location.href);
+      const ticket = qs.parse(url.search.substring(1));
+
+      if (ticket?.code) {
+        setQuickSign({
+          platform: 'Twitter',
+          ticket: ticket
+        });
+        setStep(3);
+      }
+    }
+  }, [params]);
 
   const handleQuickCreate = async (response, platform) => {
     setQuickSign({
@@ -96,15 +108,7 @@ const QuickSign: React.FC<{
           spinning={!apiWs}
           indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
         >
-          <Tooltip title="Comming soon">
-            <span className='twitter-login-btn' onClick={handleMockSign}>
-              <img
-                src="/images/sns/twitter-white.svg"
-                className='twitter-icon'
-              />
-              Create by Twitter
-            </span>
-          </Tooltip>
+          <TwitterLoginButton></TwitterLoginButton>
 
           <CustomTelegramLoginButton
             dataOnauth={(response) => {
