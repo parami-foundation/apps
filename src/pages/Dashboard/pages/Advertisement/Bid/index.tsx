@@ -226,7 +226,7 @@ const Bid: React.FC<{
             {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
           </div>
         </div>
-        <div className={styles.field}>
+        {/* <div className={styles.field}>
           <div className={styles.title}>
             <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.token',
@@ -267,8 +267,8 @@ const Bid: React.FC<{
               </div>
             </div>
           </div>
-        </div>
-        <div className={styles.field}>
+        </div> */}
+        {/* <div className={styles.field}>
           <Alert
             banner
             message={
@@ -279,7 +279,7 @@ const Bid: React.FC<{
               </Marquee>
             }
           />
-        </div>
+        </div> */}
 
         <div className={styles.field}>
           <Button
