@@ -14,9 +14,9 @@ import { getIncentiveId } from './api/parami/util';
 import { BigIntToFloatString } from '@/utils/format';
 import PairItem from './components/PairItem';
 import ERC20_ABI from './abi/ERC20.json';
-import ETHAddress from '../../components/ETHAddress/ETHAddress';
 import SelectWallet from '../../components/SelectWallet';
 import { isMainnetOrRinkeby } from '@/utils/chain.util';
+import EthAddress from '@/components/EthAddress/EthAddress';
 
 const Farm: React.FC = () => {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -287,7 +287,7 @@ const Farm: React.FC = () => {
 					<div className={styles.mainBgContainer}>
 						<div className={styles.contentContainer}>
 							<div className={style.stakeContainer}>
-								<ETHAddress />
+								<EthAddress theme='dashboard' />
 								<div className={style.headerContainer}>
 									<div className={style.titleContainer}>
 										<Title level={2}>

@@ -16,6 +16,7 @@ import { EthNetworkName } from '@/config/ethereumNetwork';
 import { VoidFn } from '@polkadot/api/types';
 import { isMainnetOrRinkeby } from '@/utils/chain.util';
 import { hexToDid } from '@/utils/common';
+import config from '@/config/config';
 
 const { Step } = Steps;
 
@@ -61,14 +62,30 @@ const ImportNFTModal: React.FC<{
   }, [retrieveAssets, Signer, ChainId]);
 
   const importNft = async (preTx?: boolean, account?: string) => {
-    if (!!wallet && !!wallet.keystore && !!mintItem) {
+    if (!!wallet && !!wallet.keystore && !!wallet.did && !!mintItem && Signer) {
       try {
+        let ethAccount = '';
+        let signedMsg = '';
+        if (!preTx) {
+          const modal = Modal.info({
+            title: 'Proof of Ownership',
+            content: `Please provide a proof of ownership by simply signing a message in your wallet`,
+            centered: true
+          });
+
+          ethAccount = await Signer.getAddress();
+          signedMsg = await Signer.signMessage(`Link: ${hexToDid(wallet?.did)}`);
+          modal.destroy();
+        }
+
         const info: any = await PortNFT(
           passphrase,
           wallet?.keystore,
           'Ethereum',
           mintItem.contract,
           mintItem.tokenId,
+          ethAccount,
+          signedMsg,
           preTx,
           account,
         );
@@ -180,12 +197,22 @@ const ImportNFTModal: React.FC<{
                 className={style.topImage}
               />
               <div className={style.description}>
-                {intl.formatMessage({
-                  id: 'wallet.nfts.empty',
-                })}
+                You do not have any hNFTs
               </div>
+              <Button
+                block
+                type='primary'
+                shape='round'
+                size='large'
+                style={{ marginTop: '20px' }}
+                onClick={() => {
+                  window.open(config.hnft.site);
+                }}
+              >
+                Create One
+              </Button>
             </div>
-          ) : (
+          ) : (<>
             <div className={style.nftsList}>
               {tokenData.map((item: Erc721) => {
                 return (
@@ -237,7 +264,19 @@ const ImportNFTModal: React.FC<{
                 )
               })}
             </div>
-          )
+            <Button
+              block
+              type='primary'
+              shape='round'
+              size='large'
+              style={{ marginTop: '20px', marginBottom: '20px' }}
+              onClick={() => {
+                window.open(config.hnft.site);
+              }}
+            >
+              Create More
+            </Button>
+          </>)
         }
       />
       <SecurityModal
