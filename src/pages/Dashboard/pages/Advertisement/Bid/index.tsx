@@ -41,7 +41,6 @@ const Bid: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        console.log('submit', tokenSelect, tokenAmount);
         await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), tokenSelect, parseAmount(tokenAmount), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);

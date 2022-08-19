@@ -4,7 +4,7 @@ import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Tooltip, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { parseAmount } from '@/utils/common';
+import { didToHex, parseAmount } from '@/utils/common';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { CreateAds } from '@/services/parami/Advertisement';
 import { CreateTag, ExistTag } from '@/services/parami/Tag';
@@ -34,6 +34,7 @@ const Create: React.FC<{
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
+  const [delegateAccount, setDelegateAccount] = useState<string>('');
   const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
@@ -140,7 +141,8 @@ const Create: React.FC<{
           throw('Create Metadata Error');
         }
 
-        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta));
+        const delegatedDid = didToHex(delegateAccount);
+        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDid);
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -485,6 +487,19 @@ const Create: React.FC<{
               onChange={(e) => setPayoutMax(Number(e.target.value))}
             />
             {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Delegated Account'} />
+          </div>
+          <div className={styles.value}>
+            <Input
+              size='large'
+              value={delegateAccount}
+              onChange={(e) => setDelegateAccount(e.target.value)}
+              placeholder={'did:ad3:......'}
+            />
           </div>
         </div>
         <div
