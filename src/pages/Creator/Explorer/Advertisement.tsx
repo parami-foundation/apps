@@ -39,7 +39,7 @@ const Advertisement: React.FC<{
 
 	const intl = useIntl();
 
-	const link = !!wallet?.did ? `${window.location.origin}/${did}?referrer=${wallet?.did}` : `${window.location.origin}/${did}`;
+	const link = !!wallet?.did ? `${window.location.origin}/${did}/${nftId}?referrer=${wallet?.did}` : `${window.location.origin}/${did}/${nftId}`;
 
 	// Get audience and scope
 	const { query } = history.location;
