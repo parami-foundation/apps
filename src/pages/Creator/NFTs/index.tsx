@@ -7,6 +7,7 @@ import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
 import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import NFTCard from './NFTCard';
+import EthAddress from '@/components/EthAddress/EthAddress';
 
 const NFTs: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -54,6 +55,7 @@ const NFTs: React.FC = () => {
 							})}
 						</div>
 					</div>
+					<EthAddress theme='wallet'></EthAddress>
 					<div className={style.nftsContainer}>
 						<Skeleton
 							loading={!apiWs || loading}

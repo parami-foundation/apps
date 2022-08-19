@@ -6,9 +6,9 @@ import style from './style.less';
 import classNames from 'classnames';
 import Deposit from './deposit';
 import Withdraw from './withdraw';
-import ETHAddress from '../../components/ETHAddress/ETHAddress';
 import SelectWallet from '../../components/SelectWallet';
 import ProcessModal from './ProcessModal';
+import EthAddress from '@/components/EthAddress/EthAddress';
 
 const Bridge: React.FC = () => {
     const { Account, connect, ChainId } = useModel('web3');
@@ -42,7 +42,7 @@ const Bridge: React.FC = () => {
             {Account ? (
                 <div className={styles.mainBgContainer}>
                     <div className={styles.contentContainer}>
-                        <ETHAddress />
+                        <EthAddress theme='dashboard' />
                         <div className={style.bridgeContainer}>
                             <div className={style.leftContainer}>
                                 <div className={style.innerWrapper}>
