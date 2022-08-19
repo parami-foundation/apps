@@ -24,6 +24,9 @@ export const config = {
     "upload": "https://ipfs.parami.io/api/v0/add?stream-channels=true",
     "endpoint": "https://ipfs.parami.io/ipfs/",
   },
+  "hnft": {
+    "site": "https://hnft.parami.io",
+  },
   "walletConnect": {
     "bridge": "https://bridge.walletconnect.org",
     "relay": "wss://relay.walletconnect.com",

@@ -1,9 +1,9 @@
-import { Button, Col, Row, Typography, Image } from 'antd';
+import { Button, Typography, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
-import { FaFolderPlus, FaFileImport } from 'react-icons/fa';
+import { FaFileImport } from 'react-icons/fa';
 import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import NFTCard from './NFTCard';
@@ -73,46 +73,23 @@ const NFTs: React.FC = () => {
 											})}
 										</div>
 										<div className={style.buttons}>
-											<Row
-												gutter={[8, 8]}
-												className={style.buttonRow}
+											<Button
+												block
+												type='primary'
+												shape='round'
+												size='large'
+												className={style.button}
+												loading={submitLoading}
+												onClick={async () => {
+													await connect();
+													setImportModal(true);
+													setSubmitLoading(false);
+												}}
 											>
-												<Col span={12}>
-													<Button
-														block
-														type='primary'
-														shape='round'
-														size='large'
-														className={style.button}
-														onClick={() => {
-															window.open('https://hnft.parami.io/');
-														}}
-													>
-														{intl.formatMessage({
-															id: 'wallet.nfts.create',
-														})}
-													</Button>
-												</Col>
-												<Col span={12}>
-													<Button
-														block
-														type='primary'
-														shape='round'
-														size='large'
-														className={style.button}
-														loading={submitLoading}
-														onClick={async () => {
-															await connect();
-															setImportModal(true);
-															setSubmitLoading(false);
-														}}
-													>
-														{intl.formatMessage({
-															id: 'wallet.nfts.import',
-														})}
-													</Button>
-												</Col>
-											</Row>
+												{intl.formatMessage({
+													id: 'wallet.nfts.import',
+												})}
+											</Button>
 										</div>
 									</div>
 								) : (
@@ -125,20 +102,6 @@ const NFTs: React.FC = () => {
 										})}
 										<div className={style.newItem}>
 											<div className={style.card}>
-												<Button
-													className={style.createNFT}
-													onClick={() => {
-														window.open('https://hnft.parami.io/');
-													}}
-												>
-													<FaFolderPlus
-														className={style.icon}
-													/>
-													{intl.formatMessage({
-														id: 'wallet.nfts.create',
-													})}
-												</Button>
-												<span className={style.divider} />
 												<Button
 													className={style.importNFT}
 													loading={submitLoading}

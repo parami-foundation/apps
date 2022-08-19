@@ -79,8 +79,8 @@ export const KickNFT = async (password: string, keystore: string, preTx?: boolea
   return await subCallback(ex, payUser);
 };
 
-export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: BigNumber, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.port(network, namespace, tokenID.toHexString());
+export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: BigNumber, ethAccount: string, signature: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.port(network, namespace, tokenID.toHexString(), ethAccount, signature);
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
