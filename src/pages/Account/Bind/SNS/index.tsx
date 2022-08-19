@@ -16,6 +16,10 @@ const SNS: React.FC<{
 
   const { Title } = Typography;
 
+  const bindTwitter = () => {
+    window.open(`http://localhost:8080/twitterLogin?did=123123`);
+  }
+
   return (
     <>
       <Title
@@ -136,18 +140,27 @@ const SNS: React.FC<{
                 </div>
                 <div className={style.button}>
                   <Button
-                    disabled
+                    disabled={null !== linkedInfo.Twitter}
                     size='large'
                     shape='round'
                     type='primary'
-                    onClick={() => {
-                      setBindModal(true);
-                      setBindPlatform('Twitter');
-                    }}
+                    onClick={bindTwitter}
                   >
-                    {intl.formatMessage({
-                      id: 'social.coming',
-                    })}
+                    {!linkedInfo.Twitter &&
+                      intl.formatMessage({
+                        id: 'social.bind',
+                      })
+                    }
+                    {linkedInfo.Twitter === 'linked' &&
+                      intl.formatMessage({
+                        id: 'social.binded',
+                      })
+                    }
+                    {linkedInfo.Twitter === 'verifing' &&
+                      intl.formatMessage({
+                        id: 'social.verifing',
+                      })
+                    }
                   </Button>
                 </div>
               </div>
