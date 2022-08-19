@@ -34,7 +34,7 @@ const Create: React.FC<{
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
-  const [delegateAccount, setDelegateAccount] = useState<string>('');
+  const [delegatedDid, setDelegatedDid] = useState<string>('');
   const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
@@ -141,8 +141,8 @@ const Create: React.FC<{
           throw('Create Metadata Error');
         }
 
-        const delegatedDid = didToHex(delegateAccount);
-        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDid);
+        const delegatedDidHex = didToHex(delegatedDid);
+        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -496,8 +496,8 @@ const Create: React.FC<{
           <div className={styles.value}>
             <Input
               size='large'
-              value={delegateAccount}
-              onChange={(e) => setDelegateAccount(e.target.value)}
+              value={delegatedDid}
+              onChange={(e) => setDelegatedDid(e.target.value)}
               placeholder={'did:ad3:......'}
             />
           </div>
