@@ -34,7 +34,7 @@ const Create: React.FC<{
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
-  const [delegatedDid, setDelegatedDid] = useState<string>('');
+  const [delegatedDid, setDelegatedDid] = useState<string>('did:ad3:izgyiwwftd7s1D3XaREJZBR2kvZ');
   const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
   const [tagInputValue, setTagInputValue] = useState<string>('');
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
