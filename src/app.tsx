@@ -33,7 +33,9 @@ export async function getInitialState(): Promise<{
   const currentInfo = await QueryCurrentUser();
 
   if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.wallet?.inProcess === 'createAccount') {
-    window.location.href = config.page.createPage;
+    if (!window.location.href.includes('oauth')) {
+      window.location.href = config.page.createPage;
+    }
   };
   if (access({ currentInfo: currentInfo }).canPreDID && window.location.toString().indexOf('create') < 0 && currentInfo?.wallet?.inProcess === 'recoverAccount') {
     window.location.href = config.page.recoverPage;

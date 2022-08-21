@@ -466,11 +466,8 @@ const VerifyIdentity: React.FC<{
               botName={config.airdropService.telegram.botName}
             />
             <DiscordLoginButton
-              dataOauth={(response) => {
-                handleLoginWithAirdrop(response, 'Discord')
-              }}
               clientId={config.airdropService.discord.clientId}
-              redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
+              redirectUri={window.location.origin + 'oauth/discord'}
             />
           </div>
         </Spin>

@@ -30,6 +30,14 @@
     ],
   },
   {
+    path: '/oauth/:platform',
+    name: 'oauth',
+    hideInMenu: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Oauth/Oauth'
+  },
+  {
     path: '/recover',
     name: 'recover',
     hideInMenu: true,
