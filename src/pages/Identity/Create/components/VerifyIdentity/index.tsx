@@ -467,7 +467,7 @@ const VerifyIdentity: React.FC<{
             />
             <DiscordLoginButton
               clientId={config.airdropService.discord.clientId}
-              redirectUri={window.location.origin + 'oauth/discord'}
+              redirectUri={window.location.origin + '/oauth/discord'}
             />
           </div>
         </Spin>

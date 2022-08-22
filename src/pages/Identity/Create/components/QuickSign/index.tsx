@@ -109,7 +109,7 @@ const QuickSign: React.FC<{
           ></CustomTelegramLoginButton>
           <DiscordLoginButton
             clientId={config.airdropService.discord.clientId}
-            redirectUri={window.location.origin + 'oauth/discord'}
+            redirectUri={window.location.origin + '/oauth/discord'}
           />
         </Spin>
         <Divider>
