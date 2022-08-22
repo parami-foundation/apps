@@ -1,4 +1,4 @@
-import { Button, Card, Divider, Spin, Tooltip, Typography } from 'antd';
+import { Button, Card, Divider, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
@@ -8,9 +8,8 @@ import DiscordLoginButton from '@/components/Discord/DiscordLoginButton';
 import { ArrowRightOutlined, LoadingOutlined } from '@ant-design/icons';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 import './QuickSign.less';
-import { useParams } from 'umi';
 import TwitterLoginButton from '@/components/TwitterLoginButton/TwitterLoginButton';
-import qs from 'qs';
+import { parseUrlParams } from '@/utils/url.util';
 
 const QuickSign: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<number>>;
@@ -22,24 +21,16 @@ const QuickSign: React.FC<{
   const intl = useIntl();
   const { Title } = Typography;
 
-  const params: {
-    platfrom: string;
-  } = useParams();
-
   useEffect(() => {
-    if (params?.platfrom === 'twitter') {
-      const url = new URL(window.location.href);
-      const ticket = qs.parse(url.search.substring(1));
-
-      if (ticket?.code) {
-        setQuickSign({
-          platform: 'Twitter',
-          ticket: ticket
-        });
-        setStep(3);
-      }
+    const params = parseUrlParams();
+    if (params.platform) {
+      setQuickSign({
+        platform: `${params.platform}`,
+        ticket: params
+      });
+      setStep(3);
     }
-  }, [params]);
+  }, []);
 
   const handleQuickCreate = async (response, platform) => {
     setQuickSign({
@@ -109,7 +100,6 @@ const QuickSign: React.FC<{
           indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}
         >
           <TwitterLoginButton></TwitterLoginButton>
-
           <CustomTelegramLoginButton
             dataOnauth={(response) => {
               response.bot = config.airdropService.telegram.botName;
@@ -118,9 +108,8 @@ const QuickSign: React.FC<{
             botName={config.airdropService.telegram.botName}
           ></CustomTelegramLoginButton>
           <DiscordLoginButton
-            dataOauth={(response) => { handleQuickCreate(response, 'Discord') }}
             clientId={config.airdropService.discord.clientId}
-            redirectUri={window.location.origin + config.airdropService.discord.redirectUri}
+            redirectUri={window.location.origin + '/oauth/discord'}
           />
         </Spin>
         <Divider>

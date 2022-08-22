@@ -1,20 +1,92 @@
-import React from 'react';
-import { useIntl, useModel } from 'umi';
+import React, { useEffect, useState } from 'react';
+import { useIntl, useModel, history } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../../style.less';
+import snsStyle from './sns.less';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Typography, Image, Card, Button, Spin } from 'antd';
+import { Typography, Image, Card, Button, Spin, notification } from 'antd';
 import Skeleton from '@/components/Skeleton';
+import config from '@/config/config';
+import { parseUrlParams } from '@/utils/url.util';
+import { BindSocialAccount } from '@/services/parami/HTTP';
+import TelegramLoginButton from 'react-telegram-login';
 
 const SNS: React.FC<{
   setBindModal: React.Dispatch<React.SetStateAction<boolean>>;
   setBindPlatform: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ setBindModal, setBindPlatform }) => {
   const linkedInfo = useModel('sns');
+  const { wallet } = useModel('currentUser');
+  const [bindSocial, setBindSocial] = useState<{ platform: string; ticket }>();
 
   const intl = useIntl();
 
   const { Title } = Typography;
+
+  const bindTwitter = () => {
+    window.location.href = `${config.main.airdropServer}/twitterLogin?state=bind`;
+  }
+
+  const bindDiscord = () => {
+    const redirectUri = window.location.origin + '/oauth/discord';
+    window.location.href = `${config.airdropService.discord.oauthEndpoint}?response_type=token&state=bind&client_id=${config.airdropService.discord.clientId}&scope=identify&redirect_uri=${redirectUri}`
+  }
+
+  const handleTelegramResp = (resp) => {
+    console.log(resp);
+    resp.bot = config.airdropService.telegram.botName;
+    setBindSocial({
+      platform: 'Telegram',
+      ticket: resp
+    });
+  }
+
+  useEffect(() => {
+    const params = parseUrlParams();
+    if (params.platform) {
+      console.log('[kai] set params');
+      setBindSocial({
+        platform: params.platform as string,
+        ticket: params
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (bindSocial?.platform) {
+      bindSocialAccount(bindSocial.platform, bindSocial.ticket);
+    }
+  }, [bindSocial])
+
+  const bindSocialAccount = async (site: string, ticket) => {
+    if (wallet.did) {
+      notification.info({
+        message: `Binding ${site} account...`
+      });
+      const { response, data } = await BindSocialAccount({ did: wallet.did, site, ticket });
+
+      if (!response) {
+        notification.error({
+          message: 'Network Error',
+          description: 'Please try again later'
+        });
+        return;
+      };
+
+      if (response.status === 204) {
+        notification.success({
+          message: `Bind ${site} account success!`
+        });
+        history.push('/profile')
+        return;
+      }
+
+      notification.error({
+        message: `${data}`,
+      });
+    }
+
+  }
 
   return (
     <>
@@ -52,22 +124,25 @@ const SNS: React.FC<{
                   />
                   <span className={style.label}>Telegram</span>
                 </div>
-                <div className={style.button}>
+                <div className={style.button + (!linkedInfo.Telegram ? ` ${snsStyle.telegramBtnContainer}` : '')}>
                   <Spin
                     indicator={
                       <LoadingOutlined spin />
                     }
                     spinning={!Object.keys(linkedInfo).length}
                   >
+                    {!linkedInfo.Telegram && <TelegramLoginButton
+                      dataOnauth={handleTelegramResp}
+                      botName={config.airdropService.telegram.botName}
+                      className={snsStyle.telegramLoginBtn}
+                    ></TelegramLoginButton>}
+
                     <Button
                       disabled={null !== linkedInfo.Telegram}
                       size='large'
                       shape='round'
                       type='primary'
-                      onClick={() => {
-                        setBindModal(true);
-                        setBindPlatform('Telegram');
-                      }}
+                      className={snsStyle.loginBtnMock}
                     >
                       {!linkedInfo.Telegram &&
                         intl.formatMessage({
@@ -105,10 +180,7 @@ const SNS: React.FC<{
                       size='large'
                       shape='round'
                       type='primary'
-                      onClick={() => {
-                        setBindModal(true);
-                        setBindPlatform('Discord');
-                      }}
+                      onClick={bindDiscord}
                     >
                       {!linkedInfo.Discord &&
                         intl.formatMessage({
@@ -136,18 +208,27 @@ const SNS: React.FC<{
                 </div>
                 <div className={style.button}>
                   <Button
-                    disabled
+                    disabled={null !== linkedInfo.Twitter}
                     size='large'
                     shape='round'
                     type='primary'
-                    onClick={() => {
-                      setBindModal(true);
-                      setBindPlatform('Twitter');
-                    }}
+                    onClick={bindTwitter}
                   >
-                    {intl.formatMessage({
-                      id: 'social.coming',
-                    })}
+                    {!linkedInfo.Twitter &&
+                      intl.formatMessage({
+                        id: 'social.bind',
+                      })
+                    }
+                    {linkedInfo.Twitter === 'linked' &&
+                      intl.formatMessage({
+                        id: 'social.binded',
+                      })
+                    }
+                    {linkedInfo.Twitter === 'verifing' &&
+                      intl.formatMessage({
+                        id: 'social.verifing',
+                      })
+                    }
                   </Button>
                 </div>
               </div>

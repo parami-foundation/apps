@@ -37,8 +37,8 @@ export const config = {
       "botName": isDev ? "parami_staging_bot" : "paramiofficialbot",
     },
     "discord": {
-      "clientId": "928193512619536465",
-      "redirectUri": "/create/discord",
+      "oauthEndpoint": "https://discord.com/api/oauth2/authorize",
+      "clientId": "1010906937421987902",
     },
   },
   "explorer": {
