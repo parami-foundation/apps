@@ -4,11 +4,12 @@ import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
+import { InjectManifest } from 'workbox-webpack-plugin';
 
 const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
-  define:{
+  define: {
     "process.env.UMI_ENV": process.env.UMI_ENV, // * 本地开发环境：dev，qa环境：qa，生产环境prod
     "process.env.name": '自定义name',
   },
@@ -55,7 +56,7 @@ export default defineConfig({
   // Fast Refresh
   fastRefresh: {},
   nodeModulesTransform: { type: 'none' },
-  mfsu: {},
+  // mfsu: {},
   webpack5: {},
   exportStatic: {},
   chainWebpack(config) {
@@ -63,6 +64,15 @@ export default defineConfig({
       .rule('mjs-rule')
       .test(/.m?js/)
       .resolve.set('fullySpecified', false);
+
+    // workbox config
+    config.plugin('workbox').use(InjectManifest, [
+      {
+        swSrc: './pwa/sw.js',
+        swDest: 'sw.js',
+        exclude: [/\.map$/, /favicon\.ico$/, /^manifest.*\.js?$/],
+      },
+    ]);
   },
   plugins: [
     './src/plugins/ga-plugin'

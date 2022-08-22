@@ -137,6 +137,7 @@
     "react-tagcloud": "^2.1.1",
     "react-telegram-login": "^1.1.2",
     "redux-persist": "^6.0.0",
+    "register-service-worker": "^1.7.2",
     "styled-components": "^5.3.3",
     "throttle-typescript": "^1.1.0",
     "tp-js-sdk": "^3.7.1",
@@ -148,7 +149,9 @@
     "web3": "^1.6.1",
     "web3-eth": "^1.6.1",
     "web3-eth-contract": "^1.7.1",
-    "web3modal": "^1.9.5"
+    "web3modal": "^1.9.5",
+    "workbox-precaching": "^6.5.4",
+    "workbox-webpack-plugin": "^6.5.4"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.5",
