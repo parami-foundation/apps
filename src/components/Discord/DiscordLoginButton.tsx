@@ -14,7 +14,8 @@ const DiscordLoginButton: React.FC<{
   };
 
   const onClick = () => {
-    window.open(`${config.airdropService.discord.oauthEndpoint}?response_type=token&client_id=${clientId}&scope=identify&redirect_uri=${RedirectUri}&state=airdrop`, 'discordLogin', 'height=700,width=500');
+    window.location.href = `${config.airdropService.discord.oauthEndpoint}?response_type=token&client_id=${clientId}&scope=identify&redirect_uri=${RedirectUri}&state=airdrop`;
+    // window.open(`${config.airdropService.discord.oauthEndpoint}?response_type=token&client_id=${clientId}&scope=identify&redirect_uri=${RedirectUri}&state=airdrop`, 'discordLogin', 'height=700,width=500');
   }
 
   return (
