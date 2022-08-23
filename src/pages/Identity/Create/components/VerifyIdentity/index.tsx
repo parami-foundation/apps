@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { BindSocialAccount, LoginWithAirdrop } from '@/services/parami/HTTP';
+import { LoginWithAirdrop, LinkAccount } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
@@ -158,8 +158,7 @@ const VerifyIdentity: React.FC<{
       return;
     }
 
-    // quickSign ? setStep(4) : setStep(5);
-    setStep(5);
+    quickSign ? setStep(4) : setStep(5);
   };
 
   // Listen Balance Change
@@ -203,12 +202,11 @@ const VerifyIdentity: React.FC<{
     }
   };
 
-  const bindSocialAccount = async (quickSign, did) => {
+  const bindSocialAccount = async (quickSign) => {
     try {
-      const { response, data } = await BindSocialAccount({
-        ticket: quickSign?.ticket,
+      const { response, data } = await LinkAccount({
         site: quickSign?.platform,
-        did,
+        wallet: account
       });
       
       if (response?.status === 204) {
@@ -249,13 +247,11 @@ const VerifyIdentity: React.FC<{
 
   useEffect(() => {
     if (!!did) {
-      // 
-      // if (!quickSign) {
-      //   goto();
-      // } else {
-      //   bindSocialAccount(quickSign, did);
-      // }
-      goto();
+      if (!quickSign) {
+        goto();
+      } else {
+        bindSocialAccount(quickSign);
+      }
     }
   }, [did]);
 
@@ -304,7 +300,7 @@ const VerifyIdentity: React.FC<{
               <Step title="Generate Passphrase" icon={step === 1 ? <LoadingOutlined /> : false} />
               <Step title="Deposit" icon={step === 2 ? <LoadingOutlined /> : false} />
               <Step title="Create DID" icon={step === 3 ? <LoadingOutlined /> : false} />
-              {/* {quickSign && <Step title="Bind Social Account" icon={step === 4 ? <LoadingOutlined /> : false} />} */}
+              {quickSign && <Step title="Bind Social Account" icon={step === 4 ? <LoadingOutlined /> : false} />}
               <Step title="Completing" icon={step === 5 ? <LoadingOutlined /> : false} />
             </Steps>
           )}
