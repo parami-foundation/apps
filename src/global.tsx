@@ -19,6 +19,13 @@ const clearCache = () => {
   }
 };
 
+// Check if service workers are supported
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js', {
+    scope: '/',
+  });
+}
+
 // if pwa is true
 if (pwa) {
   // Notify user if offline now

@@ -12,12 +12,14 @@ export const config = {
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://staging.parami.io/airdrop",
+    "webNotificationServer": "http://localhost:8080"
   } : {
     "socketServer": "wss://rpc-na1.parami.io/ws",
     "subqueryServer": "https://graph.parami.io",
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://airdrop.parami.io",
+    "webNotificationServer": "http://localhost:8080"
   },
   "ipfs": {
     "host": "ipfs.parami.io",
