@@ -1,5 +1,4 @@
 import { precacheAndRoute } from 'workbox-precaching';
-import config from '@/config/config';
 
 precacheAndRoute(self.__WB_MANIFEST);
 

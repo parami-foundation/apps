@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, Card } from 'antd';
+import React, { useEffect } from 'react';
+import { Card } from 'antd';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
@@ -7,6 +7,7 @@ import Balance from './Balance';
 import Record from './Record';
 import Tags from './Tags';
 import ExportMnemonicAlert from '@/components/ExportMnemonicAlert/ExportMnemonicAlert';
+import config from '@/config/config';
 
 // Copied from the web-push documentation
 const urlBase64ToUint8Array = (base64String) => {
@@ -29,18 +30,24 @@ const Wallet: React.FC = () => {
   const intl = useIntl();
   const { wallet } = useModel('currentUser');
 
-  const handleSub = async () => {
-    if (!('serviceWorker' in navigator)) return;
+  const setupWebpush = async () => {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+    
+    if (localStorage.getItem('parami:user:notification')) {
+      return;
+    }
 
     const registration = await navigator.serviceWorker.ready;
-  
+
     // Subscribe to push notifications
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
     });
 
-    await fetch(`http://localhost:8080/subscribe?account=${wallet.account}`, {
+    await fetch(`${config.main.webNotificationServer}/subscribe?account=${wallet.account}`, {
       method: 'POST',
       body: JSON.stringify(subscription),
       headers: {
@@ -48,12 +55,15 @@ const Wallet: React.FC = () => {
       },
     });
 
-    console.log('Subscribe!', subscription);
+    localStorage.setItem('parami:user:notification', 'true');
   }
+
+  useEffect(() => {
+    setupWebpush();
+  }, []);
 
   return (<>
     <ExportMnemonicAlert />
-    <Button onClick={handleSub}>Subscribe</Button>
     <div className={styles.mainTopContainer}>
       <div className={style.indexContainer}>
         <div className={style.left}>
