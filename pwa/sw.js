@@ -1,6 +1,4 @@
-import { precacheAndRoute } from 'workbox-precaching';
-
-precacheAndRoute(self.__WB_MANIFEST);
+const ignored = self.__WB_MANIFEST;
 
 self.addEventListener('push', (e) => {
   const data = e.data.json();
