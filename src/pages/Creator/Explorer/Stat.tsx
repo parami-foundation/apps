@@ -12,7 +12,6 @@ const Stat: React.FC<{
 	asset: any;
 	assetPrice: string;
 	totalSupply: bigint;
-	viewer: any;
 	member: any;
 }> = ({ asset, assetPrice, totalSupply, member }) => {
 	const intl = useIntl();

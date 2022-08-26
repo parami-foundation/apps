@@ -4,7 +4,7 @@ import Marquee from 'react-fast-marquee';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { useIntl, history, useModel } from 'umi';
-import { DollarCircleFilled, EyeFilled, InfoCircleOutlined, NotificationOutlined, RightOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { DollarCircleFilled, EyeFilled, InfoCircleOutlined, NotificationOutlined, RightOutlined, ShareAltOutlined, MoneyCollectOutlined } from '@ant-design/icons';
 import SmallModal from '@/components/ParamiModal/SmallModal';
 import BigModal from '@/components/ParamiModal/BigModal';
 import Chart from './components/Chart';
@@ -17,25 +17,24 @@ import Keyring from '@polkadot/keyring';
 import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import ClaimModal from './components/ClaimModal/ClaimModal';
 
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
 	nftId: string;
-	viewer: any;
-	referer: any;
 	asset: any;
 	avatar: string;
 	did: string;
 	adData: any;
-	remain: bigint | undefined;
 	adImageOnLoad: () => void
-}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain = 0, adImageOnLoad = () => {} }) => {
+}> = ({ ad, nftId, asset, avatar, did, adData, adImageOnLoad = () => { } }) => {
 	const { wallet } = useModel('currentUser');
-	const [infoModal, setInfoModal] = useState<boolean>(false);
-	const [chartModal, setChartModal] = useState<boolean>(false);
+	// const [infoModal, setInfoModal] = useState<boolean>(false);
+	// const [chartModal, setChartModal] = useState<boolean>(false);
 	const [passphrase, setPassphrase] = useState<string>('');
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [stamp, setStamp] = useState<string>('');
+	const [claimModal, setClaimModal] = useState<boolean>(false);
 
 	const intl = useIntl();
 
@@ -136,6 +135,7 @@ const Advertisement: React.FC<{
 			</div>
 			<Card
 				className={`${styles.card} ${style.adCard}`}
+				style={{ maxWidth: '650px', border: 'none', marginBottom: '30px' }}
 				bodyStyle={{
 					padding: 0,
 					width: '100%',
@@ -143,7 +143,7 @@ const Advertisement: React.FC<{
 			>
 				<div className={style.advertisement}>
 					<div className={style.cover}>
-						<div className={style.viewer}>
+						{/* <div className={style.viewer}>
 							<Tag
 								icon={<ShareAltOutlined />}
 								color="rgba(0,0,0,.5)"
@@ -180,7 +180,7 @@ const Advertisement: React.FC<{
 									}}
 								/>
 							</Tag>
-						</div>
+						</div> */}
 						<div className={style.adMedia}>
 							<div
 								className={style.guideClickContainer}
@@ -193,7 +193,7 @@ const Advertisement: React.FC<{
 								}}
 							>
 								<div className={style.guideClickFinger} />
-								<div className={style.guideClickText}>
+								{/* <div className={style.guideClickText}>
 									{intl.formatMessage({
 										id: 'creator.explorer.advertisement.earnUpTo',
 									}, {
@@ -211,7 +211,7 @@ const Advertisement: React.FC<{
 											</>
 										)
 									})}
-								</div>
+								</div> */}
 							</div>
 							<Image
 								src={ad?.media}
@@ -233,7 +233,18 @@ const Advertisement: React.FC<{
 							/>
 						</div>
 					</div>
-					<Alert
+					{ad?.instructions && ad?.instructions?.length > 0 && <>
+						<div className={style.instructions}>
+							<div className={style.instructionTitle}>Follow the instructions to improve your parami score</div>
+							{ad.instructions.map(instruction => {
+								return (
+									<div className={style.instruction}>{instruction}</div>
+								)
+							})}
+						</div>
+					</>}
+
+					{/* <Alert
 						banner
 						icon={<NotificationOutlined />}
 						className={style.meta}
@@ -246,10 +257,10 @@ const Advertisement: React.FC<{
 								{ad?.desc}
 							</Marquee>
 						}
-					/>
+					/> */}
 				</div>
 			</Card>
-			<span className={style.countDown}>
+			{/* <span className={style.countDown}>
 				<span
 					style={{
 						display: 'flex',
@@ -286,8 +297,22 @@ const Advertisement: React.FC<{
 						<Token value={remain?.toString()} symbol={asset?.symbol} />
 					</span>
 				</Space>
-			</span>
-			<div className={style.share}>
+			</span> */}
+			<div className={style.buttonContainer}>
+				<Button
+					block
+					type='primary'
+					shape='round'
+					size='large'
+					icon={<MoneyCollectOutlined />}
+					className={style.claimBtn}
+					onClick={() => setClaimModal(true)}
+				>
+					{`Claim your $${asset?.symbol}`}
+				</Button>
+			</div>
+
+			{/* <div className={style.share}>
 				<Button
 					block
 					type='primary'
@@ -336,8 +361,9 @@ const Advertisement: React.FC<{
 						setInfoModal(true);
 					}}
 				/>
-			</div>
-			<SmallModal
+			</div> */}
+
+			{/* <SmallModal
 				visable={infoModal}
 				content={intl.formatMessage({
 					id: 'creator.explorer.advertisement.share.desc',
@@ -358,8 +384,8 @@ const Advertisement: React.FC<{
 						</Button>
 					</>
 				}
-			/>
-			<BigModal
+			/> */}
+			{/* <BigModal
 				visable={chartModal}
 				title={intl.formatMessage({
 					id: 'creator.explorer.chart',
@@ -371,7 +397,11 @@ const Advertisement: React.FC<{
 				}
 				footer={false}
 				close={() => { setChartModal(false) }}
-			/>
+			/> */}
+
+			{claimModal && <ClaimModal
+				onClose={() => setClaimModal(false)}
+			></ClaimModal>}
 			<SecurityModal
 				visable={secModal}
 				setVisable={setSecModal}
