@@ -1,6 +1,7 @@
 import { useModel } from 'umi';
 import { useCallback, useState } from 'react';
 import { GetClaimInfo } from '@/services/parami/RPC';
+import { deleteComma } from '@/utils/format';
 
 export interface NFTItem {
 	id: string;
@@ -42,8 +43,8 @@ export default () => {
 
 			Promise.all(Object.keys(tmpAssets).map(async key => {
 				const tempAsset = tmpAssets[key];
-				const nftId = tempAsset.classId;
-				const tokenAssetId = tempAsset.tokenAssetId;
+				const nftId = deleteComma(tempAsset.classId);
+				const tokenAssetId = deleteComma(tempAsset.tokenAssetId);
 				const minted = tempAsset.minted;
 
 				const externalData = await apiWs.query.nft.external(nftId);
