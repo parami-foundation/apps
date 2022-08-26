@@ -2,6 +2,7 @@ import { Keyring } from '@polkadot/api';
 import { DecodeKeystoreWithPwd } from './Crypto';
 import { subCallback } from './Subscription';
 import { BigNumber } from "ethers";
+import { deleteComma } from '@/utils/format';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -12,7 +13,17 @@ export const GetPreferredNFT = async (did: string) => {
 
 export const GetNFTMetaData = async (id: string) => {
   const nftInfo = await window.apiWs.query.nft.metadata(id);
-  return nftInfo;
+
+  if (nftInfo.isEmpty) {
+    return null;
+  }
+  
+  const res: any = nftInfo.toHuman();
+  return {
+    ...res,
+    classId: deleteComma(res.classId),
+    tokenAssetId: deleteComma(res.tokenAssetId)
+  };
 };
 
 export const NftMint = async (name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {

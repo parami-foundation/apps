@@ -32,8 +32,7 @@ const List: React.FC<{
         const slots = slotsRaw.toHuman();
         if (!!slots) {
           for (const slot of slots) {
-            const nftInfoRaw = await GetNFTMetaData(slot);
-            const nftInfo: any = nftInfoRaw.toHuman();
+            const nftInfo = await GetNFTMetaData(slot);
             const adInfo = await GetSlotAdOfByAssetID(nftInfo?.tokenAssetId);
             const assetRaw = await GetAssetInfo(nftInfo?.tokenAssetId);
             const asset = assetRaw.toHuman();

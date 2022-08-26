@@ -91,12 +91,12 @@ const Bid: React.FC<{
 
   useEffect(() => {
     const getCurrentPrice = async () => {
-      const nftMetadataRaw = await GetNFTMetaData(nftId);
-      const nftMetadata: any = nftMetadataRaw?.toHuman();
-      if (nftMetadataRaw.isEmpty || !nftMetadata?.minted) {
+      const nftMetadata = await GetNFTMetaData(nftId);
+
+      if (!nftMetadata?.minted) {
         return;
       };
-      const assetDataRaw = await GetAssetInfo(nftMetadata?.tokenAssetId);
+      const assetDataRaw = await GetAssetInfo(deleteComma(nftMetadata?.tokenAssetId));
       if (assetDataRaw.isEmpty) {
         return;
       }
