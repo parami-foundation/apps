@@ -40,6 +40,8 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
+  const [instruction, setInstruction] = useState<string>('');
+  const [instructions, setInstructions] = useState<string[]>([]);
 
   const tagInputRef = useRef<Input>(null);
 
@@ -132,13 +134,14 @@ const Create: React.FC<{
           link,
           desc: description,
           media: mediaUrl,
-          poster: posterUrl
+          poster: posterUrl,
+          instructions
         };
-    
+
         const bufferred = await Buffer.from(JSON.stringify(adMetadata));
         const { response, data } = await uploadIPFS(bufferred);
         if (!response.ok) {
-          throw('Create Metadata Error');
+          throw ('Create Metadata Error');
         }
 
         const delegatedDidHex = didToHex(delegatedDid);
@@ -379,6 +382,39 @@ const Create: React.FC<{
             </Upload>
           </div>
         </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title="instructions" required />
+          </div>
+          <div className={styles.value}>
+            <Search
+              type="text"
+              size="large"
+              enterButton="add"
+              className={style.tagInput}
+              value={instruction}
+              onChange={(e) => {
+                setInstruction(e.target.value);
+              }}
+              onSearch={() => {
+                if (instruction?.length) {
+                  setInstructions([...instructions, instruction]);
+                  setInstruction('');
+                }
+              }}
+            />
+          </div>
+        </div>
+        {instructions.length > 0 &&
+          <div className={styles.field}>
+            {instructions.map(instruction => <p>
+              <Tag closable onClose={(e) => {
+                e.preventDefault();
+                setInstructions(instructions.filter(ins => ins !== instruction))
+              }}>{instruction}</Tag>
+            </p>)}
+          </div>
+        }
         <div className={styles.field}>
           <div className={styles.title}>
             <FormFieldTitle title={intl.formatMessage({
