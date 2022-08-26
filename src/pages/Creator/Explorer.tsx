@@ -132,7 +132,7 @@ const Explorer: React.FC = () => {
     setLoading(false);
     return;
     
-    // Query user avatar
+    // // Query user avatar
     // if (user?.avatar.indexOf('ipfs://') > -1) {
     //   const hash = user?.avatar?.substring(7);
     //   const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
@@ -283,7 +283,7 @@ const Explorer: React.FC = () => {
             </div>
           </>
         )}
-        {!KOL && access.canWalletUser && did !== hexToDid(wallet.did!) && nft && (
+        {!KOL && access.canWalletUser && nft && (
           <div
             className={styles.pageContainer}
             style={{
