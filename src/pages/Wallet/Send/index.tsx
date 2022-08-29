@@ -11,7 +11,7 @@ import SelectAsset from './SelectAsset';
 const { Title } = Typography;
 
 const Send: React.FC = () => {
-  const [step, setStep] = useState<string>('InputAmount');
+  const [step, setStep] = useState<string>('InputAddress');
   const [number, setNumber] = useState<string>('0');
   const [token, setToken] = useState<any>({});
   const [address, setAddress] = useState<string>();

@@ -16,7 +16,7 @@ const InputAddress: React.FC<{
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    setStep('Confirm');
+    setStep('InputAmount');
   };
 
   return (
