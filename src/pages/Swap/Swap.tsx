@@ -169,7 +169,7 @@ const Swap: React.FC = () => {
                 });
             }
         }
-    }, [params]);
+    }, [params, mode]);
 
     const setAD3Max = useCallback(() => {
         const ad3BalanceStr = BigIntToFloatString(balance?.free, 18);
