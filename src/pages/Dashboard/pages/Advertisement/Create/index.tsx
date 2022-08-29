@@ -207,6 +207,17 @@ const Create: React.FC<{
             })} required />
           </div>
           <div className={styles.value}>
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Please select"
+              onChange={value => setTags(value as string[])}
+            >
+              <Option key='telegram' value={'Telegram'}>Telegram</Option>
+            </Select>
+          </div>
+          {/* <div className={styles.value}>
             {tags.map((tag, index) => {
               if (tagEditInputIndex === index) {
                 return (
@@ -303,7 +314,7 @@ const Create: React.FC<{
               </Tag>
             )
             }
-          </div>
+          </div> */}
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
