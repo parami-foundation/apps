@@ -55,7 +55,7 @@ const NFTs: React.FC = () => {
 							})}
 						</div>
 					</div>
-					<EthAddress theme='wallet'></EthAddress>
+					<EthAddress theme='wallet' supportedChainId={1}></EthAddress>
 					<div className={style.nftsContainer}>
 						<Skeleton
 							loading={!apiWs || loading}
