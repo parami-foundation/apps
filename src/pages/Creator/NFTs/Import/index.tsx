@@ -41,7 +41,8 @@ const ImportNFTModal: React.FC<{
     ChainName
   } = useModel("web3");
   const { retrieveAssets } = useModel('openseaApi');
-  const [importStep, setImportStep] = useState<number>();
+  const [importStep, setImportStep] = useState<number>(-1);
+  const [signedMsg, setSignedMsg] = useState<string>('');
 
   const intl = useIntl();
 
@@ -62,21 +63,9 @@ const ImportNFTModal: React.FC<{
   }, [retrieveAssets, Signer, ChainId]);
 
   const importNft = async (preTx?: boolean, account?: string) => {
-    if (!!wallet && !!wallet.keystore && !!wallet.did && !!mintItem && Signer) {
+    if (!!wallet && !!wallet.keystore && !!wallet.did && !!mintItem && Signer && signedMsg) {
       try {
-        let ethAccount = '';
-        let signedMsg = '';
-        if (!preTx) {
-          const modal = Modal.info({
-            title: 'Proof of Ownership',
-            content: `Please provide a proof of ownership by simply signing a message in your wallet`,
-            centered: true
-          });
-
-          ethAccount = await Signer.getAddress();
-          signedMsg = await Signer.signMessage(`Link: ${hexToDid(wallet?.did)}`);
-          modal.destroy();
-        }
+        const ethAccount = await Signer.getAddress();
 
         const info: any = await PortNFT(
           passphrase,
@@ -94,7 +83,6 @@ const ImportNFTModal: React.FC<{
           return info
         }
 
-        setImportStep(0);
         const unsub = await SubParamiEvents();
         setEventsUnsub(() => unsub);
       } catch (e: any) {
@@ -143,9 +131,33 @@ const ImportNFTModal: React.FC<{
     }
   }, [ChainId, ChainName]);
 
+  const signEthMsg = async () => {
+    if (Signer && wallet?.did) {
+      setImportStep(0);
+      try {
+        const signedMsg = await Signer.signMessage(`Link: ${hexToDid(wallet?.did)}`);
+        setImportStep(1);
+        setSignedMsg(signedMsg);
+        setSecModal(true);
+      } catch (e: any) {
+        if (e?.code === 4001) {
+          notification.warning({
+            message: 'User Rejected'
+          });
+        } else {
+          notification.error({
+            message: 'Sign Eth Message Error',
+            description: JSON.stringify(e)
+          });
+        }
+        setImportStep(-1);
+      }
+    }
+  }
+
   const authorizeAndSetlink = useCallback(async (nftId: string) => {
     if (mintItem && Signer && ChainId) {
-      setImportStep(1);
+      setImportStep(2);
       try {
         const adLink = `${window.location.origin}/${hexToDid(wallet.did!)}/${nftId}`;
 
@@ -157,11 +169,14 @@ const ImportNFTModal: React.FC<{
           message: 'Import HNFT Success!',
           description: 'Reloading your NFTs...'
         });
-      } catch (e) {
-        console.error('Hyperlink Setup Error', JSON.stringify(e));
+      } catch (e: any) {
+        notification.warning({
+          message: 'Set Hyperlink Error',
+          description: 'You could try set the hyperlink later'
+        });
       }
       getNFTs();
-      setImportStep(undefined);
+      setImportStep(-1);
     }
   }, [mintItem, Signer, ChainId, getNFTs]);
 
@@ -248,7 +263,7 @@ const ImportNFTModal: React.FC<{
                                 size='middle'
                                 onClick={() => {
                                   setMintItem(item);
-                                  setSecModal(true);
+                                  signEthMsg();
                                 }}
                               >
                                 {intl.formatMessage({
@@ -287,7 +302,7 @@ const ImportNFTModal: React.FC<{
         func={importNft}
       />
 
-      {(importStep === 0 || importStep === 1) && (
+      {(importStep >= 0) && (
         <Modal
           visible
           title='Importing'
@@ -299,13 +314,15 @@ const ImportNFTModal: React.FC<{
             size='small'
             current={importStep}
           >
+            <Step title="Sign ETH Message" />
             <Step title="Import HNFT" />
             <Step title="Setup Hyperlink" />
           </Steps>
           <div className={style.loadingContainer}>
             <Spin />
-            {importStep === 0 && <p>Importing your HNFT. Please wait.</p>}
-            {importStep === 1 && <p>Setting-up your hyperlink. Please confirm in your wallet.</p>}
+            {importStep === 0 && <p>Please provide a proof of ownership by simply signing a message in your wallet.</p>}
+            {importStep === 1 && <p>Importing your HNFT. Please wait.</p>}
+            {importStep === 2 && <p>Setting-up your hyperlink. Please confirm in your wallet.</p>}
           </div>
         </Modal>
       )}
