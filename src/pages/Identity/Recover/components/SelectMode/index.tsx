@@ -27,6 +27,7 @@ const SelectMode: React.FC<{
     refresh();
     setTimeout(() => {
       window.location.href = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
+      localStorage.setItem('parami:wallet:mnemonicExported', 'true');
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
     }, 10);
