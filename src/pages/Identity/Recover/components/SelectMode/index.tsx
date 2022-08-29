@@ -16,7 +16,7 @@ const SelectMode: React.FC<{
   setPassphrase: React.Dispatch<React.SetStateAction<string>>;
 }> = ({ mnemonic, passphrase, account, did, setPassphrase }) => {
   const apiWs = useModel('apiWs');
-  const { initialState, refresh } = useModel('@@initialState');
+  const { refresh } = useModel('@@initialState');
   const [loading, setLoading] = useState<boolean>(false);
 
   const intl = useIntl();
@@ -26,7 +26,7 @@ const SelectMode: React.FC<{
   const goto = () => {
     refresh();
     setTimeout(() => {
-      window.location.href = initialState?.currentInfo?.wallet?.redirect || config.page.walletPage;
+      window.location.href = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
       localStorage.removeItem('parami:wallet:inProcess');
       localStorage.removeItem('parami:wallet:redirect');
     }, 10);
