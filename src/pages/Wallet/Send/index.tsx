@@ -52,7 +52,6 @@ const Send: React.FC = () => {
           )}
           {step === 'Confirm' && (
             <Confirm
-              setStep={setStep}
               number={number}
               token={token}
               address={address as string}
