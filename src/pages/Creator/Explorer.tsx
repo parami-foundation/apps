@@ -58,7 +58,7 @@ const Explorer: React.FC = () => {
   const queryAdSlot = async () => {
     const slot = await GetSlotAdOf(params.nftID);
     if (!slot) {
-      setLoading(false);
+      history.replace(`${window.location.pathname}/dao`);
       return;
     }
     setAdSlot(slot);

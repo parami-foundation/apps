@@ -400,6 +400,9 @@ const Advertisement: React.FC<{
 			/> */}
 
 			{claimModal && <ClaimModal
+				adId={adData?.id}
+				nftId={nftId}
+				did={did}
 				onClose={() => setClaimModal(false)}
 			></ClaimModal>}
 			<SecurityModal

@@ -1,5 +1,6 @@
 import config from '@/config/config';
 import { extend } from 'umi-request';
+import { AdScore } from './typings';
 
 const errorHandler = (error: any) => {
     const { response = {}, data = {} } = error;
@@ -51,6 +52,14 @@ export async function LinkAccount(body: API.AirdropLink, options?: { [key: strin
         ...(options || {}),
         getResponse: true,
     });
+}
+
+export async function GetCurrentScoresOfAd(adId: string, nftId: string, did: string, options?: { [key: string]: any }) {
+    return request(`${config.main.airdropServer}/advertisers/scores?ad=${adId}&nft=${nftId}&did=${did}`, {
+        method: 'GET',
+        ...(options || {}),
+        getResponse: true,
+    }) as unknown as Promise<AdScore[]>;
 }
 
 export async function GetAvatar(url: string, options?: { [key: string]: any }) {

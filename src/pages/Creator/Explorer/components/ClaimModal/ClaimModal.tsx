@@ -2,21 +2,34 @@ import React, { useEffect, useState } from 'react';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, Spin } from 'antd';
 import style from './ClaimModal.less';
+import { GetCurrentScoresOfAd } from '@/services/parami/HTTP';
+import { AdScore } from '@/services/parami/typings';
 
 const ClaimModal: React.FC<{
-    onClose: () => void
-}> = ({ onClose }) => {
-
-    const [claimInfo, setClaimInfo] = useState<any>();
+    adId: string;
+    nftId: string;
+    did: string;
+    onClose: () => void;
+}> = ({ onClose, adId, nftId, did }) => {
+    const [adScores, setAdScores] = useState<AdScore[]>();
 
     const fetchClaimInfo = async () => {
-        setClaimInfo('Claim your token now and receive +3 parami score on Telegram tag.');
+        // mock api
+        setAdScores([
+            { tag: 'Telegram', score: '+5' },
+            { tag: 'Twitter', score: '-2' },
+        ]);
+        // try {
+        //     const adScores = await GetCurrentScoresOfAd(adId, nftId, did);
+        //     setAdScores(adScores);
+        // } catch (e) {
+        //     console.log(e);
+        //     setAdScores([]);
+        // }
     }
 
     useEffect(() => {
-        setTimeout(() => {
-            fetchClaimInfo();
-        }, 2000);
+        fetchClaimInfo();
     }, []);
 
     return <>
@@ -25,8 +38,17 @@ const ClaimModal: React.FC<{
             title="Claim your token"
             content={
                 <div className={style.claimInfoContainer}>
-                    <Spin spinning={!claimInfo}>
-                        {claimInfo}
+                    <Spin spinning={!adScores}>
+                        {adScores?.length === 0 && <>
+                            The advertiser hasn't assign you any scores. You could still claim your token.
+                        </>}
+
+                        {adScores && adScores?.length > 0 && <>
+                            <p>Claim now and receive the following scores from the advertiser:</p>
+                            {adScores.map(adScore => {
+                                return <p>{`${adScore.score} on ${adScore.tag}`}</p>
+                            })}
+                        </>}
                     </Spin>
                 </div>
             }
@@ -36,7 +58,7 @@ const ClaimModal: React.FC<{
                     type='primary'
                     shape='round'
                     size='large'
-                    disabled={!claimInfo}
+                    disabled={!adScores}
                 >Claim</Button>
             </>}
             close={() => onClose()}

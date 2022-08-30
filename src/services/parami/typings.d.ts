@@ -96,3 +96,8 @@ type NFTNetwork =
 	| 'Solana'
 	| 'Tron'
 	| 'Near';
+
+export type AdScore = {
+	tag: string;
+	score: string;
+}
