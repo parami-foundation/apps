@@ -1,27 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Tooltip, Typography, message, notification } from 'antd';
+import React, { useState } from 'react';
+import { Button, Tooltip, Typography, notification } from 'antd';
 import { useIntl, history, useModel } from 'umi';
 import styles from '../../style.less';
-import { getTokenTransFee, getTransFee, Transfer, TransferAsset } from '@/services/parami/Transaction';
+import { Transfer, TransferAsset } from '@/services/parami/Transaction';
 import config from '@/config/config';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { didToHex } from '@/utils/common';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
-import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
 
 const Confirm: React.FC<{
-  setStep: React.Dispatch<React.SetStateAction<string>>;
   number: string;
   token: any;
   address: string;
-}> = ({ setStep, number, token, address }) => {
-  const apiWs = useModel('apiWs');
+}> = ({ number, token, address }) => {
   const { wallet } = useModel('currentUser');
   const [submitting, setSubmitting] = useState<boolean>(false);
-  const [fee, setFee] = useState<any>(null);
   const [secModal, setSecModal] = useState<boolean>(false);
   const [passphrase, setPassphrase] = useState<string>('');
 
@@ -98,48 +94,6 @@ const Confirm: React.FC<{
     }
   };
 
-  const partialFee = async () => {
-    if (!!wallet && !!wallet.account) {
-      if (toAddress.indexOf('did:ad3:') > -1) {
-        toAddress = didToHex(toAddress);
-      };
-
-      try {
-        setSubmitting(true);
-        if (!Object.keys(token).length) {
-          const info = await getTransFee(toAddress, wallet?.account, number);
-          setFee(`${info}`);
-        } else {
-          const info = await getTokenTransFee(token[Object.keys(token)[0]], toAddress, wallet?.account, number);
-          setFee(`${info}`);
-        }
-        setSubmitting(false);
-      } catch (e) {
-        message.error(
-          intl.formatMessage({
-            id: 'error.receiverAddress.error',
-          }),
-        );
-        setStep('InputAddress');
-        setSubmitting(false);
-      }
-    } else {
-      notification.error({
-        key: 'accessDenied',
-        message: intl.formatMessage({
-          id: 'error.accessDenied',
-        }),
-        duration: null,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (apiWs) {
-      partialFee();
-    }
-  }, [apiWs]);
-
   return (
     <>
       <Title level={4}>
@@ -167,16 +121,6 @@ const Confirm: React.FC<{
           <Tooltip placement="topRight" title={address}>
             <span className={styles.value}>{address}</span>
           </Tooltip>
-        </div>
-        <div className={styles.field}>
-          <span className={styles.title}>
-            {intl.formatMessage({
-              id: 'wallet.send.serviceFee',
-            })}
-          </span>
-          <span className={styles.value}>
-            <AD3 value={fee} />
-          </span>
         </div>
       </div>
       <div className={styles.buttons}>
