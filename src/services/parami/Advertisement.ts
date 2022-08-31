@@ -4,6 +4,9 @@ import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
 import { AdScore } from "./typings";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
+import config from "@/config/config";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -98,7 +101,14 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
 
 export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   console.log('in claim ad token');
-  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, null, { Sr25519: signature.trim() }, signer.trim());
+  await cryptoWaitReady();
+  const provider = new WsProvider('ws://10.1.0.137:9944');
+  const api = await ApiPromise.create({
+    provider,
+    types: config.types,
+    rpc: config.rpc
+  });
+  const ex = await api.tx.ad.claim(adId, nftId, visitor, scores, null, { Sr25519: signature.trim() }, signer.trim());
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
