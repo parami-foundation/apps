@@ -19,6 +19,10 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 import ClaimModal from './components/ClaimModal/ClaimModal';
 
+import { u8aToHex, hexToU8a } from '@polkadot/util';
+import { keccakAsU8a } from '@polkadot/util-crypto';
+import * as $ from "parity-scale-codec";
+
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
 	nftId: string;
@@ -112,6 +116,58 @@ const Advertisement: React.FC<{
 			handleStamp();
 		}
 	}, [wallet, wallet?.keystore]);
+
+	const submitScore = async () => {
+		const ad = adData?.id;
+		const nft = parseInt(nftId, 10);
+		const ref = '';
+		const did = wallet?.did;
+
+		const scores = [{
+			tag: 'Telegram',
+			score: 2
+		}, {
+			tag: 'Twitter',
+			score: 3
+		}];
+
+		const adIdU8a = hexToU8a(ad);
+		const nftIdU8a = $.u32.encode(nft);
+		const didU8a = hexToU8a(did);
+
+		const scoresU8a = scores.reduce((pre, current) => {
+			return new Uint8Array([...pre, ...$.str.encode(current.tag), ...$.i8.encode(current.score)])
+		}, new Uint8Array());
+
+		let messageU8a = new Uint8Array([...adIdU8a, ...nftIdU8a, ...didU8a, ...scoresU8a]);
+
+		if (ref) {
+			messageU8a = new Uint8Array([...messageU8a, ...hexToU8a(ref)]);
+		}
+
+		const messageU8aHash = keccakAsU8a(messageU8a, 256);
+		const instanceKeyring = new Keyring({ type: 'sr25519' });
+		const decodedMnemonic = DecodeKeystoreWithPwd(wallet?.passphrase || passphrase, wallet.keystore!);
+		const keypair = instanceKeyring.createFromUri(decodedMnemonic!);
+		const signature = keypair.sign(messageU8aHash);
+
+		const signatureHex = u8aToHex(signature);
+
+		const reqBody = {
+			ad, nft, did, scores, referer: ref, signer_did: did, signature: signatureHex
+		}
+
+		// send all data and sig to node-score
+		const resp = await fetch('https://staging.parami.io/airdrop/advertisers/scores', {
+			"headers": {
+				"content-type": "application/json",
+			},
+			"body": JSON.stringify(reqBody),
+			"method": "POST"
+		});
+
+		console.log(resp);
+	}
 
 	return (
 		<>
@@ -312,6 +368,15 @@ const Advertisement: React.FC<{
 				</Button>
 			</div>
 
+			<div className={style.buttonContainer}>
+				<Button
+					block
+					type='primary'
+					shape='round'
+					onClick={() => submitScore()}
+				>Test Score</Button>
+			</div>
+
 			{/* <div className={style.share}>
 				<Button
 					block
@@ -404,6 +469,7 @@ const Advertisement: React.FC<{
 				nftId={nftId}
 				did={did}
 				onClose={() => setClaimModal(false)}
+				onClaim={() => setClaimModal(false)}
 			></ClaimModal>}
 			<SecurityModal
 				visable={secModal}

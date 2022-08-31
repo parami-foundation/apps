@@ -101,3 +101,10 @@ export type AdScore = {
 	tag: string;
 	score: string;
 }
+
+export type AdScoreInfo = {
+	scores: AdScore[],
+	signature: string,
+	referer: string,
+	signer_account: string
+}

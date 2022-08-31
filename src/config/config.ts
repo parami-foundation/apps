@@ -7,7 +7,7 @@ export const config = {
     "adEarnUpTo": "500000000000000000000",
   },
   "main": isDev ? {
-    "socketServer": "wss://staging.parami.io/ws",
+    "socketServer": "ws://ironman.parami.io:9944/ws",
     "subqueryServer": "https://staging.parami.io/graph/",
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",
@@ -39,8 +39,8 @@ export const config = {
       "botName": isDev ? "parami_staging_bot" : "paramiofficialbot",
     },
     "discord": {
-      "oauthEndpoint": "https://discord.com/api/oauth2/authorize",
-      "clientId": "1010906937421987902",
+      "clientId": "928193512619536465",
+      "redirectUri": "/create/discord",
     },
   },
   "explorer": {

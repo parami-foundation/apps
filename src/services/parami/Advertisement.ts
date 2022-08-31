@@ -1,6 +1,9 @@
 import { deleteComma, BigIntToFloatString } from "@/utils/format";
 import { web3FromSource } from "@polkadot/extension-dapp";
-import { subWeb3Callback } from "./Subscription";
+import { DecodeKeystoreWithPwd } from "./Crypto";
+import { subCallback, subWeb3Callback } from "./Subscription";
+import { Keyring } from '@polkadot/api';
+import { AdScore } from "./typings";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -91,4 +94,25 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
     }
   }
   return false;
+};
+
+export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  console.log('in claim ad token');
+  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, null, { Sr25519: signature.trim() }, signer.trim());
+
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
+    return info;
+  }
+
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const instanceKeyring = new Keyring({ type: 'sr25519' });
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
 };

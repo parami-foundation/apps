@@ -1,6 +1,6 @@
 import config from '@/config/config';
 import { extend } from 'umi-request';
-import { AdScore } from './typings';
+import { AdScore, AdScoreInfo } from './typings';
 
 const errorHandler = (error: any) => {
     const { response = {}, data = {} } = error;
@@ -59,7 +59,7 @@ export async function GetCurrentScoresOfAd(adId: string, nftId: string, did: str
         method: 'GET',
         ...(options || {}),
         getResponse: true,
-    }) as unknown as Promise<AdScore[]>;
+    });
 }
 
 export async function GetAvatar(url: string, options?: { [key: string]: any }) {
