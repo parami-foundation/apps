@@ -7,7 +7,7 @@ export const config = {
     "adEarnUpTo": "500000000000000000000",
   },
   "main": isDev ? {
-    "socketServer": "ws://ironman.parami.io:9944/ws",
+    "socketServer": "wss://staging.parami.io/ws",
     "subqueryServer": "https://staging.parami.io/graph/",
     "tagMapConfig": "/tagmap.json",
     "tokenListConfig": "/tokens.json",

@@ -19,10 +19,6 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
 import ClaimModal from './components/ClaimModal/ClaimModal';
 
-import { u8aToHex, hexToU8a } from '@polkadot/util';
-import { keccakAsU8a } from '@polkadot/util-crypto';
-import * as $ from "parity-scale-codec";
-
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
 	nftId: string;
@@ -39,6 +35,9 @@ const Advertisement: React.FC<{
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [stamp, setStamp] = useState<string>('');
 	const [claimModal, setClaimModal] = useState<boolean>(false);
+	const [adClaimed, setAdClaimed] = useState<boolean>(false);
+
+	const apiWs = useModel('apiWs');
 
 	const intl = useIntl();
 
@@ -106,7 +105,7 @@ const Advertisement: React.FC<{
 			return
 		}
 
-		window.open(`${ad?.link}&nftId=${nftId}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}&poster=${ad?.poster}`);
+		window.open(`${ad?.link}&nftId=${nftId}&did=${wallet?.did}&ad=${adData?.id}&t=${Date.now()}&poster=${ad?.poster}`);
 	};
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
@@ -117,57 +116,20 @@ const Advertisement: React.FC<{
 		}
 	}, [wallet, wallet?.keystore]);
 
-	const submitScore = async () => {
-		const ad = adData?.id;
-		const nft = parseInt(nftId, 10);
-		const ref = '';
-		const did = wallet?.did;
-
-		const scores = [{
-			tag: 'Telegram',
-			score: 2
-		}, {
-			tag: 'Twitter',
-			score: 3
-		}];
-
-		const adIdU8a = hexToU8a(ad);
-		const nftIdU8a = $.u32.encode(nft);
-		const didU8a = hexToU8a(did);
-
-		const scoresU8a = scores.reduce((pre, current) => {
-			return new Uint8Array([...pre, ...$.str.encode(current.tag), ...$.i8.encode(current.score)])
-		}, new Uint8Array());
-
-		let messageU8a = new Uint8Array([...adIdU8a, ...nftIdU8a, ...didU8a, ...scoresU8a]);
-
-		if (ref) {
-			messageU8a = new Uint8Array([...messageU8a, ...hexToU8a(ref)]);
+	const checkAdClaimStatus = async (apiWs, adId, did) => {
+		const res = await apiWs.query.ad.payout(adId, did);
+		if (res.isEmpty) {
+			setAdClaimed(false);
+		} else {
+			setAdClaimed(true);
 		}
-
-		const messageU8aHash = keccakAsU8a(messageU8a, 256);
-		const instanceKeyring = new Keyring({ type: 'sr25519' });
-		const decodedMnemonic = DecodeKeystoreWithPwd(wallet?.passphrase || passphrase, wallet.keystore!);
-		const keypair = instanceKeyring.createFromUri(decodedMnemonic!);
-		const signature = keypair.sign(messageU8aHash);
-
-		const signatureHex = u8aToHex(signature);
-
-		const reqBody = {
-			ad, nft, did, scores, referer: ref, signer_did: did, signature: signatureHex
-		}
-
-		// send all data and sig to node-score
-		const resp = await fetch('https://staging.parami.io/airdrop/advertisers/scores', {
-			"headers": {
-				"content-type": "application/json",
-			},
-			"body": JSON.stringify(reqBody),
-			"method": "POST"
-		});
-
-		console.log(resp);
 	}
+
+	useEffect(() => {
+		if (apiWs && adData?.id && wallet?.did) {
+			checkAdClaimStatus(apiWs, adData?.id, wallet?.did);
+		}
+	}, [apiWs, adData, wallet])
 
 	return (
 		<>
@@ -355,78 +317,62 @@ const Advertisement: React.FC<{
 				</Space>
 			</span> */}
 			<div className={style.buttonContainer}>
-				<Button
-					block
-					type='primary'
-					shape='round'
-					size='large'
-					icon={<MoneyCollectOutlined />}
-					className={style.claimBtn}
-					onClick={() => setClaimModal(true)}
-				>
-					{`Claim your $${asset?.symbol}`}
-				</Button>
-			</div>
-
-			<div className={style.buttonContainer}>
-				<Button
-					block
-					type='primary'
-					shape='round'
-					onClick={() => submitScore()}
-				>Test Score</Button>
-			</div>
-
-			{/* <div className={style.share}>
-				<Button
-					block
-					type='primary'
-					shape='round'
-					size='large'
-					icon={<ShareAltOutlined />}
-					className={style.shareButton}
-					onClick={async () => {
-						const shareData = {
-							title: 'Para Metaverse Identity',
-							text: intl.formatMessage({
-								id: 'creator.explorer.shareMessage',
-							}),
-							url: link,
-						};
-						if (navigator.canShare && navigator.canShare(shareData)) {
-							try {
-								await navigator.share(shareData);
-							} catch (e) {
-								console.log(e);
-							}
-						} else {
-							copy(link + ` ${intl.formatMessage({
-								id: 'creator.explorer.shareMessage',
-							}, {
-								token: `$${asset?.symbol}`
-							})}`);
-							message.success(
-								intl.formatMessage({
-									id: 'common.copied',
+				{adClaimed && <>
+					<Button
+						block
+						type='primary'
+						shape='round'
+						size='large'
+						icon={<ShareAltOutlined />}
+						className={style.shareButton}
+						onClick={async () => {
+							const shareData = {
+								title: 'Para Metaverse Identity',
+								text: intl.formatMessage({
+									id: 'creator.explorer.shareMessage',
 								}),
-							);
-						}
-					}}
-				>
-					{intl.formatMessage({
-						id: 'creator.explorer.advertisement.share',
-					}, { token: `$${asset?.symbol}` })}
-				</Button>
-				<Button
-					type='primary'
-					shape='circle'
-					size='large'
-					icon={<InfoCircleOutlined />}
-					onClick={() => {
-						setInfoModal(true);
-					}}
-				/>
-			</div> */}
+								url: link,
+							};
+							if (navigator.canShare && navigator.canShare(shareData)) {
+								try {
+									await navigator.share(shareData);
+								} catch (e) {
+									console.log(e);
+								}
+							} else {
+								copy(link + ` ${intl.formatMessage({
+									id: 'creator.explorer.shareMessage',
+								}, {
+									token: `$${asset?.symbol}`
+								})}`);
+								message.success(
+									intl.formatMessage({
+										id: 'common.copied',
+									}),
+								);
+							}
+						}}
+					>
+						{intl.formatMessage({
+							id: 'creator.explorer.advertisement.share',
+						}, { token: `$${asset?.symbol}` })}
+					</Button>
+				</>}
+
+				{!adClaimed && <>
+					<Button
+						block
+						type='primary'
+						shape='round'
+						size='large'
+						icon={<MoneyCollectOutlined />}
+						className={style.claimBtn}
+						onClick={() => setClaimModal(true)}
+					>
+						{`Claim your $${asset?.symbol}`}
+					</Button>
+				</>}
+			</div>
 
 			{/* <SmallModal
 				visable={infoModal}
@@ -469,7 +415,10 @@ const Advertisement: React.FC<{
 				nftId={nftId}
 				did={did}
 				onClose={() => setClaimModal(false)}
-				onClaim={() => setClaimModal(false)}
+				onClaim={() => {
+					setClaimModal(false);
+					setAdClaimed(true);
+				}}
 			></ClaimModal>}
 			<SecurityModal
 				visable={secModal}
