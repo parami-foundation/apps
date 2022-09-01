@@ -12,6 +12,7 @@ import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
+import { deleteComma } from '@/utils/format';
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -166,7 +167,7 @@ const Explorer: React.FC = () => {
     const nftInfoData = await GetNFTMetaData(params?.nftID);
 
     // If don't have any nft
-    if (nftInfoData?.isEmpty) {
+    if (!nftInfoData) {
       notification.error({
         message: intl.formatMessage({
           id: 'error.nft.notFound',
@@ -177,9 +178,7 @@ const Explorer: React.FC = () => {
       return;
     }
 
-    const nftInfo: any = nftInfoData?.toHuman();
-
-    if (nftInfo?.owner !== didHex) {
+    if (nftInfoData?.owner !== didHex) {
       notification.error({
         message: intl.formatMessage({
           id: 'error.nft.notFound',
@@ -190,7 +189,7 @@ const Explorer: React.FC = () => {
       return;
     }
 
-    setNft(nftInfo);
+    setNft(nftInfoData);
   }
 
   useEffect(() => {

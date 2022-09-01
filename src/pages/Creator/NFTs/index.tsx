@@ -9,6 +9,8 @@ import Skeleton from '@/components/Skeleton';
 import NFTCard from './NFTCard';
 import EthAddress from '@/components/EthAddress/EthAddress';
 
+const umi_env = process.env.UMI_ENV;
+
 const NFTs: React.FC = () => {
 	const apiWs = useModel('apiWs');
 	const { connect } = useModel('web3');
@@ -55,7 +57,7 @@ const NFTs: React.FC = () => {
 							})}
 						</div>
 					</div>
-					<EthAddress theme='wallet'></EthAddress>
+					<EthAddress theme='wallet' supportedChainId={umi_env === 'dev' ? 4 : 1}></EthAddress>
 					<div className={style.nftsContainer}>
 						<Skeleton
 							loading={!apiWs || loading}
