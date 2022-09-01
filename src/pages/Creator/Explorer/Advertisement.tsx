@@ -200,7 +200,7 @@ const Advertisement: React.FC<{
 							</Tag>
 						</div> */}
 						<div className={style.adMedia}>
-							<div
+							{/* <div
 								className={style.guideClickContainer}
 								onClick={() => {
 									if (sign) {
@@ -211,7 +211,7 @@ const Advertisement: React.FC<{
 								}}
 							>
 								<div className={style.guideClickFinger} />
-								{/* <div className={style.guideClickText}>
+								<div className={style.guideClickText}>
 									{intl.formatMessage({
 										id: 'creator.explorer.advertisement.earnUpTo',
 									}, {
@@ -229,8 +229,8 @@ const Advertisement: React.FC<{
 											</>
 										)
 									})}
-								</div> */}
-							</div>
+								</div>
+							</div> */}
 							<Image
 								src={ad?.media}
 								placeholder={true}
@@ -413,7 +413,6 @@ const Advertisement: React.FC<{
 			{claimModal && <ClaimModal
 				adId={adData?.id}
 				nftId={nftId}
-				did={did}
 				onClose={() => setClaimModal(false)}
 				onClaim={() => {
 					setClaimModal(false);

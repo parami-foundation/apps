@@ -12,10 +12,9 @@ import { useIntl, useModel } from 'umi';
 const ClaimModal: React.FC<{
     adId: string;
     nftId: string;
-    did: string;
     onClose: () => void;
     onClaim: () => void;
-}> = ({ onClose, adId, nftId, did, onClaim }) => {
+}> = ({ onClose, adId, nftId, onClaim }) => {
     const [adScore, setAdScore] = useState<AdScoreInfo>();
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
@@ -25,9 +24,11 @@ const ClaimModal: React.FC<{
 
     const fetchClaimInfo = async () => {
         try {
-            const { response, data } = await GetCurrentScoresOfAd(adId, nftId, didToHex(did));
+            const { response, data } = await GetCurrentScoresOfAd(adId, nftId, wallet?.did);
             if (response.ok) {
                 setAdScore(data as AdScoreInfo);
+            } else {
+                setAdScore({} as AdScoreInfo);
             }
         } catch (e) {
             console.log(e);
@@ -52,9 +53,9 @@ const ClaimModal: React.FC<{
         }
 
         try {
-            const scores = adScore!.scores.map(score => [score.tag, score.score]);
+            const scores = (adScore!.scores ?? []).map(score => [score.tag, score.score]);
             console.log('scores', scores);
-            const info: any = await ClaimAdToken(adId, nftId, didToHex(did), scores, adScore!.referer, adScore!.signature, adScore!.signer_account, passphrase, wallet.keystore, preTx, account);
+            const info: any = await ClaimAdToken(adId, nftId, wallet?.did, scores, adScore!.referer, adScore!.signature, adScore!.signer_account, passphrase, wallet.keystore, preTx, account);
 
             if (preTx && account) {
                 return info;
@@ -81,7 +82,7 @@ const ClaimModal: React.FC<{
             content={
                 <div className={style.claimInfoContainer}>
                     <Spin spinning={!adScore}>
-                        {adScore?.scores?.length === 0 && <>
+                        {adScore && !adScore?.scores && <>
                             The advertiser hasn't assign you any scores. You could still claim your token.
                         </>}
 
@@ -100,7 +101,7 @@ const ClaimModal: React.FC<{
                     type='primary'
                     shape='round'
                     size='large'
-                    disabled={!adScore}
+                    disabled={!adScore?.signature}
                     onClick={() => setSecModal(true)}
                 >Claim</Button>
             </>}

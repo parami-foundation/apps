@@ -99,7 +99,7 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
 };
 
 export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, null, { Sr25519: signature.trim() }, signer.trim());
+  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, referrer, { Sr25519: signature.trim() }, signer.trim());
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
