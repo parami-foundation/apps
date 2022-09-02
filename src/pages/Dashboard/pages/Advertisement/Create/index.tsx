@@ -12,8 +12,15 @@ import FormFieldTitle from '@/components/FormFieldTitle';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
 import { uploadIPFS } from '@/services/parami/IPFS';
+import CreateUserInstruction from './CreateUserInstruction/CreateUserInstruction';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
+
+type UserInstruction = {
+  text: string;
+  tag: string;
+  score: number;
+}
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,8 +47,9 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
-  const [instruction, setInstruction] = useState<string>('');
-  const [instructions, setInstructions] = useState<string[]>([]);
+  const [instruction, setInstruction] = useState<UserInstruction>();
+  const [createInstructionModal, setCreateInstructionModal] = useState<boolean>(false);
+  const [instructions, setInstructions] = useState<UserInstruction[]>([]);
 
   const tagInputRef = useRef<Input>(null);
 
@@ -398,22 +406,7 @@ const Create: React.FC<{
             <FormFieldTitle title="instructions" required />
           </div>
           <div className={styles.value}>
-            <Search
-              type="text"
-              size="large"
-              enterButton="add"
-              className={style.tagInput}
-              value={instruction}
-              onChange={(e) => {
-                setInstruction(e.target.value);
-              }}
-              onSearch={() => {
-                if (instruction?.length) {
-                  setInstructions([...instructions, instruction]);
-                  setInstruction('');
-                }
-              }}
-            />
+            <Button onClick={() => setCreateInstructionModal(true)}>Add New Instruction</Button>
           </div>
         </div>
         {instructions.length > 0 &&
@@ -422,7 +415,9 @@ const Create: React.FC<{
               <Tag closable onClose={(e) => {
                 e.preventDefault();
                 setInstructions(instructions.filter(ins => ins !== instruction))
-              }}>{instruction}</Tag>
+              }}>
+                {instruction.text} - {instruction.tag} - {instruction.score}
+              </Tag>
             </p>)}
           </div>
         }
@@ -572,6 +567,16 @@ const Create: React.FC<{
           </Button>
         </div>
       </div>
+
+      {createInstructionModal && <>
+        <CreateUserInstruction
+          onCancel={() => setCreateInstructionModal(false)}
+          onCreateInstruction={newInstruction => {
+            setInstructions([...instructions, newInstruction]);
+            setCreateInstructionModal(false);
+          }}
+        ></CreateUserInstruction>
+      </>}
 
       <BigModal
         visable={createTag}

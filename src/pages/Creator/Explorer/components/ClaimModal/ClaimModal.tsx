@@ -4,17 +4,20 @@ import { Button, notification, Spin } from 'antd';
 import style from './ClaimModal.less';
 import { GetCurrentScoresOfAd } from '@/services/parami/HTTP';
 import { AdScoreInfo } from '@/services/parami/typings';
-import { didToHex } from '@/utils/common';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { ClaimAdToken } from '@/services/parami/Advertisement';
+import { ClaimAdToken, ClaimAdTokenWithoutSignature } from '@/services/parami/Advertisement';
 import { useIntl, useModel } from 'umi';
+import { GetTagsOfAd } from '@/services/parami/Tag';
+import ParamiScoreTag from '../ParamiScoreTag/ParamiScoreTag';
+import ParamiScore from '../ParamiScore/ParamiScore';
 
 const ClaimModal: React.FC<{
     adId: string;
     nftId: string;
+    referrer?: string;
     onClose: () => void;
     onClaim: () => void;
-}> = ({ onClose, adId, nftId, onClaim }) => {
+}> = ({ onClose, adId, nftId, referrer = null, onClaim }) => {
     const [adScore, setAdScore] = useState<AdScoreInfo>();
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
@@ -24,11 +27,25 @@ const ClaimModal: React.FC<{
 
     const fetchClaimInfo = async () => {
         try {
+            const res = await GetTagsOfAd(adId);
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+        }
+
+        try {
             const { response, data } = await GetCurrentScoresOfAd(adId, nftId, wallet?.did);
             if (response.ok) {
                 setAdScore(data as AdScoreInfo);
             } else {
-                setAdScore({} as AdScoreInfo);
+                const tags = await GetTagsOfAd(adId);
+
+                setAdScore({
+                    scores: (tags ?? []).map(tag => ({
+                        tag: tag.name,
+                        score: -5
+                    }))
+                } as AdScoreInfo);
             }
         } catch (e) {
             console.log(e);
@@ -53,9 +70,14 @@ const ClaimModal: React.FC<{
         }
 
         try {
+            let info: any;
             const scores = (adScore!.scores ?? []).map(score => [score.tag, score.score]);
-            console.log('scores', scores);
-            const info: any = await ClaimAdToken(adId, nftId, wallet?.did, scores, adScore!.referer, adScore!.signature, adScore!.signer_account, passphrase, wallet.keystore, preTx, account);
+
+            if (adScore && adScore.signature) {
+                info = await ClaimAdToken(adId, nftId, wallet?.did, scores, adScore!.referer, adScore!.signature, adScore!.signer_account, passphrase, wallet.keystore, preTx, account);
+            } else {
+                info = await ClaimAdTokenWithoutSignature(adId, nftId, scores, referrer, passphrase, wallet.keystore, preTx, account);
+            }
 
             if (preTx && account) {
                 return info;
@@ -89,7 +111,10 @@ const ClaimModal: React.FC<{
                         {adScore && adScore.scores && adScore.scores.length > 0 && <>
                             <p>Claim now and receive the following scores from the advertiser:</p>
                             {adScore.scores.map(score => {
-                                return <p>{`${score.score} on ${score.tag}`}</p>
+                                return <div className={style.scoreChange}>
+                                    <ParamiScoreTag tag={score.tag} />
+                                    <ParamiScore score={parseInt(score.score, 10)} />
+                                </div>
                             })}
                         </>}
                     </Spin>
@@ -101,7 +126,7 @@ const ClaimModal: React.FC<{
                     type='primary'
                     shape='round'
                     size='large'
-                    disabled={!adScore?.signature}
+                    disabled={!adScore}
                     onClick={() => setSecModal(true)}
                 >Claim</Button>
             </>}

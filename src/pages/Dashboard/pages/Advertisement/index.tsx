@@ -55,7 +55,7 @@ const Advertisement: React.FC = () => {
 				return (<>
 					<Popover content={
 						<>{Object.keys(adItem.metadata).map(key => {
-							return <p><b>{key}</b>: {adItem.metadata[key].toString()}</p>
+							return <p><b>{key}</b>: {JSON.stringify(adItem.metadata[key])}</p>
 						})}
 						</>
 					}>{adItem.metadataIpfs}</Popover>

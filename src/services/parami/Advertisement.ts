@@ -3,9 +3,6 @@ import { web3FromSource } from "@polkadot/extension-dapp";
 import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
-import { AdScore } from "./typings";
-import { hexToU8a } from "@polkadot/util";
-import * as $ from "parity-scale-codec";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -99,8 +96,18 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
 };
 
 export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, referrer, { Sr25519: signature.trim() }, signer.trim());
+  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, (referrer ?? '').trim(), { Sr25519: signature.trim() }, signer.trim());
 
+  return SubmitExtrinsic(ex, password, keystore, preTx, account);
+};
+
+export const ClaimAdTokenWithoutSignature = async (adId: string, nftId: string, scores: (string | number)[][], referrer: string | null, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = await window.apiWs.tx.ad.claimWithoutAdvertiserSignature(adId, nftId, scores, referrer);
+
+  return SubmitExtrinsic(ex, password, keystore, preTx, account);
+}
+
+const SubmitExtrinsic = async (ex: any, password: string, keystore: string, preTx?: boolean, account?: string) => {
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
     return info;
@@ -116,4 +123,4 @@ export const ClaimAdToken = async (adId: string, nftId: string, visitor: string,
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
   return await subCallback(ex, payUser);
-};
+}

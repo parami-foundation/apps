@@ -1,3 +1,10 @@
+.advertisementContainer {
+  .adCard {
+    background: hsla(0, 0%, 100%, .24);
+  }
+}
+
+
 .advertisement {
   position: relative;
   display: flex;
@@ -6,79 +13,18 @@
   justify-content: center;
   width: 100%;
 
-  .cover {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  .adMedia {
     width: 100%;
 
-    .adMedia {
-      position: relative;
-
-      .adMediaImg {
-        cursor: pointer;
-        width: 100%;
-        max-height: 60vh;
-      }
-
-      .guideClickContainer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0,0,0,.5);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 3;
-        transition: all 1s linear; 
-                
-        .guideClickFinger {
-          background: url("/images/icon/clickHand.svg") center center no-repeat;
-          width: 50px;
-          height: 72px;
-          animation: fingerHandle 1s ease infinite both;
-        }
-
-        .guideClickText {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          justify-content: center;
-          color: #fff;
-          text-shadow: 0 0 10px rgba(0,0,0,.5);
-          animation: fingerHandle 1s ease infinite both;
-        }
-      }
-    }
-
-    img {
-      width: 100%;
-    }
-
     :global(.ant-image) {
-      display: block;
       width: 100% !important;
     }
 
-    .viewer {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: center;
-      position: absolute;
-      bottom: 10px;
-      right: 0;
-      z-index: 2;
+    .adMediaImg {
+      width: 100%;
+      cursor: 'pointer';
+      max-height: 60vh;
     }
-  }
-
-  .meta {
-    width: 100%;
   }
 }
 
@@ -86,8 +32,7 @@
   display: flex;
   width: 100%;
   height: 100%;
-  background: radial-gradient(66.32% 66.32% at 54.13% 113.95%,rgba(255, 182, 66, .2) 0,rgba(242,89,255,0) 100%),linear-gradient(
-    211.99deg,rgba(255, 93, 66, .2) -4.17%,rgba(45,143,234,0) 68.7%),radial-gradient(100% 100% at 28.65% 0,#f7cfa4 0,rgba(250,247,254,0) 100%);
+  background: radial-gradient(66.32% 66.32% at 54.13% 113.95%, rgba(255, 182, 66, .2) 0, rgba(242, 89, 255, 0) 100%), linear-gradient(211.99deg, rgba(255, 93, 66, .2) -4.17%, rgba(45, 143, 234, 0) 68.7%), radial-gradient(100% 100% at 28.65% 0, #f7cfa4 0, rgba(250, 247, 254, 0) 100%);
 }
 
 .countDown {
@@ -110,23 +55,38 @@
 
 .instructions {
   width: 100%;
-  background-color: #fffbe6;
   padding-bottom: 10px;
 
   .instructionTitle {
-    font-size: 1.1rem;
     font-weight: 500;
     padding: 5px;
   }
 
   .instruction {
+    border-radius: 10px;
+    margin: 10px;
+    background: hsla(0, 0%, 100%, .5);
+    padding: 10px;
 
+    display: flex;
+    flex-direction: row;
+
+    .instructionText {
+      text-align: left;
+      flex-grow: 1;
+    }
   }
 }
 
 .buttonContainer {
   width: 100%;
   max-width: 650px;
+  display: flex;
+  justify-content: center;
+
+  :global(.ant-btn) {
+    width: auto !important;
+  }
 }
 
 .share {
@@ -143,12 +103,12 @@
 }
 
 .userCard {
-  border: 2px solid rgba(244,245,246,1);
+  border: 2px solid rgba(244, 245, 246, 1);
   max-width: 1920px;
   width: 100%;
   margin-bottom: 30px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  background: rgba(244,245,246,1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  background: rgba(244, 245, 246, 1);
 
 
   .user {
@@ -158,7 +118,7 @@
     align-items: center;
     position: relative;
     min-height: 200px;
-    
+
     .avatar {
       width: 180px;
       height: 180px;
@@ -233,25 +193,25 @@
           flex-direction: row;
           align-items: center;
           justify-content: center;
-          box-shadow: rgba(0,0,0,.08) 0px 6px 10px;
+          box-shadow: rgba(0, 0, 0, .08) 0px 6px 10px;
           background-color: rgb(255, 255, 255);
           padding: 8px;
           border-radius: 16px;
           margin-right: 5px;
-    
+
           .pairCoinsItemIcon {
             width: 24px;
             height: 24px;
             border-radius: 24px;
             margin-right: 5px;
           }
-        
+
           .pairCoinsItemLabel {
             font-size: 13px;
             font-weight: 900;
           }
         }
-    
+
         .pairCoinsItemInput {
           flex: 2;
         }
@@ -270,7 +230,7 @@
           outline: none;
           border-radius: 12px;
           background-color: unset !important;
-    
+
           &:focus {
             border: none;
             box-shadow: none;
@@ -382,7 +342,7 @@
     justify-content: center;
     align-items: center;
     width: 100%;
-    
+
     .sponsored {
       display: flex;
       height: 3.5rem;
@@ -390,10 +350,10 @@
       align-items: center;
       justify-content: center;
       border-radius: 9999px;
-      background-color: rgba(255,255,255,1);
+      background: hsla(0, 0%, 100%, .4);
       padding-left: 0.5rem;
       padding-right: 0.5rem;
-      box-shadow: 0px 12px 40px rgba(31,47,70,0.08);
+      box-shadow: 0px 12px 40px rgba(31, 47, 70, 0.08);
 
       span {
         color: inherit;
@@ -418,7 +378,7 @@
 @media (max-width: 767px) {
   .advertisement {
     .cover {
-      .adMedia{
+      .adMedia {
         .adMediaImg {
           max-height: 100vh !important;
         }
@@ -441,7 +401,7 @@
     width: 100%;
     margin-top: 100px;
     border-radius: 0 !important;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 
     .user {
       flex-direction: column;
@@ -462,9 +422,11 @@
   0% {
     transform: none;
   }
+
   70% {
     transform: scale3d(.8, .8, .8);
   }
+
   100% {
     transform: none;
   }

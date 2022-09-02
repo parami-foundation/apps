@@ -13,6 +13,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import { deleteComma } from '@/utils/format';
+import Footer from '@/components/Footer';
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -132,7 +133,7 @@ const Explorer: React.FC = () => {
     // todo: query nft image
     setLoading(false);
     return;
-    
+
     // // Query user avatar
     // if (user?.avatar.indexOf('ipfs://') > -1) {
     //   const hash = user?.avatar?.substring(7);
@@ -204,7 +205,7 @@ const Explorer: React.FC = () => {
       const assetInfo = assetData.toHuman() as any;
       setAsset(assetInfo);
     }
-    
+
     if (nft) {
       try {
         queryAssetInfo();
@@ -243,7 +244,7 @@ const Explorer: React.FC = () => {
   return (
     <>
       <div
-        className={styles.mainTopContainer}
+        className={style.explorerContainer}
       >
         {KOL && (
           <>
@@ -300,13 +301,13 @@ const Explorer: React.FC = () => {
             className={styles.pageContainer}
             style={{
               paddingTop: 50,
-              maxWidth: '100%',
-              backgroundColor: 'rgba(244,245,246,1)',
+              maxWidth: '100%'
             }}
           >
             <Advertisement
               ad={ad}
               nftId={params?.nftID}
+              referrer={referrer}
               asset={asset}
               avatar={avatar}
               did={did}
@@ -317,6 +318,8 @@ const Explorer: React.FC = () => {
             />
           </div>
         )}
+
+        <Footer />
       </div>
 
       <BigModal
