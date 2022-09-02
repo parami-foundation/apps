@@ -17,6 +17,7 @@ export const subCallback = (cb: SubmittableExtrinsic<"promise", any>, payUser: K
 							console.log(`${section}.${name}: ${docs.join(" ")}`);
 						} catch (e) {
 							console.error(e);
+							reject(e);
 						}
 					} else {
 						// Other, CannotLookup, BadOrigin, no extra info

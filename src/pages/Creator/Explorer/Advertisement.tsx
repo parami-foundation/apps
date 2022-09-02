@@ -4,7 +4,7 @@ import Marquee from 'react-fast-marquee';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { useIntl, history, useModel } from 'umi';
-import { DollarCircleFilled, EyeFilled, InfoCircleOutlined, NotificationOutlined, RightOutlined, ShareAltOutlined } from '@ant-design/icons';
+import { DollarCircleFilled, EyeFilled, InfoCircleOutlined, NotificationOutlined, RightOutlined, ShareAltOutlined, MoneyCollectOutlined } from '@ant-design/icons';
 import SmallModal from '@/components/ParamiModal/SmallModal';
 import BigModal from '@/components/ParamiModal/BigModal';
 import Chart from './components/Chart';
@@ -17,25 +17,27 @@ import Keyring from '@polkadot/keyring';
 import { useEffect } from 'react';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DecodeKeystoreWithPwd } from '@/services/parami/Crypto';
+import ClaimModal from './components/ClaimModal/ClaimModal';
 
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
 	nftId: string;
-	viewer: any;
-	referer: any;
 	asset: any;
 	avatar: string;
 	did: string;
 	adData: any;
-	remain: bigint | undefined;
 	adImageOnLoad: () => void
-}> = ({ ad, nftId, viewer, referer, asset, avatar, did, adData, remain = 0, adImageOnLoad = () => {} }) => {
+}> = ({ ad, nftId, asset, avatar, did, adData, adImageOnLoad = () => { } }) => {
 	const { wallet } = useModel('currentUser');
-	const [infoModal, setInfoModal] = useState<boolean>(false);
-	const [chartModal, setChartModal] = useState<boolean>(false);
+	// const [infoModal, setInfoModal] = useState<boolean>(false);
+	// const [chartModal, setChartModal] = useState<boolean>(false);
 	const [passphrase, setPassphrase] = useState<string>('');
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [stamp, setStamp] = useState<string>('');
+	const [claimModal, setClaimModal] = useState<boolean>(false);
+	const [adClaimed, setAdClaimed] = useState<boolean>(false);
+
+	const apiWs = useModel('apiWs');
 
 	const intl = useIntl();
 
@@ -103,7 +105,7 @@ const Advertisement: React.FC<{
 			return
 		}
 
-		window.open(`${ad?.link}&nftId=${nftId}&stamp=${stamp}&ad=${adData?.id}&t=${Date.now()}&poster=${ad?.poster}`);
+		window.open(`${ad?.link}&nftId=${nftId}&did=${wallet?.did}&ad=${adData?.id}&t=${Date.now()}&poster=${ad?.poster}`);
 	};
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
@@ -113,6 +115,21 @@ const Advertisement: React.FC<{
 			handleStamp();
 		}
 	}, [wallet, wallet?.keystore]);
+
+	const checkAdClaimStatus = async (apiWs, adId, did) => {
+		const res = await apiWs.query.ad.payout(adId, did);
+		if (res.isEmpty) {
+			setAdClaimed(false);
+		} else {
+			setAdClaimed(true);
+		}
+	}
+
+	useEffect(() => {
+		if (apiWs && adData?.id && wallet?.did) {
+			checkAdClaimStatus(apiWs, adData?.id, wallet?.did);
+		}
+	}, [apiWs, adData, wallet])
 
 	return (
 		<>
@@ -136,6 +153,7 @@ const Advertisement: React.FC<{
 			</div>
 			<Card
 				className={`${styles.card} ${style.adCard}`}
+				style={{ maxWidth: '650px', border: 'none', marginBottom: '30px' }}
 				bodyStyle={{
 					padding: 0,
 					width: '100%',
@@ -143,7 +161,7 @@ const Advertisement: React.FC<{
 			>
 				<div className={style.advertisement}>
 					<div className={style.cover}>
-						<div className={style.viewer}>
+						{/* <div className={style.viewer}>
 							<Tag
 								icon={<ShareAltOutlined />}
 								color="rgba(0,0,0,.5)"
@@ -180,9 +198,9 @@ const Advertisement: React.FC<{
 									}}
 								/>
 							</Tag>
-						</div>
+						</div> */}
 						<div className={style.adMedia}>
-							<div
+							{/* <div
 								className={style.guideClickContainer}
 								onClick={() => {
 									if (sign) {
@@ -212,7 +230,7 @@ const Advertisement: React.FC<{
 										)
 									})}
 								</div>
-							</div>
+							</div> */}
 							<Image
 								src={ad?.media}
 								placeholder={true}
@@ -233,7 +251,18 @@ const Advertisement: React.FC<{
 							/>
 						</div>
 					</div>
-					<Alert
+					{ad?.instructions && ad?.instructions?.length > 0 && <>
+						<div className={style.instructions}>
+							<div className={style.instructionTitle}>Follow the instructions to improve your parami score</div>
+							{ad.instructions.map(instruction => {
+								return (
+									<div className={style.instruction}>{instruction}</div>
+								)
+							})}
+						</div>
+					</>}
+
+					{/* <Alert
 						banner
 						icon={<NotificationOutlined />}
 						className={style.meta}
@@ -246,10 +275,10 @@ const Advertisement: React.FC<{
 								{ad?.desc}
 							</Marquee>
 						}
-					/>
+					/> */}
 				</div>
 			</Card>
-			<span className={style.countDown}>
+			{/* <span className={style.countDown}>
 				<span
 					style={{
 						display: 'flex',
@@ -286,58 +315,66 @@ const Advertisement: React.FC<{
 						<Token value={remain?.toString()} symbol={asset?.symbol} />
 					</span>
 				</Space>
-			</span>
-			<div className={style.share}>
-				<Button
-					block
-					type='primary'
-					shape='round'
-					size='large'
-					icon={<ShareAltOutlined />}
-					className={style.shareButton}
-					onClick={async () => {
-						const shareData = {
-							title: 'Para Metaverse Identity',
-							text: intl.formatMessage({
-								id: 'creator.explorer.shareMessage',
-							}),
-							url: link,
-						};
-						if (navigator.canShare && navigator.canShare(shareData)) {
-							try {
-								await navigator.share(shareData);
-							} catch (e) {
-								console.log(e);
-							}
-						} else {
-							copy(link + ` ${intl.formatMessage({
-								id: 'creator.explorer.shareMessage',
-							}, {
-								token: `$${asset?.symbol}`
-							})}`);
-							message.success(
-								intl.formatMessage({
-									id: 'common.copied',
+			</span> */}
+			<div className={style.buttonContainer}>
+				{adClaimed && <>
+					<Button
+						block
+						type='primary'
+						shape='round'
+						size='large'
+						icon={<ShareAltOutlined />}
+						className={style.shareButton}
+						onClick={async () => {
+							const shareData = {
+								title: 'Para Metaverse Identity',
+								text: intl.formatMessage({
+									id: 'creator.explorer.shareMessage',
 								}),
-							);
-						}
-					}}
-				>
-					{intl.formatMessage({
-						id: 'creator.explorer.advertisement.share',
-					}, { token: `$${asset?.symbol}` })}
-				</Button>
-				<Button
-					type='primary'
-					shape='circle'
-					size='large'
-					icon={<InfoCircleOutlined />}
-					onClick={() => {
-						setInfoModal(true);
-					}}
-				/>
+								url: link,
+							};
+							if (navigator.canShare && navigator.canShare(shareData)) {
+								try {
+									await navigator.share(shareData);
+								} catch (e) {
+									console.log(e);
+								}
+							} else {
+								copy(link + ` ${intl.formatMessage({
+									id: 'creator.explorer.shareMessage',
+								}, {
+									token: `$${asset?.symbol}`
+								})}`);
+								message.success(
+									intl.formatMessage({
+										id: 'common.copied',
+									}),
+								);
+							}
+						}}
+					>
+						{intl.formatMessage({
+							id: 'creator.explorer.advertisement.share',
+						}, { token: `$${asset?.symbol}` })}
+					</Button>
+				</>}
+
+				{!adClaimed && <>
+					<Button
+						block
+						type='primary'
+						shape='round'
+						size='large'
+						icon={<MoneyCollectOutlined />}
+						className={style.claimBtn}
+						onClick={() => setClaimModal(true)}
+					>
+						{`Claim your $${asset?.symbol}`}
+					</Button>
+				</>}
 			</div>
-			<SmallModal
+
+			{/* <SmallModal
 				visable={infoModal}
 				content={intl.formatMessage({
 					id: 'creator.explorer.advertisement.share.desc',
@@ -358,8 +395,8 @@ const Advertisement: React.FC<{
 						</Button>
 					</>
 				}
-			/>
-			<BigModal
+			/> */}
+			{/* <BigModal
 				visable={chartModal}
 				title={intl.formatMessage({
 					id: 'creator.explorer.chart',
@@ -371,7 +408,17 @@ const Advertisement: React.FC<{
 				}
 				footer={false}
 				close={() => { setChartModal(false) }}
-			/>
+			/> */}
+
+			{claimModal && <ClaimModal
+				adId={adData?.id}
+				nftId={nftId}
+				onClose={() => setClaimModal(false)}
+				onClaim={() => {
+					setClaimModal(false);
+					setAdClaimed(true);
+				}}
+			></ClaimModal>}
 			<SecurityModal
 				visable={secModal}
 				setVisable={setSecModal}

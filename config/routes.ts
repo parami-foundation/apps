@@ -191,6 +191,13 @@
     component: './Creator/Explorer',
   },
   {
+    path: '/did:kol/:nftID/dao',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    component: './Creator/Explorer/DAO/DAO',
+  },
+  {
     path: '/downloads',
     name: 'downloads',
     hideInMenu: true,

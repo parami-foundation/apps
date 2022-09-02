@@ -7,6 +7,7 @@ declare namespace Type {
         media: string,
         title: string,
         desc: string,
-        poster: string
+        poster: string,
+        instructions?: string[]
     } | null;
 }

@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Advertisement from './Explorer/Advertisement';
-import Stat from './Explorer/Stat';
-import User from './Explorer/User';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { history, useAccess, useIntl, useParams, useModel } from 'umi';
-import { hexToDid, didToHex, parseAmount } from '@/utils/common';
+import { hexToDid, didToHex } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { Image, notification, Button, Divider } from 'antd';
 import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/Advertisement';
-import { getAdvertisementRefererCounts, getAdViewerCounts } from '@/services/subquery/subquery';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { GetAvatar } from '@/services/parami/HTTP';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
-import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
+import { GetAssetInfo } from '@/services/parami/Assets';
+import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import { deleteComma } from '@/utils/format';
 
 const Explorer: React.FC = () => {
@@ -28,16 +24,10 @@ const Explorer: React.FC = () => {
   const [user, setUser] = useState<any>();
   const [nft, setNft] = useState<any>();
   const [asset, setAsset] = useState<any>();
-  const [assetPrice, setAssetPrice] = useState<string>('');
-  const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
   const [notAccess, setNotAccess] = useState<boolean>(false);
   const [adSlot, setAdSlot] = useState<any>();
   const [adData, setAdData] = useState<any>();
   const [ad, setAd] = useState<Type.AdInfo>(null);
-  const [viewer, setViewer] = useState<any>();
-  const [referer, setRefererr] = useState<any>();
-  const [member, setMember] = useState<any>();
-  const [remain, setRemain] = useState<bigint>();
 
   const intl = useIntl();
   const access = useAccess();
@@ -69,20 +59,10 @@ const Explorer: React.FC = () => {
   const queryAdSlot = async () => {
     const slot = await GetSlotAdOf(params.nftID);
     if (!slot) {
-      setLoading(false);
+      history.replace(`${window.location.pathname}/dao`);
       return;
     }
     setAdSlot(slot);
-  }
-
-  const queryViewers = async (data) => {
-    const viewers = await getAdViewerCounts(data?.id);
-    setViewer(viewers);
-  }
-
-  const queryReferers = async (data) => {
-    const referers = await getAdvertisementRefererCounts(data?.id);
-    setRefererr(referers);
   }
 
   const queryAdJson = async (data) => {
@@ -103,22 +83,12 @@ const Explorer: React.FC = () => {
     setAd(adJson);
   }
 
-  const queryBalance = async (slot) => {
-    const balance = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
-    setRemain(BigInt(balance?.balance?.replaceAll(',', '') || '0'));
-  }
-
   useEffect(() => {
     if (adSlot) {
       try {
-        queryBalance(adSlot);
-
         const adData = adSlot.ad;
         if (!adData?.metadata) return;
         setAdData(adData);
-
-        queryViewers(adData);
-        queryReferers(adData);
         queryAdJson(adData);
       } catch (e) {
         errorHandler(e);
@@ -159,26 +129,30 @@ const Explorer: React.FC = () => {
   }
 
   const queryAvatar = async () => {
-    // Query user avatar
-    if (user?.avatar.indexOf('ipfs://') > -1) {
-      const hash = user?.avatar?.substring(7);
-      const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+    // todo: query nft image
+    setLoading(false);
+    return;
+    
+    // // Query user avatar
+    // if (user?.avatar.indexOf('ipfs://') > -1) {
+    //   const hash = user?.avatar?.substring(7);
+    //   const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
 
-      // Network exception
-      if (!response) {
-        notification.error({
-          key: 'networkException',
-          message: 'Network exception',
-          description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-          duration: null,
-        });
-        setLoading(false);
-      }
+    //   // Network exception
+    //   if (!response) {
+    //     notification.error({
+    //       key: 'networkException',
+    //       message: 'Network exception',
+    //       description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+    //       duration: null,
+    //     });
+    //     setLoading(false);
+    //   }
 
-      if (response?.status === 200) {
-        setAvatar(window.URL.createObjectURL(data));
-      }
-    };
+    //   if (response?.status === 200) {
+    //     setAvatar(window.URL.createObjectURL(data));
+    //   }
+    // };
   }
 
   useEffect(() => {
@@ -239,34 +213,6 @@ const Explorer: React.FC = () => {
       }
     }
   }, [nft]);
-
-  const queryAssetPrice = async () => {
-    const value = await DrylySellToken(nft?.tokenAssetId, parseAmount('1'));
-    setAssetPrice(value.toString());
-  }
-
-  const queryTotalSupply = async () => {
-    const assetDetail = await GetAssetDetail(nft?.tokenAssetId);
-    const supply: string = assetDetail.unwrap().supply.toString();
-    setTotalSupply(BigInt(supply));
-  }
-
-  const queryMember = async () => {
-    const members = await GetAssetsHolders(nft?.tokenAssetId);
-    setMember(members);
-  }
-
-  useEffect(() => {
-    if (nft && asset) {
-      try {
-        queryAssetPrice();
-        queryTotalSupply();
-        queryMember();
-      } catch (e) {
-        errorHandler(e);
-      }
-    }
-  }, [nft, asset]);
 
   useEffect(() => {
     if (asset) {
@@ -336,7 +282,7 @@ const Explorer: React.FC = () => {
             </div>
           </>
         )}
-        {!KOL && access.canWalletUser && did !== hexToDid(wallet.did!) && nft && (
+        {!KOL && access.canWalletUser && nft && (
           <div
             className={styles.pageContainer}
             style={{
@@ -361,53 +307,16 @@ const Explorer: React.FC = () => {
             <Advertisement
               ad={ad}
               nftId={params?.nftID}
-              viewer={viewer}
-              referer={referer}
               asset={asset}
               avatar={avatar}
               did={did}
               adData={adData}
-              remain={remain}
               adImageOnLoad={() => {
                 setLoading(false)
               }}
             />
           </div>
         )}
-        <div
-          className={styles.pageContainer}
-          style={{
-            paddingTop: 50,
-            maxWidth: 1920,
-          }}
-        >
-          <User
-            avatar={avatar}
-            did={did}
-            user={user}
-            asset={asset}
-            assetId={nft?.tokenAssetId}
-          />
-        </div>
-        <div
-          className={styles.pageContainer}
-          style={{
-            paddingTop: 50,
-            maxWidth: 1920,
-          }}
-        >
-          {KOL && access.canWalletUser && (
-            <>
-              <Stat
-                asset={asset}
-                assetPrice={assetPrice}
-                totalSupply={totalSupply}
-                viewer={viewer}
-                member={member}
-              />
-            </>
-          )}
-        </div>
       </div>
 
       <BigModal
