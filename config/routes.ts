@@ -181,6 +181,7 @@
     hideInMenu: true,
     exact: true,
     headerRender: false,
+    footerRender: false,
     component: './Creator/Explorer',
   },
   {
@@ -188,6 +189,7 @@
     hideInMenu: true,
     exact: true,
     headerRender: false,
+    footerRender: false,
     component: './Creator/Explorer',
   },
   {

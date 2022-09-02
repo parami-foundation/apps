@@ -8,6 +8,10 @@ declare namespace Type {
         title: string,
         desc: string,
         poster: string,
-        instructions?: string[]
+        instructions?: {
+            text: string,
+            tag: string,
+            score: string
+        }[]
     } | null;
 }
