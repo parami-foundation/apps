@@ -180,8 +180,8 @@ const Advertisement: React.FC<{
 									return (
 										<div className={style.instruction}>
 											<span className={style.instructionText}>{instruction.text}</span>
-											<ParamiScoreTag tag={instruction.tag} />
-											<ParamiScore score={parseInt(instruction.score, 10)} />
+											{!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
+											{!!instruction.score && <ParamiScore score={parseInt(instruction.score, 10)} />}
 										</div>
 									)
 								})}

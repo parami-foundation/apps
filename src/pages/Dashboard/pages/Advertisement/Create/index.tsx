@@ -18,8 +18,8 @@ const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
 type UserInstruction = {
   text: string;
-  tag: string;
-  score: number;
+  tag?: string;
+  score?: number;
 }
 
 const Create: React.FC<{
@@ -47,7 +47,6 @@ const Create: React.FC<{
   const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
   const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
   const [createTag, setCreateTag] = useState<boolean>(false);
-  const [instruction, setInstruction] = useState<UserInstruction>();
   const [createInstructionModal, setCreateInstructionModal] = useState<boolean>(false);
   const [instructions, setInstructions] = useState<UserInstruction[]>([]);
 

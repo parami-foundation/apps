@@ -5,8 +5,8 @@ import styles from '@/pages/dashboard.less';
 
 export interface UserInstruction {
     text: string;
-    tag: string;
-    score: number;
+    tag?: string;
+    score?: number;
 }
 
 export interface CreateUserInstructionProps {
@@ -20,11 +20,11 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
     const [score, setScore] = useState<number>();
 
     const createInstruction = () => {
-        if (text && tag && score) {
+        if (text) {
             onCreateInstruction({
                 text,
-                tag,
-                score
+                tag: tag,
+                score: score
             });
         }
     }
@@ -51,7 +51,7 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
 
             <div className={styles.field}>
                 <div className={styles.title}>
-                    <FormFieldTitle title={'Tag'} required />
+                    <FormFieldTitle title={'Tag'} />
                 </div>
                 <div className={styles.value}>
                     <Input
@@ -64,7 +64,7 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
 
             <div className={styles.field}>
                 <div className={styles.title}>
-                    <FormFieldTitle title={'score'} required />
+                    <FormFieldTitle title={'score'} />
                 </div>
                 <div className={styles.value}>
                     <Input
