@@ -24,14 +24,14 @@ export const GetTagsOfAd = async (adId: string) => {
 
   return entries.map(entry => {
     const [key, _] = entry;
-    const adHash = key.toHuman()[1];
-    const tag = tagMap[adHash];
-    const tagName = tag?.label ?? 'Unknown';
+    const tagHash = key.toHuman()[1];
+    const tag = tagMap[tagHash];
+    const tagName = tag?.label;
     return {
-      hash: adHash,
+      hash: tagHash,
       name: tagName
     }
-  });
+  }).filter(tag => !!tag.name);
 };
 
 export const GetTagsOf = async (ad: Uint8Array): Promise<any> => {
