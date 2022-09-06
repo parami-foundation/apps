@@ -4,7 +4,6 @@ import { Button, Image, Input, Tooltip, notification } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { BigNumber, ethers, utils } from 'ethers';
-import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
@@ -178,6 +177,7 @@ const Deposit: React.FC<{
             message: 'Deposit Success',
           });
           setParamiHash(item.blockHash);
+          setSelectedToken({ ...selectedToken! });
         }
       }
     }
@@ -210,7 +210,7 @@ const Deposit: React.FC<{
             </span>
             <Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, 18)}>
               <span className={style.balanceDetailsBalance}>
-                <AD3 value={balanceOnEth} />
+                <Token value={balanceOnEth} symbol={selectedToken?.symbol} />
               </span>
             </Tooltip>
           </div>
@@ -223,7 +223,7 @@ const Deposit: React.FC<{
             }}
           >
             <Image
-              src='/images/logo-round-core.svg'
+              src={selectedToken?.icon}
               preview={false}
               className={style.chainIcon}
             />

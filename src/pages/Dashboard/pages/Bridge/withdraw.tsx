@@ -113,6 +113,7 @@ const Withdraw: React.FC<{
 			if (BridgeContract) {
 				UnsubBridgeEvents(BridgeContract);
 			}
+			setSelectedToken({...selectedToken!});
 		}
 	}, [BridgeContract, ProposalEvent, UnsubBridgeEvents, txNonce]);
 
