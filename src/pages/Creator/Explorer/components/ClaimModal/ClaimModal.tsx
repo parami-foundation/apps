@@ -104,18 +104,17 @@ const ClaimModal: React.FC<{
             content={
                 <div className={style.claimInfoContainer}>
                     <Spin spinning={!adScore}>
-                        {adScore && !adScore?.scores && <>
-                            The advertiser hasn't assign you any scores. You could still claim your token.
-                        </>}
-
                         {adScore && adScore.scores && adScore.scores.length > 0 && <>
-                            <p>Claim now and receive the following scores from the advertiser:</p>
+                            <p>Claim now and have your score updated:</p>
                             {adScore.scores.map(score => {
                                 return <div className={style.scoreChange}>
                                     <ParamiScoreTag tag={score.tag} />
                                     <ParamiScore score={parseInt(score.score, 10)} />
                                 </div>
                             })}
+                            {!adScore.signature && <p>
+                                Not happy with the reward? Follow the instructions before claiming.
+                            </p>}
                         </>}
                     </Spin>
                 </div>
