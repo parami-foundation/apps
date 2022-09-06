@@ -13,6 +13,7 @@ import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
 import { uploadIPFS } from '@/services/parami/IPFS';
 import CreateUserInstruction from './CreateUserInstruction/CreateUserInstruction';
+import { GetTagsMap } from '@/services/parami/HTTP';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
@@ -33,6 +34,7 @@ const Create: React.FC<{
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
+  const [tagOptions, setTagOptions] = useState<{ hash: string; name: string }[]>([]);
   const [title, setTitle] = useState<string>();
   const [link, setLink] = useState<string>('https://weekly.parami.io/');
   const [description, setDescription] = useState<string>();
@@ -55,6 +57,21 @@ const Create: React.FC<{
   const intl = useIntl();
   const { Search } = Input;
   const { Option } = Select;
+
+  const fetchTagOptions = async () => {
+    const { data }: any = await GetTagsMap();
+    const tags = Object.keys(data).filter(tagHash => data[tagHash].guide).map(tagHash => {
+      return {
+        hash: tagHash,
+        name: data[tagHash].label
+      }
+    });
+    setTagOptions(tags);
+  }
+
+  useEffect(() => {
+    fetchTagOptions();
+  }, []);
 
   const existTag = async (tag: string) => {
     try {
@@ -221,7 +238,9 @@ const Create: React.FC<{
               placeholder="Please select"
               onChange={value => setTags(value as string[])}
             >
-              <Option key='telegram' value={'Telegram'}>Telegram</Option>
+              {tagOptions.map(option => {
+                return <Option key={option.hash} value={option.name}>{option.name}</Option>
+              })}
             </Select>
           </div>
           {/* <div className={styles.value}>

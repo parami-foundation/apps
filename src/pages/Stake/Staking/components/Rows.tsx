@@ -55,7 +55,7 @@ const Rows: React.FC<{
 
 			try {
 				const token = await DrylyRemoveLiquidity(nftItem?.lpId);
-				const info: any = await RemoveLiquidity(nftItem?.lpId, token[1], token[0], passphrase, wallet?.keystore, preTx, account);
+				const info: any = await RemoveLiquidity(nftItem?.lpId, token[3], token[2], passphrase, wallet?.keystore, preTx, account);
 				setSubmitting(false);
 
 				if (preTx && account) {
