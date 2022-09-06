@@ -3,13 +3,13 @@ import { useIntl, useModel } from 'umi';
 import { Button, Image, Input, message, notification, Tooltip } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { AD3ToETH } from '@/services/parami/xAssets';
+import { ERC20TokenToETH, getTokenBalanceOnEth, getTokenBalanceOnParami } from '@/services/parami/xAssets';
 import { isETHAddress } from '@/utils/checkAddress';
-import { BigNumber } from 'ethers';
-import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import SelectToken from './SelectToken';
 import TransactionFeeModal from './TransactionFeeModal';
+import Token from '@/components/Token/Token';
+import { ChainBridgeToken } from '@/models/chainbridge';
 
 const Withdraw: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,29 +26,42 @@ const Withdraw: React.FC<{
 	} = useModel('web3');
 	const { dashboard } = useModel('currentUser');
 	const { SubBridgeEvents, UnsubBridgeEvents, ProposalEvent } = useModel('dashboard.bridgeEvents');
-	const { balance } = useModel('dashboard.balance');
-	const { Ad3Contract, BridgeContract } = useModel('contracts');
-	const [freeBalance, setFreeBalance] = useState<string>('');
+	const { BridgeContract } = useModel('contracts');
 	const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
 	const [amount, setAmount] = useState<string>('');
 	const [destinationAddress, setDestinationAddress] = useState<string>();
 	const [selectModal, setSelectModal] = useState<boolean>(false);
 	const [transferFeeModal, setTransferFeeModal] = useState<boolean>(false);
 
+	const { tokens } = useModel('chainbridge');
+
+	const [selectedToken, setSelectedToken] = useState<ChainBridgeToken>();
+	const [balanceOnParami, setBalanceOnParami] = useState<string>('');
+	const [balanceOnEth, setBalanceOnEth] = useState<string>('');
+
+	useEffect(() => {
+		if (tokens?.length) {
+			setSelectedToken(tokens[0]);
+		}
+	}, [tokens])
+
 	const intl = useIntl();
 
-	const getBalance = async () => {
-		if (!Provider || !Signer) return;
-		try {
-			const balanceOf = await Ad3Contract?.balanceOf(Account);
-			setFreeBalance(BigNumber.from(balanceOf).toString());
-		} catch (e: any) {
-			notification.error({
-				message: e.message || e,
-				duration: null,
+	useEffect(() => {
+		if (selectedToken && Signer && Account) {
+			getTokenBalanceOnEth(selectedToken, Signer, Account).then(balance => {
+				setBalanceOnEth(balance);
 			});
 		}
-	};
+	}, [selectedToken, Signer, Account]);
+
+	useEffect(() => {
+		if (selectedToken && apiWs && dashboard?.account) {
+			getTokenBalanceOnParami(selectedToken, dashboard.account).then(balance => {
+				setBalanceOnParami(balance.free);
+			});
+		}
+	}, [selectedToken, apiWs, dashboard]);
 
 	const handleSubmit = async () => {
 		if (!Provider || !Signer) return;
@@ -65,7 +78,8 @@ const Withdraw: React.FC<{
 	const withdraw = async () => {
 		try {
 			setLoading(true);
-			const paramiRes: any = await AD3ToETH(JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+
+			const paramiRes: any = await ERC20TokenToETH(selectedToken!, JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
 			setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
 			setParamiHash(paramiRes.blockHash);
 			setStep(2);
@@ -99,15 +113,9 @@ const Withdraw: React.FC<{
 			if (BridgeContract) {
 				UnsubBridgeEvents(BridgeContract);
 			}
+			setSelectedToken({...selectedToken!});
 		}
 	}, [BridgeContract, ProposalEvent, UnsubBridgeEvents, txNonce]);
-
-	useEffect(() => {
-		if (!Account || !Ad3Contract) return;
-		if (apiWs) {
-			getBalance();
-		}
-	}, [Signer, Provider, Ad3Contract, Account, apiWs]);
 
 	return (
 		<>
@@ -134,9 +142,9 @@ const Withdraw: React.FC<{
 								defaultMessage: 'Balance Available',
 							})}:
 						</span>
-						<Tooltip placement="top" title={BigIntToFloatString(balance?.free, 18)}>
+						<Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, 18)}>
 							<span className={style.balanceDetailsBalance}>
-								<AD3 value={balance?.free} />
+								<Token value={balanceOnParami} symbol={selectedToken?.symbol} />
 							</span>
 						</Tooltip>
 					</div>
@@ -149,11 +157,11 @@ const Withdraw: React.FC<{
 						}}
 					>
 						<Image
-							src='/images/logo-round-core.svg'
+							src={selectedToken?.icon}
 							preview={false}
 							className={style.chainIcon}
 						/>
-						<span className={style.tokenDetailsTokenName}>AD3</span>
+						<span className={style.tokenDetailsTokenName}>{selectedToken?.name}</span>
 						<DownOutlined className={style.tokenDetailsArrow} />
 					</div>
 					<div className={style.amountDetails}>
@@ -171,7 +179,7 @@ const Withdraw: React.FC<{
 							type='link'
 							size='small'
 							onClick={() => {
-								setAmount(BigIntToFloatString(balance?.free, 18));
+								setAmount(BigIntToFloatString(balanceOnParami, 18));
 							}}
 						>
 							{intl.formatMessage({
@@ -207,9 +215,9 @@ const Withdraw: React.FC<{
 							defaultMessage: 'Balance',
 						})}:
 					</span>
-					<Tooltip placement="top" title={BigIntToFloatString(freeBalance, 18)}>
+					<Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, 18)}>
 						<span className={style.balanceDetailsBalance}>
-							<AD3 value={freeBalance} />
+							<Token value={balanceOnEth} symbol={selectedToken?.symbol} />
 						</span>
 					</Tooltip>
 				</div>
@@ -256,7 +264,7 @@ const Withdraw: React.FC<{
 				onClick={() => {
 					handleSubmit();
 				}}
-				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(balance?.free)}
+				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(balanceOnParami)}
 			>
 				{intl.formatMessage({
 					id: 'dashboard.bridge.transfer',
@@ -264,13 +272,16 @@ const Withdraw: React.FC<{
 				})}
 			</Button>
 
-			<SelectToken
-				selectModal={selectModal}
-				setSelectModal={setSelectModal}
+			{selectModal && <SelectToken
+				onClose={() => setSelectModal(false)}
+				onSelectToken={(token) => {
+					setSelectedToken(token);
+					setSelectModal(false);
+				}}
 				chain={'parami'}
-			/>
+			/>}
 
-			{transferFeeModal && (
+			{transferFeeModal && selectedToken && (
 				<TransactionFeeModal
 					onCancel={() => setTransferFeeModal(false)}
 					onConfirm={() => {
@@ -278,6 +289,7 @@ const Withdraw: React.FC<{
 						withdraw();
 					}}
 					amount={amount}
+					token={selectedToken}
 				/>
 			)}
 		</>

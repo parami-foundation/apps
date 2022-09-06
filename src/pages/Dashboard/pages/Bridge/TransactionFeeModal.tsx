@@ -1,32 +1,40 @@
 import AD3 from "@/components/Token/AD3";
-import { getAD3ToETHTransferFee } from "@/services/parami/xAssets";
+import { getAD3ToETHTransferFee, getERC20TokenToEthTransferFee } from "@/services/parami/xAssets";
 import { Alert, Button, Modal, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import styles from './TransactionFeeModal.less'
 import { FloatStringToBigInt } from '@/utils/format';
+import { ChainBridgeToken } from "@/models/chainbridge";
+import Token from "@/components/Token/Token";
 
 const { Title } = Typography;
 
 const TransactionFeeModal: React.FC<{
   onCancel: () => void,
   onConfirm: () => void,
-  amount: string
-}> = ({ onCancel, onConfirm, amount }) => {
+  amount: string,
+  token: ChainBridgeToken
+}> = ({ onCancel, onConfirm, amount, token }) => {
 
   const [transferFee, setTransferFee] = useState<{ fee: string }>();
-  const [receiveAmount, setReceiveAmount] = useState<string>();
   const [insufficientAmount, setInsufficientAmount] = useState<boolean>(false);
 
   useEffect(() => {
-    getAD3ToETHTransferFee().then(res => {
-      setTransferFee(res)
-    });
-  }, [amount])
+    if (token.assetId) {
+      getERC20TokenToEthTransferFee(token.ethChainId, token.assetId).then(res => {
+        setTransferFee(res)
+      });
+    } else {
+      getAD3ToETHTransferFee().then(res => {
+        setTransferFee(res)
+      });
+    }
+
+  }, [token])
 
   useEffect(() => {
     if (transferFee) {
       const receive = (FloatStringToBigInt(amount, 18) - BigInt(transferFee.fee.replaceAll(',', ''))).toString();
-      setReceiveAmount(receive);
       setInsufficientAmount(!!receive && BigInt(receive) <= 0);
     }
   }, [transferFee])
@@ -87,13 +95,7 @@ const TransactionFeeModal: React.FC<{
               Transfer Amount:
             </div>
             <div className={styles.value}>
-              <AD3
-                value={FloatStringToBigInt(amount, 18).toString()}
-                style={{
-                  fontSize: '0.8rem',
-                  fontWeight: 900,
-                }}
-              />
+              <Token value={FloatStringToBigInt(amount, 18).toString()} symbol={token.symbol} />
             </div>
           </div>
           <div className={styles.field}>
@@ -106,21 +108,6 @@ const TransactionFeeModal: React.FC<{
                 style={{
                   fontSize: '0.8rem',
                   fontWeight: 900,
-                }}
-              />
-            </div>
-          </div>
-          <div className={styles.field}>
-            <div className={styles.label}>
-              Will Receive:
-            </div>
-            <div className={styles.value}>
-              <AD3
-                value={receiveAmount ?? ''}
-                style={{
-                  fontSize: '0.8rem',
-                  fontWeight: 900,
-                  color: insufficientAmount ? 'red' : ''
                 }}
               />
             </div>

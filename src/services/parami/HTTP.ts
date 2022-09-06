@@ -78,3 +78,11 @@ export async function GetTagsMap(options?: { [key: string]: any }) {
         getResponse: true,
     });
 }
+
+export async function GetChainBridgeTokenInfo(options?: { [key: string]: any }) {
+    return request(config.main.chainBridgeConfig, {
+        method: 'GET',
+        ...(options || {}),
+        getResponse: true,
+    });
+}
