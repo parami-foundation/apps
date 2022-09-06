@@ -109,7 +109,7 @@ const Deposit: React.FC<{
       utils
         .hexZeroPad(
           BigNumber.from(
-            utils.parseUnits(amount, 18)
+            utils.parseUnits(amount, selectedToken!.decimals)
           ).toHexString(),
           32
         )
@@ -131,7 +131,7 @@ const Deposit: React.FC<{
         await ERC20TokenContract?.approve(
           contractAddresses.erc20handler[ChainId!],
           BigNumber.from(
-            utils.parseUnits(amount.toString(), 18)
+            utils.parseUnits(amount.toString(), selectedToken?.decimals)
           )
         )
       ).wait();
@@ -208,7 +208,7 @@ const Deposit: React.FC<{
                 defaultMessage: 'Balance',
               })}:
             </span>
-            <Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, 18)}>
+            <Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, selectedToken?.decimals ?? 18)}>
               <span className={style.balanceDetailsBalance}>
                 <Token value={balanceOnEth} symbol={selectedToken?.symbol} />
               </span>
@@ -245,7 +245,7 @@ const Deposit: React.FC<{
               type='link'
               size='small'
               onClick={() => {
-                setAmount(BigIntToFloatString(balanceOnEth, 18));
+                setAmount(BigIntToFloatString(balanceOnEth, selectedToken!.decimals));
               }}
             >
               {intl.formatMessage({
@@ -281,7 +281,7 @@ const Deposit: React.FC<{
               defaultMessage: 'Balance',
             })}:
           </span>
-          <Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, 18)}>
+          <Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, selectedToken?.decimals ?? 18)}>
             <span className={style.balanceDetailsBalance}>
               <Token value={balanceOnParami} symbol={selectedToken?.symbol} />
             </span>
@@ -330,7 +330,7 @@ const Deposit: React.FC<{
         onClick={() => {
           handleSubmit();
         }}
-        disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0)}
+        disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, selectedToken?.decimals ?? 18) <= BigInt(0)}
       >
         {intl.formatMessage({
           id: 'dashboard.bridge.transfer',

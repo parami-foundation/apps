@@ -121,7 +121,6 @@ const SelectToken: React.FC<{
                       </span>
                     </span>
                     <span className={style.value}>
-                      {/* todo: get balance of token */}
                       <Token value={tokenBalance[token.name] ?? '0'} symbol={token.symbol} />
                     </span>
                   </div>
