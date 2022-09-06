@@ -454,7 +454,9 @@ const Create: React.FC<{
               maxLength={18}
               min={0}
               onChange={(e) => setRewardRate(Number(e.target.value))}
+              suffix="%"
             />
+            <span className={style.fieldInfo}>Referrer gets {rewardRate}% from each referral.</span>
           </div>
         </div>
         <div className={styles.field}>
