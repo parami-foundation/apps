@@ -1,27 +1,36 @@
 import AD3 from "@/components/Token/AD3";
-import { getAD3ToETHTransferFee } from "@/services/parami/xAssets";
+import { getAD3ToETHTransferFee, getERC20TokenToEthTransferFee } from "@/services/parami/xAssets";
 import { Alert, Button, Modal, Spin, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import styles from './TransactionFeeModal.less'
 import { FloatStringToBigInt } from '@/utils/format';
+import { ChainBridgeToken } from "@/models/chainbridge";
 
 const { Title } = Typography;
 
 const TransactionFeeModal: React.FC<{
   onCancel: () => void,
   onConfirm: () => void,
-  amount: string
-}> = ({ onCancel, onConfirm, amount }) => {
+  amount: string,
+  token: ChainBridgeToken
+}> = ({ onCancel, onConfirm, amount, token }) => {
 
   const [transferFee, setTransferFee] = useState<{ fee: string }>();
   const [receiveAmount, setReceiveAmount] = useState<string>();
   const [insufficientAmount, setInsufficientAmount] = useState<boolean>(false);
 
   useEffect(() => {
-    getAD3ToETHTransferFee().then(res => {
-      setTransferFee(res)
-    });
-  }, [amount])
+    if (token.assetId) {
+      getERC20TokenToEthTransferFee(token.ethChainId, token.assetId).then(res => {
+        setTransferFee(res)
+      });
+    } else {
+      getAD3ToETHTransferFee().then(res => {
+        setTransferFee(res)
+      });
+    }
+
+  }, [token])
 
   useEffect(() => {
     if (transferFee) {

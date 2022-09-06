@@ -10,6 +10,7 @@ export const config = {
     "socketServer": "wss://staging.parami.io/ws",
     "subqueryServer": "https://staging.parami.io/graph/",
     "tagMapConfig": "/tagmap.json",
+    "chainBridgeConfig": "/chainbridge.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://staging.parami.io/airdrop",
     "webNotificationServer": "https://staging.parami.io/webnotify"
@@ -17,6 +18,7 @@ export const config = {
     "socketServer": "wss://rpc-na1.parami.io/ws",
     "subqueryServer": "https://graph.parami.io",
     "tagMapConfig": "/tagmap.json",
+    "chainBridgeConfig": "/chainbridge.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://airdrop.parami.io",
     "webNotificationServer": "https://webnotify.parami.io"

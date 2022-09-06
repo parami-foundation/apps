@@ -1,0 +1,76 @@
+{
+  "assets": [
+    {
+      "name": "AD3",
+      "symbol": "AD3",
+      "resourceId":"0x000000000000000000000000000000a56889c89dddcbb363cbd6a8d11de9e100",
+      "decimals": 18,
+      "icon": "/images/logo-round-core.svg",
+      "chains": [
+        {
+          "chain_id": 233,
+          "type": "substrate",
+          "asset_id": 0
+        },
+        {
+          "chain_id": 0,
+          "type": "ethereum",
+          "contract_address": "0xf8bd1248816ec6cd10336d54a7530305e03dcf3f"
+        }
+      ],
+      "direction": [
+        {
+          "from": 0,
+          "to": 233
+        },
+        {
+          "from": 233,
+          "to": 0
+        }
+      ]
+    },
+    {
+      "name": "pUSD",
+      "symbol": "USD",
+      "resourceId": "0x0000000000000000000000000000000014413cd207f80672707b7e4e5fa23f00",
+      "decimals": 18,
+      "icon": "/images/crypto/usdt-circle.svg",
+      "chains": [
+        {
+          "chain_id": 233,
+          "type": "substrate",
+          "asset_id": 3
+        },
+        {
+          "chain_id": 0,
+          "type": "ethereum",
+          "contract_address": "0x458FDfd521b852D8D2b1AEc64030b537A28Fd7d8"
+        }
+      ],
+      "direction": [
+        {
+          "from": 0,
+          "to": 233
+        },
+        {
+          "from": 233,
+          "to": 0
+        }
+      ]
+    }
+  ],
+  "chains": [
+    {
+      "id": 233,
+      "type": "substrate",
+      "name": "Parami Dana",
+      "endpoint": "wss://staging.parami.io"
+    },
+    {
+      "id": 0,
+      "type": "ethereum",
+      "name": "Ethereum Ropsten",
+      "network_id": "3"
+    }
+  ]
+}

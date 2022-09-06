@@ -3,8 +3,7 @@ import { useIntl, useModel } from 'umi';
 import { Button, Image, Input, Tooltip, notification } from 'antd';
 import style from './style.less';
 import { ArrowDownOutlined, DownOutlined, PlusOutlined } from '@ant-design/icons';
-import { BigNumber, utils } from 'ethers';
-import config from './config';
+import { BigNumber, ethers, utils } from 'ethers';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { hexToDid } from '@/utils/common';
@@ -12,6 +11,10 @@ import { QueryAccountFromDid } from '@/services/parami/Identity';
 import SelectToken from './SelectToken';
 import { decodeAddress } from '@polkadot/util-crypto';
 import { contractAddresses } from '../Farm/config';
+import { ChainBridgeToken } from '@/models/chainbridge';
+import { getTokenBalanceOnEth, getTokenBalanceOnParami } from '@/services/parami/xAssets';
+import Token from '@/components/Token/Token';
+import ERC20Abi from '@/pages/Dashboard/pages/Farm/abi/ERC20.json'
 
 const Deposit: React.FC<{
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -30,16 +33,42 @@ const Deposit: React.FC<{
   } = useModel('web3');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
   const [eventsUnsub, setEventsUnsub] = useState<() => void>();
-  const { balance } = useModel('dashboard.balance');
-  const { Ad3Contract, BridgeContract } = useModel('contracts');
-  const [freeBalance, setFreeBalance] = useState<string>('');
+  const { BridgeContract } = useModel('contracts');
   const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
   const [amount, setAmount] = useState<string>('');
   const [waitingParami, setWaitingParami] = useState<boolean>(false);
   const [destinationAddress, setDestinationAddress] = useState<string>('');
   const [selectModal, setSelectModal] = useState<boolean>(false);
 
+  const { tokens } = useModel('chainbridge');
+
+  const [selectedToken, setSelectedToken] = useState<ChainBridgeToken>();
+  const [balanceOnParami, setBalanceOnParami] = useState<string>('');
+  const [balanceOnEth, setBalanceOnEth] = useState<string>('');
+
+  useEffect(() => {
+    if (tokens?.length) {
+      setSelectedToken(tokens[0]);
+    }
+  }, [tokens])
+
   const intl = useIntl();
+
+  useEffect(() => {
+    if (selectedToken && Signer && Account) {
+      getTokenBalanceOnEth(selectedToken, Signer, Account).then(balance => {
+        setBalanceOnEth(balance);
+      });
+    }
+  }, [selectedToken, Signer, Account]);
+
+  useEffect(() => {
+    if (selectedToken && apiWs && dashboard?.account) {
+      getTokenBalanceOnParami(selectedToken, dashboard.account).then(balance => {
+        setBalanceOnParami(balance.total);
+      });
+    }
+  }, [selectedToken, apiWs, dashboard]);
 
   let unsubParami;
   const isDepositSuccessEvent = (item: any, nonce: bigint) => {
@@ -49,19 +78,6 @@ const Deposit: React.FC<{
       }
     }
     return false;
-  };
-
-  const getBalance = async () => {
-    if (!Provider || !Signer) return;
-    try {
-      const balanceOf = await Ad3Contract?.balanceOf(Account);
-      setFreeBalance(BigNumber.from(balanceOf).toString());
-    } catch (e: any) {
-      notification.error({
-        message: e.message || e,
-        duration: null,
-      });
-    }
   };
 
   const handleSubmit = async () => {
@@ -109,8 +125,11 @@ const Deposit: React.FC<{
       notification.info({
         message: 'Approve Token Access'
       });
+
+      const ERC20TokenContract = new ethers.Contract(selectedToken!.contract_address, ERC20Abi, Signer);
+
       await (
-        await Ad3Contract?.approve(
+        await ERC20TokenContract?.approve(
           contractAddresses.erc20handler[ChainId!],
           BigNumber.from(
             utils.parseUnits(amount.toString(), 18)
@@ -123,8 +142,8 @@ const Deposit: React.FC<{
       });
       const ethRes = await (
         await BridgeContract?.deposit(
-          config.bridge.destinationChainId,
-          config.resource.id,
+          selectedToken!.paramiChainId,
+          selectedToken!.resourceId,
           data,
         )
       ).wait();
@@ -164,13 +183,6 @@ const Deposit: React.FC<{
     }
   }, [Events, txNonce, waitingParami, eventsUnsub]);
 
-  useEffect(() => {
-    if (!Account || !Ad3Contract) return;
-    if (apiWs) {
-      getBalance();
-    }
-  }, [Signer, Provider, Ad3Contract, Account, apiWs]);
-
   return (
     <>
       <div className={style.fromLabel}>
@@ -196,9 +208,9 @@ const Deposit: React.FC<{
                 defaultMessage: 'Balance',
               })}:
             </span>
-            <Tooltip placement="top" title={BigIntToFloatString(freeBalance, 18)}>
+            <Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, 18)}>
               <span className={style.balanceDetailsBalance}>
-                <AD3 value={freeBalance} />
+                <AD3 value={balanceOnEth} />
               </span>
             </Tooltip>
           </div>
@@ -215,7 +227,7 @@ const Deposit: React.FC<{
               preview={false}
               className={style.chainIcon}
             />
-            <span className={style.tokenDetailsTokenName}>AD3</span>
+            <span className={style.tokenDetailsTokenName}>{selectedToken?.name}</span>
             <DownOutlined className={style.tokenDetailsArrow} />
           </div>
           <div className={style.amountDetails}>
@@ -233,7 +245,7 @@ const Deposit: React.FC<{
               type='link'
               size='small'
               onClick={() => {
-                setAmount(BigIntToFloatString(freeBalance, 18));
+                setAmount(BigIntToFloatString(balanceOnEth, 18));
               }}
             >
               {intl.formatMessage({
@@ -269,9 +281,9 @@ const Deposit: React.FC<{
               defaultMessage: 'Balance',
             })}:
           </span>
-          <Tooltip placement="top" title={BigIntToFloatString(balance?.total, 18)}>
+          <Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, 18)}>
             <span className={style.balanceDetailsBalance}>
-              <AD3 value={balance?.total} />
+              <Token value={balanceOnParami} symbol={selectedToken?.symbol} />
             </span>
           </Tooltip>
         </div>
@@ -326,11 +338,15 @@ const Deposit: React.FC<{
         })}
       </Button>
 
-      <SelectToken
-        selectModal={selectModal}
-        setSelectModal={setSelectModal}
+      {selectModal && <SelectToken
+        onClose={() => setSelectModal(false)}
+        onSelectToken={(token) => {
+          setSelectedToken(token);
+          setSelectModal(false);
+        }}
         chain={'ethereum'}
-      />
+      />}
+
     </>
   )
 }
