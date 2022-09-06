@@ -11,7 +11,7 @@
 	},
 	"0x3eeeaf2b24de92d6c804955d3a696c3d8832d946b0fa12122859f63a8e627b12": {
 		"label": "CryptoMines",
-		"guide": true,
+		"guide": false,
 		"url": "/profile?from=Binance"
 	},
 	"0xe93c851b7e320b9ad26ff96b17de9e4f301ad8e9f71de876eaba56d7791a7e7c": {
@@ -21,7 +21,7 @@
 	},
 	"0x4c027e41fb9d0619a6e2393bcdab92d3bacdd34c5519f73b7bf2ed234ee10bc4": {
 		"label": "Polkadot",
-		"guide": false,
+		"guide": true,
 		"url": null
 	},
 	"0x8f54e49d11ae58a541fe46d6c859e3cfb4cee18a29038b83f3bc43498657110d": {
@@ -31,7 +31,7 @@
 	},
 	"0x40c8253a3fccae698a831d727547de3f8e7d961d3aabcb3b817c060cb40968eb": {
 		"label": "DeFi",
-		"guide": false,
+		"guide": true,
 		"url": null
 	},
 	"0xfd5e088cae725f3fd1ead3fccf1ba30c6c99d5532e2b037fdfdf980eb684a633": {
