@@ -11,7 +11,8 @@ declare namespace Type {
         instructions?: {
             text: string,
             tag: string,
-            score: string
+            score: string,
+            link: string
         }[]
     } | null;
 }

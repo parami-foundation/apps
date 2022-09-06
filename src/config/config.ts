@@ -13,7 +13,8 @@ export const config = {
     "chainBridgeConfig": "/chainbridge.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://staging.parami.io/airdrop",
-    "webNotificationServer": "https://staging.parami.io/webnotify"
+    "webNotificationServer": "https://staging.parami.io/webnotify",
+    "weeklySite": "https://weekly.parami.io/"
   } : {
     "socketServer": "wss://rpc-na1.parami.io/ws",
     "subqueryServer": "https://graph.parami.io",
@@ -21,7 +22,8 @@ export const config = {
     "chainBridgeConfig": "/chainbridge.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://airdrop.parami.io",
-    "webNotificationServer": "https://webnotify.parami.io"
+    "webNotificationServer": "https://webnotify.parami.io",
+    "weeklySite": "https://weekly.parami.io/"
   },
   "ipfs": {
     "host": "ipfs.parami.io",

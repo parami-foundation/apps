@@ -1,27 +1,21 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
-import { Button, Input, message, notification, Select, Tag, Tooltip, Upload } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Upload } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { didToHex, parseAmount } from '@/utils/common';
-import BigModal from '@/components/ParamiModal/BigModal';
 import { CreateAds } from '@/services/parami/Advertisement';
-import { CreateTag, ExistTag } from '@/services/parami/Tag';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
 import { uploadIPFS } from '@/services/parami/IPFS';
-import CreateUserInstruction from './CreateUserInstruction/CreateUserInstruction';
+import CreateUserInstruction, { UserInstruction } from './CreateUserInstruction/CreateUserInstruction';
 import { GetTagsMap } from '@/services/parami/HTTP';
+import ParamiScoreTag from '@/pages/Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
+import ParamiScore from '@/pages/Creator/Explorer/components/ParamiScore/ParamiScore';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
-
-type UserInstruction = {
-  text: string;
-  tag?: string;
-  score?: number;
-}
 
 const Create: React.FC<{
   setCreateModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,18 +38,10 @@ const Create: React.FC<{
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
   const [delegatedDid, setDelegatedDid] = useState<string>('did:ad3:izgyiwwftd7s1D3XaREJZBR2kvZ');
-  const [tagInputVisible, setTagInputVisible] = useState<boolean>(false);
-  const [tagInputValue, setTagInputValue] = useState<string>('');
-  const [tagEditInputIndex, setTagEditInputIndex] = useState<number>(-1);
-  const [tagEditInputValue, setTagEditInputValue] = useState<string>('');
-  const [createTag, setCreateTag] = useState<boolean>(false);
   const [createInstructionModal, setCreateInstructionModal] = useState<boolean>(false);
   const [instructions, setInstructions] = useState<UserInstruction[]>([]);
 
-  const tagInputRef = useRef<Input>(null);
-
   const intl = useIntl();
-  const { Search } = Input;
   const { Option } = Select;
 
   const fetchTagOptions = async () => {
@@ -72,82 +58,6 @@ const Create: React.FC<{
   useEffect(() => {
     fetchTagOptions();
   }, []);
-
-  const existTag = async (tag: string) => {
-    try {
-      const res = await ExistTag(tag);
-      if (!res.toHuman()) {
-        return false;
-      }
-      return true;
-    } catch (e: any) {
-      notification.error({
-        message: e.message || e,
-        duration: null,
-      });
-      return false;
-    }
-  };
-
-  const newTag = async (tag: string) => {
-    if (!!dashboard && !!dashboard?.accountMeta) {
-      setSubmiting(true);
-      try {
-        await CreateTag(tag, JSON.parse(dashboard?.accountMeta));
-        let Tags = tags;
-        if (tagInputValue && tags.indexOf(tagInputValue) === -1) {
-          Tags = [...tags, tagInputValue];
-        }
-        setTags(Tags);
-        setTagInputVisible(false);
-        setTagInputValue('');
-        setSubmiting(false);
-      } catch (e: any) {
-        notification.error({
-          message: intl.formatMessage({ id: e.message || e }),
-          duration: null,
-        });
-        setSubmiting(false);
-      }
-    } else {
-      notification.error({
-        key: 'accessDenied',
-        message: intl.formatMessage({
-          id: 'error.accessDenied',
-        }),
-        duration: null,
-      })
-    }
-  };
-
-  const handleTagInputConfirm = async () => {
-    const exist = await existTag(tagInputValue);
-    if (!exist) {
-      setCreateTag(true);
-      return;
-    }
-    let Tags = tags;
-    if (tagInputValue && tags.indexOf(tagInputValue) === -1) {
-      Tags = [...tags, tagInputValue];
-    }
-    setTags(Tags);
-    setTagInputVisible(false);
-    setTagInputValue('');
-  };
-
-  const handleTagEditInputConfirm = () => {
-    const newTags = [...tags];
-    newTags[tagEditInputIndex] = tagEditInputValue;
-
-    setTags(newTags);
-    setTagEditInputIndex(0);
-    setTagEditInputValue('');
-  };
-
-  const handleTagClose = (removedTag: any) => {
-    const Tags = tags.filter(tag => tag !== removedTag);
-    setTags(Tags);
-  };
 
   const handleSubmit = async () => {
     if (!!dashboard && !!dashboard?.accountMeta) {
@@ -243,104 +153,6 @@ const Create: React.FC<{
               })}
             </Select>
           </div>
-          {/* <div className={styles.value}>
-            {tags.map((tag, index) => {
-              if (tagEditInputIndex === index) {
-                return (
-                  <Search
-                    key={tag}
-                    size="large"
-                    className="tag-input"
-                    enterButton={intl.formatMessage({
-                      id: 'common.confirm',
-                    })}
-                    loading={submiting}
-                    onChange={(e) => {
-                      setTagEditInputValue(e.target.value);
-                    }}
-                    onSearch={() => {
-                      if (!tagEditInputValue) {
-                        message.error('Please Input Tag');
-                        return;
-                      }
-                      handleTagEditInputConfirm();
-                    }}
-                  />
-                );
-              }
-
-              const isLongTag = tag.length > 20;
-
-              const tagElem = (
-                <Tag
-                  className={style.tag}
-                  color="volcano"
-                  key={tag}
-                  closable={true}
-                  onClose={() => handleTagClose(tag)}
-                >
-                  <span
-                    onDoubleClick={() => {
-                      setTagEditInputIndex(index);
-                      setTagEditInputValue(tag);
-                      focus();
-                    }}
-                  >
-                    {isLongTag ? `${tag.slice(0, 20)}...` : tag}
-                  </span>
-                </Tag>
-              );
-              return isLongTag ? (
-                <Tooltip
-                  title={tag}
-                  key={tag}
-                >
-                  {tagElem}
-                </Tooltip>
-              ) : (
-                tagElem
-              );
-            })}
-            {tagInputVisible && (
-              <Search
-                ref={tagInputRef}
-                type="text"
-                size="large"
-                enterButton={intl.formatMessage({
-                  id: 'common.confirm',
-                })}
-                className={style.tagInput}
-                loading={submiting}
-                onChange={(e) => {
-                  setTagInputValue(e.target.value);
-                }}
-                onSearch={() => {
-                  if (!tagInputValue) {
-                    message.error('Please Input Tag');
-                    return;
-                  }
-                  handleTagInputConfirm();
-                }}
-              />
-            )
-            }
-            {!tagInputVisible && (
-              <Tag
-                className={style.tag}
-                color="volcano"
-                onClick={() => {
-                  setTagInputVisible(true);
-                  tagInputRef.current?.focus();
-                }}
-              >
-                <PlusOutlined />
-                {intl.formatMessage({
-                  id: 'dashboard.ads.create.tag.new',
-                })}
-              </Tag>
-            )
-            }
-          </div> */}
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
@@ -434,7 +246,10 @@ const Create: React.FC<{
                 e.preventDefault();
                 setInstructions(instructions.filter(ins => ins !== instruction))
               }}>
-                {instruction.text} - {instruction.tag} - {instruction.score}
+                {instruction.text}
+                {!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
+                {!!instruction.score && <ParamiScore score={instruction.score} />}
+                {!!instruction.link && <a href={instruction.link} target="_blank">(link)</a>}
               </Tag>
             </p>)}
           </div>
@@ -596,34 +411,6 @@ const Create: React.FC<{
         ></CreateUserInstruction>
       </>}
 
-      <BigModal
-        visable={createTag}
-        title={tagInputValue}
-        content={intl.formatMessage({
-          id: 'dashboard.ads.create.tag.create',
-        })}
-        footer={
-          <>
-            <Button
-              block
-              shape='round'
-              type='primary'
-              size='large'
-              onClick={() => {
-                newTag(tagInputValue);
-                setCreateTag(false);
-              }}
-            >
-              {intl.formatMessage({
-                id: 'common.submit',
-              })}
-            </Button>
-          </>
-        }
-        close={() => {
-          setCreateTag(false)
-        }}
-      />
     </>
   )
 }

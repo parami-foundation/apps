@@ -7,6 +7,7 @@ export interface UserInstruction {
     text: string;
     tag?: string;
     score?: number;
+    link?: string;
 }
 
 export interface CreateUserInstructionProps {
@@ -18,13 +19,15 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
     const [text, setText] = useState<string>();
     const [tag, setTag] = useState<string>();
     const [score, setScore] = useState<number>();
+    const [link, setLink] = useState<string>();
 
     const createInstruction = () => {
         if (text) {
             onCreateInstruction({
                 text,
                 tag: tag,
-                score: score
+                score: score,
+                link: link
             });
         }
     }
@@ -72,6 +75,19 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
                         type={'number'}
                         onChange={(e) => setScore(parseInt(e.target.value, 10))}
                         placeholder='score'
+                    />
+                </div>
+            </div>
+
+            <div className={styles.field}>
+                <div className={styles.title}>
+                    <FormFieldTitle title={'link'} />
+                </div>
+                <div className={styles.value}>
+                    <Input
+                        size='large'
+                        onChange={(e) => setLink(e.target.value)}
+                        placeholder='link'
                     />
                 </div>
             </div>
