@@ -10,6 +10,8 @@ import SelectToken from './SelectToken';
 import TransactionFeeModal from './TransactionFeeModal';
 import Token from '@/components/Token/Token';
 import { ChainBridgeToken } from '@/models/chainbridge';
+import { ethers } from 'ethers';
+import BRIDGE_ABI from '@/pages/Dashboard/pages/Bridge/abi/Bridge.json';
 
 const Withdraw: React.FC<{
 	setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,14 +28,14 @@ const Withdraw: React.FC<{
 	} = useModel('web3');
 	const { dashboard } = useModel('currentUser');
 	const { SubBridgeEvents, UnsubBridgeEvents, ProposalEvent } = useModel('dashboard.bridgeEvents');
-	const { BridgeContract } = useModel('contracts');
 	const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
 	const [amount, setAmount] = useState<string>('');
 	const [destinationAddress, setDestinationAddress] = useState<string>();
 	const [selectModal, setSelectModal] = useState<boolean>(false);
 	const [transferFeeModal, setTransferFeeModal] = useState<boolean>(false);
+	const [bridgeContract, setBridgeContract] = useState<ethers.Contract>();
 
-	const { tokens } = useModel('chainbridge');
+	const { tokens, contractAddresses } = useModel('chainbridge');
 
 	const [selectedToken, setSelectedToken] = useState<ChainBridgeToken>();
 	const [balanceOnParami, setBalanceOnParami] = useState<string>('');
@@ -44,6 +46,12 @@ const Withdraw: React.FC<{
 			setSelectedToken(tokens[0]);
 		}
 	}, [tokens])
+
+	useEffect(() => {
+		if (contractAddresses?.bridge && Signer) {
+			setBridgeContract(new ethers.Contract(contractAddresses?.bridge, BRIDGE_ABI, Signer));
+		}
+	}, [contractAddresses, Signer]);
 
 	const intl = useIntl();
 
@@ -84,8 +92,8 @@ const Withdraw: React.FC<{
 			setParamiHash(paramiRes.blockHash);
 			setStep(2);
 
-			if (BridgeContract) {
-				SubBridgeEvents(BridgeContract);
+			if (bridgeContract) {
+				SubBridgeEvents(bridgeContract);
 			} else {
 				notification.error({
 					message: 'No bridge contract',
@@ -110,12 +118,12 @@ const Withdraw: React.FC<{
 			if (ProposalEvent.txHash) {
 				setETHHash(ProposalEvent.txHash);
 			};
-			if (BridgeContract) {
-				UnsubBridgeEvents(BridgeContract);
+			if (bridgeContract) {
+				UnsubBridgeEvents(bridgeContract);
 			}
-			setSelectedToken({...selectedToken!});
+			setSelectedToken({ ...selectedToken! });
 		}
-	}, [BridgeContract, ProposalEvent, UnsubBridgeEvents, txNonce]);
+	}, [bridgeContract, ProposalEvent, UnsubBridgeEvents, txNonce]);
 
 	return (
 		<>

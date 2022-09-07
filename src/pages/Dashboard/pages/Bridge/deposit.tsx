@@ -9,11 +9,11 @@ import { hexToDid } from '@/utils/common';
 import { QueryAccountFromDid } from '@/services/parami/Identity';
 import SelectToken from './SelectToken';
 import { decodeAddress } from '@polkadot/util-crypto';
-import { contractAddresses } from '../Farm/config';
 import { ChainBridgeToken } from '@/models/chainbridge';
 import { getTokenBalanceOnEth, getTokenBalanceOnParami } from '@/services/parami/xAssets';
 import Token from '@/components/Token/Token';
 import ERC20Abi from '@/pages/Dashboard/pages/Farm/abi/ERC20.json'
+import BRIDGE_ABI from '@/pages/Dashboard/pages/Bridge/abi/Bridge.json';
 
 const Deposit: React.FC<{
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -28,18 +28,16 @@ const Deposit: React.FC<{
     ChainName,
     Provider,
     Signer,
-    ChainId
   } = useModel('web3');
   const { Events, SubParamiEvents } = useModel('paramiEvents');
   const [eventsUnsub, setEventsUnsub] = useState<() => void>();
-  const { BridgeContract } = useModel('contracts');
   const [txNonce, setTxNonce] = useState<bigint>(BigInt(0));
   const [amount, setAmount] = useState<string>('');
   const [waitingParami, setWaitingParami] = useState<boolean>(false);
   const [destinationAddress, setDestinationAddress] = useState<string>('');
   const [selectModal, setSelectModal] = useState<boolean>(false);
 
-  const { tokens } = useModel('chainbridge');
+  const { tokens, contractAddresses } = useModel('chainbridge');
 
   const [selectedToken, setSelectedToken] = useState<ChainBridgeToken>();
   const [balanceOnParami, setBalanceOnParami] = useState<string>('');
@@ -129,7 +127,7 @@ const Deposit: React.FC<{
 
       await (
         await ERC20TokenContract?.approve(
-          contractAddresses.erc20handler[ChainId!],
+          contractAddresses.erc20Handler,
           BigNumber.from(
             utils.parseUnits(amount.toString(), selectedToken?.decimals)
           )
@@ -139,8 +137,9 @@ const Deposit: React.FC<{
       notification.info({
         message: 'Deposit Token'
       });
+      const bridgeContract = new ethers.Contract(contractAddresses.bridge, BRIDGE_ABI, Signer);
       const ethRes = await (
-        await BridgeContract?.deposit(
+        await bridgeContract.deposit(
           selectedToken!.paramiChainId,
           selectedToken!.resourceId,
           data,
