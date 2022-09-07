@@ -146,7 +146,8 @@ const Deposit: React.FC<{
         )
       ).wait();
 
-      const nonce = BigInt(ethRes.logs[2].topics[3]);
+      const depositLog = ethRes.logs.find(log => log.address.toLowerCase() === contractAddresses.bridge.toLowerCase());
+      const nonce = BigInt(depositLog.topics[depositLog.topics.length - 1]);
       setTxNonce(nonce);
       setETHHash(ethRes.transactionHash);
       setStep(2);
