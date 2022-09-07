@@ -7,6 +7,7 @@ import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
 import { useEffect, useState } from "react";
 import { useModel } from "umi";
+import { tokenIconMap } from "../chainbridge";
 
 export default () => {
   const apiWs = useModel('apiWs');
@@ -35,27 +36,32 @@ export default () => {
             const balanceBigInt = BigInt(balance.replaceAll(',', ''));
 
             if (!!balanceBigInt && balanceBigInt > 0) {
-              const ad3 = await DrylySellToken(assetId, balanceBigInt.toString());
-              const did = await OwnerDidOfNft(assetId);
-              const kol = await GetUserInfo(did);
-              let icon: any;
-              if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {
-                const hash = kol?.avatar.substring(7);
-                const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
+              let ad3, kol, icon;
+              const did = await OwnerDidOfNft(entry?.assetId).catch(() => null);
+              if (did) {
+                ad3 = await DrylySellToken(entry?.assetId, balanceBigInt.toString());
+                kol = await GetUserInfo(did);
 
-                // Network exception
-                if (!response) {
-                  notification.error({
-                    key: 'networkException',
-                    message: 'Network exception',
-                    description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-                    duration: null,
-                  });
-                }
+                if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {
+                  const hash = kol?.avatar.substring(7);
+                  const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
 
-                if (response?.status === 200) {
-                  icon = window.URL.createObjectURL(data);
+                  // Network exception
+                  if (!response) {
+                    notification.error({
+                      key: 'networkException',
+                      message: 'Network exception',
+                      description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+                      duration: null,
+                    });
+                  }
+
+                  if (response?.status === 200) {
+                    icon = window.URL.createObjectURL(data);
+                  }
                 }
+              } else {
+                icon = tokenIconMap[metadata.symbol];
               }
 
               let changes = BigInt(0);
@@ -80,12 +86,13 @@ export default () => {
                   token: metadata?.name,
                   symbol: metadata?.symbol,
                   balance: balanceBigInt.toString(),
-                  ad3: `${ad3}`,
+                  decimals: parseInt(metadata.decimals, 10),
+                  isNftToken: !!did,
+                  ad3: ad3 ? `${ad3}` : '',
                   icon,
                 });
               }
             }
-
 
             setAssets(assets);
             setAssetsArr([...assets?.values()]);

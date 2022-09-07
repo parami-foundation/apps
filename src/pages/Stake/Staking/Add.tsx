@@ -106,20 +106,22 @@ const Add: React.FC<{
                 const balanceBigInt = BigInt(balance.replaceAll(',', ''));
 
                 if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(assets[assetsID])) {
-                    let icon: any;
-                    const did = await OwnerDidOfNft(assetsID);
-                    const info = await GetUserInfo(did);
-                    if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
-                        const hash = info?.avatar.substring(7);
-                        icon = config.ipfs.endpoint + hash;
-                    };
-                    data.push({
-                        id: assetsID,
-                        token: assets[assetsID].name,
-                        symbol: assets[assetsID].symbol,
-                        balance: balanceBigInt.toString(),
-                        icon,
-                    });
+                    const did = await OwnerDidOfNft(assetsID).catch(() => null);
+                    if (did) {
+                        let icon: any;
+                        const info = await GetUserInfo(did);
+                        if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
+                            const hash = info?.avatar.substring(7);
+                            icon = config.ipfs.endpoint + hash;
+                        };
+                        data.push({
+                            id: assetsID,
+                            token: assets[assetsID].name,
+                            symbol: assets[assetsID].symbol,
+                            balance: balanceBigInt.toString(),
+                            icon,
+                        });
+                    }
                 }
             }
             setAssetsBalance(data);
@@ -143,32 +145,32 @@ const Add: React.FC<{
         updateAssetsBalance(tmpAssets);
     };
 
-	const handleSubmit = async (preTx?: boolean, account?: string) => {
-		if (!!wallet && !!wallet?.keystore) {
-			setSubmitting(true);
-			try {
-				const info: any = await AddLiquidity(token?.id, FloatStringToBigInt(targetAd3Number, 18).toString(), tokenAmount[1], tokenAmount[0], passphrase, wallet?.keystore, preTx, account);
-				setSubmitting(false);
-				if (preTx && account) {
-					return info
-				}
+    const handleSubmit = async (preTx?: boolean, account?: string) => {
+        if (!!wallet && !!wallet?.keystore) {
+            setSubmitting(true);
+            try {
+                const info: any = await AddLiquidity(token?.id, FloatStringToBigInt(targetAd3Number, 18).toString(), tokenAmount[1], tokenAmount[0], passphrase, wallet?.keystore, preTx, account);
+                setSubmitting(false);
+                if (preTx && account) {
+                    return info
+                }
 
-				getTokenList();
-			} catch (e: any) {
-				message.error(e);
-			}
-			setSubmitting(false);
-			setAddModal(false);
-		} else {
-			notification.error({
-				key: 'accessDenied',
-				message: intl.formatMessage({
-					id: 'error.accessDenied',
-				}),
-				duration: null,
-			})
-		}
-	};
+                getTokenList();
+            } catch (e: any) {
+                message.error(e);
+            }
+            setSubmitting(false);
+            setAddModal(false);
+        } else {
+            notification.error({
+                key: 'accessDenied',
+                message: intl.formatMessage({
+                    id: 'error.accessDenied',
+                }),
+                duration: null,
+            })
+        }
+    };
 
     useEffect(() => {
         if (apiWs) {
@@ -310,8 +312,8 @@ const Add: React.FC<{
                         size='large'
                         className={styles.button}
                         loading={submitting}
-                        disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) || 
-                            FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) || 
+                        disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) ||
+                            FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) ||
                             tokenAmount.length === 0 ||
                             (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > tokenBalance)}
                         onClick={() => {
