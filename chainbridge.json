@@ -28,7 +28,7 @@
       "name": "WePiggy Coin",
       "symbol": "WPC",
       "decimals": 18,
-      "resource_id": "0x0000000000000000000000000000006803d3c2a2dd1449f97ebc1ec624cccf00",
+      "resource_id": "0xeed62aeac7e8d2530e185b6591382b468fdea88edf7ac8e57ab778fda1d90e1c",
       "chains": [
         {
           "chain_id": 233,
@@ -79,6 +79,34 @@
           "to": 0
         }
       ]
+    },
+    {
+      "name": "1Sol",
+      "symbol": "1SOL",
+      "decimals": 18,
+      "resource_id": "0xa4169d2ee2a7b9ce0fffc58da1d7198767a850f2caf1251c3c227c5a50c24a85",
+      "chains": [
+        {
+          "chain_id": 233,
+          "type": "substrate",
+          "asset_id": 10013
+        },
+        {
+          "chain_id": 0,
+          "type": "ethereum",
+          "contract_address": "0x009178997aff09a67d4caccfeb897fb79d036214"
+        }
+      ],
+      "direction": [
+        {
+          "from": 0,
+          "to": 233
+        },
+        {
+          "from": 233,
+          "to": 0
+        }
+      ]
     }
   ],
   "chains": [
@@ -93,8 +121,8 @@
       "type": "ethereum",
       "name": "Ethereum Mainnet",
       "network_id": "1",
-      "bridge": "0x0e58C69918baa6A578E2BA65a58C3Bdcc640EE2f",
-      "erc20Handler": "0x4A00CC0DA9333658CAC63Ddc074681BfF218aeFD"
+      "bridge": "0x0a2341ab53a820b554b65606713fdea64522ebfa",
+      "erc20Handler": "0xf51c889399409f5de67d6cc36d57e4a83b817809"
     }
   ]
 }

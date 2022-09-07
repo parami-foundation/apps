@@ -68,7 +68,9 @@
       "id": 0,
       "type": "ethereum",
       "name": "Ethereum Ropsten",
-      "network_id": "3"
+      "network_id": "3",
+      "bridge": "0x0e58C69918baa6A578E2BA65a58C3Bdcc640EE2f",
+      "erc20Handler": "0x4A00CC0DA9333658CAC63Ddc074681BfF218aeFD"
     }
   ]
 }
