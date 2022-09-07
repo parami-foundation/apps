@@ -5,16 +5,16 @@ import style from './style.less';
 import { useIntl, useModel } from 'umi';
 import { Alert, Button, Divider, Input, notification } from 'antd';
 import { formatBalance } from '@polkadot/util';
-import Marquee from 'react-fast-marquee';
 import { didToHex, parseAmount } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
-import { BigIntToFloatString, deleteComma } from '@/utils/format';
+import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/format';
 import { BidSlot, GetSlotOfNft } from '@/services/parami/Advertisement';
 import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { DownOutlined } from '@ant-design/icons';
-import SelectToken from './SelectToken';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import FormFieldTitle from '@/components/FormFieldTitle';
+import { ChainBridgeToken } from '@/models/chainbridge';
+import SelectToken from '../../Bridge/SelectToken';
 
 const Bid: React.FC<{
   adItem: any;
@@ -30,8 +30,8 @@ const Bid: React.FC<{
   const [price, setPrice] = useState<number>();
   const [priceErrorMsg, setPriceErrorMsg] = useState<string>();
   const [selectModal, setSelectModal] = useState<boolean>(false);
+  const [selectedToken, setSelectedToken] = useState<ChainBridgeToken>();
   const [tokenAmount, setTokenAmount] = useState<string>('');
-  const [tokenSelect, setTokenSelect] = useState<any>();
 
   const intl = useIntl();
 
@@ -41,7 +41,7 @@ const Bid: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), tokenSelect, parseAmount(tokenAmount), JSON.parse(dashboard?.accountMeta));
+        await BidSlot(adItem.id, nftId, parseAmount((price as number).toString()), selectedToken?.assetId, FloatStringToBigInt(tokenAmount, selectedToken!.decimals).toString(), JSON.parse(dashboard?.accountMeta));
         setBidModal(false);
         setSubmiting(false);
         window.location.reload();
@@ -112,7 +112,7 @@ const Bid: React.FC<{
 
       return balance.balance;
     }
-    
+
     setDidErrorMsg('');
     setCurrentPrice('');
     if (nftId) {
@@ -226,7 +226,7 @@ const Bid: React.FC<{
             {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
           </div>
         </div>
-        {/* <div className={styles.field}>
+        <div className={styles.field}>
           <div className={styles.title}>
             <FormFieldTitle title={intl.formatMessage({
               id: 'dashboard.ads.launch.token',
@@ -247,11 +247,11 @@ const Bid: React.FC<{
                 }}
               >
                 <Image
-                  src='/images/logo-round-core.svg'
+                  src={selectedToken?.icon ?? '/images/logo-round-core.svg'}
                   preview={false}
                   className={style.chainIcon}
                 />
-                <span className={style.tokenDetailsTokenName}>AD3</span>
+                <span className={style.tokenDetailsTokenName}>{selectedToken?.name}</span>
                 <DownOutlined className={style.tokenDetailsArrow} />
               </div>
               <div className={style.amountDetails}>
@@ -267,7 +267,7 @@ const Bid: React.FC<{
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
         {/* <div className={styles.field}>
           <Alert
             banner
@@ -301,11 +301,15 @@ const Bid: React.FC<{
         </div>
       </div>
 
-      <SelectToken
-        selectModal={selectModal}
-        setSelectModal={setSelectModal}
-        setTokenSelect={setTokenSelect}
-      />
+      {selectModal &&
+        <SelectToken
+          onClose={() => setSelectModal(false)}
+          onSelectToken={(token) => {
+            setSelectedToken(token);
+            setSelectModal(false);
+          }}
+          chain={'parami'}
+        ></SelectToken>}
     </>
   )
 }
