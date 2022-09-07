@@ -5,10 +5,11 @@ import { formatWithoutUint } from '@/utils/common';
 const Token: React.FC<{
   value: string,
   symbol?: string,
-}> = ({ value, symbol }) => {
+  decimals?: number
+}> = ({ value, symbol, decimals = 18 }) => {
   return (
     <div className={styles.ad3}>
-      {value ? formatWithoutUint(value.replaceAll(',', '')) : '--'}
+      {value ? formatWithoutUint(value.replaceAll(',', ''), decimals) : '--'}
       {/* {BigIntToFloatString(value, 18)} */}
       {symbol && (<span className={styles.unit}>&nbsp;${symbol}</span>)}
     </div>
