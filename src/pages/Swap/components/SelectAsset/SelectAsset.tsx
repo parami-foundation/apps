@@ -37,27 +37,27 @@ const SelectAsset: React.FC<{
                 const { balance } = accountRes.toHuman() ?? { balance: '' };
                 balance.replaceAll(',', '')
 
-                let icon = '';
                 try {
                     const did = await OwnerDidOfNft(asset!.id);
                     const info = await GetUserInfo(did);
+                    let icon = '';
 
                     if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
                         const hash = info?.avatar.substring(7);
                         icon = config.ipfs.endpoint + hash;
                     }
-                } catch (e) {
-                    console.error('Fetch Token Icon Error: assetId', asset!.id);
-                }
 
-                return {
-                    ...asset,
-                    icon,
-                    balance: balance.replaceAll(',', '')
+                    return {
+                        ...asset,
+                        icon,
+                        balance: balance.replaceAll(',', '')
+                    }
+                } catch (_e) {
+                    return null;
                 }
             }));
 
-            setAssets(items);
+            setAssets(items.filter(Boolean));
         }
     }
 
