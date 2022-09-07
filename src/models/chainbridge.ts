@@ -13,7 +13,7 @@ export interface ChainBridgeToken {
   decimals: number;
 }
 
-const tokenIconMap = {
+export const tokenIconMap = {
   AD3: "/images/logo-round-core.svg",
   USD: "/images/crypto/usdt-circle.svg",
   LINK: "/images/crypto/chainlink-link-logo.svg",

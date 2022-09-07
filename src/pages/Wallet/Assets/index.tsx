@@ -28,15 +28,15 @@ const Assets: React.FC = () => {
             {!!assetsArr && assetsArr.map((item) => {
               return (
                 <Badge
-                  count={intl.formatMessage({
+                  count={item.isNftToken ? intl.formatMessage({
                     id: 'wallet.assets.earnMore',
-                  })}
+                  }) : null}
                   offset={[-20, 0]}
                 >
                   <div
-                    className={style.field}
+                    className={`${style.field} ${item.isNftToken ? style.nftToken : ''}`}
                     onClick={() => {
-                      jumpKOLPage(item?.id);
+                      item.isNftToken && jumpKOLPage(item?.id);
                     }}
                   >
                     <div className={style.title}>
@@ -49,7 +49,7 @@ const Assets: React.FC = () => {
                           fallback='/images/logo-round-core.svg'
                           preview={false}
                         />
-                        {item?.token}#{item?.id}
+                        {item?.token}{item?.isNftToken && `#${item?.id}`}
                       </span>
                       <span
                         className={style.price}
@@ -63,12 +63,12 @@ const Assets: React.FC = () => {
                       >
                         <span
                           style={{
-                            marginBottom: 10,
+                            marginBottom: item.isNftToken ? 10 : 0,
                           }}
                         >
-                          <Token value={item?.balance} symbol={item?.symbol} />
+                          <Token value={item?.balance} symbol={item?.symbol} decimals={item?.decimals} />
                         </span>
-                        <small><AD3 value={item?.ad3} /></small>
+                        {item.isNftToken && <small><AD3 value={item?.ad3} /></small>}
                       </span>
                     </div>
                   </div>
@@ -76,7 +76,7 @@ const Assets: React.FC = () => {
               );
             })
             }
-            { !!assetsArr && assetsArr.length === 0 && (
+            {!!assetsArr && assetsArr.length === 0 && (
               <div className={style.noAssets}>
                 <img
                   src={'/images/icon/query.svg'}
