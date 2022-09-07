@@ -79,7 +79,7 @@ const Withdraw: React.FC<{
 		try {
 			setLoading(true);
 
-			const paramiRes: any = await ERC20TokenToETH(selectedToken!, JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, 18).toString(), destinationAddress as string);
+			const paramiRes: any = await ERC20TokenToETH(selectedToken!, JSON.parse(dashboard.accountMeta!), FloatStringToBigInt(amount, selectedToken!.decimals).toString(), destinationAddress as string);
 			setTxNonce(BigInt(paramiRes.chainBridge.FungibleTransfer[0][1]));
 			setParamiHash(paramiRes.blockHash);
 			setStep(2);
@@ -142,7 +142,7 @@ const Withdraw: React.FC<{
 								defaultMessage: 'Balance Available',
 							})}:
 						</span>
-						<Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, 18)}>
+						<Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, selectedToken?.decimals ?? 18)}>
 							<span className={style.balanceDetailsBalance}>
 								<Token value={balanceOnParami} symbol={selectedToken?.symbol} />
 							</span>
@@ -179,7 +179,7 @@ const Withdraw: React.FC<{
 							type='link'
 							size='small'
 							onClick={() => {
-								setAmount(BigIntToFloatString(balanceOnParami, 18));
+								setAmount(BigIntToFloatString(balanceOnParami, selectedToken?.decimals ?? 18));
 							}}
 						>
 							{intl.formatMessage({
@@ -215,7 +215,7 @@ const Withdraw: React.FC<{
 							defaultMessage: 'Balance',
 						})}:
 					</span>
-					<Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, 18)}>
+					<Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, selectedToken?.decimals ?? 18)}>
 						<span className={style.balanceDetailsBalance}>
 							<Token value={balanceOnEth} symbol={selectedToken?.symbol} />
 						</span>
@@ -264,7 +264,7 @@ const Withdraw: React.FC<{
 				onClick={() => {
 					handleSubmit();
 				}}
-				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, 18) <= BigInt(0) || FloatStringToBigInt(amount, 18) > BigInt(balanceOnParami)}
+				disabled={!amount || !destinationAddress || FloatStringToBigInt(amount, selectedToken?.decimals ?? 18) <= BigInt(0) || FloatStringToBigInt(amount, selectedToken?.decimals ?? 18) > BigInt(balanceOnParami)}
 			>
 				{intl.formatMessage({
 					id: 'dashboard.bridge.transfer',

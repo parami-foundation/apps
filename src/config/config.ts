@@ -10,7 +10,7 @@ export const config = {
     "socketServer": "wss://staging.parami.io/ws",
     "subqueryServer": "https://staging.parami.io/graph/",
     "tagMapConfig": "/tagmap.json",
-    "chainBridgeConfig": "/chainbridge.json",
+    "chainBridgeConfig": "/chainbridge.staging.json",
     "tokenListConfig": "/tokens.json",
     "airdropServer": "https://staging.parami.io/airdrop",
     "webNotificationServer": "https://staging.parami.io/webnotify",

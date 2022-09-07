@@ -63,10 +63,9 @@ export const CreateAds = async (tags: any[], metadata: string, rewardRate: strin
   return await subWeb3Callback(tx, injector, account);
 };
 
-export const BidSlot = async (adId: string, nftID: string, amount: string, tokenSelect, tokenAmount, account: any) => { // todo: type this
-  console.log(account)
+export const BidSlot = async (adId: string, nftID: string, amount: string, tokenAssetId: number | undefined, tokenAmount, account: any) => {
   const injector = await web3FromSource(account.meta.source);
-  const tx = window.apiWs.tx.ad.bidWithFraction(adId, nftID, amount, tokenSelect, tokenAmount);
+  const tx = window.apiWs.tx.ad.bidWithFraction(adId, nftID, amount, tokenAssetId, tokenAmount);
 
   return await subWeb3Callback(tx, injector, account);
 };

@@ -34,7 +34,7 @@ const TransactionFeeModal: React.FC<{
 
   useEffect(() => {
     if (transferFee) {
-      const receive = (FloatStringToBigInt(amount, 18) - BigInt(transferFee.fee.replaceAll(',', ''))).toString();
+      const receive = (FloatStringToBigInt(amount, token.decimals) - BigInt(transferFee.fee.replaceAll(',', ''))).toString();
       setInsufficientAmount(!!receive && BigInt(receive) <= 0);
     }
   }, [transferFee])
@@ -95,7 +95,7 @@ const TransactionFeeModal: React.FC<{
               Transfer Amount:
             </div>
             <div className={styles.value}>
-              <Token value={FloatStringToBigInt(amount, 18).toString()} symbol={token.symbol} />
+              <Token value={FloatStringToBigInt(amount, token.decimals).toString()} symbol={token.symbol} />
             </div>
           </div>
           <div className={styles.field}>
