@@ -95,8 +95,8 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
   return false;
 };
 
-export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, (referrer ?? '').trim(), { Sr25519: signature.trim() }, signer.trim());
+export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string | null, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, referrer, { Sr25519: signature.trim() }, signer.trim());
 
   return SubmitExtrinsic(ex, password, keystore, preTx, account);
 };
