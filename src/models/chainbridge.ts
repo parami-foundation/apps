@@ -19,10 +19,12 @@ const tokenIconMap = {
   LINK: "/images/crypto/chainlink-link-logo.svg",
   WPC: "/images/crypto/WePiggy-icon.png",
   USDT: "/images/crypto/usdt-circle.svg",
+  "1SOL": "/images/crypto/1sol-icon.png"
 }
 
 export default () => {
   const [tokens, setTokens] = useState<ChainBridgeToken[]>();
+  const [contractAddresses, setContractAddresses] = useState<{bridge: string; erc20Handler: string}>();
 
   const fetchTokenInfo = async () => {
     const { data } = await GetChainBridgeTokenInfo();
@@ -40,6 +42,12 @@ export default () => {
       }
     })
     setTokens(tokens);
+
+    const chainInfo = data.chains;
+    setContractAddresses({
+      bridge: chainInfo[1].bridge,
+      erc20Handler: chainInfo[1].erc20Handler
+    });
   }
 
   useEffect(() => {
@@ -47,6 +55,7 @@ export default () => {
   }, []);
 
   return {
-    tokens
+    tokens,
+    contractAddresses
   }
 }
