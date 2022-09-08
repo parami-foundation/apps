@@ -193,12 +193,6 @@ const Explorer: React.FC = () => {
   }, [nft]);
 
   useEffect(() => {
-    if (asset) {
-      queryAdSlot().catch(errorHandler);
-    }
-  }, [asset])
-
-  useEffect(() => {
     if (apiWs && !params?.nftID) {
       queryPreferred();
     };
@@ -210,6 +204,7 @@ const Explorer: React.FC = () => {
 
     if (apiWs) {
       try {
+        queryAdSlot();
         queryNftMetaData();
         queryUser();
       } catch (e) {
