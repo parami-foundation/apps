@@ -31,11 +31,7 @@ export const subCallback = (cb: SubmittableExtrinsic<"promise", any>, payUser: K
 					});
 				}
 				if (status.isInBlock) {
-					notification.success({
-						key: 'ChainMessage',
-						message: 'Included at block hash',
-						description: status.asInBlock.toHex(),
-					});
+					console.log('ChainMessage: Included at block hash', status.asInBlock.toHex());
 
 					const map = {
 						blockHash: status.asInBlock.toHex()
@@ -102,11 +98,7 @@ export const subWeb3Callback = (cb: SubmittableExtrinsic<"promise", any>, inject
 				});
 			}
 			if (status.isInBlock) {
-				notification.success({
-					key: 'ChainMessage',
-					message: 'Included at block hash',
-					description: status.asInBlock.toHex(),
-				});
+				console.log('ChainMessage: Included at block hash', status.asInBlock.toHex());
 
 				const map = {
 					blockHash: status.asInBlock.toHex()

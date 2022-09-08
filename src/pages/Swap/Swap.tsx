@@ -8,7 +8,7 @@ import AD3 from '@/components/Token/AD3';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DownOutlined } from '@ant-design/icons';
 import Token from '@/components/Token/Token';
-import { BuyCurrency, BuyToken } from '@/services/parami/Swap';
+import { BuyToken, SellToken } from '@/services/parami/Swap';
 import config from '@/config/config';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { parseAmount } from '@/utils/common';
@@ -113,7 +113,7 @@ const Swap: React.FC = () => {
                     break;
                 case 'tokenToAd3':
                     try {
-                        const info: any = await BuyCurrency(params?.assetId, FloatStringToBigInt(ad3Number, 18).toString(), FloatStringToBigInt(tokenNumber, 18).toString(), passphrase, wallet?.keystore, preTx, account);
+                        const info: any = await SellToken(params?.assetId, FloatStringToBigInt(tokenNumber, 18).toString(), FloatStringToBigInt(ad3Number, 18).toString(), passphrase, wallet?.keystore, preTx, account);
                         setLoading(false);
 
                         if (preTx && account) {
