@@ -76,11 +76,6 @@ const Explorer: React.FC = () => {
 
     if (!adJson) return;
 
-    adJson.link = adJson.link + '?kol=' + didToHex(did);
-    if (!!referrer) {
-      adJson.link += '&referrer=' + referrer;
-    };
-
     setAd(adJson);
   }
 
