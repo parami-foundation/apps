@@ -90,6 +90,7 @@
     name: 'account',
     icon: 'UserOutlined',
     access: 'canUser',
+    hideInMenu: true,
     hideChildrenInMenu: true,
     component: './Account',
   },
