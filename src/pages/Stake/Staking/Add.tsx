@@ -107,7 +107,7 @@ const Add: React.FC<{
                 const balanceBigInt = BigInt(balance.replaceAll(',', ''));
 
                 if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(assets[assetsID])) {
-                    const did = await OwnerDidOfNft(assetsID).catch(() => null);
+                    const did = await OwnerDidOfNft(assetsID);
                     if (did) {
                         let icon: any;
                         const info = await GetUserInfo(did);

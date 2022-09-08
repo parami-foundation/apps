@@ -8,6 +8,8 @@ import { notification } from 'antd';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
 import { GetNFTMetaData } from '@/services/parami/NFT';
 import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
+import config from "@/config/config";
+import { GetAvatar } from "@/services/parami/HTTP";
 
 const DAO: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -38,15 +40,18 @@ const DAO: React.FC = () => {
     const did = !!params?.kol ? 'did' + params?.kol : hexToDid(wallet.did!);
     const didHex = didToHex(did);
 
-    const queryAvatar = async () => {
-        // todo: query nft image
-    }
-
     useEffect(() => {
         if (user) {
             // Set page title
-            document.title = `${user?.nickname.toString() || did} - Para Metaverse Identity`;
-            queryAvatar();
+            document.title = `${user.nickname?.toString() || did} - Para Metaverse Identity`;
+            if (user.avatar && user.avatar?.indexOf('ipfs://') > -1) {
+                const hash = user.avatar.substring(7);
+                GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {
+                    if (response?.status === 200) {
+                        setAvatar(window.URL.createObjectURL(data));
+                    }
+                })
+            }
         }
     }, [user]);
 
@@ -76,7 +81,7 @@ const DAO: React.FC = () => {
         const nftInfoData = await GetNFTMetaData(params?.nftID);
 
         // If don't have any nft
-        if (nftInfoData?.isEmpty) {
+        if (!nftInfoData) {
             notification.error({
                 message: 'This KOL does not own any NFT',
                 duration: null,
@@ -85,9 +90,7 @@ const DAO: React.FC = () => {
             return;
         }
 
-        const nftInfo: any = nftInfoData?.toHuman();
-
-        if (nftInfo?.owner !== didHex) {
+        if (nftInfoData.owner !== didHex) {
             notification.error({
                 message: 'This KOL does not own any NFT',
                 duration: null,
@@ -96,7 +99,7 @@ const DAO: React.FC = () => {
             return;
         }
 
-        setNft(nftInfo);
+        setNft(nftInfoData);
     }
 
     const queryUser = async () => {
