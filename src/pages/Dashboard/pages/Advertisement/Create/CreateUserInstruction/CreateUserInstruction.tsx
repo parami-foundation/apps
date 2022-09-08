@@ -73,7 +73,14 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
                     <Input
                         size='large'
                         type={'number'}
-                        onChange={(e) => setScore(parseInt(e.target.value, 10))}
+                        step={1}
+                        max={5}
+                        min={-5}
+                        value={score}
+                        onChange={(e) => {
+                            const score = Math.min(5, Math.max(-5, parseInt(e.target.value, 10)));
+                            setScore(score);
+                        }}
                         placeholder='score'
                     />
                 </div>
