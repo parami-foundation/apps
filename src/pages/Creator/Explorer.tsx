@@ -12,8 +12,8 @@ import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
-import { deleteComma } from '@/utils/format';
 import Footer from '@/components/Footer';
+import { GetAvatar } from "@/services/parami/HTTP";
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -124,38 +124,20 @@ const Explorer: React.FC = () => {
     setUser(userData);
   }
 
-  const queryAvatar = async () => {
-    // todo: query nft image
-    setLoading(false);
-    return;
-
-    // // Query user avatar
-    // if (user?.avatar.indexOf('ipfs://') > -1) {
-    //   const hash = user?.avatar?.substring(7);
-    //   const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
-
-    //   // Network exception
-    //   if (!response) {
-    //     notification.error({
-    //       key: 'networkException',
-    //       message: 'Network exception',
-    //       description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-    //       duration: null,
-    //     });
-    //     setLoading(false);
-    //   }
-
-    //   if (response?.status === 200) {
-    //     setAvatar(window.URL.createObjectURL(data));
-    //   }
-    // };
-  }
-
   useEffect(() => {
     if (user) {
       // Set page title
       document.title = `${user?.nickname.toString() || did} - Para Metaverse Identity`;
-      queryAvatar().catch(errorHandler);
+
+      // Query user avatar
+      if (user?.avatar.indexOf('ipfs://') > -1) {
+        const hash = user?.avatar?.substring(7);
+        GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {
+          if (response?.status === 200) {
+            setAvatar(window.URL.createObjectURL(data));
+          }
+        });
+      };
     }
   }, [user]);
 
