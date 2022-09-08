@@ -1,5 +1,5 @@
-import React from 'react';
-import { useIntl, useModel } from 'umi';
+import React, { useEffect } from 'react';
+import { useIntl, useModel, useParams } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from '../../style.less';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -15,6 +15,17 @@ const BlockChain: React.FC<{
   const intl = useIntl();
 
   const { Title } = Typography;
+
+  const params: {
+    bind: string;
+  } = useParams();
+
+  useEffect(() => {
+    if (params?.bind === 'ethereum') {
+      setBindModal(true);
+      setBindPlatform('Ethereum');
+    }
+  }, [params]);
 
   return (
     <>

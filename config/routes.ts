@@ -86,6 +86,14 @@
     component: './Account',
   },
   {
+    path: '/profile/:bind',
+    name: 'account',
+    icon: 'UserOutlined',
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './Account',
+  },
+  {
     path: '/record',
     name: 'record',
     icon: 'HistoryOutlined',

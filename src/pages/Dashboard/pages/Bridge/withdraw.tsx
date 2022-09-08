@@ -152,7 +152,7 @@ const Withdraw: React.FC<{
 						</span>
 						<Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, selectedToken?.decimals ?? 18)}>
 							<span className={style.balanceDetailsBalance}>
-								<Token value={balanceOnParami} symbol={selectedToken?.symbol} />
+								<Token value={balanceOnParami} symbol={selectedToken?.symbol} decimals={selectedToken?.decimals} />
 							</span>
 						</Tooltip>
 					</div>
@@ -225,7 +225,7 @@ const Withdraw: React.FC<{
 					</span>
 					<Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, selectedToken?.decimals ?? 18)}>
 						<span className={style.balanceDetailsBalance}>
-							<Token value={balanceOnEth} symbol={selectedToken?.symbol} />
+							<Token value={balanceOnEth} symbol={selectedToken?.symbol} decimals={selectedToken?.decimals} />
 						</span>
 					</Tooltip>
 				</div>

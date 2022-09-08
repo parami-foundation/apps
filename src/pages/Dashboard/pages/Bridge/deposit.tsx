@@ -146,7 +146,8 @@ const Deposit: React.FC<{
         )
       ).wait();
 
-      const nonce = BigInt(ethRes.logs[2].topics[3]);
+      const depositLog = ethRes.logs.find(log => log.address.toLowerCase() === contractAddresses.bridge.toLowerCase());
+      const nonce = BigInt(depositLog.topics[depositLog.topics.length - 1]);
       setTxNonce(nonce);
       setETHHash(ethRes.transactionHash);
       setStep(2);
@@ -209,7 +210,7 @@ const Deposit: React.FC<{
             </span>
             <Tooltip placement="top" title={BigIntToFloatString(balanceOnEth, selectedToken?.decimals ?? 18)}>
               <span className={style.balanceDetailsBalance}>
-                <Token value={balanceOnEth} symbol={selectedToken?.symbol} />
+                <Token value={balanceOnEth} symbol={selectedToken?.symbol} decimals={selectedToken?.decimals} />
               </span>
             </Tooltip>
           </div>
@@ -282,7 +283,7 @@ const Deposit: React.FC<{
           </span>
           <Tooltip placement="top" title={BigIntToFloatString(balanceOnParami, selectedToken?.decimals ?? 18)}>
             <span className={style.balanceDetailsBalance}>
-              <Token value={balanceOnParami} symbol={selectedToken?.symbol} />
+              <Token value={balanceOnParami} symbol={selectedToken?.symbol} decimals={selectedToken?.decimals} />
             </span>
           </Tooltip>
         </div>
