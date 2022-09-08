@@ -34,7 +34,8 @@ export const doGraghQuery = async (query: string) => {
 };
 
 export const OwnerDidOfNft = async (nftId: any) => {
-  const query = `query {
+  try {
+    const query = `query {
     nfts(
       filter: { assetId: { equalTo: "${nftId}" } }
     ) {
@@ -43,21 +44,25 @@ export const OwnerDidOfNft = async (nftId: any) => {
       }
     }
   }`;
-  const res = await doGraghQuery(query);
+    const res = await doGraghQuery(query);
 
-  // Network exception
-  if (!res) {
-    notification.error({
-      key: 'networkException',
-      message: 'Network exception',
-      description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-      duration: null,
-    });
+    // Network exception
+    if (!res) {
+      notification.error({
+        key: 'networkException',
+        message: 'Network exception',
+        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+        duration: null,
+      });
+      return;
+    }
+
+    const data = await res.json();
+    return data.data.nfts.nodes[0].kolDid;
+  } catch (e) {
+    console.error(e)
     return;
   }
-
-  const data = await res.json();
-  return data.data.nfts.nodes[0].kolDid;
 };
 
 // 7 days 
@@ -136,7 +141,7 @@ export const AssetTransactionHistory = async (stashAccount: string) => {
   const assetIds: string[] = Array.from(new Set(transactions.map(asset => asset.assetId))).filter(id => id !== 'AD3');
 
   const symbols = [{ assetId: 'AD3', assetSymbol: 'AD3' }];
-  
+
   if (assetIds.length) {
     const filterCondition = assetIds.map(id => `{ assetId: { equalTo: "${id}" }}`).join(',');
     const query = `query {

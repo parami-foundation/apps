@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useModel } from "umi";
 import { notification } from 'antd';
 import { CalculateLPReward, GetUserInfo } from "@/services/parami/RPC";
+import { deleteComma } from "@/utils/format";
 
 export default () => {
     const apiWs = useModel('apiWs');
@@ -24,11 +25,14 @@ export default () => {
             await apiWs.query.swap.liquidity(LPTokenId, async (LPInfoData: any) => {
                 const LPInfo = LPInfoData.toHuman();
                 if (!!LPInfo) {
+                    LPInfo.tokenId = deleteComma(LPInfo.tokenId);
                     LPInfo['lpId'] = LPTokenId;
                     const reward = await CalculateLPReward(LPTokenId);
                     LPInfo['reward'] = reward;
 
                     const did = await OwnerDidOfNft(LPInfo.tokenId);
+                    if (!did) return;
+                    
                     const kol = await GetUserInfo(did);
                     let icon: any;
                     if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {

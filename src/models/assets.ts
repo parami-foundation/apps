@@ -36,7 +36,7 @@ export default () => {
             const balanceBigInt = BigInt(balance.replaceAll(',', ''));
             if (!!balanceBigInt && balanceBigInt > 0) {
               let ad3, kol, icon;
-              const did = await OwnerDidOfNft(entry?.assetId).catch(() => null);
+              const did = await OwnerDidOfNft(entry?.assetId);
               if (did) {
                 ad3 = await DrylySellToken(entry?.assetId, balanceBigInt.toString());
                 kol = await GetUserInfo(did);
