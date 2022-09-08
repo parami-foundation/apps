@@ -24,7 +24,12 @@ export const GetSlotOfNft = async (nftId: string) => {
     return null;
   }
   const res = slot.toHuman() as any;
-  return res;
+  return {
+    ...res,
+    fractionId: deleteComma(res.fractionId),
+    fungibleId: deleteComma(res.fungibleId),
+    nftId: deleteComma(res.nftId)
+  };
 }
 
 export const GetSlotAdOf = async (nftId: string): Promise<any> => {

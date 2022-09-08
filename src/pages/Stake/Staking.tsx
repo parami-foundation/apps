@@ -58,8 +58,8 @@ const Staking: React.FC = () => {
 				</div>
 			</div>
 
-			<BigModal
-				visable={addModal}
+			{addModal && <BigModal
+				visable
 				title={
 					intl.formatMessage({
 						id: 'stake.add',
@@ -71,7 +71,8 @@ const Staking: React.FC = () => {
 				bodyStyle={{
 					padding: 0
 				}}
-			/>
+			/>}
+
 		</>
 	)
 }

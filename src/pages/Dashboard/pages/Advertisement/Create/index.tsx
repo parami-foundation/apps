@@ -11,7 +11,6 @@ import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
 import { uploadIPFS } from '@/services/parami/IPFS';
 import CreateUserInstruction, { UserInstruction } from './CreateUserInstruction/CreateUserInstruction';
-import { GetTagsMap } from '@/services/parami/HTTP';
 import ParamiScoreTag from '@/pages/Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '@/pages/Creator/Explorer/components/ParamiScore/ParamiScore';
 
@@ -28,12 +27,11 @@ const Create: React.FC<{
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
-  const [tagOptions, setTagOptions] = useState<{ hash: string; name: string }[]>([]);
   const [title, setTitle] = useState<string>();
-  const [link, setLink] = useState<string>('https://weekly.parami.io/');
   const [description, setDescription] = useState<string>();
   const [mediaUrl, setMediaUrl] = useState<string>();
-  const [posterUrl, setPosterUrl] = useState<string>();
+
+  const { tagOptions } = useModel('tagOptions');
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
@@ -44,31 +42,14 @@ const Create: React.FC<{
   const intl = useIntl();
   const { Option } = Select;
 
-  const fetchTagOptions = async () => {
-    const { data }: any = await GetTagsMap();
-    const tags = Object.keys(data).filter(tagHash => data[tagHash].guide).map(tagHash => {
-      return {
-        hash: tagHash,
-        name: data[tagHash].label
-      }
-    });
-    setTagOptions(tags);
-  }
-
-  useEffect(() => {
-    fetchTagOptions();
-  }, []);
-
   const handleSubmit = async () => {
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
         let adMetadata = {
           title,
-          link,
           desc: description,
           media: mediaUrl,
-          poster: posterUrl,
           instructions
         };
 
@@ -79,7 +60,8 @@ const Create: React.FC<{
         }
 
         const delegatedDidHex = didToHex(delegatedDid);
-        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
+        const allTags = Array.from(new Set([...tags, ...instructions.map(ins => ins.tag).filter(Boolean)]));
+        await CreateAds(allTags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
@@ -122,7 +104,7 @@ const Create: React.FC<{
       if (info.file.status === 'done') {
         const ipfsHash = info.file.response.Hash;
         const imageUrl = config.ipfs.endpoint + ipfsHash;
-        imageType === 'media' ? setMediaUrl(imageUrl) : setPosterUrl(imageUrl);
+        setMediaUrl(imageUrl);
         return;
       }
       if (info.file.status === 'error') {
@@ -168,19 +150,6 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            <FormFieldTitle title={'Link'} required />
-          </div>
-          <div className={styles.value}>
-            <Input
-              size='large'
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              placeholder='https://weekly.parami.io/'
-            />
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.title}>
             <FormFieldTitle title={'Description'} required />
           </div>
           <div className={styles.value}>
@@ -189,26 +158,6 @@ const Create: React.FC<{
               onChange={(e) => setDescription(e.target.value)}
               placeholder='Advertisement Description'
             />
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.title}>
-            <FormFieldTitle title={'Media'} required />
-          </div>
-          <div className={styles.value}>
-            <Upload
-              name="avatar"
-              listType="picture-card"
-              className="avatar-uploader"
-              showUploadList={false}
-              action={config.ipfs.upload}
-              onChange={handleUploadOnChange('media')}
-            >
-              {mediaUrl ? <img src={mediaUrl} style={{ width: '100%' }} /> : <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>}
-            </Upload>
           </div>
         </div>
         <div className={styles.field}>
@@ -222,9 +171,9 @@ const Create: React.FC<{
               className="avatar-uploader"
               showUploadList={false}
               action={config.ipfs.upload}
-              onChange={handleUploadOnChange('poster')}
+              onChange={handleUploadOnChange('media')}
             >
-              {posterUrl ? <img src={posterUrl} style={{ width: '100%' }} /> : <div>
+              {mediaUrl ? <img src={mediaUrl} style={{ width: '100%' }} /> : <div>
                 <PlusOutlined />
                 <div style={{ marginTop: 8 }}>Upload</div>
               </div>}

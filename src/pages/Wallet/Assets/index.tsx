@@ -49,7 +49,7 @@ const Assets: React.FC = () => {
                           fallback='/images/logo-round-core.svg'
                           preview={false}
                         />
-                        {item?.token}{item?.isNftToken && `#${item?.id}`}
+                        {item?.symbol}
                       </span>
                       <span
                         className={style.price}

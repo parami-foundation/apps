@@ -363,8 +363,8 @@ const Swap: React.FC = () => {
 
             {selectAssetModal && <SelectAsset
                 onClose={() => setSelectAssetModal(false)}
-                onSelectAsset={assetId => {
-                    history.push(`/swap/${assetId}`);
+                onSelectAsset={asset => {
+                    history.push(`/swap/${asset.id}`);
                     setSelectAssetModal(false);
                 }}
             ></SelectAsset>}

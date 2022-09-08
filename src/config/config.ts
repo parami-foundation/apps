@@ -16,7 +16,7 @@ export const config = {
     "webNotificationServer": "https://staging.parami.io/webnotify",
     "weeklySite": "https://weekly.parami.io/"
   } : {
-    "socketServer": "wss://rpc-na1.parami.io/ws",
+    "socketServer": "wss://rpc-global.parami.io/ws",
     "subqueryServer": "https://graph.parami.io",
     "tagMapConfig": "/tagmap.json",
     "chainBridgeConfig": "/chainbridge.json",
