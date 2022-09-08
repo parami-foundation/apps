@@ -11,7 +11,7 @@ import { GetAllAssets } from '@/services/parami/Assets';
 
 const SelectAsset: React.FC<{
     onClose: () => void
-    onSelectAsset: (assetId: string) => void
+    onSelectAsset: (asset) => void
 }> = ({ onClose, onSelectAsset }) => {
     const intl = useIntl();
     const apiWs = useModel('apiWs');
@@ -75,7 +75,7 @@ const SelectAsset: React.FC<{
 
                 {assets && assets.length > 0 && <>
                     <div className={style.title}>
-                        <span>Name</span>
+                        <span>Token</span>
                         <span>Available Balance</span>
                     </div>
 
@@ -84,7 +84,7 @@ const SelectAsset: React.FC<{
                             <div
                                 className={style.field}
                                 key={asset.id}
-                                onClick={() => onSelectAsset(asset.id)}
+                                onClick={() => onSelectAsset(asset)}
                             >
                                 <span className={style.title}>
                                     <Image
@@ -94,7 +94,7 @@ const SelectAsset: React.FC<{
                                         preview={false}
                                     />
                                     <span className={style.name}>
-                                        {asset.name}
+                                        {asset.symbol}
                                     </span>
                                 </span>
                                 <span className={style.value}>

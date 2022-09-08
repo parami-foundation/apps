@@ -1,85 +1,19 @@
-import BigModal from '@/components/ParamiModal/BigModal';
 import { RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image, message, notification } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { AddLiquidity } from '@/services/parami/Swap';
-import config from '@/config/config';
-import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
-import { DrylyAddLiquidity, GetUserInfo } from '@/services/parami/RPC';
-import { isLPAsset } from '@/utils/assets.util';
-import { GetAllAssets } from '@/services/parami/Assets';
-
-const SelectAssets: React.FC<{
-    setToken: React.Dispatch<React.SetStateAction<any>>,
-    setSelectModal: React.Dispatch<React.SetStateAction<boolean>>,
-    assetsBalance: any[],
-    setTokenBalance: React.Dispatch<React.SetStateAction<any>>,
-}> = ({ setToken, setSelectModal, assetsBalance, setTokenBalance }) => {
-    const intl = useIntl();
-
-    const handleSelect = async (item: any) => {
-        setToken(item);
-        console.log(item)
-        setTokenBalance(item.balance);
-        setSelectModal(false);
-    }
-
-    return (
-        <div className={styles.selectAssets}>
-            <div className={styles.assetsList}>
-                <div className={styles.title}>
-                    <span>
-                        {intl.formatMessage({
-                            id: 'stake.add.name',
-                        })}
-                    </span>
-                    <span>
-                        {intl.formatMessage({
-                            id: 'stake.add.availableBalance',
-                        })}
-                    </span>
-                </div>
-                {
-                    assetsBalance.map((item: any) => {
-                        return (
-                            <div
-                                className={styles.field}
-                                key={item?.id}
-                                onClick={() => handleSelect(item)}
-                            >
-                                <span className={styles.title}>
-                                    <Image
-                                        className={styles.icon}
-                                        src={item?.icon || '/images/logo-round-core.svg'}
-                                        fallback='/images/logo-round-core.svg'
-                                        preview={false}
-                                    />
-                                    <span className={styles.name}>
-                                        {item?.token}
-                                    </span>
-                                </span>
-                                <span className={styles.value}>
-                                    <Token value={item?.balance} symbol={item?.symbol} />
-                                </span>
-                            </div>
-                        );
-                    })
-                }
-            </div>
-        </div>
-    )
-};
+import { DrylyAddLiquidity } from '@/services/parami/RPC';
+import SelectAsset from '@/pages/Swap/components/SelectAsset/SelectAsset';
 
 const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setAddModal }) => {
-    const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const { balance: ad3Balance } = useModel('balance');
     const { getTokenList } = useModel('stake');
@@ -89,58 +23,9 @@ const Add: React.FC<{
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectModal, setSelectModal] = useState<boolean>(false);
-    const [assetsBalance, setAssetsBalance] = useState<any[]>([]);
     const [tokenAmount, setTokenAmount] = useState<any[]>([]);
-    const [tokenBalance, setTokenBalance] = useState<any>();
 
     const intl = useIntl();
-
-    const updateAssetsBalance = async (assets: any) => {
-        if (!apiWs) {
-            return;
-        }
-        const data: any[] = [];
-        if (!!assets) {
-            for (const assetsID in assets) {
-                const res: any = await apiWs.query.assets.account(Number(assetsID), wallet?.account);
-                const { balance } = res.toHuman() ?? { balance: '' };
-                const balanceBigInt = BigInt(balance.replaceAll(',', ''));
-
-                if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(assets[assetsID])) {
-                    const did = await OwnerDidOfNft(assetsID);
-                    if (did) {
-                        let icon: any;
-                        const info = await GetUserInfo(did);
-                        if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
-                            const hash = info?.avatar.substring(7);
-                            icon = config.ipfs.endpoint + hash;
-                        };
-                        data.push({
-                            id: assetsID,
-                            token: assets[assetsID].name,
-                            symbol: assets[assetsID].symbol,
-                            balance: balanceBigInt.toString(),
-                            icon,
-                        });
-                    }
-                }
-            }
-            setAssetsBalance(data);
-        }
-    };
-
-    const updateAssetsInfo = async () => {
-        if (!apiWs) {
-            return;
-        }
-        
-        const tmpAssets = {};
-        const assets = await GetAllAssets();
-        assets.forEach(asset => {
-            tmpAssets[asset.id] = asset;
-        });
-        updateAssetsBalance(tmpAssets);
-    };
 
     const handleSubmit = async (preTx?: boolean, account?: string) => {
         if (!!wallet && !!wallet?.keystore) {
@@ -169,12 +54,6 @@ const Add: React.FC<{
         }
     };
 
-    useEffect(() => {
-        if (apiWs) {
-            updateAssetsInfo();
-        }
-    }, [apiWs]);
-
     return (
         <>
             <div className={styles.mining}>
@@ -193,7 +72,7 @@ const Add: React.FC<{
                         }}
                     >
                         <div className={styles.title}>
-                            {token.token && (
+                            {token.symbol && (
                                 <>
                                     <Image
                                         className={styles.icon}
@@ -201,10 +80,10 @@ const Add: React.FC<{
                                         fallback='/images/logo-round-core.svg'
                                         preview={false}
                                     />
-                                    <span className={styles.name}>{token.token}</span>
+                                    <span className={styles.name}>{token.symbol}</span>
                                 </>
                             )}
-                            {!token.token && (
+                            {!token.symbol && (
                                 <span className={styles.name}>
                                     {intl.formatMessage({
                                         id: 'stake.add.pleaseSelect',
@@ -213,7 +92,7 @@ const Add: React.FC<{
                             )}
                         </div>
                         <div className={styles.token}>
-                            <Token value={tokenBalance} symbol={token?.symbol} />
+                            <Token value={token?.balance} symbol={token?.symbol} />
                             <RightOutlined
                                 style={{
                                     color: '#ff5b00',
@@ -312,7 +191,7 @@ const Add: React.FC<{
                         disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) ||
                             FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) ||
                             tokenAmount.length === 0 ||
-                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > tokenBalance)}
+                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > BigInt(token?.balance ?? '0'))}
                         onClick={() => {
                             setSubmitting(true);
                             setSecModal(true);
@@ -324,37 +203,15 @@ const Add: React.FC<{
                     </Button>
                 </div>
             </div>
-            <BigModal
-                visable={selectModal}
-                title={
-                    intl.formatMessage({
-                        id: 'stake.add.selectAssets',
-                    })
-                }
-                content={
-                    <SelectAssets
-                        setToken={setToken}
-                        setSelectModal={setSelectModal}
-                        assetsBalance={assetsBalance}
-                        setTokenBalance={setTokenBalance}
-                    />
-                }
-                close={() => { setSelectModal(false) }}
-                footer={
-                    <Button
-                        block
-                        type='primary'
-                        shape='round'
-                        size='large'
-                        className={styles.button}
-                        onClick={() => setSelectModal(false)}
-                    >
-                        {intl.formatMessage({
-                            id: 'common.close',
-                        })}
-                    </Button>
-                }
-            />
+
+            {selectModal && <SelectAsset
+                onClose={() => setSelectModal(false)}
+                onSelectAsset={asset => {
+                    setToken(asset);
+                    setSelectModal(false);
+                }}
+            ></SelectAsset>}
+
             <SecurityModal
                 visable={secModal}
                 setVisable={setSecModal}
