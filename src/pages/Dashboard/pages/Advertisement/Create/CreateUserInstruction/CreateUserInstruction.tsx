@@ -1,7 +1,10 @@
 import FormFieldTitle from '@/components/FormFieldTitle';
-import { Input, Modal } from 'antd';
+import { Input, Modal, Select } from 'antd';
 import React, { useState } from 'react';
 import styles from '@/pages/dashboard.less';
+import { useModel } from 'umi';
+
+const { Option } = Select;
 
 export interface UserInstruction {
     text: string;
@@ -20,6 +23,8 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
     const [tag, setTag] = useState<string>();
     const [score, setScore] = useState<number>();
     const [link, setLink] = useState<string>();
+
+    const { tagOptions } = useModel('tagOptions');
 
     const createInstruction = () => {
         if (text) {
@@ -57,11 +62,16 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
                     <FormFieldTitle title={'Tag'} />
                 </div>
                 <div className={styles.value}>
-                    <Input
-                        size='large'
-                        onChange={(e) => setTag(e.target.value)}
-                        placeholder='Tag to score'
-                    />
+                    <Select
+                        allowClear
+                        style={{ width: '100%' }}
+                        placeholder="Please select"
+                        onChange={value => setTag(value as string)}
+                    >
+                        {tagOptions.map(option => {
+                            return <Option key={option.hash} value={option.name}>{option.name}</Option>
+                        })}
+                    </Select>
                 </div>
             </div>
 

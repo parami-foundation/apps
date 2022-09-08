@@ -11,7 +11,6 @@ import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
 import { uploadIPFS } from '@/services/parami/IPFS';
 import CreateUserInstruction, { UserInstruction } from './CreateUserInstruction/CreateUserInstruction';
-import { GetTagsMap } from '@/services/parami/HTTP';
 import ParamiScoreTag from '@/pages/Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '@/pages/Creator/Explorer/components/ParamiScore/ParamiScore';
 
@@ -28,10 +27,11 @@ const Create: React.FC<{
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
-  const [tagOptions, setTagOptions] = useState<{ hash: string; name: string }[]>([]);
   const [title, setTitle] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [mediaUrl, setMediaUrl] = useState<string>();
+
+  const { tagOptions } = useModel('tagOptions');
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
@@ -41,21 +41,6 @@ const Create: React.FC<{
 
   const intl = useIntl();
   const { Option } = Select;
-
-  const fetchTagOptions = async () => {
-    const { data }: any = await GetTagsMap();
-    const tags = Object.keys(data).filter(tagHash => data[tagHash].guide).map(tagHash => {
-      return {
-        hash: tagHash,
-        name: data[tagHash].label
-      }
-    });
-    setTagOptions(tags);
-  }
-
-  useEffect(() => {
-    fetchTagOptions();
-  }, []);
 
   const handleSubmit = async () => {
     if (!!dashboard && !!dashboard?.accountMeta) {
@@ -75,7 +60,8 @@ const Create: React.FC<{
         }
 
         const delegatedDidHex = didToHex(delegatedDid);
-        await CreateAds(tags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
+        const allTags = Array.from(new Set([...tags, ...instructions.map(ins => ins.tag).filter(Boolean)]));
+        await CreateAds(allTags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();
