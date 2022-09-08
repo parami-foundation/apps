@@ -21,3 +21,27 @@ export const GetBalanceOfBudgetPot = async (potId: string, assetId: string) => {
   const res = balance.toHuman() as any;
   return res;
 }
+
+export const GetAllAssets = async () => {
+  const entries = await window.apiWs.query.assets.metadata.entries();
+  const assets: {
+    decimals: string;
+    deposit: string;
+    id: string;
+    isFrozen: boolean;
+    name: string;
+    symbol: string;
+  }[] = (entries ?? []).map(entry => {
+    const [key, value] = entry;
+    const assetId = key.toHuman();
+    if (assetId) {
+      return {
+        ...value.toHuman(),
+        id: assetId[0].replaceAll(',', '')
+      }
+    }
+    return null;
+  }).filter(Boolean) as any;
+
+  return assets;
+}

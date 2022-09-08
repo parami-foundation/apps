@@ -13,6 +13,7 @@ import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity, GetUserInfo } from '@/services/parami/RPC';
 import { isLPAsset } from '@/utils/assets.util';
+import { GetAllAssets } from '@/services/parami/Assets';
 
 const SelectAssets: React.FC<{
     setToken: React.Dispatch<React.SetStateAction<any>>,
@@ -132,16 +133,12 @@ const Add: React.FC<{
         if (!apiWs) {
             return;
         }
-        const allEntries = await apiWs.query.assets.metadata.entries();
+        
         const tmpAssets = {};
-        for (let i = 0; i < allEntries.length; i++) {
-            const [key, value] = allEntries[i];
-            const shortKey = key.toHuman();
-            if (!!shortKey) {
-                const id = shortKey[0].replaceAll(',', '');
-                tmpAssets[id] = value.toHuman();
-            }
-        }
+        const assets = await GetAllAssets();
+        assets.forEach(asset => {
+            tmpAssets[asset.id] = asset;
+        });
         updateAssetsBalance(tmpAssets);
     };
 

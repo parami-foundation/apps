@@ -7,6 +7,7 @@ import { GetUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
 import style from './SelectAsset.less';
 import Token from '@/components/Token/Token';
+import { GetAllAssets } from '@/services/parami/Assets';
 
 const SelectAsset: React.FC<{
     onClose: () => void
@@ -19,18 +20,7 @@ const SelectAsset: React.FC<{
 
     const queryAssets = async () => {
         if (apiWs) {
-            const entries = await apiWs.query.assets.metadata.entries();
-            const assets = (entries ?? []).map(entry => {
-                const [key, value] = entry;
-                const assetId = key.toHuman();
-                if (assetId) {
-                    return {
-                        ...value.toHuman(),
-                        id: assetId[0]
-                    }
-                }
-                return null;
-            }).filter(Boolean);
+            const assets = await GetAllAssets();
 
             const items = await Promise.all(assets.map(async asset => {
                 const accountRes: any = await apiWs.query.assets.account(Number(asset!.id), wallet?.account);

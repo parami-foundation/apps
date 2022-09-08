@@ -9,6 +9,7 @@ import { useState } from 'react';
 import SelectAccount from './components/SelectAccount';
 import config from '@/config/config';
 import { LoadingOutlined } from '@ant-design/icons';
+import { GetAllAssets } from '@/services/parami/Assets';
 
 const Index: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -22,15 +23,12 @@ const Index: React.FC = () => {
         if (!apiWs) {
             return;
         }
-        const allEntries = await apiWs.query.assets.metadata.entries();
+        
         const tmpAssets = {};
-        for (let i = 0; i < allEntries.length; i++) {
-            const [key, value] = allEntries[i];
-            const shortKey = key.toHuman();
-            if (!!shortKey) {
-                tmpAssets[shortKey[0]] = value.toHuman();
-            }
-        }
+        const assets = await GetAllAssets();
+        assets.forEach(asset => {
+            tmpAssets[asset.id] = asset;
+        });
         localStorage.setItem('parami:dashboard:assets', JSON.stringify(tmpAssets));
     };
 
