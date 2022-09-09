@@ -32,7 +32,7 @@ const Confirm: React.FC<{
         toAddress = didToHex(toAddress);
       };
       try {
-        if (!Object.keys(token).length) {
+        if (token.symbol === 'AD3') {
           const info: any = await Transfer(
             number,
             wallet?.keystore,
@@ -46,7 +46,7 @@ const Confirm: React.FC<{
           }
         } else {
           const info: any = await TransferAsset(
-            token[Object.keys(token)[0]],
+            token.assetId,
             number.toString(),
             wallet.keystore,
             toAddress,
@@ -109,7 +109,7 @@ const Confirm: React.FC<{
             })}
           </span>
           <span className={styles.value}>
-            <Token value={FloatStringToBigInt(number, 18).toString()} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
+            <Token value={FloatStringToBigInt(number, token.decimals).toString()} symbol={token.symbol} decimals={token.decimals} />
           </span>
         </div>
         <div className={styles.field}>

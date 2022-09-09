@@ -143,32 +143,19 @@ export const AssetTransactionHistory = async (stashAccount: string) => {
   const symbols = [{ assetId: 'AD3', assetSymbol: 'AD3' }];
 
   if (assetIds.length) {
-    const filterCondition = assetIds.map(id => `{ assetId: { equalTo: "${id}" }}`).join(',');
-    const query = `query {
-      nfts (
-        filter: { or: [${filterCondition}]}
-        )
-          {
-          nodes {
-            assetId
-            assetSymbol
-          }
-        }
-    }`;
-
-    const nftQuery = await doGraghQuery(query);
-    const nftData = await nftQuery.json();
-
-    // Network exception
-    if (!nftData) {
-      notification.error({
-        key: 'networkException',
-        message: 'Graph Query nfts Error',
-        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-        duration: null,
-      });
-    } else {
-      symbols.push(...(nftData.data?.nfts?.nodes ?? []))
+    // get symbols
+    try {
+      const symbolsArr = await Promise.all(assetIds.map(async assetId => {
+        const raw = await window.apiWs.query.assets.metadata(assetId);
+        const metadata = raw.toHuman();
+        return {
+          assetId,
+          assetSymbol: metadata.symbol as string
+        };
+      }));
+      symbols.push(...symbolsArr);
+    } catch (e) {
+      console.error('query asset symbol error', e);
     }
   }
 

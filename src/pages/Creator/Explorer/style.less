@@ -4,7 +4,6 @@
   }
 }
 
-
 .advertisement {
   position: relative;
   display: flex;
@@ -59,7 +58,8 @@
 
   .instructionTitle {
     font-weight: 500;
-    padding: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 
   .instruction {
@@ -84,13 +84,17 @@
 }
 
 .buttonContainer {
-  width: 100%;
   max-width: 650px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  .actionBtn {
+    margin-bottom: 10px;
+  }
 
   :global(.ant-btn) {
-    width: auto !important;
+    width: fit-content !important;
   }
 }
 
