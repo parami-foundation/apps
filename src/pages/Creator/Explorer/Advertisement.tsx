@@ -1,9 +1,9 @@
-import { Button, Card, Image, message } from 'antd';
+import { Button, Card, Image, message, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
-import { useIntl, useModel } from 'umi';
-import { ShareAltOutlined, MoneyCollectOutlined } from '@ant-design/icons';
+import { history, useIntl, useModel } from 'umi';
+import { ShareAltOutlined, MoneyCollectOutlined, WalletOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { hexToDid } from '@/utils/common';
 import copy from 'copy-to-clipboard';
 import { useEffect } from 'react';
@@ -90,7 +90,15 @@ const Advertisement: React.FC<{
 						</div>
 						{ad?.instructions && ad?.instructions?.length > 0 && <>
 							<div className={style.instructions}>
-								<div className={style.instructionTitle}>Follow the instructions to improve your parami score</div>
+								<div className={style.instructionTitle}>
+									Follow the instructions to improve your parami score
+									<Tooltip
+										placement="top"
+										title={'one-liner explaining what parami score is'}
+									>
+										<ExclamationCircleOutlined style={{ marginLeft: '5px' }} />
+									</Tooltip>
+								</div>
 								{ad.instructions.map(instruction => {
 									return (
 										<div className={`${style.instruction} ${instruction.link ? style.withLink : ''}`} onClick={() => {
@@ -113,8 +121,8 @@ const Advertisement: React.FC<{
 							type='primary'
 							shape='round'
 							size='large'
+							className={style.actionBtn}
 							icon={<ShareAltOutlined />}
-							className={style.shareButton}
 							onClick={async () => {
 								const shareData = {
 									title: 'Para Metaverse Identity',
@@ -146,6 +154,20 @@ const Advertisement: React.FC<{
 							{intl.formatMessage({
 								id: 'creator.explorer.advertisement.share',
 							}, { token: `$${asset?.symbol}` })}
+						</Button>
+
+						<Button
+							block
+							type='primary'
+							shape='round'
+							size='large'
+							className={style.actionBtn}
+							icon={<WalletOutlined />}
+							onClick={() => {
+								history.push('/wallet');
+							}}
+						>
+							Check your reward and score
 						</Button>
 					</>}
 

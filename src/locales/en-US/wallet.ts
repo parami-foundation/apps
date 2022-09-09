@@ -55,7 +55,7 @@ export default {
     'wallet.nickname.edit': 'Edit Nickname',
     'wallet.guide.welcome': 'Welcome',
     'wallet.guide.description': 'Use your telegram avatar and nickname, or you can edit it.',
-    'wallet.tags.title': 'My Crypto Profile',
+    'wallet.tags.title': 'My Parami Score',
     'wallet.nfts.empty': 'You do not have any NFTs',
     'wallet.nfts.create': 'Create HNFT',
     'wallet.nfts.import': 'Import HNFT',
