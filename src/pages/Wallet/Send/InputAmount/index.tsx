@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Image, Button, Input } from 'antd';
-import { useIntl, history, useModel } from 'umi';
+import { useIntl, history } from 'umi';
 import styles from '../../style.less';
 import { RightOutlined } from '@ant-design/icons';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
@@ -13,7 +13,6 @@ const InputAmount: React.FC<{
   token: any;
   setToken: React.Dispatch<React.SetStateAction<any>>;
 }> = ({ setStep, number, setNumber, token }) => {
-  const { balance } = useModel('balance');
   const [submitting, setSubmitting] = useState(false);
 
   const intl = useIntl();
@@ -43,7 +42,7 @@ const InputAmount: React.FC<{
         type='primary'
         shape='round'
         onClick={() => {
-          setNumber(BigIntToFloatString(balance?.free, 18))
+          setNumber(BigIntToFloatString(token.balance, token.decimals))
         }}
       >
         {intl.formatMessage({
@@ -64,7 +63,7 @@ const InputAmount: React.FC<{
             preview={false}
           />
           <span className={styles.name}>
-            {Object.keys(token).length ? token.token : 'AD3'}
+            {token.symbol}
           </span>
           <RightOutlined
             style={{
@@ -81,7 +80,7 @@ const InputAmount: React.FC<{
         </div>
         <div className={styles.balance}>
           <span className={styles.token}>
-            <Token value={Object.keys(token).length ? token.balance : balance?.free} symbol={Object.keys(token).length ? token.symbol : 'AD3'} />
+            <Token value={token.balance} symbol={token.symbol} decimals={token.decimals} />
           </span>
         </div>
       </div>
@@ -93,7 +92,7 @@ const InputAmount: React.FC<{
           size="large"
           className={styles.button}
           loading={submitting}
-          disabled={FloatStringToBigInt(number, 18) <= BigInt(0) || FloatStringToBigInt(number, 18) > BigInt(Object.keys(token).length ? token.balance : balance?.free)}
+          disabled={FloatStringToBigInt(number, token.decimals) <= BigInt(0) || FloatStringToBigInt(number, token.decimals) > BigInt(token.balance)}
           onClick={() => handleSubmit()}
         >
           {intl.formatMessage({

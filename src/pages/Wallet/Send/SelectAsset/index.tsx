@@ -1,18 +1,18 @@
 import { Button, Input, Image } from 'antd';
-import React from 'react';
-import { useIntl, useModel } from 'umi';
+import React, { useEffect } from 'react';
+import { useIntl } from 'umi';
 import styles from '../../style.less';
 import { useState } from 'react';
-import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
+import { TokenType } from '..';
 
 const SelectAsset: React.FC<{
   setStep: React.Dispatch<React.SetStateAction<string>>,
-  setToken: React.Dispatch<React.SetStateAction<Record<string, number>>>,
-}> = ({ setStep, setToken }) => {
-  const { balance } = useModel('balance');
-  const { assetsArr } = useModel('assets');
-  const [keyword, setKeyword] = useState<string>();//TODO: fixit
+  setToken: React.Dispatch<React.SetStateAction<TokenType | undefined>>,
+  tokens: any[]
+}> = ({ setStep, setToken, tokens }) => {
+  const [keyword, setKeyword] = useState<string>('');
+  const [filteredTokens, setFilteredTokens] = useState<any[]>([]);
 
   const intl = useIntl();
 
@@ -20,6 +20,14 @@ const SelectAsset: React.FC<{
     setToken(symbol);
     setStep('InputAmount');
   };
+
+  useEffect(() => {
+    if (keyword?.length > 0) {
+      setFilteredTokens(tokens.filter(token => token.symbol.toLowerCase().includes(keyword.toLowerCase())))
+    } else {
+      setFilteredTokens(tokens);
+    }
+  }, [keyword, tokens]);
 
   return (
     <>
@@ -47,34 +55,13 @@ const SelectAsset: React.FC<{
             })}
           </span>
         </div>
-        <div
-          className={styles.field}
-          key="ad3"
-          onClick={() => handleSelect({})}
-        >
-          <span className={styles.title}>
-            <Image
-              className={styles.icon}
-              src={"/images/logo-round-core.svg"}
-              preview={false}
-            />
-            <span className={styles.name}>
-              AD3
-            </span>
-          </span>
-          <span className={styles.value}>
-            <AD3 value={balance.free} />
-          </span>
-        </div>
         {
-          (assetsArr ?? []).map((item: any) => {
+          filteredTokens.map((item: any) => {
             return (
               <div
                 className={styles.field}
-                key={item?.assetsID}
+                key={item.symbol}
                 onClick={() => {
-                  const tmp: Record<string, number> = {};
-                  tmp[item.symbol] = item?.id;
                   handleSelect(item)
                 }}
               >
@@ -86,7 +73,7 @@ const SelectAsset: React.FC<{
                     preview={false}
                   />
                   <span className={styles.name}>
-                    {item?.token}
+                    {item?.symbol}
                   </span>
                 </span>
                 <span className={styles.value}>

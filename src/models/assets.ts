@@ -70,12 +70,14 @@ export default () => {
                 changes = balanceBigInt - BigInt(assets.get(entry?.assetId).balance);
               }
 
+              const decimals = parseInt(metadata.decimals, 10) ?? 18;
+
               // TODO: time events(first)
               if (((new Date()).getTime() - first >= 30000) && changes) {
                 notification.success({
                   key: 'assetsChange',
                   message: `Changes in ${metadata?.name}, click for details`,
-                  description: formatBalance(changes, { withUnit: metadata?.symbol }, 18),
+                  description: formatBalance(changes, { withUnit: metadata?.symbol }, decimals),
                   onClick: () => {
                     history.push("/wallet");
                   }
@@ -88,7 +90,7 @@ export default () => {
                   token: metadata?.name,
                   symbol: metadata?.symbol,
                   balance: balanceBigInt.toString(),
-                  decimals: parseInt(metadata.decimals, 10),
+                  decimals,
                   isNftToken: !!did,
                   ad3: ad3 ? `${ad3}` : '',
                   icon,
