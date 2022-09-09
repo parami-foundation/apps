@@ -45,6 +45,7 @@ export const config = {
     "discord": {
       "clientId": "928193512619536465",
       "redirectUri": "/create/discord",
+      "oauthEndpoint": "https://discord.com/oauth2/authorize"
     },
   },
   "explorer": {
