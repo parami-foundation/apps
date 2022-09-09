@@ -24,6 +24,12 @@ const BlockChain: React.FC<{
     if (params?.bind === 'ethereum') {
       setBindModal(true);
       setBindPlatform('Ethereum');
+    } else if (params?.bind === 'solana') {
+      setBindModal(true);
+      setBindPlatform('Solana');
+    } else if (params?.bind === 'binance') {
+      setBindModal(true);
+      setBindPlatform('Binance');
     }
   }, [params]);
 
