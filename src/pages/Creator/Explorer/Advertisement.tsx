@@ -91,10 +91,10 @@ const Advertisement: React.FC<{
 						{ad?.instructions && ad?.instructions?.length > 0 && <>
 							<div className={style.instructions}>
 								<div className={style.instructionTitle}>
-									Follow the instructions to improve your parami score
+									Follow the instructions to improve your DID reputation score
 									<Tooltip
 										placement="top"
-										title={'one-liner explaining what parami score is'}
+										title={'Your DID reputation score is a number attached to your DID that can be increased by performing tasks. The higher your DID reputation score, the higher the reward.'}
 									>
 										<ExclamationCircleOutlined style={{ marginLeft: '5px' }} />
 									</Tooltip>
