@@ -41,9 +41,11 @@ const DAO: React.FC = () => {
     const didHex = didToHex(did);
 
     useEffect(() => {
+        document.title = `DAO - ${asset?.name ?? did} - Para Metaverse Identity`;
+    }, [asset]);
+
+    useEffect(() => {
         if (user) {
-            // Set page title
-            document.title = `${user.nickname?.toString() || did} - Para Metaverse Identity`;
             if (user.avatar && user.avatar?.indexOf('ipfs://') > -1) {
                 const hash = user.avatar.substring(7);
                 GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {
