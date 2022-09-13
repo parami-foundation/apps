@@ -125,11 +125,11 @@ const Explorer: React.FC = () => {
   }
 
   useEffect(() => {
-    if (user) {
-      // Set page title
-      document.title = `${user?.nickname.toString() || did} - Para Metaverse Identity`;
+    document.title = `${asset?.name ?? did} - Para Metaverse Identity`;
+  }, [asset]);
 
-      // Query user avatar
+  useEffect(() => {
+    if (user) {
       if (user?.avatar.indexOf('ipfs://') > -1) {
         const hash = user?.avatar?.substring(7);
         GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {

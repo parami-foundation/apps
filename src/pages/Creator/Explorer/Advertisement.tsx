@@ -99,9 +99,9 @@ const Advertisement: React.FC<{
 										<ExclamationCircleOutlined style={{ marginLeft: '5px' }} />
 									</Tooltip>
 								</div>
-								{ad.instructions.map(instruction => {
+								{ad.instructions.map((instruction, index) => {
 									return (
-										<div className={`${style.instruction} ${instruction.link ? style.withLink : ''}`} onClick={() => {
+										<div className={`${style.instruction} ${instruction.link ? style.withLink : ''}`} key={index} onClick={() => {
 											!!instruction.link && window.open(`${config.main.weeklySite}?redirect=${instruction.link}&nftId=${nftId}&did=${wallet?.did}&ad=${adData?.id}&referrer=${referrer}&tag=${instruction.tag}&score=${instruction.score}`);
 										}}>
 											<span className={style.instructionText}>{instruction.text}</span>

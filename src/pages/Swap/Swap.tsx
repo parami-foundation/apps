@@ -43,6 +43,7 @@ const Swap: React.FC = () => {
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectAssetModal, setSelectAssetModal] = useState<boolean>(false);
+    const [balanceWarning, setBalanceWarning] = useState<boolean>(false);
 
     const intl = useIntl();
 
@@ -87,6 +88,8 @@ const Swap: React.FC = () => {
         if (apiWs) {
             queryAsset(params?.assetId);
             queryIcon(params?.assetId);
+            setAd3Number('');
+            setTokenNumber('');
         }
     }, [params, apiWs]);
 
@@ -185,6 +188,21 @@ const Swap: React.FC = () => {
         }
     }, [mode, params, assets, handleTokenInputChange]);
 
+    useEffect(() => {
+        if (mode === 'ad3ToToken') {
+            if (balance?.free && ad3Number) {
+                setBalanceWarning(FloatStringToBigInt(ad3Number, 18) > BigInt(balance.free));
+                return;
+            }
+        } else {
+            if (params?.assetId && assets && tokenNumber) {
+                setBalanceWarning(FloatStringToBigInt(tokenNumber, 18) > BigInt(assets.get(params?.assetId)?.balance));
+                return;
+            }
+        }
+        setBalanceWarning(false);
+    }, [mode, balance, ad3Number, tokenNumber, params, assets]);
+
     return (
         <>
             <Spin
@@ -249,11 +267,12 @@ const Swap: React.FC = () => {
                                     />
                                 </div>
                                 <div className={style.pairCoinsBalance}>
-                                    <span className={style.balance}>
+                                    <span className={`${style.balance} ${mode === 'ad3ToToken' && balanceWarning ? style.warning : ''}`}>
                                         {intl.formatMessage({
                                             id: 'creator.explorer.trade.balance',
                                             defaultMessage: 'Balance'
                                         })}: <AD3 value={balance?.free} />
+                                        {mode === 'ad3ToToken' && balanceWarning && <span className={style.warningText}>(insufficient balance)</span>}
                                     </span>
                                     <Button
                                         type='link'
@@ -306,11 +325,12 @@ const Swap: React.FC = () => {
                                     />
                                 </div>
                                 <div className={style.pairCoinsBalance}>
-                                    <span className={style.balance}>
+                                    <span className={`${style.balance} ${mode === 'tokenToAd3' && balanceWarning ? style.warning : ''}`}>
                                         {intl.formatMessage({
                                             id: 'creator.explorer.trade.balance',
                                             defaultMessage: 'Balance'
                                         })}: <Token value={assets.get(params?.assetId ?? '')?.balance ?? ''} symbol={asset?.symbol} />
+                                        {mode === 'tokenToAd3' && balanceWarning && <span className={style.warningText}>(insufficient balance)</span>}
                                     </span>
                                     <Button
                                         type='link'
@@ -339,7 +359,7 @@ const Swap: React.FC = () => {
                             size='large'
                             shape='round'
                             className={style.submitButton}
-                            disabled={!ad3Number || !tokenNumber}
+                            disabled={!ad3Number || !tokenNumber || balanceWarning}
                             onClick={() => {
                                 setSecModal(true);
                             }}
