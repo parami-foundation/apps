@@ -54,6 +54,7 @@ const Advertisement: React.FC<{
 		} else {
 			setAdClaimed(true);
 		}
+		setAdClaimed(false);
 	}
 
 	useEffect(() => {
