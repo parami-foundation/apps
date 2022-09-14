@@ -93,10 +93,11 @@ const ClaimModal: React.FC<{
 
             onClaim();
         } catch (e) {
-            console.log(e);
             notification.error({
                 message: 'Claim Ad Token Error',
-                description: `${e}`,
+                description: intl.formatMessage({
+                    id: 'error.ad.Paid'
+                })
             });
         }
     }
