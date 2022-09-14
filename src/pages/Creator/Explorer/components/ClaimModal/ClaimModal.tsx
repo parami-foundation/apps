@@ -25,6 +25,17 @@ const ClaimModal: React.FC<{
 
     const intl = useIntl();
 
+    const setDefaultScores = async () => {
+        const tags = await GetTagsOfAd(adId);
+
+        setAdScore({
+            scores: (tags ?? []).map(tag => ({
+                tag: tag.name,
+                score: -5
+            }))
+        } as AdScoreInfo);
+    }
+
     const fetchClaimInfo = async () => {
         try {
             const res = await GetTagsOfAd(adId);
@@ -38,18 +49,11 @@ const ClaimModal: React.FC<{
             if (response.ok) {
                 setAdScore(data as AdScoreInfo);
             } else {
-                const tags = await GetTagsOfAd(adId);
-
-                setAdScore({
-                    scores: (tags ?? []).map(tag => ({
-                        tag: tag.name,
-                        score: -5
-                    }))
-                } as AdScoreInfo);
+                setDefaultScores();
             }
         } catch (e) {
             console.log(e);
-            setAdScore({} as AdScoreInfo);
+            setDefaultScores();
         }
     }
 

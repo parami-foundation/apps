@@ -10,10 +10,11 @@ import config from '@/config/config';
 import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { GetAssetInfo } from '@/services/parami/Assets';
+import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import Footer from '@/components/Footer';
 import { GetAvatar } from "@/services/parami/HTTP";
+import { deleteComma } from '@/utils/format';
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -29,6 +30,7 @@ const Explorer: React.FC = () => {
   const [adSlot, setAdSlot] = useState<any>();
   const [adData, setAdData] = useState<any>();
   const [ad, setAd] = useState<Type.AdInfo>(null);
+  const [balance, setBalance] = useState<string>('');
 
   const intl = useIntl();
   const access = useAccess();
@@ -86,6 +88,11 @@ const Explorer: React.FC = () => {
         if (!adData?.metadata) return;
         setAdData(adData);
         queryAdJson(adData);
+        GetBalanceOfBudgetPot(adSlot.budgetPot, adSlot.fractionId).then(res => {
+          setBalance(deleteComma(res?.balance ?? ''));
+        }).catch(e => {
+          console.error('GetBalanceOfBudgetPot error:', e);
+        });
       } catch (e) {
         errorHandler(e);
       }
@@ -284,6 +291,8 @@ const Explorer: React.FC = () => {
               avatar={avatar}
               did={did}
               adData={adData}
+              balance={balance}
+              notAccess={notAccess}
               adImageOnLoad={() => {
                 setLoading(false)
               }}

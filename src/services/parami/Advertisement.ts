@@ -33,17 +33,18 @@ export const GetSlotOfNft = async (nftId: string) => {
 }
 
 export const GetSlotAdOf = async (nftId: string): Promise<any> => {
-  const slot = await window.apiWs.query.ad.slotOf(nftId);
-  if (slot.isEmpty) {
+  const slot = await GetSlotOfNft(nftId);
+
+  if (!slot) {
     return null;
   }
-  const res = slot.toHuman() as any;
-  const ad = await window.apiWs.query.ad.metadata(res.adId);
+
+  const ad = await window.apiWs.query.ad.metadata(slot.adId);
   if (ad.isEmpty) {
     return null;
   }
-  res.ad = ad.toHuman();
-  return res;
+  slot.ad = ad.toHuman();
+  return slot;
 };
 
 export const GetSlotsOf = async (adID: string): Promise<any> => {
