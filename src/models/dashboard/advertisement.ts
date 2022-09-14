@@ -22,14 +22,14 @@ export default () => {
     if (!apiWs) {
       return;
     }
-    const data: AdListItem[] = [];
 
     await apiWs.query.ad.adsOf(dashboard?.did, async (adListRaw) => {
-      const adList: any = adListRaw.toHuman();
-      for (const adItem in adList) {
-        const metadataRaw = await apiWs.query.ad.metadata(adList[adItem]);
+      const adIds: any = adListRaw.toHuman();
+
+      const adList = await Promise.all(adIds.map(async adId => {
+        const metadataRaw = await apiWs.query.ad.metadata(adId);
         const metadata: any = metadataRaw.toHuman();
-        const endtime: any = await GetEndtimeOf(adList[adItem]);
+        const endtime: any = await GetEndtimeOf(adId);
 
         let adMetadata;
         try {
@@ -38,16 +38,17 @@ export default () => {
           adMetadata = {};
         }
 
-        data.push({
-          id: adList[adItem],
-          tag: await GetTagsOf(adList[adItem]),
+        return {
+          id: adId,
+          tag: await GetTagsOf(adId),
           metadataIpfs: metadata.metadata,
           metadata: adMetadata ?? {},
           rewardRate: metadata.rewardRate,
           endtime: endtime.toString(),
-        });
-      }
-      setAdList(data);
+        }
+      }));
+      
+      setAdList(adList);
     });
   };
 
