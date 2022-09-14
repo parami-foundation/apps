@@ -174,7 +174,7 @@ const VerifyIdentity: React.FC<{
           notification.success({
             key: 'balanceChange',
             message: 'Changes in Balance',
-            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
+            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3', decimals: 18 }),
           })
         }
         free = `${data.free}`;

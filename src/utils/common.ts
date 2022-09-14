@@ -289,7 +289,7 @@ export const parseAmount = (string: string) => {
   return inputToBn(string).toString();
 };
 
-export const formatWithoutUint = (value: string, deciamls = 18) => formatBalance(value, { withUnit: false }, deciamls);
+export const formatWithoutUint = (value: string, decimals = 18) => formatBalance(value, { withUnit: false, decimals });
 
 export const getObjectURL = (file: any) => {
   if (URL !== undefined) {

@@ -77,7 +77,7 @@ export default () => {
                 notification.success({
                   key: 'assetsChange',
                   message: `Changes in ${metadata?.name}, click for details`,
-                  description: formatBalance(changes, { withUnit: metadata?.symbol }, decimals),
+                  description: formatBalance(changes, { withUnit: metadata?.symbol, decimals }),
                   onClick: () => {
                     history.push("/wallet");
                   }

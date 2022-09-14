@@ -177,7 +177,7 @@ const Rows: React.FC<{
 												</div>
 												<div className={style.value}>
 													{
-														formatBalance(item.liquidity, { withUnit: false }, 18)
+														formatBalance(item.liquidity, { withUnit: false, decimals: 18 })
 													}
 												</div>
 											</div>
@@ -208,7 +208,7 @@ const Rows: React.FC<{
 															preview={false}
 															className={style.icon}
 														/>
-														{formatBalance(rewards.filter((reward) => { return reward.tokenId === item.tokenId })[0]?.reward, { withUnit: false }, 18)}
+														{formatBalance(rewards.filter((reward) => { return reward.tokenId === item.tokenId })[0]?.reward, { withUnit: false, decimals: 18 })}
 													</div>
 												</div>
 												<Button
@@ -255,7 +255,7 @@ const Rows: React.FC<{
 												</div>
 												<div className={style.value}>
 													{
-														formatBalance(item.liquidity, { withUnit: false }, 18)
+														formatBalance(item.liquidity, { withUnit: false, decimals: 18 })
 													}
 												</div>
 											</div>
