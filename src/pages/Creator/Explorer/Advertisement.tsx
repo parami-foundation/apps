@@ -39,7 +39,7 @@ const Advertisement: React.FC<{
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
 
-	const insufficientBalance = balance && adData.payoutMin && BigInt(balance) < BigInt(deleteComma(adData.payoutMin));
+	const insufficientBalance = balance && adData.payoutMax && BigInt(balance) < BigInt(deleteComma(adData.payoutMax));
 
 	useEffect(() => {
 		if (insufficientBalance && !notAccess && adClaimed) {
