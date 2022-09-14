@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Web3Modal from 'web3modal';
 import { EthNetworkName } from "@/config/ethereumNetwork";
 import { message, notification } from 'antd';
+import { numberToHex } from "@polkadot/util";
 
 const providerOptions = {
     // Example with WalletConnect provider
@@ -84,6 +85,18 @@ export default () => {
                     message: 'Unsupported ChainId',
                     description: `ChainId: ${chainId}`
                 });
+                (async () => {
+                    try {
+                        if (window.ethereum) {
+                            await window.ethereum.request({
+                                method: 'wallet_switchEthereumChain',
+                                params: [{ chainId: '0x1' }],
+                            });
+                        }
+                    } catch (e) {
+                        console.log('Switch Eth Chain Error', e);
+                    }
+                })();
             }
 
             provider.on('accountsChanged', function (accounts: string[]) {

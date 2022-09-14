@@ -40,6 +40,14 @@ const Advertisement: React.FC = () => {
 			ellipsis: true,
 		},
 		{
+			title: 'title',
+			key: 'title',
+			ellipsis: true,
+			render: (adItem: AdListItem) => {
+				return <span>{adItem?.metadata?.title ?? '-'}</span>
+			}
+		},
+		{
 			title: intl.formatMessage({
 				id: 'dashboard.ads.item.tag',
 			}),
