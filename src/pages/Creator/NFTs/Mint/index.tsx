@@ -135,7 +135,7 @@ const MintNFTModal: React.FC<{
 					</small>
 				</div>
 				<div className={style.value}>
-					{formatBalance(item?.deposit, { withUnit: 'AD3', decimals: 18 })}
+					{formatBalance(item?.deposit, { withUnit: 'AD3' }, 18)}
 				</div>
 			</div>
 			<DownOutlined
