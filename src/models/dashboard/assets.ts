@@ -76,7 +76,7 @@ export default () => {
                 notification.success({
                   key: 'assetsChange',
                   message: `Changes in ${metadata?.name}`,
-                  description: formatBalance(changes, { withUnit: metadata?.symbol, decimals: 18 }),
+                  description: formatBalance(changes, { withUnit: metadata?.symbol }, 18),
                 });
               }
 

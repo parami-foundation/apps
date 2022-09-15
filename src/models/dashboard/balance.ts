@@ -21,7 +21,7 @@ export default () => {
           notification.success({
             key: 'gasBalanceChange',
             message: 'Dashboard: Changes in Gas Balance',
-            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3', decimals: 18 }),
+            description: formatBalance(BigInt(`${data.free}`) - BigInt(free), { withUnit: 'AD3' }, 18),
           })
         }
         setBalance({

@@ -285,7 +285,7 @@ const PairItem: React.FC<{
 							Total Liquidity({pair.coin})
 						</div>
 						<div className={style.value}>
-							{formatBalance(liquidity, { withUnit: pair.coin, decimals: 18 })}
+							{formatBalance(liquidity, { withUnit: pair.coin }, 18)}
 							<Tooltip
 								placement="bottom"
 								title={'The liquidity value is an estimation that only calculates the liquidity lies in the reward range.'}
