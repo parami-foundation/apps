@@ -28,7 +28,6 @@ const Create: React.FC<{
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState<string>();
-  // const [description, setDescription] = useState<string>();
   const [mediaUrl, setMediaUrl] = useState<string>();
   const [iconUrl, setIconUrl] = useState<string>();
 
@@ -151,7 +150,7 @@ const Create: React.FC<{
         </div>
         <div className={styles.field}>
           <div className={styles.title}>
-            <FormFieldTitle title={'Description'} required />
+            <FormFieldTitle title={'Ad Icon'} required />
           </div>
           <div className={styles.value}>
             <Upload
