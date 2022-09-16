@@ -3,7 +3,7 @@ import { useIntl, useModel } from 'umi';
 import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Upload } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { UploadOutlined } from '@ant-design/icons';
 import { didToHex, parseAmount } from '@/utils/common';
 import { CreateAds } from '@/services/parami/Advertisement';
 import FormFieldTitle from '@/components/FormFieldTitle';
@@ -26,12 +26,9 @@ const Create: React.FC<{
   const [payoutMax, setPayoutMax] = useState<number>(0);
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
-  const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState<string>();
   const [mediaUrl, setMediaUrl] = useState<string>();
   const [iconUrl, setIconUrl] = useState<string>();
-
-  const { tagOptions } = useModel('tagOptions');
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
@@ -60,7 +57,7 @@ const Create: React.FC<{
         }
 
         const delegatedDidHex = didToHex(delegatedDid);
-        const allTags = Array.from(new Set([...tags, ...instructions.map(ins => ins.tag).filter(Boolean)]));
+        const allTags = Array.from(new Set([...instructions.map(ins => ins.tag).filter(Boolean)]));
         await CreateAds(allTags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
         setSubmiting(false);
         setCreateModal(false);
@@ -118,26 +115,6 @@ const Create: React.FC<{
       <div className={styles.modalBody}>
         <div className={styles.field}>
           <div className={styles.title}>
-            <FormFieldTitle title={intl.formatMessage({
-              id: 'dashboard.ads.create.tag',
-            })} required />
-          </div>
-          <div className={styles.value}>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Please select"
-              onChange={value => setTags(value as string[])}
-            >
-              {tagOptions.map(option => {
-                return <Option key={option.hash} value={option.name}>{option.name}</Option>
-              })}
-            </Select>
-          </div>
-        </div>
-        <div className={styles.field}>
-          <div className={styles.title}>
             <FormFieldTitle title={'Title'} required />
           </div>
           <div className={styles.value}>
@@ -154,15 +131,13 @@ const Create: React.FC<{
           </div>
           <div className={styles.value}>
             <Upload
-              listType="picture-card"
               showUploadList={false}
               action={config.ipfs.upload}
               onChange={handleUploadOnChange('icon')}
             >
-              {iconUrl ? <img src={iconUrl} style={{ width: '100%' }} /> : <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>}
+              {iconUrl
+                ? <img src={iconUrl} style={{ width: '100%' }} />
+                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
             </Upload>
           </div>
         </div>
@@ -172,17 +147,13 @@ const Create: React.FC<{
           </div>
           <div className={styles.value}>
             <Upload
-              name="avatar"
-              listType="picture-card"
-              className="avatar-uploader"
               showUploadList={false}
               action={config.ipfs.upload}
               onChange={handleUploadOnChange('poster')}
             >
-              {mediaUrl ? <img src={mediaUrl} style={{ width: '100%' }} /> : <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>}
+              {mediaUrl
+                ? <img src={mediaUrl} style={{ width: '100%' }} />
+                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
             </Upload>
           </div>
         </div>
@@ -345,7 +316,7 @@ const Create: React.FC<{
             size='large'
             shape='round'
             type='primary'
-            disabled={!tags || !lifetime || !rewardRate || !payoutBase || !!payoutMaxError || !!payoutMinError}
+            disabled={!lifetime || !rewardRate || !payoutBase || !!payoutMaxError || !!payoutMinError}
             loading={submiting}
             onClick={() => {
               handleSubmit()
