@@ -28,8 +28,9 @@ const Create: React.FC<{
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [tags, setTags] = useState<string[]>([]);
   const [title, setTitle] = useState<string>();
-  const [description, setDescription] = useState<string>();
+  // const [description, setDescription] = useState<string>();
   const [mediaUrl, setMediaUrl] = useState<string>();
+  const [iconUrl, setIconUrl] = useState<string>();
 
   const { tagOptions } = useModel('tagOptions');
 
@@ -48,8 +49,8 @@ const Create: React.FC<{
       try {
         let adMetadata = {
           title,
-          desc: description,
           media: mediaUrl,
+          icon: iconUrl,
           instructions
         };
 
@@ -104,7 +105,7 @@ const Create: React.FC<{
       if (info.file.status === 'done') {
         const ipfsHash = info.file.response.Hash;
         const imageUrl = config.ipfs.endpoint + ipfsHash;
-        setMediaUrl(imageUrl);
+        imageType === 'poster' ? setMediaUrl(imageUrl) : setIconUrl(imageUrl);
         return;
       }
       if (info.file.status === 'error') {
@@ -153,11 +154,17 @@ const Create: React.FC<{
             <FormFieldTitle title={'Description'} required />
           </div>
           <div className={styles.value}>
-            <Input
-              size='large'
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder='Advertisement Description'
-            />
+            <Upload
+              listType="picture-card"
+              showUploadList={false}
+              action={config.ipfs.upload}
+              onChange={handleUploadOnChange('icon')}
+            >
+              {iconUrl ? <img src={iconUrl} style={{ width: '100%' }} /> : <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>}
+            </Upload>
           </div>
         </div>
         <div className={styles.field}>
@@ -171,7 +178,7 @@ const Create: React.FC<{
               className="avatar-uploader"
               showUploadList={false}
               action={config.ipfs.upload}
-              onChange={handleUploadOnChange('media')}
+              onChange={handleUploadOnChange('poster')}
             >
               {mediaUrl ? <img src={mediaUrl} style={{ width: '100%' }} /> : <div>
                 <PlusOutlined />
