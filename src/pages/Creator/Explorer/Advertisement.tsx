@@ -42,7 +42,7 @@ const Advertisement: React.FC<{
 	const insufficientBalance = balance && adData.payoutMax && BigInt(balance) < BigInt(deleteComma(adData.payoutMax));
 
 	useEffect(() => {
-		if (insufficientBalance && !notAccess && adClaimed) {
+		if (insufficientBalance && !notAccess && !adClaimed) {
 			setOopsModal(true);
 		}
 	}, [insufficientBalance, notAccess, adClaimed])
