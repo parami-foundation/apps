@@ -1,3 +1,4 @@
+import { deleteComma } from '@/utils/format';
 import { Keyring } from '@polkadot/api';
 import { DecodeKeystoreWithPwd } from './Crypto';
 import { subCallback } from './Subscription';
@@ -125,9 +126,12 @@ export const RemoveLiquidity = async (lpTokenId: string, minCurrency: string, mi
 	return await subCallback(ex, payUser);
 };
 
-export const GetAccountLPs = async (account: string) => {
+export const GetAccountLPTokenIds = async (account: string) => {
 	const LPs = await window.apiWs.query.swap.account.entries(account);
-	return LPs;
+	return LPs.map(LP => {
+		const tokenInfo = LP[0].toHuman() as string[];
+		return deleteComma(tokenInfo[1]);
+	});
 };
 
 export const GetLPLiquidity = async (LPTokenId: string) => {

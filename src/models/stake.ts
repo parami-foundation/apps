@@ -6,6 +6,7 @@ import { useModel } from "umi";
 import { notification } from 'antd';
 import { CalculateLPReward, GetUserInfo } from "@/services/parami/RPC";
 import { deleteComma } from "@/utils/format";
+import { GetAccountLPTokenIds } from "@/services/parami/Swap";
 
 export default () => {
     const apiWs = useModel('apiWs');
@@ -18,16 +19,14 @@ export default () => {
             return;
         }
         const allLPs: Map<string, any> = new Map();
-        const LPTokens: any = await apiWs.query.swap.account.entries(wallet?.account);
-        for (const tokenId in LPTokens) {
-            const tokenInfo: any = LPTokens[tokenId][0].toHuman();
-            const LPTokenId = tokenInfo[1];
-            await apiWs.query.swap.liquidity(LPTokenId, async (LPInfoData: any) => {
+        const lpTokenIds = await GetAccountLPTokenIds(wallet?.account);
+        lpTokenIds.forEach(async tokenId => {
+            await apiWs.query.swap.liquidity(tokenId, async (LPInfoData: any) => {
                 const LPInfo = LPInfoData.toHuman();
                 if (!!LPInfo) {
                     LPInfo.tokenId = deleteComma(LPInfo.tokenId);
-                    LPInfo['lpId'] = LPTokenId;
-                    const reward = await CalculateLPReward(LPTokenId);
+                    LPInfo['lpId'] = tokenId;
+                    const reward = await CalculateLPReward(tokenId);
                     LPInfo['reward'] = reward;
 
                     const did = await OwnerDidOfNft(LPInfo.tokenId);
@@ -72,7 +71,7 @@ export default () => {
                     });
                 }
             });
-        }
+        });
         setLPs(allLPs);
         setLPsArr([...allLPs?.values()]);
     }
