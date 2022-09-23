@@ -71,7 +71,11 @@ const SecurityModal: React.FC<{
     }
 
     if (!!func) {
-      await func();
+      try {
+        await func();
+      } catch (e) {
+        console.log('security modal submit func error fallback', e);
+      }
     }
     setVisable(false);
     setSubmitting(false);
