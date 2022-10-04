@@ -186,6 +186,14 @@
     footerRender: false,
   },
   {
+    path: '/claim/:adId/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Claim/Claim',
+  },
+  {
     path: '/did:kol',
     hideInMenu: true,
     exact: true,
