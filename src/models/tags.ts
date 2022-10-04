@@ -71,7 +71,7 @@ export default () => {
 
 					if (Data[item.count]) {
 						data.set(Data[item.count], {
-							value: item?.value?.currentScore,
+							value: parseInt(item?.value?.extrinsic ?? '0', 10) + parseInt(item?.value?.intrinsic ?? '0', 10),
 							data: Data[item.count],
 							hex: item?.count,
 							fontColor: '#d4380d',
