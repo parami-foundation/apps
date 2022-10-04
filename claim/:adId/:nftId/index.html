@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="keywords"
+      content="airdrop,coin airdrop,candy airdrop,ad3,parami,candy box,crypto token"
+    />
+    <meta
+      name="description"
+      content="Parami Protocol is to build Ad3.0 for Web3.0"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>Parami - Para Metaverse Identity</title>
+    <link
+      rel="icon"
+      href="/images/logo-core-colored-fit-into-round.svg"
+      type="image/x-icon"
+    />
+    <link rel="stylesheet" href="/umi.356e554b.css" />
+    <script>
+      window.routerBase = "/";
+    </script>
+    <script>
+      //! umi version: 3.5.20
+    </script>
+  </head>
+
+  <body>
+    <noscript>
+      <div class="noscript-container">
+        Hi there! Please
+        <div class="noscript-enableJS">
+          <a
+            href="https://www.enablejavascript.io/en"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <b>enable Javascript</b>
+          </a>
+        </div>
+        in your browser to use Parami Wallet!
+      </div>
+    </noscript>
+    <div id="root">
+      <style>
+        html,
+        body,
+        #root {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+
+        #root {
+          background-repeat: no-repeat;
+          background-size: 100% auto;
+        }
+
+        .noscript-container {
+          display: flex;
+          align-content: center;
+          justify-content: center;
+          margin-top: 90px;
+          font-size: 20px;
+          font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+            "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        }
+
+        .noscript-enableJS {
+          padding-right: 3px;
+          padding-left: 3px;
+        }
+
+        .page-loading-warp {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 98px;
+        }
+      </style>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          min-height: 420px;
+          width: 100%;
+          padding: 30px;
+          max-width: 800px;
+        "
+      >
+        <canvas id="loadingCanvas"></canvas>
+      </div>
+    </div>
+    <script src="https://unpkg.com/svga/dist/index.min.js"></script>
+    <script>
+      var parser = new SVGA.Parser();
+      var player = new SVGA.Player(document.getElementById("loadingCanvas"));
+      parser.load("/images/parami.svga", function (videoItem) {
+        player.setVideoItem(videoItem);
+        player.startAnimation();
+      });
+    </script>
+
+    <script>
+      (function () {
+        if (!location.port) {
+          (function (i, s, o, g, r, a, m) {
+            i["GoogleAnalyticsObject"] = r;
+            (i[r] =
+              i[r] ||
+              function () {
+                (i[r].q = i[r].q || []).push(arguments);
+              }),
+              (i[r].l = 1 * new Date());
+            (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m);
+          })(
+            window,
+            document,
+            "script",
+            "//www.google-analytics.com/analytics.js",
+            "ga"
+          );
+          ga("create", "G-1FKB5YPBY7", "auto");
+          ga("send", "pageview");
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        if (!location.port || true) {
+          var gtagScript = document.createElement("script");
+          gtagScript.async = true;
+          gtagScript.src =
+            "https://www.googletagmanager.com/gtag/js?id=G-1FKB5YPBY7";
+          var scr = document.getElementsByTagName("script")[0];
+          scr.parentNode.insertBefore(gtagScript, scr);
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag("js", new Date());
+          gtag("config", "G-1FKB5YPBY7");
+        }
+      })();
+    </script>
+    <script src="/umi.f835d982.js"></script>
+  </body>
+</html>
