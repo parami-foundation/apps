@@ -13,3 +13,7 @@ export const CHAINS = {
     'Dana CC2': 'dana-cc2',
     'Dana CC3': 'dana-cc3',
 };
+
+export enum WALLET_TYPE {
+    POPUP = 'popup'
+}

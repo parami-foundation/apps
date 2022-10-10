@@ -18,6 +18,7 @@ import DiscordLoginButton from '@/components/Discord';
 import { QueryDID, RegisterDID, GetExistentialDeposit } from '@/services/parami/Identity';
 import CustomTelegramLoginButton from '@/components/Telegram/CustomTelegramLoginButton';
 import TwitterLoginButton from '@/components/TwitterLoginButton/TwitterLoginButton';
+import { WALLET_TYPE } from '@/config/constant';
 
 let unsub: VoidFn | null = null;
 
@@ -50,7 +51,7 @@ const VerifyIdentity: React.FC<{
     localStorage.removeItem('parami:wallet:inProcess');
     localStorage.removeItem('parami:wallet:redirect');
     localStorage.removeItem('parami:wallet:type');
-    if (type === 'popupWindow') {
+    if (type === WALLET_TYPE.POPUP) {
       window.close();
     } else {
       window.location.href = redirect;
