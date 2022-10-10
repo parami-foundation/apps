@@ -46,9 +46,15 @@ const VerifyIdentity: React.FC<{
   const goto = async () => {
     await refresh();
     const redirect = localStorage.getItem('parami:wallet:redirect') || config.page.walletPage;
+    const type = localStorage.getItem('parami:wallet:type');
     localStorage.removeItem('parami:wallet:inProcess');
     localStorage.removeItem('parami:wallet:redirect');
-    window.location.href = redirect;
+    localStorage.removeItem('parami:wallet:type');
+    if (type === 'popupWindow') {
+      window.close();
+    } else {
+      window.location.href = redirect;
+    }
   };
 
   // Login With Airdrop

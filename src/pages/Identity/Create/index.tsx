@@ -4,7 +4,7 @@ import NotSupport from '../NotSupport';
 import QuickSign from './components/QuickSign';
 import VerifyIdentity from './components/VerifyIdentity';
 import { CreateAccount, CreateMnemonic } from '@/services/parami/Identity';
-import { useAccess, history, useModel } from 'umi';
+import { useAccess, history, useModel, useParams } from 'umi';
 import config from '@/config/config';
 import isiOSSafari from '@/utils/isSafaiApp';
 import InApp from 'detect-inapp';
@@ -28,6 +28,16 @@ const Create: React.FC = () => {
 
   const access = useAccess();
   const walletInfo = initialState?.currentInfo?.wallet;
+
+  const params: {
+    type: string;
+  } = useParams();
+
+  useEffect(() => {
+    if (params?.type) {
+      localStorage.setItem('parami:wallet:type', params?.type);
+    }
+  }, [params]);
 
   // Create Account
   const createAccount = async () => {

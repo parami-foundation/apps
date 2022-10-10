@@ -20,7 +20,7 @@
         component: './Identity/Create',
       },
       {
-        path: '/create/:platfrom',
+        path: '/create/:type',
         name: 'create',
         component: './Identity/Create',
       },
