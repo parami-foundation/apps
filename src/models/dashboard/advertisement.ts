@@ -24,7 +24,7 @@ export default () => {
     }
 
     await apiWs.query.ad.adsOf(dashboard?.did, async (adListRaw) => {
-      const adIds: any = adListRaw.toHuman();
+      const adIds: any = adListRaw.toHuman() ?? [];
 
       const adList = await Promise.all(adIds.map(async adId => {
         const metadataRaw = await apiWs.query.ad.metadata(adId);
