@@ -3,6 +3,7 @@ import { didToHex, parseAmount } from '@/utils/common';
 import { subCallback } from './Subscription';
 import { DecodeKeystoreWithPwd } from './Crypto';
 import type { SubmittableExtrinsic } from '@polkadot/api/types';
+import { FloatStringToBigInt } from '@/utils/format';
 
 const instanceKeyring = new Keyring({ type: 'sr25519' });
 
@@ -32,7 +33,7 @@ export const Transfer = async (amount: string, keystore: string, toAddress: stri
   return await subCallback(ex, payUser);
 };
 
-export const TransferAsset = async (assetId: number, amount: string, keystore: string, toAddress: string, password: string, preTx?: boolean, account?: string) => {
+export const TransferAsset = async (assetId: number, deciamls: number, amount: string, keystore: string, toAddress: string, password: string, preTx?: boolean, account?: string) => {
   let to = toAddress;
   if (/^did:ad3:/.test(toAddress)) {
     to = didToHex(to);
@@ -40,7 +41,7 @@ export const TransferAsset = async (assetId: number, amount: string, keystore: s
       throw new Error('Wrong Did');
     }
   }
-  const ex = window.apiWs.tx.assets.transfer(assetId, to, parseAmount(amount));
+  const ex = window.apiWs.tx.assets.transfer(assetId, to, FloatStringToBigInt(amount, deciamls).toString());
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
@@ -56,22 +57,6 @@ export const TransferAsset = async (assetId: number, amount: string, keystore: s
   const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
   return await subCallback(ex, payUser);
-};
-
-export const getTransFee = async (toAddress: string, myAddress: string, amount: string) => {
-  const transfer = window.apiWs.tx.balances.transfer(toAddress, parseAmount(amount));
-
-  const info = await transfer.paymentInfo(myAddress);
-
-  return info.partialFee;
-};
-
-export const getTokenTransFee = async (token: any, toAddress: string, myAddress: string, amount: string) => {
-  const transfer = window.apiWs.tx.assets.transfer(token, toAddress, parseAmount(amount));
-
-  const info = await transfer.paymentInfo(myAddress);
-
-  return info.partialFee;
 };
 
 export const GetExistentialDeposit = async () => {

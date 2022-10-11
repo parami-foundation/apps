@@ -29,7 +29,7 @@ const Assets: React.FC = () => {
 			dataIndex: 'balance',
 			key: 'balance',
 			render: (text, row) => (
-				<Token value={row.balance} symbol={row.symbol} />
+				<Token value={row.balance} symbol={row.symbol} decimals={row.decimals} />
 			),
 		},
 		{

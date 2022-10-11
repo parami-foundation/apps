@@ -47,6 +47,7 @@ const Confirm: React.FC<{
         } else {
           const info: any = await TransferAsset(
             token.assetId,
+            token.decimals,
             number.toString(),
             wallet.keystore,
             toAddress,
