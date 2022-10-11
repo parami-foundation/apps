@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { CopyOutlined, LoadingOutlined, SyncOutlined } from '@ant-design/icons';
-import { LoginWithAirdrop } from '@/services/parami/HTTP';
+import { LoginWithAirdrop, LinkAccount } from '@/services/parami/HTTP';
 import AD3 from '@/components/Token/AD3';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { formatBalance } from '@polkadot/util';
@@ -81,23 +81,10 @@ const VerifyIdentity: React.FC<{
       };
 
       if (Resp?.status === 200) {
-        // query did
-        let didData = await QueryDID(account);
-        if (!!didData) {
-          setDID(didData);
-          localStorage.setItem('parami:wallet:did', didData);
-
-          notification.success({
-            message: 'Airdrop Success',
-          });
-          setStep(5);
-        } else {
-          console.log('no did', didData);
-          notification.error({
-            message: 'No DID'
-          });
-          setLoading(false);
-        }
+        notification.success({
+          message: 'Airdrop Success',
+        })
+        setStep(3);
         return;
       }
 
@@ -222,6 +209,36 @@ const VerifyIdentity: React.FC<{
     }
   };
 
+  const bindSocialAccount = async (quickSign) => {
+    try {
+      const { response, data } = await LinkAccount({
+        site: quickSign?.platform,
+        wallet: account
+      });
+      
+      if (response?.status === 204) {
+        notification.success({
+          message: 'Bind social account success!'
+        })
+      } else {
+        notification.warning({
+          message: data,
+          description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+          duration: 10,
+        });
+      }
+    } catch (e: any) {
+      notification.warning({
+        message: e.message || e,
+        description: 'Having trouble bindind your social account. Please try later in Parami Account.',
+        duration: 10,
+      });
+    }
+
+    setStep(5);
+    goto();
+  }
+
   // Compute Existential Deposit
   const getExistentialDeposit = async () => {
     const existentialDeposit = await GetExistentialDeposit();
@@ -237,7 +254,11 @@ const VerifyIdentity: React.FC<{
 
   useEffect(() => {
     if (!!did) {
-      goto();
+      if (!quickSign) {
+        goto();
+      } else {
+        bindSocialAccount(quickSign);
+      }
     }
   }, [did]);
 
