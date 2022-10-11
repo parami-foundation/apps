@@ -27,6 +27,8 @@ const Create: React.FC<{
   const [payoutMinError, setPayoutMinError] = useState<string>('');
   const [payoutMaxError, setPayoutMaxError] = useState<string>('');
   const [title, setTitle] = useState<string>();
+  const [sponsorName, setSponsorName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [mediaUrl, setMediaUrl] = useState<string>();
   const [iconUrl, setIconUrl] = useState<string>();
 
@@ -47,7 +49,9 @@ const Create: React.FC<{
           title,
           media: mediaUrl,
           icon: iconUrl,
-          instructions
+          description,
+          instructions,
+          sponsorName
         };
 
         const bufferred = await Buffer.from(JSON.stringify(adMetadata));
@@ -122,6 +126,30 @@ const Create: React.FC<{
               size='large'
               onChange={(e) => setTitle(e.target.value)}
               placeholder='Advertisement Title'
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Sponsor Name'} required />
+          </div>
+          <div className={styles.value}>
+            <Input
+              size='large'
+              onChange={(e) => setSponsorName(e.target.value)}
+              placeholder='Advertisement Sponsor Name'
+            />
+          </div>
+        </div>
+        <div className={styles.field}>
+          <div className={styles.title}>
+            <FormFieldTitle title={'Description'} required />
+          </div>
+          <div className={styles.value}>
+            <Input
+              size='large'
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder='Advertisement Description'
             />
           </div>
         </div>

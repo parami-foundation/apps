@@ -10,6 +10,7 @@ import { GetNFTMetaData } from '@/services/parami/NFT';
 import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from "@/config/config";
 import { GetAvatar } from "@/services/parami/HTTP";
+import Support from '../Supoort';
 
 const DAO: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -177,6 +178,9 @@ const DAO: React.FC = () => {
                     />
                 </>
             )}
+            {!KOL && nft && <>
+                <Support nft={nft}></Support>
+            </>}
         </div>
     </>;
 };
