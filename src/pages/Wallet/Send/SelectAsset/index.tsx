@@ -77,7 +77,7 @@ const SelectAsset: React.FC<{
                   </span>
                 </span>
                 <span className={styles.value}>
-                  <Token value={item?.balance} symbol={item?.symbol} />
+                  <Token value={item?.balance} symbol={item?.symbol} decimals={item?.decimals} />
                 </span>
               </div>
             );

@@ -95,7 +95,7 @@ const TransactionFeeModal: React.FC<{
               Transfer Amount:
             </div>
             <div className={styles.value}>
-              <Token value={FloatStringToBigInt(amount, token.decimals).toString()} symbol={token.symbol} />
+              <Token value={FloatStringToBigInt(amount, token.decimals).toString()} symbol={token.symbol} decimals={token.decimals} />
             </div>
           </div>
           <div className={styles.field}>

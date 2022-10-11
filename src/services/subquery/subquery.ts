@@ -12,6 +12,7 @@ export type AssetTransaction = {
   amount: string
   timestampInSecond: number
   out: boolean
+  decimals: number;
 };
 
 const formatTimestamp = (timestamp: number): string => {
@@ -140,27 +141,30 @@ export const AssetTransactionHistory = async (stashAccount: string) => {
 
   const assetIds: string[] = Array.from(new Set(transactions.map(asset => asset.assetId))).filter(id => id !== 'AD3');
 
-  const symbols = [{ assetId: 'AD3', assetSymbol: 'AD3' }];
+  const tokens = [{ assetId: 'AD3', assetSymbol: 'AD3', decimals: 18 }];
 
   if (assetIds.length) {
     // get symbols
     try {
-      const symbolsArr = await Promise.all(assetIds.map(async assetId => {
+      const tokensArr = await Promise.all(assetIds.map(async assetId => {
         const raw = await window.apiWs.query.assets.metadata(assetId);
         const metadata = raw.toHuman();
         return {
           assetId,
-          assetSymbol: metadata.symbol as string
+          assetSymbol: metadata.symbol as string,
+          decimals: parseInt(metadata.decimals as string, 10)
         };
       }));
-      symbols.push(...symbolsArr);
+      tokens.push(...tokensArr);
     } catch (e) {
       console.error('query asset symbol error', e);
     }
   }
 
   transactions.forEach(tx => {
-    tx.assetSymbol = symbols.find(nft => nft.assetId === tx.assetId)?.assetSymbol || '';
+    const token = tokens.find(nft => nft.assetId === tx.assetId) ?? {} as { assetSymbol: string; decimals: number };
+    tx.assetSymbol = token.assetSymbol || '';
+    tx.decimals = token.decimals ?? '18';
     tx.out = tx.fromAccountId === stashAccount
   });
 
