@@ -17,7 +17,7 @@ export const GetNFTMetaData = async (id: string) => {
   if (nftInfo.isEmpty) {
     return null;
   }
-  
+
   const res: any = nftInfo.toHuman();
   return {
     ...res,
@@ -27,7 +27,7 @@ export const GetNFTMetaData = async (id: string) => {
 };
 
 export const NftMint = async (name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = await window.apiWs.tx.nft.mint(name, symbol);
+  const ex = await window.apiWs.tx.nft.mint(name, symbol, "1000000000000000000000");
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
@@ -129,7 +129,7 @@ export const SupportDAO = async (nftID: string, amount: string, password: string
 };
 
 export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.mint(nftID, name, symbol);
+  const ex = window.apiWs.tx.nft.mint(nftID, name, symbol, "1000000000000000000000");
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);
