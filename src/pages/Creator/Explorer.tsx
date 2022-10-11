@@ -7,7 +7,6 @@ import { hexToDid, didToHex } from '@/utils/common';
 import { GetNFTMetaData, GetPreferredNFT } from '@/services/parami/NFT';
 import { Image, notification, Button, Divider } from 'antd';
 import config from '@/config/config';
-import Support from './Explorer/Supoort';
 import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
@@ -261,19 +260,6 @@ const Explorer: React.FC = () => {
               </span>
             </div>
           </>
-        )}
-        {!KOL && access.canWalletUser && nft && (
-          <div
-            className={styles.pageContainer}
-            style={{
-              paddingTop: 50,
-              maxWidth: 1920,
-            }}
-          >
-            <Support
-              nft={nft}
-            />
-          </div>
         )}
         {(KOL && adData && Object.keys(adData).length > 0) && (
           <div
