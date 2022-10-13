@@ -86,3 +86,10 @@ export async function GetChainBridgeTokenInfo(options?: { [key: string]: any }) 
         getResponse: true,
     });
 }
+
+export async function QueryAssets(did: string, keyword?: string) {
+    return request(`http://localhost:8080/tokens?did=${did}${keyword ? `&keyword=${keyword}` : ''}`, {
+        method: 'GET',
+        getResponse: true,
+    })
+}
