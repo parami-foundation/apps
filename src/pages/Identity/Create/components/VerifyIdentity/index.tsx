@@ -92,9 +92,9 @@ const VerifyIdentity: React.FC<{
           });
           setStep(5);
         } else {
-          console.log('no did', didData);
           notification.error({
-            message: 'No DID'
+            message: 'Network Error',
+            description: 'please try again later.'
           });
           setLoading(false);
         }
@@ -128,7 +128,7 @@ const VerifyIdentity: React.FC<{
       if (Resp?.status === 400) {
         notification.error({
           message: 'Got an error',
-          description: 'Something went wrong, please try again latar.',
+          description: 'Something went wrong, please try again later.',
           duration: null,
         })
         setLoading(false);
@@ -137,7 +137,7 @@ const VerifyIdentity: React.FC<{
 
       notification.error({
         message: 'Got an error',
-        description: `Unknown: Something went wrong, please try again latar.`,
+        description: `Unknown: Something went wrong, please try again later.`,
         duration: null,
       })
       setLoading(false);
