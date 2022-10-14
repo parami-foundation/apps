@@ -17,3 +17,7 @@ export const CHAINS = {
 export enum WALLET_TYPE {
     POPUP = 'popup'
 }
+
+export enum POST_MESSAGE_PREFIX {
+    AD_CLAIMED = 'AdClaimed'
+}
