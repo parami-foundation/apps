@@ -241,6 +241,14 @@
     component: './Swap/Swap',
   },
   {
+    path: '/claimHnft',
+    name: 'Claim HNFT',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './ClaimHNFT/ClaimHNFT'
+  },
+  {
     component: './404',
   },
 ];

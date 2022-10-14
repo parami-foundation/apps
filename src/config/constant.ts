@@ -17,3 +17,9 @@ export const CHAINS = {
 export enum WALLET_TYPE {
     POPUP = 'popup'
 }
+
+export enum TWITTER_OAUTH_STATE {
+    AIRDROP = 'airdrop',
+    BIND = 'bind',
+    CLAIM_HNFT = 'claimHnft'
+}

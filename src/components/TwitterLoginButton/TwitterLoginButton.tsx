@@ -1,12 +1,15 @@
 import styles from './TwitterLoginButton.less';
 import config from '@/config/config';
 
-export interface TwitterLoginButtonProps { }
+export interface TwitterLoginButtonProps {
+    state?: string;
+    buttonText?: string;
+}
 
-function TwitterLoginButton({ }: TwitterLoginButtonProps) {
+function TwitterLoginButton({state = 'airdrop', buttonText = 'Create by Twitter'}: TwitterLoginButtonProps) {
 
     const onClick = async () => {
-        window.location.href = `${config.main.airdropServer}/twitterLogin?state=airdrop`;
+        window.location.href = `${config.main.airdropServer}/twitterLogin?state=${state}`;
     }
 
     return <div className={styles.twitterBtn}>
@@ -18,7 +21,7 @@ function TwitterLoginButton({ }: TwitterLoginButtonProps) {
                 src="/images/sns/twitter-white.svg"
                 className={styles.loginIcon}
             />
-            Create by Twitter
+            {buttonText}
         </button>
     </div>;
 };
