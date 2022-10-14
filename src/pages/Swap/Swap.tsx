@@ -36,7 +36,7 @@ const Swap: React.FC = () => {
     const [tokenIcon, setTokenIcon] = useState<string>('');
     const [asset, setAsset] = useState<Asset>();
     const [assetPrice, setAssetPrice] = useState<string>();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [mode, setMode] = useState<string>('ad3ToToken');
     const [ad3Number, setAd3Number] = useState<string>('');
     const [tokenNumber, setTokenNumber] = useState<string>('');
@@ -81,11 +81,7 @@ const Swap: React.FC = () => {
     }
 
     useEffect(() => {
-        if (!params?.assetId) {
-            setSelectAssetModal(true);
-            return;
-        }
-        if (apiWs) {
+        if (apiWs && params?.assetId) {
             queryAsset(params?.assetId);
             queryIcon(params?.assetId);
             setAd3Number('');
@@ -302,12 +298,17 @@ const Swap: React.FC = () => {
                             <div className={`${style.pairCoinsItem} ${style.tokenCoin}`}>
                                 <div className={style.pairCoinsSelect}>
                                     <div className={style.pairCoin} onClick={() => setSelectAssetModal(true)}>
-                                        <Image
-                                            src={tokenIcon || '/images/logo-round-core.svg'}
-                                            preview={false}
-                                            className={style.pairCoinsItemIcon}
-                                        />
-                                        <span className={style.pairCoinsItemLabel}>{asset?.symbol}</span>
+                                        {asset && <>
+                                            <Image
+                                                src={tokenIcon || '/images/logo-round-core.svg'}
+                                                preview={false}
+                                                className={style.pairCoinsItemIcon}
+                                            />
+                                            <span className={style.pairCoinsItemLabel}>{asset?.symbol}</span>
+                                        </>}
+                                        {!asset && <>
+                                            <span className={style.pairCoinsItemText}>Select Asset</span>
+                                        </>}
                                         <DownOutlined className={style.downIcon} />
                                     </div>
                                     <InputNumber
@@ -359,7 +360,7 @@ const Swap: React.FC = () => {
                             size='large'
                             shape='round'
                             className={style.submitButton}
-                            disabled={!ad3Number || !tokenNumber || balanceWarning}
+                            disabled={!ad3Number || !tokenNumber || balanceWarning || !params?.assetId}
                             onClick={() => {
                                 setSecModal(true);
                             }}

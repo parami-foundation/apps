@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Image, Input, Spin } from 'antd';
 import { useModel } from 'umi';
@@ -15,6 +15,7 @@ const SelectAsset: React.FC<{
     const { wallet } = useModel('currentUser');
     const [assets, setAssets] = useState<any[]>();
     const [keyword, setKeyword] = useState<string>();
+    const inputRef: any = useRef();
 
     const queryAssets = useCallback(debounce(async (keyword: string) => {
         const resp = await QueryAssets(wallet.account, keyword);
@@ -26,14 +27,20 @@ const SelectAsset: React.FC<{
         queryAssets(keyword ?? '');
     }, [keyword, queryAssets]);
 
+    useEffect(() => {
+        inputRef.current.focus({
+            cursor: 'start',
+        });
+    }, []);
+
     return <BigModal
         visable
         title="Select Asset"
         content={
             <div className={style.assetsContainer}>
                 <div className={style.searchInput}>
-                    <Input value={keyword} onChange={e => setKeyword(e.target.value)} 
-                    placeholder="Search name or symbol" prefix={<SearchOutlined />}></Input>
+                    <Input value={keyword} onChange={e => setKeyword(e.target.value)} ref={inputRef}
+                        placeholder="Search name or symbol" prefix={<SearchOutlined />}></Input>
                 </div>
 
                 {keyword && keyword.length > 0 && !assets && <>
