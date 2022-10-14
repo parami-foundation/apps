@@ -1,90 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Image, Input, Spin } from 'antd';
-import { useIntl, useModel } from 'umi';
-import { OwnerDidOfNft } from '@/services/subquery/subquery';
-import { GetUserInfo } from '@/services/parami/RPC';
-import config from '@/config/config';
+import { Image, Input, Spin } from 'antd';
+import { useModel } from 'umi';
 import style from './SelectAsset.less';
 import Token from '@/components/Token/Token';
-import { GetAllAssets } from '@/services/parami/Assets';
 import { QueryAssets } from '@/services/parami/HTTP';
+import { debounce } from 'lodash';
+import { SearchOutlined } from '@ant-design/icons';
 
 const SelectAsset: React.FC<{
     onClose: () => void
     onSelectAsset: (asset) => void
 }> = ({ onClose, onSelectAsset }) => {
-    const intl = useIntl();
-    const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const [assets, setAssets] = useState<any[]>();
     const [keyword, setKeyword] = useState<string>();
 
-    const queryAssets = async (keyword: string) => {
-        // const resp = await fetch(`http://localhost:8080/tokens?did=${wallet?.account}`);
-
+    const queryAssets = useCallback(debounce(async (keyword: string) => {
         const resp = await QueryAssets(wallet.account, keyword);
-
         setAssets(resp.data.tokens ?? []);
-
-        console.log(resp);
-
-        // if (apiWs) {
-        //     const assets = await GetAllAssets();
-
-        //     const items = await Promise.all(assets.map(async asset => {
-        //         const accountRes: any = await apiWs.query.assets.account(Number(asset!.id), wallet?.account);
-        //         const { balance } = accountRes.toHuman() ?? { balance: '' };
-        //         balance.replaceAll(',', '')
-
-        //         try {
-        //             const did = await OwnerDidOfNft(asset!.id);
-        //             const info = await GetUserInfo(did);
-        //             let icon = '';
-
-        //             if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
-        //                 const hash = info?.avatar.substring(7);
-        //                 icon = config.ipfs.endpoint + hash;
-        //             }
-
-        //             return {
-        //                 ...asset,
-        //                 icon,
-        //                 balance: balance.replaceAll(',', '')
-        //             }
-        //         } catch (_e) {
-        //             return null;
-        //         }
-        //     }));
-
-        //     setAssets(items.filter(Boolean));
-        // }
-    }
+    }, 200), [wallet]);
 
     useEffect(() => {
+        setAssets(undefined);
         queryAssets(keyword ?? '');
-    }, [keyword])
-
+    }, [keyword, queryAssets]);
 
     return <BigModal
         visable
         title="Select Asset"
         content={
             <div className={style.assetsContainer}>
-                {!assets && <>
+                <div className={style.searchInput}>
+                    <Input value={keyword} onChange={e => setKeyword(e.target.value)} 
+                    placeholder="Search name or symbol" prefix={<SearchOutlined />}></Input>
+                </div>
+
+                {keyword && keyword.length > 0 && !assets && <>
                     <Spin tip='Loading Assets'></Spin>
                 </>}
 
-                {assets && assets.length === 0 && <>
+                {keyword && keyword.length > 0 && assets && assets.length === 0 && <>
                     <div className={style.noAssets}>
                         Could not find any assets.
                     </div>
                 </>}
 
                 {assets && assets.length > 0 && <>
-                    <div>
-                        <Input value={keyword} onChange={e => setKeyword(e.target.value)}></Input>
-                    </div>
+
                     <div className={style.title}>
                         <span>Token</span>
                         <span>Available Balance</span>
@@ -115,23 +78,10 @@ const SelectAsset: React.FC<{
                         </>;
                     })}
                 </>}
-
             </div>
         }
         close={onClose}
-        footer={
-            <Button
-                block
-                type='primary'
-                shape='round'
-                size='large'
-                onClick={onClose}
-            >
-                {intl.formatMessage({
-                    id: 'common.close',
-                })}
-            </Button>
-        }
+        footer={null}
     />;
 };
 
