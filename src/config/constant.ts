@@ -18,7 +18,7 @@ export enum WALLET_TYPE {
     POPUP = 'popup'
 }
 
-export enum TWITTER_OAUTH_STATE {
+export enum TWITTER_OAUTH_USAGE {
     AIRDROP = 'airdrop',
     BIND = 'bind',
     CLAIM_HNFT = 'claimHnft'

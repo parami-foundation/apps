@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, history } from 'umi';
 import { notification } from 'antd';
 import { parseUrlParams } from '@/utils/url.util';
-import { TWITTER_OAUTH_STATE } from '@/config/constant';
+import { TWITTER_OAUTH_USAGE } from '@/config/constant';
 
 export interface OauthProps { }
 
@@ -16,7 +16,7 @@ type DiscordTicket = {
 
 type TwitterTicket = {
     code: string,
-    state: string
+    state: TWITTER_OAUTH_USAGE
 }
 
 function Oauth({ }: OauthProps) {
@@ -42,13 +42,13 @@ function Oauth({ }: OauthProps) {
 
     const parseTwitterTicket = (ticket: TwitterTicket) => {
         switch (ticket.state) {
-            case TWITTER_OAUTH_STATE.AIRDROP:
+            case TWITTER_OAUTH_USAGE.AIRDROP:
                 history.push(`/create?platform=Twitter&code=${ticket.code}`);
                 break;
-            case TWITTER_OAUTH_STATE.BIND:
+            case TWITTER_OAUTH_USAGE.BIND:
                 history.push(`/profile?platform=Twitter&code=${ticket.code}`);
                 break;
-            case TWITTER_OAUTH_STATE.CLAIM_HNFT:
+            case TWITTER_OAUTH_USAGE.CLAIM_HNFT:
                 history.push(`/claimHnft?code=${ticket.code}`);
                 break;
             default:
