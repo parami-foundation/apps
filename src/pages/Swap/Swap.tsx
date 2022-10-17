@@ -50,6 +50,7 @@ const Swap: React.FC = () => {
     const params: { assetId: string } = useParams();
 
     const queryIcon = async (assetId: string) => {
+        setTokenIcon('');
         try {
             const did = await OwnerDidOfNft(assetId);
             const info = await GetUserInfo(did);
