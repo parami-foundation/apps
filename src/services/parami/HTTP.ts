@@ -88,7 +88,7 @@ export async function GetChainBridgeTokenInfo(options?: { [key: string]: any }) 
 }
 
 export async function ApplyClaimHNFT(body: API.ClaimHNFT, options?: { [key: string]: any }) {
-    return request(`${config.main.airdropServer}/claim/hnft`, {
+    return request(`${config.main.airdropServer}/api/claim/hnft`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

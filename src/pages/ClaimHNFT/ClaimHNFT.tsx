@@ -20,7 +20,7 @@ function ClaimHNFT({ }: ClaimHNFTProps) {
         notification.info({
             message: 'Claiming your HNFT...'
         })
-        const { data, response } = await ApplyClaimHNFT({ ticket: { code: code }, did: wallet.did, site: 'Twitter' });
+        const { data, response } = await ApplyClaimHNFT({ ticket: { code: code }, account: wallet.account, site: 'Twitter' });
         if (response.status === 401) {
             setClaimResult({
                 status: 'error',

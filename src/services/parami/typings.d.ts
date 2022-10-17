@@ -18,7 +18,7 @@ declare namespace API {
 	type ClaimHNFT = {
 		ticket: {};
 		site: string;
-		did: string;
+		account: string;
 	}
 
 	type BindSocial = {
