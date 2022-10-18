@@ -18,6 +18,12 @@ export enum WALLET_TYPE {
     POPUP = 'popup'
 }
 
+export enum TWITTER_OAUTH_USAGE {
+    AIRDROP = 'airdrop',
+    BIND = 'bind',
+    CLAIM_HNFT = 'claimHnft'
+}
+
 export enum POST_MESSAGE_PREFIX {
     AD_CLAIMED = 'AdClaimed'
 }

@@ -1,6 +1,6 @@
 import config from '@/config/config';
 import { extend } from 'umi-request';
-import { AdScore, AdScoreInfo } from './typings';
+import { AdScore, AdScoreInfo, API } from './typings';
 
 const errorHandler = (error: any) => {
     const { response = {}, data = {} } = error;
@@ -84,6 +84,18 @@ export async function GetChainBridgeTokenInfo(options?: { [key: string]: any }) 
         method: 'GET',
         ...(options || {}),
         getResponse: true,
+    });
+}
+
+export async function ApplyClaimHNFT(body: API.ClaimHNFT, options?: { [key: string]: any }) {
+    return request(`${config.main.airdropServer}/api/claim/hnft`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: body,
+        ...(options || {}),
+        getResponse: true
     });
 }
 

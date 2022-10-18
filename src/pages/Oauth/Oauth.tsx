@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useParams, history } from 'umi';
 import { notification } from 'antd';
 import { parseUrlParams } from '@/utils/url.util';
+import { TWITTER_OAUTH_USAGE } from '@/config/constant';
 
 export interface OauthProps { }
 
@@ -41,13 +42,17 @@ function Oauth({ }: OauthProps) {
 
     const parseTwitterTicket = (ticket: TwitterTicket) => {
         switch (ticket.state) {
-            case 'airdrop':
+            case TWITTER_OAUTH_USAGE.AIRDROP:
                 history.push(`/create?platform=Twitter&code=${ticket.code}`);
                 break;
-            case 'bind':
+            case TWITTER_OAUTH_USAGE.BIND:
                 history.push(`/profile?platform=Twitter&code=${ticket.code}`);
                 break;
             default:
+                if (ticket.state.startsWith(TWITTER_OAUTH_USAGE.CLAIM_HNFT)) {
+                    history.push(`/claimHnft/${ticket.state.slice(TWITTER_OAUTH_USAGE.CLAIM_HNFT.length + 1)}?code=${ticket.code}`);
+                    break;
+                }
                 notification.warning({
                     message: `Twitter Oauth Unknown State: ${ticket.state}`
                 });

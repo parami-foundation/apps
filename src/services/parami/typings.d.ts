@@ -15,6 +15,13 @@ declare namespace API {
 		wallet?: string;
 	};
 
+	type ClaimHNFT = {
+		ticket: {};
+		site: string;
+		account: string;
+		nftId: string;
+	}
+
 	type BindSocial = {
 		ticket?: {};
 		site?: string;
