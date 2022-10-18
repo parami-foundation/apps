@@ -23,3 +23,7 @@ export enum TWITTER_OAUTH_USAGE {
     BIND = 'bind',
     CLAIM_HNFT = 'claimHnft'
 }
+
+export enum POST_MESSAGE_PREFIX {
+    AD_CLAIMED = 'AdClaimed'
+}

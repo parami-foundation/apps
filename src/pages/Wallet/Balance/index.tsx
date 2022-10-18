@@ -4,7 +4,7 @@ import {
   SendOutlined,
   TagOutlined,
 } from '@ant-design/icons';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Tooltip } from 'antd';
 import React, { useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import config from '@/config/config';
@@ -80,22 +80,25 @@ const Balance: React.FC = () => {
           </div>
           <div
             className={styles.button}
-            onClick={() => {
-              history.push(config.page.buyPage);
-            }}
+            // onClick={() => {
+            //   history.push(config.page.buyPage);
+            // }}
           >
-            <Button
-              type="primary"
-              shape="circle"
-              icon={<TagOutlined />}
-              size="large"
-              className={styles.buttonContent}
-            />
-            <small>
-              {intl.formatMessage({
-                id: 'wallet.balance.buy',
-              })}
-            </small>
+            <Tooltip title="Coming Soon">
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<TagOutlined />}
+                size="large"
+                disabled
+                className={styles.buttonContent}
+              />
+              <small>
+                {intl.formatMessage({
+                  id: 'wallet.balance.buy',
+                })}
+              </small>
+            </Tooltip>
           </div>
         </div>
         <Divider />

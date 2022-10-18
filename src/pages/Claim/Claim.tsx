@@ -1,3 +1,4 @@
+import { POST_MESSAGE_PREFIX } from '@/config/constant';
 import React from 'react';
 import { useParams } from 'umi';
 import ClaimModal from '../Creator/Explorer/components/ClaimModal/ClaimModal';
@@ -14,8 +15,13 @@ function Claim({ }: ClaimProps) {
         {adId && nftId && <ClaimModal
             adId={adId}
             nftId={nftId}
-            onClaim={() => window.close()}
-            onClose={() => window.close()}
+            onClaim={() => {
+                window.opener.postMessage(`${POST_MESSAGE_PREFIX.AD_CLAIMED}:${adId}`, '*');
+                window.close();
+            }}
+            onClose={() => {
+                window.close();
+            }}
         />}
     </>;
 };

@@ -98,3 +98,10 @@ export async function ApplyClaimHNFT(body: API.ClaimHNFT, options?: { [key: stri
         getResponse: true
     });
 }
+
+export async function QueryAssets(did: string, keyword?: string) {
+    return request(`${config.main.airdropServer}/tokens?did=${did}${keyword ? `&keyword=${keyword}` : ''}`, {
+        method: 'GET',
+        getResponse: true,
+    })
+}
