@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
-import { GetTagsMap } from "@/services/parami/HTTP";
+import { GetAllTags } from "@/services/parami/Tag";
+import { useModel } from "umi";
 
 export default () => {
-  const [tagOptions, setTagOptions] = useState<{ hash: string; name: string }[]>([]);
+  const [tagOptions, setTagOptions] = useState<{ key: string; tag: string }[]>([]);
+  const apiWs = useModel('apiWs');
 
   useEffect(() => {
-    (async () => {
-      const { data }: any = await GetTagsMap();
-      const tags = Object.keys(data).filter(tagHash => data[tagHash].guide).map(tagHash => {
-        return {
-          hash: tagHash,
-          name: data[tagHash].label
-        }
-      });
-      setTagOptions(tags);
-    })();
-  }, []);
+    if (apiWs) {
+      (async () => {
+        const tags = await GetAllTags();
+        setTagOptions(tags);
+      })();
+    }
+  }, [apiWs]);
 
   return {
     tagOptions
