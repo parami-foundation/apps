@@ -241,7 +241,7 @@
     component: './Swap/Swap',
   },
   {
-    path: '/claim/hnft',
+    path: '/claimHnft/:nftId',
     name: 'Claim HNFT',
     hideInMenu: true,
     access: 'canUser',

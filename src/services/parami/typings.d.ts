@@ -19,6 +19,7 @@ declare namespace API {
 		ticket: {};
 		site: string;
 		account: string;
+		nftId: string;
 	}
 
 	type BindSocial = {

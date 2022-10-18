@@ -16,7 +16,7 @@ type DiscordTicket = {
 
 type TwitterTicket = {
     code: string,
-    state: TWITTER_OAUTH_USAGE
+    state: string
 }
 
 function Oauth({ }: OauthProps) {
@@ -48,10 +48,11 @@ function Oauth({ }: OauthProps) {
             case TWITTER_OAUTH_USAGE.BIND:
                 history.push(`/profile?platform=Twitter&code=${ticket.code}`);
                 break;
-            case TWITTER_OAUTH_USAGE.CLAIM_HNFT:
-                history.push(`/claimHnft?code=${ticket.code}`);
-                break;
             default:
+                if (ticket.state.startsWith(TWITTER_OAUTH_USAGE.CLAIM_HNFT)) {
+                    history.push(`/claimHnft/${ticket.state.slice(TWITTER_OAUTH_USAGE.CLAIM_HNFT.length + 1)}?code=${ticket.code}`);
+                    break;
+                }
                 notification.warning({
                     message: `Twitter Oauth Unknown State: ${ticket.state}`
                 });

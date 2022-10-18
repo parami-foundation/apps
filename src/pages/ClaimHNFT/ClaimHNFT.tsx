@@ -1,10 +1,11 @@
 import TwitterLoginButton from '@/components/TwitterLoginButton/TwitterLoginButton';
+import { TWITTER_OAUTH_USAGE } from '@/config/constant';
 import { ApplyClaimHNFT } from '@/services/parami/HTTP';
 import { parseUrlParams } from '@/utils/url.util';
 import { notification, Result, Typography, Image } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
 import React, { useEffect, useState } from 'react';
-import { useModel } from 'umi';
+import { useModel, useParams } from 'umi';
 import style from './ClaimHNFT.less';
 
 const { Title } = Typography;
@@ -12,15 +13,17 @@ const { Title } = Typography;
 export interface ClaimHNFTProps { }
 
 function ClaimHNFT({ }: ClaimHNFTProps) {
-
     const { wallet } = useModel('currentUser');
-    const [claimResult, setClaimResult] = useState<{status: ResultStatusType; title: string; subTitle?: string, canRetry: boolean}>();
+    const [claimResult, setClaimResult] = useState<{ status: ResultStatusType; title: string; subTitle?: string, canRetry: boolean }>();
+    const params: {
+        nftId: string;
+    } = useParams();
 
     const claimHnft = async (code: string) => {
         notification.info({
             message: 'Claiming your HNFT...'
         })
-        const { data, response } = await ApplyClaimHNFT({ ticket: { code: code }, account: wallet.account, site: 'Twitter' });
+        const { data, response } = await ApplyClaimHNFT({ ticket: { code: code }, account: wallet.account, site: 'Twitter', nftId: params.nftId });
         if (response.status === 401) {
             setClaimResult({
                 status: 'error',
@@ -92,7 +95,7 @@ function ClaimHNFT({ }: ClaimHNFTProps) {
             </>}
             {(!claimResult || claimResult.canRetry) && <>
                 <div className={style.btnContainer}>
-                    <TwitterLoginButton state='claimHnft' buttonText='Authorize and claim'></TwitterLoginButton>
+                    <TwitterLoginButton state={`${TWITTER_OAUTH_USAGE.CLAIM_HNFT}:${params.nftId}`} buttonText='Authorize and claim'></TwitterLoginButton>
                 </div>
             </>}
         </div>
