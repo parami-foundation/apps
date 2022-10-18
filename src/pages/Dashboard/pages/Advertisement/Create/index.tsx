@@ -245,6 +245,11 @@ const Create: React.FC<{
                 setLifetime(Number(value));
               }}
             >
+              <Option value={1 * NUM_BLOCKS_PER_DAY}>
+                {intl.formatMessage({
+                  id: 'dashboard.ads.create.lifetime.1day',
+                })}
+              </Option>
               <Option value={3 * NUM_BLOCKS_PER_DAY}>
                 {intl.formatMessage({
                   id: 'dashboard.ads.create.lifetime.3days',
