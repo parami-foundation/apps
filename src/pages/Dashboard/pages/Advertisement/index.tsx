@@ -123,34 +123,34 @@ const Advertisement: React.FC = () => {
 		},
 	];
 
-	const checkIsAdvertiser = async () => {
-		if (!!dashboard && !!dashboard?.account) {
-			try {
-				const isAdvertiser = await IsAdvertiser(dashboard?.account);
-				setIsAdvertisers(isAdvertiser);
-			} catch (e: any) {
-				notification.error({
-					key: 'unknownError',
-					message: e.message || e,
-					duration: null,
-				})
-			}
-		} else {
-			notification.error({
-				key: 'accessDenied',
-				message: intl.formatMessage({
-					id: 'error.accessDenied',
-				}),
-				duration: null,
-			})
-		}
-	};
+	// const checkIsAdvertiser = async () => {
+	// 	if (!!dashboard && !!dashboard?.account) {
+	// 		try {
+	// 			const isAdvertiser = await IsAdvertiser(dashboard?.account);
+	// 			setIsAdvertisers(isAdvertiser);
+	// 		} catch (e: any) {
+	// 			notification.error({
+	// 				key: 'unknownError',
+	// 				message: e.message || e,
+	// 				duration: null,
+	// 			})
+	// 		}
+	// 	} else {
+	// 		notification.error({
+	// 			key: 'accessDenied',
+	// 			message: intl.formatMessage({
+	// 				id: 'error.accessDenied',
+	// 			}),
+	// 			duration: null,
+	// 		})
+	// 	}
+	// };
 
-	useEffect(() => {
-		if (apiWs) {
-			checkIsAdvertiser();
-		}
-	}, [apiWs]);
+	// useEffect(() => {
+	// 	if (apiWs) {
+	// 		checkIsAdvertiser();
+	// 	}
+	// }, [apiWs]);
 
 	return (
 		<>
@@ -166,7 +166,7 @@ const Advertisement: React.FC = () => {
 									width: '100%',
 								}}
 							>
-								{!isAdvertisers && (
+								{(false && 
 									<div className={style.createModal}>
 										<Button
 											type='primary'
