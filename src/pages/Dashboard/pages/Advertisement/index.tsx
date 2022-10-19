@@ -15,6 +15,7 @@ import List from './List';
 import { IsAdvertiser } from '@/services/parami/Advertisement';
 import { AdListItem } from '@/models/dashboard/advertisement';
 import type { ColumnsType } from 'antd/es/table';
+import CreateTagModal from '../../components/CreateTagModal/CreateTagModal';
 
 const Advertisement: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -23,6 +24,7 @@ const Advertisement: React.FC = () => {
 	const [isAdvertisers, setIsAdvertisers] = useState<boolean>(false);
 	const [becomeModal, setBecomeModal] = useState<boolean>(false);
 	const [createModal, setCreateModal] = useState<boolean>(false);
+	const [createTagModal, setCreateTagModal] = useState<boolean>(false);
 	const [bidModal, setBidModal] = useState<boolean>(false);
 	const [listModal, setListModal] = useState<boolean>(false);
 	const [adItem, setAdItem] = useState<any>({});
@@ -211,6 +213,15 @@ const Advertisement: React.FC = () => {
 												id: 'dashboard.ads.control.create',
 											})}
 										</Button>,
+										<Button
+											type='primary'
+											size='large'
+											shape='round'
+											icon={<PlusCircleOutlined />}
+											onClick={() => { setCreateTagModal(true) }}
+										>
+											Create New Tag
+										</Button>
 									]}
 								>
 									<Table
@@ -259,6 +270,15 @@ const Advertisement: React.FC = () => {
 					}}
 				/>
 			)}
+
+			{
+				createTagModal && (
+					<CreateTagModal onCancel={() => setCreateTagModal(false)} onCreate={() => {
+						setCreateTagModal(false);
+						window.location.reload();
+					}}/>
+				)
+			}
 
 			{bidModal && (
 				<BigModal
