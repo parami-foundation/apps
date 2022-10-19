@@ -15,6 +15,7 @@ import List from './List';
 import { IsAdvertiser } from '@/services/parami/Advertisement';
 import { AdListItem } from '@/models/dashboard/advertisement';
 import type { ColumnsType } from 'antd/es/table';
+import CreateTagModal from '../../components/CreateTagModal/CreateTagModal';
 
 const Advertisement: React.FC = () => {
 	const apiWs = useModel('apiWs');
@@ -23,6 +24,7 @@ const Advertisement: React.FC = () => {
 	const [isAdvertisers, setIsAdvertisers] = useState<boolean>(false);
 	const [becomeModal, setBecomeModal] = useState<boolean>(false);
 	const [createModal, setCreateModal] = useState<boolean>(false);
+	const [createTagModal, setCreateTagModal] = useState<boolean>(false);
 	const [bidModal, setBidModal] = useState<boolean>(false);
 	const [listModal, setListModal] = useState<boolean>(false);
 	const [adItem, setAdItem] = useState<any>({});
@@ -121,34 +123,34 @@ const Advertisement: React.FC = () => {
 		},
 	];
 
-	const checkIsAdvertiser = async () => {
-		if (!!dashboard && !!dashboard?.account) {
-			try {
-				const isAdvertiser = await IsAdvertiser(dashboard?.account);
-				setIsAdvertisers(isAdvertiser);
-			} catch (e: any) {
-				notification.error({
-					key: 'unknownError',
-					message: e.message || e,
-					duration: null,
-				})
-			}
-		} else {
-			notification.error({
-				key: 'accessDenied',
-				message: intl.formatMessage({
-					id: 'error.accessDenied',
-				}),
-				duration: null,
-			})
-		}
-	};
+	// const checkIsAdvertiser = async () => {
+	// 	if (!!dashboard && !!dashboard?.account) {
+	// 		try {
+	// 			const isAdvertiser = await IsAdvertiser(dashboard?.account);
+	// 			setIsAdvertisers(isAdvertiser);
+	// 		} catch (e: any) {
+	// 			notification.error({
+	// 				key: 'unknownError',
+	// 				message: e.message || e,
+	// 				duration: null,
+	// 			})
+	// 		}
+	// 	} else {
+	// 		notification.error({
+	// 			key: 'accessDenied',
+	// 			message: intl.formatMessage({
+	// 				id: 'error.accessDenied',
+	// 			}),
+	// 			duration: null,
+	// 		})
+	// 	}
+	// };
 
-	useEffect(() => {
-		if (apiWs) {
-			checkIsAdvertiser();
-		}
-	}, [apiWs]);
+	// useEffect(() => {
+	// 	if (apiWs) {
+	// 		checkIsAdvertiser();
+	// 	}
+	// }, [apiWs]);
 
 	return (
 		<>
@@ -164,7 +166,7 @@ const Advertisement: React.FC = () => {
 									width: '100%',
 								}}
 							>
-								{!isAdvertisers && (
+								{(false && 
 									<div className={style.createModal}>
 										<Button
 											type='primary'
@@ -211,6 +213,15 @@ const Advertisement: React.FC = () => {
 												id: 'dashboard.ads.control.create',
 											})}
 										</Button>,
+										<Button
+											type='primary'
+											size='large'
+											shape='round'
+											icon={<PlusCircleOutlined />}
+											onClick={() => { setCreateTagModal(true) }}
+										>
+											Create New Tag
+										</Button>
 									]}
 								>
 									<Table
@@ -259,6 +270,15 @@ const Advertisement: React.FC = () => {
 					}}
 				/>
 			)}
+
+			{
+				createTagModal && (
+					<CreateTagModal onCancel={() => setCreateTagModal(false)} onCreate={() => {
+						setCreateTagModal(false);
+						window.location.reload();
+					}}/>
+				)
+			}
 
 			{bidModal && (
 				<BigModal

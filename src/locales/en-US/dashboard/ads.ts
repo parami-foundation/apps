@@ -9,6 +9,7 @@ export default {
   'dashboard.ads.create.rewardRate': 'Reward Rate',
   'dashboard.ads.create.lifetime': 'Lifetime',
   'dashboard.ads.create.lifetime.desc': 'Increase height by 1 every 12 seconds',
+  'dashboard.ads.create.lifetime.1day': '1 day',
   'dashboard.ads.create.lifetime.3days': '3days',
   'dashboard.ads.create.lifetime.7days': '7days',
   'dashboard.ads.create.lifetime.15days': '15days',

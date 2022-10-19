@@ -71,14 +71,6 @@ export async function GetAvatar(url: string, options?: { [key: string]: any }) {
     });
 }
 
-export async function GetTagsMap(options?: { [key: string]: any }) {
-    return request(config.main.tagMapConfig, {
-        method: 'GET',
-        ...(options || {}),
-        getResponse: true,
-    });
-}
-
 export async function GetChainBridgeTokenInfo(options?: { [key: string]: any }) {
     return request(config.main.chainBridgeConfig, {
         method: 'GET',

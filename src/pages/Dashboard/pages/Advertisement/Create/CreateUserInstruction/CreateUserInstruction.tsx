@@ -69,7 +69,7 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
                         onChange={value => setTag(value as string)}
                     >
                         {tagOptions.map(option => {
-                            return <Option key={option.hash} value={option.name}>{option.name}</Option>
+                            return <Option key={option.key} value={option.tag}>{option.tag}</Option>
                         })}
                     </Select>
                 </div>
