@@ -22,6 +22,7 @@ const ClaimModal: React.FC<{
     const [secModal, setSecModal] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
     const { wallet } = useModel('currentUser');
+    const apiWs = useModel('apiWs');
 
     const intl = useIntl();
 
@@ -38,13 +39,6 @@ const ClaimModal: React.FC<{
 
     const fetchClaimInfo = async () => {
         try {
-            const res = await GetTagsOfAd(adId);
-            console.log(res);
-        } catch (e) {
-            console.log(e);
-        }
-
-        try {
             const { response, data } = await GetCurrentScoresOfAd(adId, nftId, wallet?.did);
             if (response.ok) {
                 setAdScore(data as AdScoreInfo);
@@ -58,8 +52,10 @@ const ClaimModal: React.FC<{
     }
 
     useEffect(() => {
-        fetchClaimInfo();
-    }, []);
+        if (apiWs) {
+            fetchClaimInfo();
+        }
+    }, [apiWs]);
 
     const claim = async (preTx?: boolean, account?: string) => {
         if (!wallet?.keystore) {
