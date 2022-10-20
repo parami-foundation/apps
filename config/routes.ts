@@ -1,4 +1,6 @@
-﻿export default [
+﻿import { triggerFocus } from "antd/lib/input/Input";
+
+export default [
   {
     path: '/',
     name: 'index',
@@ -247,6 +249,14 @@
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './ClaimHNFT/ClaimHNFT'
+  },
+  {
+    path: '/bid/:nftId',
+    name: 'Bid on HNFT',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './BidHNFT/BidHNFT'
   },
   {
     component: './404',

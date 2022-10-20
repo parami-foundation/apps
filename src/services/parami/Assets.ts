@@ -1,3 +1,11 @@
+export type Asset = {
+  deposit: number;
+  name: string;
+  symbol: string;
+  decimals: number;
+  isFrozen: boolean;
+}
+
 export const GetAssetInfo = async (assetId: string) => {
   const assetInfo = await window.apiWs.query.assets.metadata(Number(assetId));
   return assetInfo;
