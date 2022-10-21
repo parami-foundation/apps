@@ -3,6 +3,26 @@ import { web3FromSource } from "@polkadot/extension-dapp";
 import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
+import { SubmittableExtrinsic } from "@polkadot/api/types";
+
+const instanceKeyring = new Keyring({ type: 'sr25519' });
+
+const checkFeeAndSubmitExtrinsic = async (ex: SubmittableExtrinsic<"promise", any>, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  if (preTx && account) {
+    const info = await ex.paymentInfo(account);
+    return info;
+  }
+
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+}
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -61,6 +81,19 @@ export const GetSlotAdOfByAssetID = async (assetID: string): Promise<any> => {
   return res;
 };
 
+export const UserCreateAds = async (
+  adConfig: any,
+  password: string,
+  keystore: string,
+  preTx?: boolean,
+  account?: string
+) => {
+  const currentBlockNum = await window.apiWs.query.system.number();
+  const ex = window.apiWs.tx.ad.create(adConfig.tags, adConfig.metadata, adConfig.rewardRate, adConfig.lifetime + Number(currentBlockNum), adConfig.payoutBase, adConfig.payoutMin, adConfig.payoutMax, adConfig.delegatedAccount);
+
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
+
 export const CreateAds = async (tags: any[], metadata: string, rewardRate: string, lifetime: number, payoutBase: string, payoutMin: string, payoutMax: string, account: any, delegateAccount: string) => {
   const currentBlockNum = await window.apiWs.query.system.number();
   const injector = await web3FromSource(account.meta.source);
@@ -68,6 +101,12 @@ export const CreateAds = async (tags: any[], metadata: string, rewardRate: strin
 
   return await subWeb3Callback(tx, injector, account);
 };
+
+export const UserBidSlot = async (adId: string, nftId: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.ad.bidWithFraction(adId, nftId, amount, null, null);
+
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
 
 export const BidSlot = async (adId: string, nftID: string, amount: string, tokenAssetId: number | undefined, tokenAmount, account: any) => {
   const injector = await web3FromSource(account.meta.source);

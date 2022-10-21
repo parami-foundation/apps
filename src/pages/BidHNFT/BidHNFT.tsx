@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useModel, useParams } from 'umi';
-import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps } from 'antd';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
 import { DrylyBuyToken, DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
-import { UploadOutlined } from '@ant-design/icons';
-import { hexToDid, parseAmount, stringToBigInt } from '@/utils/common';
+import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { didToHex, hexToDid, parseAmount, stringToBigInt } from '@/utils/common';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '../Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
@@ -17,11 +17,12 @@ import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { Asset, GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
-import { GetSlotOfNft } from '@/services/parami/Advertisement';
+import { GetSlotOfNft, UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
 import { formatBalance } from '@polkadot/util';
 import { BuyToken } from '@/services/parami/Swap';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
+import { uploadIPFS } from '@/services/parami/IPFS';
 
 export interface BidHNFTProps { }
 
@@ -29,6 +30,7 @@ const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 const { Title } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;
+const { Step } = Steps;
 
 enum IMAGE_TYPE {
     ICON = 'icon',
@@ -44,7 +46,7 @@ const defaultInstruction: UserInstruction = {
 
 function BidHNFT({ }: BidHNFTProps) {
     const [sponsorName, setSponsorName] = useState<string>('');
-    const [content, setContent] = useState<string>('');
+    const [content, setContent] = useState<string>('View Ads. Get Paid.');
     const [userInfo, setUserInfo] = useState<{ nickname?: string; avatar?: string }>();
     const [iconUrl, setIconUrl] = useState<string>();
     const [posterUrl, setPosterUrl] = useState<string>();
@@ -73,8 +75,16 @@ function BidHNFT({ }: BidHNFTProps) {
     const [assetBalance, setAssetBalance] = useState<string>('');
     const [showSwap, setShowSwap] = useState<boolean>(false);
     const [passphrase, setPassphrase] = useState<string>('');
+    const [adConfig, setAdConfig] = useState<any>();
+    const [bidInProgress, setBidInProgress] = useState<boolean>(false);
+    const [step, setStep] = useState<number>(0);
 
-    const [secModal, setSecModal] = useState<boolean>(false);
+
+    const [createAdSecModal, setCreateAdSecModal] = useState<boolean>(false);
+    const [bidSecModal, setBidSecModal] = useState<boolean>(false);
+
+    // const [secModal, setSecModal] = useState<{ show: boolean; func?: any }>({ show: false });
+    const [adId, setAdId] = useState<string>();
 
     const params: {
         nftId: string;
@@ -198,13 +208,89 @@ function BidHNFT({ }: BidHNFTProps) {
         }
     }, [price]);
 
-    // const trySwapToken = async () => {
-    //     const tokenNumber = (FloatStringToBigInt(`${price}`, 18) - stringToBigInt(assetBalance)).toString();
-    //     const ad3Number = await DrylyBuyToken(params?.nftId, tokenNumber);
+    const bidAd = async (preTx?: boolean, account?: string) => {
+        try {
+            const info: any = await UserBidSlot(adId!, params.nftId, parseAmount((price as number).toString()), passphrase, wallet?.keystore, preTx, account);
+            if (preTx && account) {
+                return info;
+            }
+            console.log('bid success');
+            setBidInProgress(false);
+            notification.success({
+                message: 'Bid Success'
+            });
+            // todo: jump to ad page?
+        } catch (e: any) {
+            notification.error({
+                message: e.message || e,
+                duration: null,
+            });
+            setBidInProgress(false);
+            return;
+        }
+    }
 
-    //     console.log('token number', tokenNumber);
-    //     console.log('ad3 number', ad3Number);
-    // }
+    const handleSubmit = async () => {
+        setBidInProgress(true);
+        const adConfig = await createAdConfig();
+        setAdConfig(adConfig);
+        setCreateAdSecModal(true);
+    }
+
+    const createAd = async (preTx?: boolean, account?: string) => {
+        try {
+            const info: any = await UserCreateAds(adConfig, passphrase, wallet?.keystore, preTx, account);
+            // set loading false
+            if (preTx && account) {
+                console.log('preTx ', info);
+                return info;
+            }
+            console.log('post tx', info);
+
+            const adId = info.ad.Created[0][0];
+            setAdId(adId);
+            setStep(1);
+            setBidSecModal(true);
+        } catch (e: any) {
+            notification.error({
+                message: e.message || e,
+                duration: null,
+            });
+            setBidInProgress(false);
+            return;
+        }
+    }
+
+    const createAdConfig = async () => {
+        let adMetadata = {
+            media: posterUrl,
+            icon: iconUrl,
+            content,
+            instructions,
+            sponsorName
+        };
+
+        const bufferred = await Buffer.from(JSON.stringify(adMetadata));
+        const { response, data } = await uploadIPFS(bufferred);
+        if (!response.ok) {
+            throw ('Create Metadata Error');
+        }
+
+        const metadataUrl = `ipfs://${data.Hash}`;
+        const delegatedDidHex = didToHex(config.advertisement.defaultDelegatedDid);
+        const allTags = Array.from(new Set([...instructions.map(ins => ins.tag).filter(Boolean)]));
+
+        return {
+            tags: allTags,
+            metadata: metadataUrl,
+            rewardRate: rewardRate.toString(),
+            lifetime,
+            payoutBase: parseAmount(payoutBase.toString()),
+            payoutMin: parseAmount(payoutMin.toString()),
+            payoutMax: parseAmount(payoutMax.toString()),
+            delegatedAccount: delegatedDidHex
+        }
+    }
 
     const swapMoreToken = async (preTx?: boolean, account?: string) => {
         // todo: set swap loading true
@@ -217,7 +303,7 @@ function BidHNFT({ }: BidHNFTProps) {
             console.log('ad3 number', ad3Number);
 
             const info: any = await BuyToken(params?.nftId, tokenNumber, ad3Number, passphrase, wallet?.keystore, preTx, account);
-            
+
             // todo:set swap loading false
             if (preTx && account) {
                 return info;
@@ -277,6 +363,7 @@ function BidHNFT({ }: BidHNFTProps) {
                             <div className={style.value}>
                                 <Input
                                     size='large'
+                                    value={content}
                                     onChange={(e) => setContent(e.target.value)}
                                     placeholder='Advertisement Content'
                                 />
@@ -492,7 +579,8 @@ function BidHNFT({ }: BidHNFTProps) {
                         {showSwap && <>
                             <div className={style.field}>
                                 <Button onClick={() => {
-                                    setSecModal(true);
+                                    console.log('swap tokens');
+                                    // setSecModal({ show: true, func: swapMoreToken });
                                 }}>Swap more {asset?.symbol}</Button>
                             </div>
                         </>}
@@ -514,6 +602,7 @@ function BidHNFT({ }: BidHNFTProps) {
                             loading={false}
                             onClick={() => {
                                 console.log('submit')
+                                handleSubmit();
                             }}
                         >
                             submit
@@ -534,12 +623,35 @@ function BidHNFT({ }: BidHNFTProps) {
         </>}
 
         <SecurityModal
-            visable={secModal}
-            setVisable={setSecModal}
+            visable={createAdSecModal}
+            setVisable={setCreateAdSecModal}
             passphrase={passphrase}
             setPassphrase={setPassphrase}
-            func={swapMoreToken}
+            func={createAd}
         />
+
+        <SecurityModal
+            visable={bidSecModal}
+            setVisable={setBidSecModal}
+            passphrase={passphrase}
+            setPassphrase={setPassphrase}
+            func={bidAd}
+        />
+
+        {bidInProgress && <>
+            <Modal
+                title="Bid Advertisement"
+                visible
+                closable={false}
+                footer={null}
+            >
+                <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
+                    <Step title="Generate Advertisement" icon={step === 0 ? <LoadingOutlined /> : false} />
+                    <Step title="Bid Advertisement on HNFT" icon={step === 1 ? <LoadingOutlined /> : false} />
+                    <Step title="Completing" icon={step === 2 ? <LoadingOutlined /> : false} />
+                </Steps>
+            </Modal>
+        </>}
     </>;
 };
 

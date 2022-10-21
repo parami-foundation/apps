@@ -48,6 +48,9 @@ export const config = {
       "oauthEndpoint": "https://discord.com/oauth2/authorize"
     },
   },
+  "advertisement": {
+    "defaultDelegatedDid": "did:ad3:izgyiwwftd7s1D3XaREJZBR2kvZ"
+  },
   "explorer": {
     "extrinsics": "https://block.parami.io/extrinsics/",
     "block": "https://block.parami.io/blocks/",
