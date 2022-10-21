@@ -34,7 +34,7 @@ const Create: React.FC<{
 
   const [rewardRate, setRewardRate] = useState<number>(0);
   const [lifetime, setLifetime] = useState<number>();
-  const [delegatedDid, setDelegatedDid] = useState<string>('did:ad3:izgyiwwftd7s1D3XaREJZBR2kvZ');
+  const [delegatedDid, setDelegatedDid] = useState<string>(config.advertisement.defaultDelegatedDid);
   const [createInstructionModal, setCreateInstructionModal] = useState<boolean>(false);
   const [instructions, setInstructions] = useState<UserInstruction[]>([]);
 
