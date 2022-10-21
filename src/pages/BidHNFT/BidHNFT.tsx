@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModel, useParams } from 'umi';
-import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps, Col, Row } from 'antd';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
@@ -15,10 +15,8 @@ import ParamiScore from '../Creator/Explorer/components/ParamiScore/ParamiScore'
 import { deleteComma } from '@/utils/format';
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import { Asset, GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
-import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { GetSlotOfNft, UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
-import { formatBalance } from '@polkadot/util';
 import { BuyToken } from '@/services/parami/Swap';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
@@ -337,278 +335,287 @@ function BidHNFT({ }: BidHNFTProps) {
                         </Title>
                     </div>
                     <div className={style.subtitle}>
-                        some sub title
+                        Place your advertisement on {asset?.name}
                     </div>
                 </div>
 
-                <div className={style.formContainer}>
-                    <Card title="Config your Ad">
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Sponsor Name'} required />
-                            </div>
-                            <div className={style.value}>
-                                <Input
-                                    size='large'
-                                    value={sponsorName}
-                                    onChange={(e) => setSponsorName(e.target.value)}
-                                    placeholder='Advertisement Sponsor Name'
-                                />
-                            </div>
-                        </div>
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Content'} />
-                            </div>
-                            <div className={style.value}>
-                                <Input
-                                    size='large'
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    placeholder='Advertisement Content'
-                                />
-                            </div>
-                        </div>
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Ad Icon'} required />
-                            </div>
-                            <div className={style.value}>
-                                <Upload
-                                    showUploadList={false}
-                                    action={config.ipfs.upload}
-                                    onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
-                                >
-                                    {iconUrl
-                                        ? <img src={iconUrl} style={{ width: '100%', maxWidth: '100px' }} />
-                                        : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
-                                </Upload>
-                            </div>
-                        </div>
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Poster'} required />
-                            </div>
-                            <div className={style.value}>
-                                <Upload
-                                    showUploadList={false}
-                                    action={config.ipfs.upload}
-                                    onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
-                                >
-                                    {posterUrl
-                                        ? <img src={posterUrl} style={{ width: '100%', maxWidth: '400px' }} />
-                                        : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
-                                </Upload>
-                            </div>
-                        </div>
+                <Row style={{ width: '100%' }} gutter={20}>
+                    <Col span={12}>
+                        <Card title="Config your Ad" className={styles.card}>
+                            <div className={style.formContainer}>
 
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title="instructions" required />
-                            </div>
-                            <div className={style.value}>
-                                <Button onClick={() => setCreateInstructionModal(true)}>Add New Instruction</Button>
-                            </div>
-                        </div>
-                        {instructions.length > 0 &&
-                            <div className={style.field}>
-                                {instructions.map(instruction => <p>
-                                    <Tag closable onClose={(e) => {
-                                        e.preventDefault();
-                                        setInstructions(instructions.filter(ins => ins !== instruction))
-                                    }}>
-                                        {instruction.text}
-                                        {!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
-                                        {!!instruction.score && <ParamiScore score={instruction.score} />}
-                                        {!!instruction.link && <a href={instruction.link} target="_blank">(link)</a>}
-                                    </Tag>
-                                </p>)}
-                            </div>
-                        }
 
-                        <Collapse ghost>
-                            <Panel header="Advanced Settings" key="1">
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title={'Reward Rate'} required />
+                                        <FormFieldTitle title={'Sponsor Name'} required />
                                     </div>
                                     <div className={style.value}>
                                         <Input
-                                            className={style.withAfterInput}
-                                            placeholder="0.00"
                                             size='large'
-                                            type='number'
-                                            maxLength={18}
-                                            min={0}
-                                            onChange={(e) => setRewardRate(Number(e.target.value))}
-                                            suffix="%"
-                                            value={rewardRate}
+                                            value={sponsorName}
+                                            onChange={(e) => setSponsorName(e.target.value)}
+                                            placeholder='Advertisement Sponsor Name'
                                         />
-                                        <span className={style.fieldInfo}>Referrer gets {rewardRate}% from each referral.</span>
                                     </div>
                                 </div>
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title={'lifetime'} required />
+                                        <FormFieldTitle title={'Content'} />
                                     </div>
                                     <div className={style.value}>
-                                        <Select
+                                        <Input
                                             size='large'
-                                            style={{
-                                                width: '100%',
-                                            }}
-                                            placeholder={'Please select a lifetime'}
-                                            onChange={(value) => {
-                                                setLifetime(Number(value));
-                                            }}
-                                            value={lifetime}
+                                            value={content}
+                                            onChange={(e) => setContent(e.target.value)}
+                                            placeholder='Advertisement Content'
+                                        />
+                                    </div>
+                                </div>
+                                <div className={style.field}>
+                                    <div className={style.title}>
+                                        <FormFieldTitle title={'Ad Icon'} required />
+                                    </div>
+                                    <div className={style.value}>
+                                        <Upload
+                                            showUploadList={false}
+                                            action={config.ipfs.upload}
+                                            onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
                                         >
-                                            <Option value={1 * NUM_BLOCKS_PER_DAY}>
-                                                1 day
-                                            </Option>
-                                            <Option value={3 * NUM_BLOCKS_PER_DAY}>
-                                                3 days
-                                            </Option>
-                                            <Option value={7 * NUM_BLOCKS_PER_DAY}>
-                                                7 days
-                                            </Option>
-                                            <Option value={15 * NUM_BLOCKS_PER_DAY}>
-                                                15 days
-                                            </Option>
-                                        </Select>
+                                            {iconUrl
+                                                ? <img src={iconUrl} style={{ width: '100%', maxWidth: '100px' }} />
+                                                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
+                                        </Upload>
                                     </div>
                                 </div>
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title={'Payout Base'} required />
+                                        <FormFieldTitle title={'Poster'} required />
                                     </div>
                                     <div className={style.value}>
-                                        <Input
-                                            className={style.withAfterInput}
-                                            placeholder="0.00"
-                                            size='large'
-                                            type='number'
-                                            value={payoutBase}
-                                            maxLength={18}
-                                            min={0}
-                                            onChange={(e) => setPayoutBase(Number(e.target.value))}
-                                        />
+                                        <Upload
+                                            showUploadList={false}
+                                            action={config.ipfs.upload}
+                                            onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
+                                        >
+                                            {posterUrl
+                                                ? <img src={posterUrl} style={{ width: '100%', maxWidth: '400px' }} />
+                                                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
+                                        </Upload>
                                     </div>
                                 </div>
+
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title={'Payout Min'} required />
+                                        <FormFieldTitle title="instructions" required />
                                     </div>
                                     <div className={style.value}>
-                                        <Input
-                                            className={`${style.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
-                                            placeholder="0.00"
-                                            size='large'
-                                            type='number'
-                                            maxLength={18}
-                                            min={0}
-                                            max={payoutMax}
-                                            value={payoutMin}
-                                            onChange={(e) => setPayoutMin(Number(e.target.value))}
-                                        />
-                                        {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
+                                        <Button onClick={() => setCreateInstructionModal(true)}>Add New Instruction</Button>
                                     </div>
                                 </div>
-                                <div className={style.field}>
-                                    <div className={style.title}>
-                                        <FormFieldTitle title={'Payout Max'} required />
+                                {instructions.length > 0 &&
+                                    <div className={style.field}>
+                                        {instructions.map(instruction => <p>
+                                            <Tag closable onClose={(e) => {
+                                                e.preventDefault();
+                                                setInstructions(instructions.filter(ins => ins !== instruction))
+                                            }}>
+                                                {instruction.text}
+                                                {!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
+                                                {!!instruction.score && <ParamiScore score={instruction.score} />}
+                                                {!!instruction.link && <a href={instruction.link} target="_blank">(link)</a>}
+                                            </Tag>
+                                        </p>)}
                                     </div>
+                                }
+
+                                <Collapse ghost>
+                                    <Panel header="Advanced Settings" key="1">
+                                        <div className={style.field}>
+                                            <div className={style.title}>
+                                                <FormFieldTitle title={'Reward Rate'} required />
+                                            </div>
+                                            <div className={style.value}>
+                                                <Input
+                                                    className={style.withAfterInput}
+                                                    placeholder="0.00"
+                                                    size='large'
+                                                    type='number'
+                                                    maxLength={18}
+                                                    min={0}
+                                                    onChange={(e) => setRewardRate(Number(e.target.value))}
+                                                    suffix="%"
+                                                    value={rewardRate}
+                                                />
+                                                <span className={style.fieldInfo}>Referrer gets {rewardRate}% from each referral.</span>
+                                            </div>
+                                        </div>
+                                        <div className={style.field}>
+                                            <div className={style.title}>
+                                                <FormFieldTitle title={'lifetime'} required />
+                                            </div>
+                                            <div className={style.value}>
+                                                <Select
+                                                    size='large'
+                                                    style={{
+                                                        width: '100%',
+                                                    }}
+                                                    placeholder={'Please select a lifetime'}
+                                                    onChange={(value) => {
+                                                        setLifetime(Number(value));
+                                                    }}
+                                                    value={lifetime}
+                                                >
+                                                    <Option value={1 * NUM_BLOCKS_PER_DAY}>
+                                                        1 day
+                                                    </Option>
+                                                    <Option value={3 * NUM_BLOCKS_PER_DAY}>
+                                                        3 days
+                                                    </Option>
+                                                    <Option value={7 * NUM_BLOCKS_PER_DAY}>
+                                                        7 days
+                                                    </Option>
+                                                    <Option value={15 * NUM_BLOCKS_PER_DAY}>
+                                                        15 days
+                                                    </Option>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div className={style.field}>
+                                            <div className={style.title}>
+                                                <FormFieldTitle title={'Payout Base'} required />
+                                            </div>
+                                            <div className={style.value}>
+                                                <Input
+                                                    className={style.withAfterInput}
+                                                    placeholder="0.00"
+                                                    size='large'
+                                                    type='number'
+                                                    value={payoutBase}
+                                                    maxLength={18}
+                                                    min={0}
+                                                    onChange={(e) => setPayoutBase(Number(e.target.value))}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className={style.field}>
+                                            <div className={style.title}>
+                                                <FormFieldTitle title={'Payout Min'} required />
+                                            </div>
+                                            <div className={style.value}>
+                                                <Input
+                                                    className={`${style.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
+                                                    placeholder="0.00"
+                                                    size='large'
+                                                    type='number'
+                                                    maxLength={18}
+                                                    min={0}
+                                                    max={payoutMax}
+                                                    value={payoutMin}
+                                                    onChange={(e) => setPayoutMin(Number(e.target.value))}
+                                                />
+                                                {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
+                                            </div>
+                                        </div>
+                                        <div className={style.field}>
+                                            <div className={style.title}>
+                                                <FormFieldTitle title={'Payout Max'} required />
+                                            </div>
+                                            <div className={style.value}>
+                                                <Input
+                                                    className={`${style.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
+                                                    placeholder="0.00"
+                                                    size='large'
+                                                    type='number'
+                                                    maxLength={18}
+                                                    value={payoutMax}
+                                                    min={payoutMin}
+                                                    onChange={(e) => setPayoutMax(Number(e.target.value))}
+                                                />
+                                                {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
+                                            </div>
+                                        </div>
+                                    </Panel>
+                                </Collapse>
+                            </div>
+                        </Card>
+                    </Col>
+                    <Col span={12}>
+                        <Card title="Ad Preview" className={styles.card}>
+                            <div className={style.previewContainer}>
+                                <AdvertisementPreview ad={adPreviewData}></AdvertisementPreview>
+                            </div>
+                        </Card>
+
+                        <Card title="Bid your price" className={styles.card} style={{ marginTop: '20px' }}>
+                            <div className={style.bidSectionContainer}>
+                                <div className={style.currentPrice}>
+                                    <div className={style.currentPriceTitle}>
+                                        <FormFieldTitle title={'Current Price'} />
+                                    </div>
+                                    <div className={style.currentPriceValue}>
+                                        <Token value={currentPrice ?? ''} symbol={asset?.symbol} />
+                                    </div>
+                                </div>
+
+                                <div className={style.priceField}>
+                                    <div className={style.priceFieldTitle}>
+                                        Offer a price
+                                    </div>
+                                    <small>
+                                        {`The bid must be higher than ${minPrice} (20% higher than the current price)`}
+                                    </small>
                                     <div className={style.value}>
                                         <Input
-                                            className={`${style.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
-                                            placeholder="0.00"
+                                            value={price}
+                                            className={`${style.withAfterInput} ${priceErrorMsg ? style.inputError : ''}`}
                                             size='large'
                                             type='number'
-                                            maxLength={18}
-                                            value={payoutMax}
-                                            min={payoutMin}
-                                            onChange={(e) => setPayoutMax(Number(e.target.value))}
+                                            placeholder='Price'
+                                            min={minPrice ? minPrice : 0}
+                                            onChange={(e) => {
+                                                setPrice(Number(e.target.value));
+                                            }}
                                         />
-                                        {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
+                                        {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
+                                    </div>
+                                    <div className={style.tokenBalance}>
+                                        <span>balance: <Token value={assetBalance ?? ''} symbol={asset?.symbol} /></span>
+                                        {/* <span>available ad3: <AD3 value={balance?.free} /></span> */}
                                     </div>
                                 </div>
-                            </Panel>
-                        </Collapse>
-                    </Card>
 
-                    <Card title="Ad Preview">
-                        <AdvertisementPreview ad={adPreviewData} avatarSrc={iconUrl}></AdvertisementPreview>
-                    </Card>
+                                {showSwap && false && <>
+                                    <div className={style.field}>
+                                        <Button onClick={() => {
+                                            console.log('swap tokens');
+                                            // setSecModal({ show: true, func: swapMoreToken });
+                                        }}>Swap more {asset?.symbol}</Button>
+                                    </div>
+                                </>}
 
-                    <Card title="Bid your price">
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Current Price'} />
+                                <div
+                                    className={style.bidBtnContainer}
+                                >
+                                    <Button
+                                        block
+                                        size='large'
+                                        shape='round'
+                                        type='primary'
+                                        disabled={false}
+                                        loading={false}
+                                        onClick={() => {
+                                            console.log('submit')
+                                            handleSubmit();
+                                        }}
+                                    >
+                                        bid
+                                    </Button>
+                                </div>
                             </div>
-                            <div className={style.value}>
-                                {`${formatBalance(currentPrice, { decimals: 18 })}`}
-                            </div>
-                        </div>
 
-                        <div className={style.field}>
-                            <div className={style.title}>
-                                <FormFieldTitle title={'Offer a price'} required />
-                                <br />
-                                <small>
-                                    {`The bid must be higher than ${minPrice} (20% higher than the current price)`}
-                                </small>
-                            </div>
-                            <div className={style.value}>
-                                <Input
-                                    value={price}
-                                    className={`${style.withAfterInput} ${priceErrorMsg ? style.inputError : ''}`}
-                                    size='large'
-                                    type='number'
-                                    min={minPrice ? minPrice : 0}
-                                    onChange={(e) => {
-                                        setPrice(Number(e.target.value));
-                                    }}
-                                />
-                                {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
-                            </div>
-                        </div>
-                        <div className={style.field}>
-                            <span>available tokens: <Token value={assetBalance ?? ''} symbol={asset?.symbol} /></span>
-                            <span>available ad3: <AD3 value={balance?.free} /></span>
-                        </div>
-                        {showSwap && <>
-                            <div className={style.field}>
-                                <Button onClick={() => {
-                                    console.log('swap tokens');
-                                    // setSecModal({ show: true, func: swapMoreToken });
-                                }}>Swap more {asset?.symbol}</Button>
-                            </div>
-                        </>}
-
-                    </Card>
-
-                    <div
-                        className={style.field}
-                        style={{
-                            marginTop: 50
-                        }}
-                    >
-                        <Button
-                            block
-                            size='large'
-                            shape='round'
-                            type='primary'
-                            disabled={false}
-                            loading={false}
-                            onClick={() => {
-                                console.log('submit')
-                                handleSubmit();
-                            }}
-                        >
-                            submit
-                        </Button>
-                    </div>
-                </div>
+                        </Card>
+                    </Col>
+                </Row>
             </div>
         </div>
 

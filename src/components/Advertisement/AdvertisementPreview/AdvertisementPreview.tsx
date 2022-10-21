@@ -3,8 +3,7 @@ import './AdvertisementPreview.less';
 
 const AdvertisementPreview: React.FC<{
 	ad: any;
-	avatarSrc?: string;
-}> = ({ ad, avatarSrc }) => {
+}> = ({ ad }) => {
 
 	const [showInstructions, setShowInstructions] = useState<boolean>(false);
 	const [closePopoverTimeout, setClosePopoverTimeout] = useState<any>();
@@ -38,14 +37,16 @@ const AdvertisementPreview: React.FC<{
 				</div>
 				<div className='sponsorInfo'>
 					{ad?.icon && <img referrerPolicy='no-referrer' className='sponsorIcon' src={ad?.icon}></img>}
-					<span className='sponsorText'><span className='sponsorName'>{ad?.sponsorName ?? 'Parami'}</span>is sponsoring this hNFT</span>
-					<div className='bidBtn' onClick={() => {}}>BID</div>
+					<span className='sponsorText'><span className='sponsorName'>{`${(ad?.sponsorName ?? 'Parami').slice(0, 30)}`}</span>is sponsoring this hNFT</span>
+					<div className='bidBtn' onClick={() => { }}>BID</div>
 				</div>
-				<img
+				{ad?.poster && <img
 					src={ad?.poster}
 					referrerPolicy='no-referrer'
 					className='adMediaImg'
-				/>
+				/>}
+				{!ad?.poster && <div className='posterPlaceHolder'>Your poster goes here</div>}
+
 				<div className='adDescription'>
 					<span className='descriptionText'>{ad?.content ?? 'View Ads. Get Paid.'}</span>
 					{tags?.length > 0 && <span className='tags'>
@@ -57,7 +58,7 @@ const AdvertisementPreview: React.FC<{
 					<div className='infoText'>Due to your Preference Score you are rewarded:</div>
 					<div className='rewardRow'>
 						<div className='rewardInfo'>
-							<img referrerPolicy='no-referrer' className='kolIcon' src={avatarSrc}></img>
+							<img referrerPolicy='no-referrer' className='kolIcon' src={'/images/logo-round-core.svg'}></img>
 							<span className='rewardAmount'>
 								<span className='rewardNumber'>{'300.00'}</span>
 								<span className='rewardToken'>{ad?.assetName} NFT Power</span>
@@ -66,7 +67,7 @@ const AdvertisementPreview: React.FC<{
 						<div className='buttons'>
 							<>
 								<div className='claimBtn actionBtn' onMouseEnter={openInstructionPopover} onMouseLeave={delayCloseInstructionPopover}>Claim</div>
-								<div className='instructionsBtn actionBtn' onClick={() => {}}>Buy more</div>
+								<div className='instructionsBtn actionBtn' onClick={() => { }}>Buy more</div>
 							</>
 						</div>
 					</div>
@@ -90,7 +91,7 @@ const AdvertisementPreview: React.FC<{
 							})}
 						</>}
 						<div className='instructionClaimBtnContainer'>
-							<div className='instructionClaimBtn actionBtn' onClick={() => {}}>{claimText}</div>
+							<div className='instructionClaimBtn actionBtn' onClick={() => { }}>{claimText}</div>
 						</div>
 					</div>
 				</div>}
