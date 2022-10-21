@@ -11,8 +11,6 @@ import ClaimModal from './components/ClaimModal/ClaimModal';
 import ParamiScoreTag from './components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from './components/ParamiScore/ParamiScore';
 import config from '@/config/config';
-import { deleteComma } from '@/utils/format';
-import BigModal from '@/components/ParamiModal/BigModal';
 
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
@@ -29,7 +27,6 @@ const Advertisement: React.FC<{
 	const { wallet } = useModel('currentUser');
 	const [claimModal, setClaimModal] = useState<boolean>(false);
 	const [adClaimed, setAdClaimed] = useState<boolean>(false);
-	const [oopsModal, setOopsModal] = useState<boolean>(false);
 
 	const apiWs = useModel('apiWs');
 
@@ -38,14 +35,6 @@ const Advertisement: React.FC<{
 	const link = !!wallet?.did ? `${window.location.origin}/${did}/${nftId}?referrer=${wallet?.did}` : `${window.location.origin}/${did}/${nftId}`;
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
-
-	const insufficientBalance = balance && adData.payoutMax && BigInt(balance) < BigInt(deleteComma(adData.payoutMax));
-
-	useEffect(() => {
-		if (insufficientBalance && !notAccess && !adClaimed) {
-			setOopsModal(true);
-		}
-	}, [insufficientBalance, notAccess, adClaimed])
 
 	const checkAdClaimStatus = async (apiWs, adId, did) => {
 		const res = await apiWs.query.ad.payout(adId, did);
@@ -184,25 +173,22 @@ const Advertisement: React.FC<{
 								id: 'creator.explorer.advertisement.share',
 							}, { token: `$${asset?.symbol}` })}
 						</Button>
-						
+
 						{gotoWalletButton('Check your reward and score')}
 					</>}
 
 					{!adClaimed && <>
-						{insufficientBalance && gotoWalletButton('Check your wallet and score')}
-						{!insufficientBalance &&
-							<Button
-								block
-								type='primary'
-								shape='round'
-								size='large'
-								icon={<MoneyCollectOutlined />}
-								className={style.claimBtn}
-								onClick={() => setClaimModal(true)}
-							>
-								{`Claim your $${asset?.symbol}`}
-							</Button>
-						}
+						<Button
+							block
+							type='primary'
+							shape='round'
+							size='large'
+							icon={<MoneyCollectOutlined />}
+							className={style.claimBtn}
+							onClick={() => setClaimModal(true)}
+						>
+							{`Claim your $${asset?.symbol}`}
+						</Button>
 					</>}
 				</div>
 
@@ -216,22 +202,6 @@ const Advertisement: React.FC<{
 						setAdClaimed(true);
 					}}
 				></ClaimModal>}
-
-				{oopsModal && <BigModal
-					visable
-					content={<div>
-						<p>Oops, all rewards have been claimed for this Ad. However the next Ad is coming soon, come back later or follow our twitter to get informed.</p>
-					</div>}
-					footer={<>
-						<Button
-							block
-							type='primary'
-							shape='round'
-							size='large'
-							onClick={() => setOopsModal(false)}
-						>OK</Button>
-					</>}
-				></BigModal>}
 			</div>
 		</>
 	)
