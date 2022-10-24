@@ -21,6 +21,7 @@ import { BuyToken } from '@/services/parami/Swap';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import { uploadIPFS } from '@/services/parami/IPFS';
+import { VoidFn } from '@polkadot/api/types';
 
 export interface BidHNFTProps { }
 
@@ -65,7 +66,7 @@ function BidHNFT({ }: BidHNFTProps) {
     // bid ad
     const [currentPrice, setCurrentPrice] = useState<string>('');
     const [price, setPrice] = useState<number>();
-    const [priceErrorMsg, setPriceErrorMsg] = useState<string>();
+    const [priceErrorMsg, setPriceErrorMsg] = useState<{ type: string; msg: string } | undefined>();
     const minPrice = Math.max(Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2, 1);
     const { balance } = useModel('balance');
     const [asset, setAsset] = useState<Asset>();
@@ -76,6 +77,7 @@ function BidHNFT({ }: BidHNFTProps) {
     const [adConfig, setAdConfig] = useState<any>();
     const [bidInProgress, setBidInProgress] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
+    const [assetBalanceUnsub, setAssetBalanceUnsub] = useState<VoidFn>();
 
 
     const [createAdSecModal, setCreateAdSecModal] = useState<boolean>(false);
@@ -128,13 +130,23 @@ function BidHNFT({ }: BidHNFTProps) {
         const value = await DrylySellToken(assetId, parseAmount('1'));
         setAssetPrice(value.toString());
 
-        const accountRes: any = await apiWs!.query.assets.account(Number(assetId), wallet.account);
-        const { balance } = accountRes.toHuman() ?? { balance: '' };
-        setAssetBalance(deleteComma(balance));
-
         const budgetBalance = await getCurrentBudgetBalance(assetId);
         setCurrentPrice(budgetBalance);
+
+        subscribeAssetBalance(assetId);
     }
+
+    const subscribeAssetBalance = async (assetId: string) => {
+        const unsub = await apiWs!.query.assets.account(Number(assetId), wallet.account, (res) => {
+            const { balance } = res.toHuman() ?? { balance: '' };
+            setAssetBalance(deleteComma(balance));
+        });
+        setAssetBalanceUnsub(() => unsub);
+    }
+
+    useEffect(() => {
+        return assetBalanceUnsub;
+    }, [assetBalanceUnsub])
 
     useEffect(() => {
         if (apiWs && params.nftId) {
@@ -194,13 +206,13 @@ function BidHNFT({ }: BidHNFTProps) {
     }, [payoutMin]);
 
     useEffect(() => {
-        setPriceErrorMsg('');
+        setPriceErrorMsg(undefined);
         setShowSwap(false);
         if (price !== undefined) {
             if (price < minPrice) {
-                setPriceErrorMsg('price too low');
+                setPriceErrorMsg({ type: 'price', msg: 'price too low' });
             } else if (FloatStringToBigInt(`${price}`, 18) > stringToBigInt(assetBalance)) {
-                setPriceErrorMsg('Insufficient Balance, please swap more token');
+                setPriceErrorMsg({ type: 'balance', msg: 'Insufficient Balance, please swap more token' });
                 setShowSwap(true);
             }
         }
@@ -571,12 +583,14 @@ function BidHNFT({ }: BidHNFTProps) {
                                             size='large'
                                             type='number'
                                             placeholder='Price'
-                                            min={minPrice ? minPrice : 0}
                                             onChange={(e) => {
                                                 setPrice(Number(e.target.value));
                                             }}
                                         />
-                                        {priceErrorMsg && <FormErrorMsg msg={priceErrorMsg} />}
+                                        {priceErrorMsg?.type === 'price' && <FormErrorMsg msg={priceErrorMsg.msg} />}
+                                        {priceErrorMsg?.type === 'balance' && <>
+                                            <span className={style.balanceError}>Insufficient Balance, please <a target="_blank" href={`/swap/${params?.nftId}`}>swap more token</a></span>
+                                        </>}
                                     </div>
                                     <div className={style.tokenBalance}>
                                         <span>balance: <Token value={assetBalance ?? ''} symbol={asset?.symbol} /></span>
@@ -601,7 +615,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                         size='large'
                                         shape='round'
                                         type='primary'
-                                        disabled={false}
+                                        disabled={!!priceErrorMsg}
                                         loading={false}
                                         onClick={() => {
                                             console.log('submit')
