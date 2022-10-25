@@ -22,6 +22,7 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import { uploadIPFS } from '@/services/parami/IPFS';
 import { VoidFn } from '@polkadot/api/types';
+import { QueryAssetById } from '@/services/parami/HTTP';
 import { IMAGE_TYPE } from '@/constants/advertisement';
 import { compressImageFile } from '@/utils/advertisement.util';
 
@@ -131,6 +132,11 @@ function BidHNFT({ }: BidHNFTProps) {
         setCurrentPrice(budgetBalance);
 
         subscribeAssetBalance(assetId);
+
+        const { data } = await QueryAssetById(assetId);
+        if (data?.token) {
+            setIconUrl(data.token.icon);
+        }
     }
 
     const subscribeAssetBalance = async (assetId: string) => {
@@ -160,15 +166,8 @@ function BidHNFT({ }: BidHNFTProps) {
     }, [apiWs, wallet]);
 
     useEffect(() => {
-        if (userInfo) {
-            if (wallet) {
-                setSponsorName(userInfo.nickname?.toString() || hexToDid(wallet.did));
-            }
-
-            if (userInfo.avatar && userInfo.avatar.startsWith('ipfs://')) {
-                const hash = userInfo.avatar.substring(7);
-                setIconUrl(config.ipfs.endpoint + hash);
-            }
+        if (userInfo && wallet) {
+            setSponsorName(userInfo.nickname?.toString() || hexToDid(wallet.did));
         }
     }, [userInfo, wallet]);
 

@@ -1,10 +1,8 @@
-import { config } from "@/config/config";
-import { GetAvatar } from "@/services/parami/HTTP";
+import { QueryAssetById } from "@/services/parami/HTTP";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
 import { useEffect, useState } from "react";
 import { useModel } from "umi";
-import { notification } from 'antd';
-import { CalculateLPReward, GetUserInfo } from "@/services/parami/RPC";
+import { CalculateLPReward } from "@/services/parami/RPC";
 import { deleteComma } from "@/utils/format";
 import { GetAccountLPTokenIds } from "@/services/parami/Swap";
 
@@ -31,27 +29,11 @@ export default () => {
 
                     const did = await OwnerDidOfNft(LPInfo.tokenId);
                     if (!did) return;
-                    
-                    const kol = await GetUserInfo(did);
-                    let icon: any;
-                    if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {
-                        const hash = kol?.avatar.substring(7);
-                        const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
 
-                        // Network exception
-                        if (!response) {
-                            notification.error({
-                                key: 'networkException',
-                                message: 'Network exception',
-                                description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-                                duration: null,
-                            });
-                            return;
-                        }
-
-                        if (response.status === 200) {
-                            icon = window.URL.createObjectURL(data);
-                        }
+                    let icon: string;
+                    const {data} = await QueryAssetById(LPInfo.tokenId);
+                    if (data?.token) {
+                        icon = data.token.icon;
                     }
 
                     await apiWs.query.assets.metadata(Number(LPInfo.tokenId), async (tokenMetadata: any) => {

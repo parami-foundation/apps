@@ -40,7 +40,7 @@ const PairItem: React.FC<{
 										className={style.icon}
 									/>
 									<Image
-										src={logo || '/images/logo-round-core.svg'}
+										src={logo || '/images/default-avatar.svg'}
 										preview={false}
 										className={style.icon}
 									/>
