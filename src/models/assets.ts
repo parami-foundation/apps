@@ -1,5 +1,5 @@
 import config from "@/config/config";
-import { GetAvatar } from "@/services/parami/HTTP";
+import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import { GetUserInfo, DrylySellToken } from "@/services/parami/RPC";
 import { OwnerDidOfNft, getAssetsList } from "@/services/subquery/subquery";
 import { isLPAsset } from "@/utils/assets.util";
@@ -35,32 +35,19 @@ export default () => {
             const { balance = '' } = result.toHuman() ?? {};
             const balanceBigInt = BigInt(balance.replaceAll(',', ''));
             if (!!balanceBigInt && balanceBigInt > 0) {
-              let ad3, kol, icon;
+              let ad3, icon;
+              const { data } = await QueryAssetById(entry?.assetId);
+              if (data?.token) {
+                icon = data.token.icon;
+              }
+
+              if (!icon) {
+                icon = tokenIconMap[metadata.symbol];
+              }
+
               const did = await OwnerDidOfNft(entry?.assetId);
               if (did) {
                 ad3 = await DrylySellToken(entry?.assetId, balanceBigInt.toString());
-                kol = await GetUserInfo(did);
-
-                if (!!kol?.avatar && kol?.avatar.indexOf('ipfs://') > -1) {
-                  const hash = kol?.avatar.substring(7);
-                  const { response, data } = await GetAvatar(config.ipfs.endpoint + hash);
-
-                  // Network exception
-                  if (!response) {
-                    notification.error({
-                      key: 'networkException',
-                      message: 'Network exception',
-                      description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-                      duration: null,
-                    });
-                  }
-
-                  if (response?.status === 200) {
-                    icon = window.URL.createObjectURL(data);
-                  }
-                }
-              } else {
-                icon = tokenIconMap[metadata.symbol];
               }
 
               let changes = BigInt(0);

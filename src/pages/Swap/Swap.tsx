@@ -9,13 +9,11 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { DownOutlined } from '@ant-design/icons';
 import Token from '@/components/Token/Token';
 import { BuyToken, SellToken } from '@/services/parami/Swap';
-import config from '@/config/config';
 import { GetAssetInfo } from '@/services/parami/Assets';
 import { parseAmount } from '@/utils/common';
 import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
-import { OwnerDidOfNft } from '@/services/subquery/subquery';
-import { GetUserInfo } from '@/services/parami/RPC';
 import SelectAsset from './components/SelectAsset/SelectAsset';
+import { QueryAssetById } from '@/services/parami/HTTP';
 
 const { Title } = Typography;
 
@@ -52,12 +50,10 @@ const Swap: React.FC = () => {
     const queryIcon = async (assetId: string) => {
         setTokenIcon('');
         try {
-            const did = await OwnerDidOfNft(assetId);
-            const info = await GetUserInfo(did);
-            if (!!info?.avatar && info?.avatar.indexOf('ipfs://') > -1) {
-                const hash = info?.avatar.substring(7);
-                setTokenIcon(config.ipfs.endpoint + hash);
-            };
+            const { data } = await QueryAssetById(assetId);
+            if (data?.token) {
+                setTokenIcon(data.token.icon);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -301,7 +297,7 @@ const Swap: React.FC = () => {
                                     <div className={style.pairCoin} onClick={() => setSelectAssetModal(true)}>
                                         {asset && <>
                                             <Image
-                                                src={tokenIcon || '/images/logo-round-core.svg'}
+                                                src={tokenIcon || '/images/default-avatar.svg'}
                                                 preview={false}
                                                 className={style.pairCoinsItemIcon}
                                             />
