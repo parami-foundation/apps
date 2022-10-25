@@ -13,6 +13,8 @@ import { uploadIPFS } from '@/services/parami/IPFS';
 import CreateUserInstruction, { UserInstruction } from './CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '@/pages/Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '@/pages/Creator/Explorer/components/ParamiScore/ParamiScore';
+import { IMAGE_TYPE } from '@/constants/advertisement';
+import { compressImageFile } from '@/utils/advertisement.util';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
@@ -100,17 +102,23 @@ const Create: React.FC<{
     }
   }, [payoutMin]);
 
-  const handleUploadOnChange = (imageType: string) => {
+  const handleUploadOnChange = (imageType: IMAGE_TYPE) => {
     return (info) => {
       if (info.file.status === 'done') {
         const ipfsHash = info.file.response.Hash;
         const imageUrl = config.ipfs.endpoint + ipfsHash;
-        imageType === 'poster' ? setMediaUrl(imageUrl) : setIconUrl(imageUrl);
+        imageType === IMAGE_TYPE.POSTER ? setMediaUrl(imageUrl) : setIconUrl(imageUrl);
         return;
       }
       if (info.file.status === 'error') {
         message.error('Upload Image Error');
       }
+    }
+  }
+
+  const handleBeforeUpload = (imageType: IMAGE_TYPE) => {
+    return async (file) => {
+      return await compressImageFile(file, imageType);
     }
   }
 
@@ -161,7 +169,8 @@ const Create: React.FC<{
             <Upload
               showUploadList={false}
               action={config.ipfs.upload}
-              onChange={handleUploadOnChange('icon')}
+              onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
+              beforeUpload={handleBeforeUpload(IMAGE_TYPE.ICON)}
             >
               {iconUrl
                 ? <img src={iconUrl} style={{ width: '100%' }} />
@@ -177,7 +186,8 @@ const Create: React.FC<{
             <Upload
               showUploadList={false}
               action={config.ipfs.upload}
-              onChange={handleUploadOnChange('poster')}
+              onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
+              beforeUpload={handleBeforeUpload(IMAGE_TYPE.POSTER)}
             >
               {mediaUrl
                 ? <img src={mediaUrl} style={{ width: '100%' }} />

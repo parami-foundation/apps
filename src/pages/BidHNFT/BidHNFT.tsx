@@ -22,6 +22,8 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import { uploadIPFS } from '@/services/parami/IPFS';
 import { VoidFn } from '@polkadot/api/types';
+import { IMAGE_TYPE } from '@/constants/advertisement';
+import { compressImageFile } from '@/utils/advertisement.util';
 
 export interface BidHNFTProps { }
 
@@ -30,11 +32,6 @@ const { Title } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;
 const { Step } = Steps;
-
-enum IMAGE_TYPE {
-    ICON = 'icon',
-    POSTER = 'poster'
-}
 
 const defaultInstruction: UserInstruction = {
     text: 'Follow Parami on Twitter',
@@ -174,6 +171,12 @@ function BidHNFT({ }: BidHNFTProps) {
             }
         }
     }, [userInfo, wallet]);
+
+    const handleBeforeUpload = (imageType: IMAGE_TYPE) => {
+        return async (file) => {
+          return await compressImageFile(file, imageType);
+        }
+      }
 
     const handleUploadOnChange = (imageType: IMAGE_TYPE) => {
         return (info) => {
@@ -392,6 +395,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                             showUploadList={false}
                                             action={config.ipfs.upload}
                                             onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
+                                            beforeUpload={handleBeforeUpload(IMAGE_TYPE.ICON)}
                                         >
                                             {iconUrl
                                                 ? <img src={iconUrl} style={{ width: '100%', maxWidth: '100px' }} />
@@ -408,6 +412,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                             showUploadList={false}
                                             action={config.ipfs.upload}
                                             onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
+                                            beforeUpload={handleBeforeUpload(IMAGE_TYPE.POSTER)}
                                         >
                                             {posterUrl
                                                 ? <img src={posterUrl} style={{ width: '100%', maxWidth: '400px' }} />

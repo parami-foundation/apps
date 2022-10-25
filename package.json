@@ -96,6 +96,7 @@
     "async-mutex": "^0.3.2",
     "big-integer": "^1.6.51",
     "bn.js": "^5.2.0",
+    "browser-image-compression": "^2.0.0",
     "browserlist": "^1.0.1",
     "bs58": "^4.0.1",
     "caniuse-lite": "^1.0.30001282",
