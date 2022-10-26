@@ -14,6 +14,7 @@ import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import Footer from '@/components/Footer';
 import { GetAvatar } from "@/services/parami/HTTP";
 import { deleteComma } from '@/utils/format';
+import MetaTags from 'react-meta-tags';
 
 const Explorer: React.FC = () => {
   const apiWs = useModel('apiWs');
@@ -221,6 +222,15 @@ const Explorer: React.FC = () => {
 
   return (
     <>
+      <MetaTags>
+        <title>Checkout this Ad</title>
+				<meta name="description" content={'View Ad, Get Paid.'} />
+				<meta property="og:type" content="website" />
+				<meta property="og:url" content="https://app.parami.io/" />
+				<meta property="og:site_name" content="Parami Ad"></meta>
+				<meta property="og:title" content={'Checkout this ad and claim your tokens'} />
+				<meta property="og:image" content={'https://pbs.twimg.com/profile_banners/1351514784273891329/1640271011/600x200'} />
+      </MetaTags>
       <div
         className={style.explorerContainer}
       >
