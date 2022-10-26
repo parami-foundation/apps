@@ -37,6 +37,7 @@ const VerifyIdentity: React.FC<{
   const [step, setStep] = useState<number>(2);
   const [balance, setBalance] = useState<bigint>(BigInt(0));
   const [ExistentialDeposit, setExistentialDeposit] = useState<string>();
+  const [showManual, setShowManual] = useState<boolean>(!quickSign);
 
   const intl = useIntl();
   const { Title } = Typography;
@@ -120,7 +121,8 @@ const VerifyIdentity: React.FC<{
           message: `${Data}`,
           description: `Your ${platform} account has been used. Please try to deposit manually.`,
           duration: null,
-        })
+        });
+        setShowManual(true);
         setLoading(false);
         return;
       }
@@ -209,9 +211,6 @@ const VerifyIdentity: React.FC<{
   const airdrop = async (quickSign: { platform: string; ticket: any }) => {
     try {
       await handleLoginWithAirdrop(quickSign.ticket, quickSign.platform);
-      if (unsub === null) {
-        listenBalance();
-      }
     } catch (e: any) {
       notification.error({
         key: 'unknowError',
@@ -306,109 +305,131 @@ const VerifyIdentity: React.FC<{
               id: 'identity.initialDeposit.title',
             })}
           </Title>
-          <p className={style.description}>
-            {intl.formatMessage({
-              id: 'identity.initialDeposit.description',
-            }, {
-              ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit!, 18).toString()} /></strong>)
-            })}
-          </p>
+          {showManual && <>
+            <p className={style.description}>
+              {intl.formatMessage({
+                id: 'identity.initialDeposit.description',
+              }, {
+                ad3: (<strong><AD3 value={FloatStringToBigInt(ExistentialDeposit!, 18).toString()} /></strong>)
+              })}
+            </p>
+          </>}
+
+          {!showManual && <>
+            <p className={style.description}>
+              In order to generate Para Meta Identity (a decentralized user identifier) , we will need to verify you as the owner.
+            </p>
+          </>}
+
           <Divider />
-          <Button
-            type="link"
-            onClick={() => {
-              setModalVisable(true);
-            }}
-          >
-            {intl.formatMessage({
-              id: 'identity.initialDeposit.whereToBuy',
-            })}
-          </Button>
-          <div className={style.listBtn}>
-            <div
-              className={style.field}
-              style={{
-                flexDirection: 'column',
-              }}
-            >
+          {showManual && <>
+            <div className={style.listBtn}>
               <div
+                className={style.field}
                 style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  marginBottom: 10,
+                  flexDirection: 'column',
                 }}
               >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    marginBottom: 10,
+                  }}
+                >
+                  <span className={style.title}>
+                    {intl.formatMessage({
+                      id: 'identity.initialDeposit.chargeAddress',
+                    })}
+                  </span>
+                  <span className={style.value}>
+                    <CopyToClipboard
+                      text={account}
+                      onCopy={() =>
+                        message.success(
+                          intl.formatMessage({
+                            id: 'common.copied',
+                          }),
+                        )
+                      }
+                    >
+                      <Button type="link" icon={<CopyOutlined />}>
+                        {intl.formatMessage({
+                          id: 'common.copy',
+                        })}
+                      </Button>
+                    </CopyToClipboard>
+                  </span>
+                </div>
+                <CopyToClipboard
+                  text={account}
+                  onCopy={() =>
+                    message.success(
+                      intl.formatMessage({
+                        id: 'common.copied',
+                      }),
+                    )
+                  }
+                >
+                  <TextArea
+                    size="small"
+                    style={{
+                      backgroundColor: '#fff',
+                    }}
+                    readOnly
+                    value={account}
+                    autoSize={{ minRows: 1, maxRows: 4 }}
+                  />
+                </CopyToClipboard>
+              </div>
+              <div className={style.field}>
                 <span className={style.title}>
                   {intl.formatMessage({
-                    id: 'identity.initialDeposit.chargeAddress',
+                    id: 'identity.initialDeposit.status',
                   })}
                 </span>
                 <span className={style.value}>
-                  <CopyToClipboard
-                    text={account}
-                    onCopy={() =>
-                      message.success(
-                        intl.formatMessage({
-                          id: 'common.copied',
-                        }),
-                      )
-                    }
-                  >
-                    <Button type="link" icon={<CopyOutlined />}>
-                      {intl.formatMessage({
-                        id: 'common.copy',
-                      })}
-                    </Button>
-                  </CopyToClipboard>
+                  <Tag color="processing" icon={<SyncOutlined spin />}>
+                    {intl.formatMessage({
+                      id: 'identity.initialDeposit.status.pending',
+                    })}
+                  </Tag>
                 </span>
               </div>
-              <CopyToClipboard
-                text={account}
-                onCopy={() =>
-                  message.success(
-                    intl.formatMessage({
-                      id: 'common.copied',
-                    }),
-                  )
-                }
-              >
-                <TextArea
-                  size="small"
-                  style={{
-                    backgroundColor: '#fff',
-                  }}
-                  readOnly
-                  value={account}
-                  autoSize={{ minRows: 1, maxRows: 4 }}
-                />
-              </CopyToClipboard>
-            </div>
-            <div className={style.field}>
-              <span className={style.title}>
-                {intl.formatMessage({
-                  id: 'identity.initialDeposit.status',
-                })}
-              </span>
-              <span className={style.value}>
-                <Tag color="processing" icon={<SyncOutlined spin />}>
+              <div className={style.field}>
+                <span className={style.title}>
                   {intl.formatMessage({
-                    id: 'identity.initialDeposit.status.pending',
+                    id: 'identity.initialDeposit.minCharge',
                   })}
-                </Tag>
-              </span>
+                </span>
+                <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
+              </div>
             </div>
-            <div className={style.field}>
-              <span className={style.title}>
-                {intl.formatMessage({
-                  id: 'identity.initialDeposit.minCharge',
-                })}
-              </span>
-              <span className={style.value}><AD3 value={FloatStringToBigInt(ExistentialDeposit as string, 18).toString()} /></span>
-            </div>
+          </>}
+
+          <div className={style.socialButtons}>
+            <Divider>
+              {intl.formatMessage({
+                id: 'identity.beforeStart.faucet',
+              })}
+            </Divider>
+            <TwitterLoginButton></TwitterLoginButton>
+            <CustomTelegramLoginButton
+              dataOnauth={(response) => {
+                response.bot = config.airdropService.telegram.botName;
+                handleLoginWithAirdrop(response, 'Telegram');
+              }}
+              botName={config.airdropService.telegram.botName}
+            />
+            <DiscordLoginButton
+              clientId={config.airdropService.discord.clientId}
+              redirectUri={window.location.origin + '/oauth/discord'}
+            />
           </div>
+
           <Popconfirm
             placement="top"
             title={intl.formatMessage({
@@ -433,27 +454,9 @@ const VerifyIdentity: React.FC<{
               })}
             </a>
           </Popconfirm>
-          <div className={style.socialButtons}>
-            <Divider>
-              {intl.formatMessage({
-                id: 'identity.beforeStart.faucet',
-              })}
-            </Divider>
-            <TwitterLoginButton></TwitterLoginButton>
-            <CustomTelegramLoginButton
-              dataOnauth={(response) => {
-                response.bot = config.airdropService.telegram.botName;
-                handleLoginWithAirdrop(response, 'Telegram');
-              }}
-              botName={config.airdropService.telegram.botName}
-            />
-            <DiscordLoginButton
-              clientId={config.airdropService.discord.clientId}
-              redirectUri={window.location.origin + '/oauth/discord'}
-            />
-          </div>
         </Spin>
       </Card>
+      
       <BigModal
         visable={modalVisable}
         title={intl.formatMessage({
