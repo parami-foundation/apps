@@ -259,6 +259,14 @@ export default [
     component: './BidHNFT/BidHNFT'
   },
   {
+    path: '/share/:shareText',
+    name: 'Share Page',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './SharePage/SharePage'
+  },
+  {
     component: './404',
   },
 ];
