@@ -10,9 +10,8 @@ import config from '@/config/config';
 import { GetSlotAdOf } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
 import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
-import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import Footer from '@/components/Footer';
-import { GetAvatar } from "@/services/parami/HTTP";
+import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import { deleteComma } from '@/utils/format';
 
 const Explorer: React.FC = () => {
@@ -22,7 +21,6 @@ const Explorer: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [avatar, setAvatar] = useState<string>('');
   const [KOL, setKOL] = useState<boolean>(true);
-  const [user, setUser] = useState<any>();
   const [nft, setNft] = useState<any>();
   const [asset, setAsset] = useState<any>();
   const [notAccess, setNotAccess] = useState<boolean>(false);
@@ -115,37 +113,9 @@ const Explorer: React.FC = () => {
     }
   };
 
-  const queryUser = async () => {
-    const userData = await GetSimpleUserInfo(didHex);
-    if (!userData) {
-      notification.error({
-        message: intl.formatMessage({
-          id: 'error.identity.notFound',
-        }),
-        duration: null,
-      });
-      history.goBack();
-      return;
-    };
-    setUser(userData);
-  }
-
   useEffect(() => {
     document.title = `${asset?.name ?? did} - Para Metaverse Identity`;
   }, [asset]);
-
-  useEffect(() => {
-    if (user) {
-      if (user?.avatar.indexOf('ipfs://') > -1) {
-        const hash = user?.avatar?.substring(7);
-        GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {
-          if (response?.status === 200) {
-            setAvatar(window.URL.createObjectURL(data));
-          }
-        });
-      };
-    }
-  }, [user]);
 
   const queryNftMetaData = async () => {
     const nftInfoData = await GetNFTMetaData(params?.nftID);
@@ -198,6 +168,16 @@ const Explorer: React.FC = () => {
     }
   }, [nft]);
 
+  const queryAvatar = async () => {
+    const { data: assetData } = await QueryAssetById(params?.nftID);
+    if (assetData?.token) {
+      const { data, response } = await GetAvatar(assetData.token.icon) as any;
+      if (response?.status === 200) {
+        setAvatar(window.URL.createObjectURL(data));
+      }
+    }
+  }
+
   useEffect(() => {
     if (apiWs && !params?.nftID) {
       queryPreferred();
@@ -212,7 +192,7 @@ const Explorer: React.FC = () => {
       try {
         queryAdSlot();
         queryNftMetaData();
-        queryUser();
+        queryAvatar();
       } catch (e) {
         errorHandler(e);
       }

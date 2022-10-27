@@ -7,7 +7,7 @@ export const compressImageFile = async (file, imageType: IMAGE_TYPE) => {
   }
   const options = imageType === IMAGE_TYPE.ICON ? {
     maxSizeMB: 0.1,
-    maxWidthOrHeight: 40,
+    maxWidthOrHeight: 60,
     useWebWorker: true
   } : {
     maxSizeMB: 0.5,

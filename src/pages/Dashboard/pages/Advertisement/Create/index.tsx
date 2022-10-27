@@ -52,7 +52,7 @@ const Create: React.FC<{
           media: mediaUrl,
           icon: iconUrl,
           description,
-          instructions,
+          instructions: instructions.map(ins => ({...ins, link: encodeURIComponent(ins.link ?? '')})),
           sponsorName
         };
 

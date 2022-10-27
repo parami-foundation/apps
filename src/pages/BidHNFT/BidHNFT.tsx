@@ -278,7 +278,7 @@ function BidHNFT({ }: BidHNFTProps) {
             media: posterUrl,
             icon: iconUrl,
             content,
-            instructions,
+            instructions: instructions.map(ins => ({...ins, link: encodeURIComponent(ins.link ?? '')})),
             sponsorName
         };
 
