@@ -24,6 +24,7 @@ import { uploadIPFS } from '@/services/parami/IPFS';
 import { VoidFn } from '@polkadot/api/types';
 import { IMAGE_TYPE } from '@/constants/advertisement';
 import { compressImageFile } from '@/utils/advertisement.util';
+import { QueryAssetById } from '@/services/parami/HTTP';
 
 export interface BidHNFTProps { }
 
@@ -66,7 +67,7 @@ function BidHNFT({ }: BidHNFTProps) {
     const [priceErrorMsg, setPriceErrorMsg] = useState<{ type: string; msg: string } | undefined>();
     const minPrice = Math.max(Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2, 1);
     const { balance } = useModel('balance');
-    const [asset, setAsset] = useState<Asset>();
+    const [asset, setAsset] = useState<Asset & { icon: string }>();
     const [assetPrice, setAssetPrice] = useState<string>();
     const [assetBalance, setAssetBalance] = useState<string>('');
     const [showSwap, setShowSwap] = useState<boolean>(false);
@@ -75,7 +76,6 @@ function BidHNFT({ }: BidHNFTProps) {
     const [bidInProgress, setBidInProgress] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
     const [assetBalanceUnsub, setAssetBalanceUnsub] = useState<VoidFn>();
-
 
     const [createAdSecModal, setCreateAdSecModal] = useState<boolean>(false);
     const [bidSecModal, setBidSecModal] = useState<boolean>(false);
@@ -112,23 +112,23 @@ function BidHNFT({ }: BidHNFTProps) {
     }
 
     const queryAsset = async (assetId: string) => {
-        const assetData = await GetAssetInfo(assetId);
-        if (assetData.isEmpty) {
+        const { data } = await QueryAssetById(assetId);
+        if (!data?.token) {
             notification.error({
                 message: 'Loading Asset Error',
                 description: `tokenAssetId: ${assetId}`
             });
             return;
         }
-
-        const assetInfo = assetData.toHuman() as Asset;
-        setAsset(assetInfo);
+        setAsset(data.token);
 
         const value = await DrylySellToken(assetId, parseAmount('1'));
         setAssetPrice(value.toString());
 
         const budgetBalance = await getCurrentBudgetBalance(assetId);
         setCurrentPrice(budgetBalance);
+
+
 
         subscribeAssetBalance(assetId);
     }
@@ -172,9 +172,9 @@ function BidHNFT({ }: BidHNFTProps) {
 
     const handleBeforeUpload = (imageType: IMAGE_TYPE) => {
         return async (file) => {
-          return await compressImageFile(file, imageType);
+            return await compressImageFile(file, imageType);
         }
-      }
+    }
 
     const handleUploadOnChange = (imageType: IMAGE_TYPE) => {
         return (info) => {
@@ -277,7 +277,7 @@ function BidHNFT({ }: BidHNFTProps) {
             media: posterUrl,
             icon: iconUrl,
             content,
-            instructions: instructions.map(ins => ({...ins, link: encodeURIComponent(ins.link ?? '')})),
+            instructions: instructions.map(ins => ({ ...ins, link: encodeURIComponent(ins.link ?? '') })),
             sponsorName
         };
 
@@ -557,7 +557,7 @@ function BidHNFT({ }: BidHNFTProps) {
                     <Col span={12}>
                         <Card title="Ad Preview" className={styles.card}>
                             <div className={style.previewContainer}>
-                                <AdvertisementPreview ad={adPreviewData}></AdvertisementPreview>
+                                <AdvertisementPreview ad={adPreviewData} kolIcon={asset?.icon}></AdvertisementPreview>
                             </div>
                         </Card>
 

@@ -5,7 +5,8 @@ import bubble from './bubble.svg';
 
 const AdvertisementPreview: React.FC<{
 	ad: any;
-}> = ({ ad }) => {
+	kolIcon?: string;
+}> = ({ ad, kolIcon }) => {
 	const [claimText, setClaimText] = useState<string>('Not interested, claim it now');
 	const [claimed, setClaimed] = useState<boolean>(false);
 
@@ -70,7 +71,7 @@ const AdvertisementPreview: React.FC<{
 
 						<div className='rewardRow'>
 							<div className='rewardInfo'>
-								<img referrerPolicy='no-referrer' className='kolIcon' src={'/images/logo-round-core.svg'}></img>
+								<img referrerPolicy='no-referrer' className='kolIcon' src={kolIcon ?? '/images/logo-round-core.svg'}></img>
 								<span className='rewardAmount'>
 									<span className='rewardNumber'>{'300.00'}</span>
 									<span className='rewardToken'>{ad?.assetName} NFT Power</span>
