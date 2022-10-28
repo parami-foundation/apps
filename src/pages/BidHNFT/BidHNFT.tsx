@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModel, useParams } from 'umi';
-import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps, Col, Row } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
@@ -65,7 +65,9 @@ function BidHNFT({ }: BidHNFTProps) {
     const [currentPrice, setCurrentPrice] = useState<string>('');
     const [price, setPrice] = useState<number>();
     const [priceErrorMsg, setPriceErrorMsg] = useState<{ type: string; msg: string } | undefined>();
-    const minPrice = Math.max(Number(BigIntToFloatString(deleteComma(currentPrice), 18)) * 1.2, 1);
+    const [minPrice, setMinPrice] = useState<number>();
+
+    
     const { balance } = useModel('balance');
     const [asset, setAsset] = useState<Asset & { icon: string }>();
     const [assetPrice, setAssetPrice] = useState<string>();
@@ -128,7 +130,9 @@ function BidHNFT({ }: BidHNFTProps) {
         const budgetBalance = await getCurrentBudgetBalance(assetId);
         setCurrentPrice(budgetBalance);
 
-
+        const minPrice = Math.ceil(Math.max(Number(BigIntToFloatString(deleteComma(budgetBalance), 18)) * 1.2, 1));
+        setMinPrice(minPrice);
+        setPrice(minPrice);
 
         subscribeAssetBalance(assetId);
     }
@@ -210,14 +214,14 @@ function BidHNFT({ }: BidHNFTProps) {
         setPriceErrorMsg(undefined);
         setShowSwap(false);
         if (price !== undefined) {
-            if (price < minPrice) {
+            if (minPrice && price < minPrice) {
                 setPriceErrorMsg({ type: 'price', msg: 'price too low' });
             } else if (FloatStringToBigInt(`${price}`, 18) > stringToBigInt(assetBalance)) {
                 setPriceErrorMsg({ type: 'balance', msg: 'Insufficient Balance, please swap more token' });
                 setShowSwap(true);
             }
         }
-    }, [price]);
+    }, [price, assetBalance, minPrice]);
 
     const bidAd = async (preTx?: boolean, account?: string) => {
         try {
@@ -356,8 +360,6 @@ function BidHNFT({ }: BidHNFTProps) {
                     <Col span={12}>
                         <Card title="Config your Ad" className={styles.card}>
                             <div className={style.formContainer}>
-
-
                                 <div className={style.field}>
                                     <div className={style.title}>
                                         <FormFieldTitle title={'Sponsor Name'} required />
@@ -450,15 +452,13 @@ function BidHNFT({ }: BidHNFTProps) {
                                                 <FormFieldTitle title={'Reward Rate'} required />
                                             </div>
                                             <div className={style.value}>
-                                                <Input
+                                                <InputNumber
                                                     className={style.withAfterInput}
                                                     placeholder="0.00"
                                                     size='large'
-                                                    type='number'
                                                     maxLength={18}
                                                     min={0}
-                                                    onChange={(e) => setRewardRate(Number(e.target.value))}
-                                                    suffix="%"
+                                                    onChange={(value) => setRewardRate(value)}
                                                     value={rewardRate}
                                                 />
                                                 <span className={style.fieldInfo}>Referrer gets {rewardRate}% from each referral.</span>
@@ -500,15 +500,14 @@ function BidHNFT({ }: BidHNFTProps) {
                                                 <FormFieldTitle title={'Payout Base'} required />
                                             </div>
                                             <div className={style.value}>
-                                                <Input
+                                                <InputNumber
                                                     className={style.withAfterInput}
                                                     placeholder="0.00"
                                                     size='large'
-                                                    type='number'
                                                     value={payoutBase}
                                                     maxLength={18}
                                                     min={0}
-                                                    onChange={(e) => setPayoutBase(Number(e.target.value))}
+                                                    onChange={(value) => setPayoutBase(value)}
                                                 />
                                             </div>
                                         </div>
@@ -517,16 +516,15 @@ function BidHNFT({ }: BidHNFTProps) {
                                                 <FormFieldTitle title={'Payout Min'} required />
                                             </div>
                                             <div className={style.value}>
-                                                <Input
+                                                <InputNumber
                                                     className={`${style.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
                                                     placeholder="0.00"
                                                     size='large'
-                                                    type='number'
                                                     maxLength={18}
                                                     min={0}
                                                     max={payoutMax}
                                                     value={payoutMin}
-                                                    onChange={(e) => setPayoutMin(Number(e.target.value))}
+                                                    onChange={(value) => setPayoutMin(value)}
                                                 />
                                                 {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
                                             </div>
@@ -536,15 +534,14 @@ function BidHNFT({ }: BidHNFTProps) {
                                                 <FormFieldTitle title={'Payout Max'} required />
                                             </div>
                                             <div className={style.value}>
-                                                <Input
+                                                <InputNumber
                                                     className={`${style.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
                                                     placeholder="0.00"
                                                     size='large'
-                                                    type='number'
                                                     maxLength={18}
                                                     value={payoutMax}
                                                     min={payoutMin}
-                                                    onChange={(e) => setPayoutMax(Number(e.target.value))}
+                                                    onChange={(value) => setPayoutMax(value)}
                                                 />
                                                 {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
                                             </div>
@@ -577,17 +574,17 @@ function BidHNFT({ }: BidHNFTProps) {
                                         Offer a price
                                     </div>
                                     <small>
-                                        {`The bid must be higher than ${minPrice} (20% higher than the current price)`}
+                                        {`≥ ${minPrice}`}
                                     </small>
                                     <div className={style.value}>
-                                        <Input
+                                        <InputNumber
                                             value={price}
                                             className={`${style.withAfterInput} ${priceErrorMsg ? style.inputError : ''}`}
                                             size='large'
                                             type='number'
                                             placeholder='Price'
-                                            onChange={(e) => {
-                                                setPrice(Number(e.target.value));
+                                            onChange={(value) => {
+                                                setPrice(value);
                                             }}
                                         />
                                         {priceErrorMsg?.type === 'price' && <FormErrorMsg msg={priceErrorMsg.msg} />}
