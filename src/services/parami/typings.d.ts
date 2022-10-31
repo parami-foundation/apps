@@ -115,3 +115,13 @@ export type AdScoreInfo = {
 	referer: string,
 	signer_account: string
 }
+
+export type Asset = {
+	deposit: string;
+  name: string;
+  symbol: string;
+  decimals: string;
+  isFrozen: boolean;
+	icon: string;
+	id: string;
+}

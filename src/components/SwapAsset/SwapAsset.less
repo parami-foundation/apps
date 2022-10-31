@@ -1,0 +1,153 @@
+.trade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .pairCoins {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .pairCoinsItem {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgb(237, 238, 242);
+      border-radius: 20px;
+      background-color: rgb(247, 248, 250);
+      padding: 1rem 0.75rem;
+      margin-top: 2px;
+      margin-bottom: 2px;
+      width: 100%;
+
+      &.tokenCoin {
+        .pairCoin {
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba(243, 243, 243, 1);
+          }
+
+          .downIcon {
+            margin-left: 20px;
+          }
+        }
+      }
+
+      .pairCoinsSelect {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        .pairCoin {
+          flex: 1;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: center;
+          box-shadow: rgba(0, 0, 0, .08) 0px 6px 10px;
+          background-color: rgb(255, 255, 255);
+          padding: 8px;
+          border-radius: 16px;
+          margin-right: 5px;
+
+          .pairCoinsItemIcon {
+            width: 24px;
+            height: 24px;
+            border-radius: 24px;
+            margin-right: 5px;
+          }
+
+          .pairCoinsItemLabel {
+            font-size: 13px;
+            font-weight: 900;
+          }
+
+          .pairCoinsItemText {
+            font-weight: 700;
+            color: rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        .pairCoinsItemInput {
+          flex: 2;
+        }
+
+        input {
+          display: flex;
+          font-weight: 600;
+          background-color: transparent;
+          font-size: 24px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          appearance: textfield;
+          text-align: right;
+          border: unset;
+          outline: none;
+          border-radius: 12px;
+          background-color: unset !important;
+
+          &:focus {
+            border: none;
+            box-shadow: none;
+          }
+        }
+      }
+
+      .pairCoinsBalance {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 10px;
+
+        .balance {
+          flex: 4;
+          font-weight: 600;
+          font-size: 12px;
+          color: rgb(86, 90, 105);
+          text-align: left;
+
+          &.warning {
+            color: #ff4d4f;
+          }
+
+          .warningText {
+            margin-left: 5px;
+          }
+        }
+
+        .maxButton {
+          flex: 1;
+          padding: 0;
+          font-weight: 900;
+        }
+      }
+    }
+
+    .pairCoinsSwitchButton {
+      margin-top: -16px;
+      margin-bottom: -16px;
+    }
+  }
+
+  .pairCoinsFlat {
+    margin-top: 10px;
+    font-weight: 900;
+    font-size: 12px;
+    color: #000000;
+  }
+
+  .submitButton {
+    margin-top: 10px;
+  }
+}
