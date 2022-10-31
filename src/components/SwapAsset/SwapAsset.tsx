@@ -20,10 +20,13 @@ const { Title } = Typography;
 
 export interface SwapAssetProps {
     assetId?: string;
-    onSelectAsset: (asset: Asset) => void
+    onSelectAsset?: (asset: Asset) => void;
+    onSwapped?: () => void;
+    canSelectAsset?: boolean;
+    initTokenNumber?: string;
 }
 
-function SwapAsset({ assetId, onSelectAsset }: SwapAssetProps) {
+function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, initTokenNumber }: SwapAssetProps) {
     const intl = useIntl();
     const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
@@ -75,7 +78,12 @@ function SwapAsset({ assetId, onSelectAsset }: SwapAssetProps) {
             queryAsset(assetId);
             queryIcon(assetId);
             setAd3Number('');
-            setTokenNumber('');
+            if (initTokenNumber) {
+                setTokenNumber(initTokenNumber);
+                handleTokenInputChange(initTokenNumber);
+            } else {
+                setTokenNumber('');
+            }
         }
     }, [assetId, apiWs]);
 
@@ -113,6 +121,7 @@ function SwapAsset({ assetId, onSelectAsset }: SwapAssetProps) {
                     }
                     break;
             }
+            onSwapped && onSwapped();
         } else {
             notification.error({
                 key: 'accessDenied',
@@ -262,7 +271,7 @@ function SwapAsset({ assetId, onSelectAsset }: SwapAssetProps) {
                 />
                 <div className={`${style.pairCoinsItem} ${style.tokenCoin}`}>
                     <div className={style.pairCoinsSelect}>
-                        <div className={style.pairCoin} onClick={() => setSelectAssetModal(true)}>
+                        <div className={style.pairCoin} onClick={() => canSelectAsset && setSelectAssetModal(true)}>
                             {asset && <>
                                 <Image
                                     src={tokenIcon || '/images/default-avatar.svg'}
@@ -349,7 +358,7 @@ function SwapAsset({ assetId, onSelectAsset }: SwapAssetProps) {
             onClose={() => setSelectAssetModal(false)}
             onSelectAsset={asset => {
                 setSelectAssetModal(false);
-                onSelectAsset(asset)
+                onSelectAsset && onSelectAsset(asset)
             }}
         ></SelectAsset>}
     </>;

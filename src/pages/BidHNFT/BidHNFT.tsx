@@ -336,7 +336,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                 </div>
                                 {instructions.length > 0 &&
                                     <div className={style.field}>
-                                        {instructions.map(instruction => <p>
+                                        {instructions.map((instruction, index) => <p key={index}>
                                             <Tag closable onClose={(e) => {
                                                 e.preventDefault();
                                                 setInstructions(instructions.filter(ins => ins !== instruction))

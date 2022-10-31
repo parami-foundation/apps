@@ -3,7 +3,7 @@ import FormFieldTitle from '@/components/FormFieldTitle';
 import Token from '@/components/Token/Token';
 import { Asset } from '@/services/parami/typings';
 import { stringToBigInt } from '@/utils/common';
-import { Button, InputNumber } from 'antd';
+import { Button, InputNumber, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './BidSection.less';
 import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/format';
@@ -11,6 +11,7 @@ import { useModel } from 'umi';
 import { GetSlotOfNft } from '@/services/parami/Advertisement';
 import { GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { VoidFn } from '@polkadot/api/types';
+import SwapAsset from '@/components/SwapAsset/SwapAsset';
 
 export interface BidSectionProps {
     asset?: Asset;
@@ -26,10 +27,11 @@ function BidSection({ asset, onBid }: BidSectionProps) {
     const [minPrice, setMinPrice] = useState<number>();
     const [assetBalance, setAssetBalance] = useState<string>('');
     const [assetBalanceUnsub, setAssetBalanceUnsub] = useState<VoidFn>();
+    const [swapTokenModal, setSwapTokenModal] = useState<boolean>();
 
     useEffect(() => {
         return assetBalanceUnsub;
-    }, [assetBalanceUnsub])
+    }, [assetBalanceUnsub]);
 
     const getCurrentBudgetBalance = async (nftId: string) => {
         const slot = await GetSlotOfNft(nftId);
@@ -113,7 +115,9 @@ function BidSection({ asset, onBid }: BidSectionProps) {
                     />
                     {priceErrorMsg?.type === 'price' && <FormErrorMsg msg={priceErrorMsg.msg} />}
                     {priceErrorMsg?.type === 'balance' && <>
-                        <span className={style.balanceError}>Insufficient Balance, please <a target="_blank" href={`/swap/${asset?.id}`}>swap more token</a></span>
+                        <span className={style.balanceError}>Insufficient Balance, please <a target="_blank" onClick={() => {
+                            setSwapTokenModal(true);
+                        }}>swap more token</a></span>
                     </>}
                 </div>
                 <div className={style.tokenBalance}>
@@ -139,6 +143,19 @@ function BidSection({ asset, onBid }: BidSectionProps) {
                 </Button>
             </div>
         </div>
+
+        {swapTokenModal && <>
+            <Modal
+                title="Swap token"
+                visible
+                footer={null}
+                onCancel={() => setSwapTokenModal(false)}
+            >
+                <SwapAsset assetId={asset?.id} canSelectAsset={false} onSwapped={() => {
+                    setSwapTokenModal(false);
+                }} initTokenNumber={BigIntToFloatString(FloatStringToBigInt(`${price}`, 18) - stringToBigInt(assetBalance), 18)}></SwapAsset>
+            </Modal>
+        </>}
     </>;
 };
 
