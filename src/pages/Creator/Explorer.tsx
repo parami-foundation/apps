@@ -76,6 +76,10 @@ const Explorer: React.FC = () => {
     if (!adJson) return;
 
     setAd(adJson);
+    
+    if (!adJson.media) {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {

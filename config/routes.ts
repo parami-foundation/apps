@@ -196,6 +196,14 @@ export default [
     component: './Claim/Claim',
   },
   {
+    path: '/ad',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Ad/Ad'
+  },
+  {
     path: '/did:kol',
     hideInMenu: true,
     exact: true,
