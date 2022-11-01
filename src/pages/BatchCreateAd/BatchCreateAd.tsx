@@ -1,3 +1,4 @@
+import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import config from '@/config/config';
 import { IMAGE_TYPE } from '@/constants/advertisement';
@@ -5,7 +6,7 @@ import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 import { UserBatchCreateAds } from '@/services/parami/Advertisement';
 import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
 import { UploadOutlined } from '@ant-design/icons';
-import { notification, Table } from 'antd';
+import { notification, Popover, Table } from 'antd';
 import { Button, Upload } from 'antd';
 import type { UploadFile } from 'antd/es/upload/interface';
 import React, { useEffect, useState } from 'react';
@@ -24,6 +25,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
     const [passphrase, setPassphrase] = useState<string>('');
     const [secModal, setSecModal] = useState<boolean>(false);
     const [adIds, setAdIds] = useState<string[]>([]);
+    const [adPreviews, setAdPreviews] = useState<any[]>([]);
 
     useEffect(() => {
         if (adInfoList.length && iconList.length && posterList.length) {
@@ -43,6 +45,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                 notification.success({
                     message: 'Ready to create'
                 })
+                setAdPreviews(ads);
                 setAdConfigList(configs);
             }).catch((e) => {
                 notification.error({
@@ -76,7 +79,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                     sponsorName: props[5],
                     instructions: [{
                         text: props[6],
-                        tag: 'Twitter',
+                        tag: 'Social Media',
                         score: 1,
                         link: props[7]
                     }],
@@ -84,7 +87,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                     payoutBase: parseInt(props[9], 10),
                     payoutMin: parseInt(props[10], 10),
                     payoutMax: parseInt(props[11], 10),
-                    lifetime: NUM_BLOCKS_PER_DAY
+                    lifetime: NUM_BLOCKS_PER_DAY * 2
                 }
             });
             console.log('got ad infos', adInfo);
@@ -140,6 +143,31 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
         })
     }
 
+    const adPreviewTableColumns = [{
+        title: 'Title',
+        dataIndex: 'title'
+    }, {
+        title: 'Content',
+        dataIndex: 'content'
+    }, {
+        title: 'Sponsor Name',
+        dataIndex: 'sponsorName'
+    }, {
+        title: 'Preview',
+        render: (_, preview) => {
+
+            return <>
+                <Popover content={
+                    <div style={{ marginTop: '40px' }}>
+                        <AdvertisementPreview ad={preview} />
+                    </div>
+                } trigger="hover">
+                    <a>preview</a>
+                </Popover>
+            </>
+        }
+    }]
+
     return <>
         <div className={style.container}>
             <div className={style.form}>
@@ -183,22 +211,28 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                 </div>
             </div>
 
-            <div className={style.btnContainer}>
-                <Button
-                    onClick={() => {
-                        setSecModal(true);
-                    }}
-                    disabled={!apiWs || !adConfigList.length}
-                >Batch Create Ads</Button>
-            </div>
+            {adPreviews.length > 0 && <>
+                <div className={style.previewTable}>
+                    <Table dataSource={adPreviews} columns={adPreviewTableColumns} pagination={false}></Table>
+                </div>
+
+                <div className={style.btnContainer}>
+                    <Button
+                        onClick={() => {
+                            setSecModal(true);
+                        }}
+                        disabled={!apiWs || !adConfigList.length}
+                    >Batch Create Ads</Button>
+                </div>
+            </>}
 
             {adIds.length > 0 && <>
-                <div className={style.tableContainer}>
-                    <Table dataSource={adIds.map(id => ({id}))} columns={[{
+                <div className={style.adIdsTable}>
+                    <Table pagination={false} dataSource={adIds.map(id => ({ id }))} columns={[{
                         title: 'Ad id',
                         dataIndex: 'id',
                         key: 'id',
-                    },]} />;
+                    }]} />;
                 </div>
             </>}
         </div>
