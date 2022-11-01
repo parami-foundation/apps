@@ -7,7 +7,7 @@ import styles from '@/pages/wallet.less';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { didToHex, hexToDid, parseAmount } from '@/utils/common';
+import { hexToDid, parseAmount } from '@/utils/common';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '../Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
@@ -15,16 +15,15 @@ import ParamiScore from '../Creator/Explorer/components/ParamiScore/ParamiScore'
 import { UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
-import { uploadIPFS } from '@/services/parami/IPFS';
 import { IMAGE_TYPE } from '@/constants/advertisement';
-import { compressImageFile } from '@/utils/advertisement.util';
+import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
 import { QueryAssetById } from '@/services/parami/HTTP';
 import BidSection from './components/BidSection/BidSection';
 import { Asset } from '@/services/parami/typings';
+import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 
 export interface BidHNFTProps { }
 
-const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 const { Title } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -179,7 +178,18 @@ function BidHNFT({ }: BidHNFTProps) {
 
     const handleSubmit = async () => {
         setBidInProgress(true);
-        const adConfig = await createAdConfig();
+        const adConfig = await generateAdConfig({
+            poster: posterUrl,
+            icon: iconUrl,
+            content,
+            instructions,
+            sponsorName,
+            rewardRate,
+            lifetime,
+            payoutBase,
+            payoutMin,
+            payoutMax
+        });
         setAdConfig(adConfig);
         setCreateAdSecModal(true);
     }
@@ -187,12 +197,9 @@ function BidHNFT({ }: BidHNFTProps) {
     const createAd = async (preTx?: boolean, account?: string) => {
         try {
             const info: any = await UserCreateAds(adConfig, passphrase, wallet?.keystore, preTx, account);
-            // set loading false
             if (preTx && account) {
-                console.log('preTx ', info);
                 return info;
             }
-            console.log('post tx', info);
 
             const adId = info.ad.Created[0][0];
             setAdId(adId);
@@ -205,37 +212,6 @@ function BidHNFT({ }: BidHNFTProps) {
             });
             setBidInProgress(false);
             return;
-        }
-    }
-
-    const createAdConfig = async () => {
-        let adMetadata = {
-            media: posterUrl,
-            icon: iconUrl,
-            content,
-            instructions: instructions.map(ins => ({ ...ins, link: encodeURIComponent(ins.link ?? '') })),
-            sponsorName
-        };
-
-        const bufferred = await Buffer.from(JSON.stringify(adMetadata));
-        const { response, data } = await uploadIPFS(bufferred);
-        if (!response.ok) {
-            throw ('Create Metadata Error');
-        }
-
-        const metadataUrl = `ipfs://${data.Hash}`;
-        const delegatedDidHex = didToHex(config.advertisement.defaultDelegatedDid);
-        const allTags = Array.from(new Set([...instructions.map(ins => ins.tag).filter(Boolean)]));
-
-        return {
-            tags: allTags,
-            metadata: metadataUrl,
-            rewardRate: rewardRate.toString(),
-            lifetime,
-            payoutBase: parseAmount(payoutBase.toString()),
-            payoutMin: parseAmount(payoutMin.toString()),
-            payoutMax: parseAmount(payoutMax.toString()),
-            delegatedAccount: delegatedDidHex
         }
     }
 

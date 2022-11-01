@@ -4,17 +4,15 @@ import styles from '@/pages/dashboard.less';
 import style from './style.less';
 import { Button, Input, message, notification, Select, Tag, Upload } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import { didToHex, parseAmount } from '@/utils/common';
 import { CreateAds } from '@/services/parami/Advertisement';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import config from '@/config/config';
-import { uploadIPFS } from '@/services/parami/IPFS';
 import CreateUserInstruction, { UserInstruction } from './CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '@/pages/Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '@/pages/Creator/Explorer/components/ParamiScore/ParamiScore';
 import { IMAGE_TYPE } from '@/constants/advertisement';
-import { compressImageFile } from '@/utils/advertisement.util';
+import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
 
 const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 
@@ -47,24 +45,20 @@ const Create: React.FC<{
     if (!!dashboard && !!dashboard?.accountMeta) {
       setSubmiting(true);
       try {
-        let adMetadata = {
-          title,
-          media: mediaUrl,
+        const adConfig = await generateAdConfig({
+          poster: mediaUrl,
           icon: iconUrl,
-          description,
-          instructions: instructions.map(ins => ({...ins, link: encodeURIComponent(ins.link ?? '')})),
-          sponsorName
-        };
-
-        const bufferred = await Buffer.from(JSON.stringify(adMetadata));
-        const { response, data } = await uploadIPFS(bufferred);
-        if (!response.ok) {
-          throw ('Create Metadata Error');
-        }
-
-        const delegatedDidHex = didToHex(delegatedDid);
-        const allTags = Array.from(new Set([...instructions.map(ins => ins.tag).filter(Boolean)]));
-        await CreateAds(allTags, `ipfs://${data.Hash}`, rewardRate.toString(), (lifetime as number), parseAmount(payoutBase.toString()), parseAmount(payoutMin.toString()), parseAmount(payoutMax.toString()), JSON.parse(dashboard?.accountMeta), delegatedDidHex);
+          content: description,
+          instructions,
+          sponsorName,
+          rewardRate,
+          lifetime,
+          payoutBase,
+          payoutMax,
+          payoutMin
+        });
+        
+        await CreateAds(adConfig, JSON.parse(dashboard?.accountMeta));
         setSubmiting(false);
         setCreateModal(false);
         window.location.reload();

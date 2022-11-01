@@ -267,6 +267,14 @@ export default [
     component: './BidHNFT/BidHNFT'
   },
   {
+    path: '/batch/create/ad',
+    name: 'Batch Create Ad',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './BatchCreateAd/BatchCreateAd'
+  },
+  {
     component: './404',
   },
 ];
