@@ -52,13 +52,8 @@ export default () => {
     });
   };
 
-  useEffect(() => {
-    if (apiWs) {
-      getAdList();
-    };
-  }, [apiWs]);
-
   return {
     AdList,
+    getAdList
   }
 }

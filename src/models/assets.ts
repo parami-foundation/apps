@@ -1,37 +1,40 @@
-import config from "@/config/config";
-import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
-import { GetUserInfo, DrylySellToken } from "@/services/parami/RPC";
+import { QueryAssetById } from "@/services/parami/HTTP";
+import { DrylySellToken } from "@/services/parami/RPC";
 import { OwnerDidOfNft, getAssetsList } from "@/services/subquery/subquery";
 import { isLPAsset } from "@/utils/assets.util";
 import { formatBalance } from "@polkadot/util";
 import { notification } from "antd";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useModel, history } from "umi";
 import { tokenIconMap } from "./chainbridge";
 
+let flag = false;
+
 export default () => {
   const apiWs = useModel('apiWs');
-  const { wallet } = useModel('currentUser');
   const [first] = useState((new Date()).getTime());
   const [assets, setAssets] = useState<Map<string, any>>(new Map());
   const [assetsArr, setAssetsArr] = useState<any[] | null>(null);
 
-  const getAssets = async () => {
-    if (!apiWs || !wallet?.account) {
+  const [unsub, setUnsub] = useState<() => void>();
+
+  const getAssets = useCallback(async (account) => {
+    if (flag || !apiWs || !account) {
       return;
     }
+    flag = true;
 
-    const entries = await getAssetsList(wallet.account!);
+    const entries = await getAssetsList(account);
     if (!!entries) {
       if (entries.length === 0) {
         setAssetsArr([]);
       }
       for (const entry of entries) {
-        const metadataRaw = await apiWs.query.assets.metadata(entry?.assetId);
+        const metadataRaw = await apiWs!.query.assets.metadata(entry?.assetId);
         const metadata: any = metadataRaw.toHuman();
 
         if (!!metadata && !isLPAsset(metadata)) {
-          apiWs.query.assets.account(Number(entry?.assetId), wallet?.account, async (result: any) => {
+          const unsub = apiWs!.query.assets.account(Number(entry?.assetId), account, async (result: any) => {
             const { balance = '' } = result.toHuman() ?? {};
             const balanceBigInt = BigInt(balance.replaceAll(',', ''));
             if (!!balanceBigInt && balanceBigInt > 0) {
@@ -89,18 +92,12 @@ export default () => {
             setAssets(assets);
             setAssetsArr([...assets?.values()]);
           });
+
+          setUnsub(() => unsub);
         }
       }
     }
-    setAssets(assets);
-    // setAssetsArr([...assets?.values()]);
-  }
+  }, [unsub, apiWs])
 
-  useEffect(() => {
-    if (apiWs) {
-      getAssets();
-    }
-  }, [apiWs]);
-
-  return { assets, assetsArr };
+  return { assets, assetsArr, getAssets };
 }
