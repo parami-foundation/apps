@@ -32,7 +32,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
             notification.info({ message: 'Preparing ad data...' });
             const ads = adInfoList.map(info => {
                 const icon = iconList.find(file => file.name.toLowerCase() === info.iconFileName.toLowerCase());
-                const poster = iconList.find(file => file.name.toLowerCase() === info.posterFileName.toLowerCase());
+                const poster = posterList.find(file => file.name.toLowerCase() === info.posterFileName.toLowerCase());
 
                 return {
                     ...info,
