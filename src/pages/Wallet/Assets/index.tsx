@@ -1,6 +1,6 @@
 import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import { Badge, Image } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import style from './style.less';
 import { hexToDid } from '@/utils/common';
@@ -9,9 +9,15 @@ import Token from '@/components/Token/Token';
 import Skeleton from '@/components/Skeleton';
 
 const Assets: React.FC = () => {
-  //const apiWs = useModel('apiWs');
-  const { assetsArr } = useModel('assets');
+  const { wallet } = useModel('currentUser');
+  const { assetsArr, getAssets } = useModel('assets');
   const intl = useIntl();
+
+  useEffect(() => {
+    if (wallet) {
+      getAssets(wallet.account);
+    }
+  }, [getAssets, wallet]);
 
   const jumpKOLPage = async (assetID: string) => {
     const res = await OwnerDidOfNft(assetID);

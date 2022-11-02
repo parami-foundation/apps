@@ -31,7 +31,7 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const { balance } = useModel('balance');
-    const { assets } = useModel('assets');
+    const { assets, getAssets } = useModel('assets');
 
     const [tokenIcon, setTokenIcon] = useState<string>('');
     const [asset, setAsset] = useState<Asset>();
@@ -43,6 +43,12 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectAssetModal, setSelectAssetModal] = useState<boolean>(false);
     const [balanceWarning, setBalanceWarning] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (wallet) {
+            getAssets(wallet.account)
+        }
+    }, [getAssets, wallet])
 
     const queryIcon = async (assetId: string) => {
         setTokenIcon('');

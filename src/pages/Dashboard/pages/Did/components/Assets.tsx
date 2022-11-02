@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useIntl } from 'umi';
 import styles from '@/pages/dashboard.less';
 import { Divider, Table } from 'antd';
@@ -7,7 +7,14 @@ import Token from '@/components/Token/Token';
 import AD3 from '@/components/Token/AD3';
 
 const Assets: React.FC = () => {
-	const { assetsArr } = useModel('dashboard.assets');
+	const { dashboard } = useModel('currentUser');
+	const { assetsArr, getAssets } = useModel('assets');
+
+	useEffect(() => {
+		if (dashboard) {
+			getAssets(dashboard.account);
+		}
+	}, [dashboard, getAssets]);
 
 	const intl = useIntl();
 

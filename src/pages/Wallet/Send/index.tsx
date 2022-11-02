@@ -22,10 +22,17 @@ const Send: React.FC = () => {
   const [step, setStep] = useState<string>('InputAddress');
   const [number, setNumber] = useState<string>('0');
   const { balance } = useModel('balance');
-  const { assetsArr } = useModel('assets');
+  const { wallet } = useModel('currentUser');
+  const { assetsArr, getAssets } = useModel('assets');
   const [tokens, setTokens] = useState<TokenType[]>([]);
   const [token, setToken] = useState<TokenType | undefined>();
   const [address, setAddress] = useState<string>();
+
+  useEffect(() => {
+    if (wallet) {
+      getAssets(wallet.account);
+    }
+  }, [getAssets, wallet]);
 
   useEffect(() => {
     const tokens = [{
