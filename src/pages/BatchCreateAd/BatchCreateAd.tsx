@@ -4,11 +4,12 @@ import config from '@/config/config';
 import { IMAGE_TYPE } from '@/constants/advertisement';
 import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 import { UserBatchCreateAds } from '@/services/parami/Advertisement';
+import { GetAvatar } from '@/services/parami/HTTP';
+import { uploadIPFS } from '@/services/parami/IPFS';
 import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
 import { UploadOutlined } from '@ant-design/icons';
 import { notification, Popover, Table } from 'antd';
 import { Button, Upload } from 'antd';
-import type { UploadFile } from 'antd/es/upload/interface';
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import style from './BatchCreateAd.less';
@@ -18,8 +19,6 @@ export interface BatchCreateAdProps { }
 function BatchCreateAd({ }: BatchCreateAdProps) {
     const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
-    const [iconList, setIconList] = useState<UploadFile[]>([]);
-    const [posterList, setPosterList] = useState<UploadFile[]>([]);
     const [adInfoList, setAdInfoList] = useState<any[]>([]);
     const [adConfigList, setAdConfigList] = useState<any[]>([]);
     const [passphrase, setPassphrase] = useState<string>('');
@@ -27,25 +26,38 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
     const [adIds, setAdIds] = useState<string[]>([]);
     const [adPreviews, setAdPreviews] = useState<any[]>([]);
 
+    const compressImageUrl = async (imageUrl, type: IMAGE_TYPE) => {
+        const download = await GetAvatar(imageUrl);
+        if (download.data.type === 'image/gif') {
+            return imageUrl;
+        }
+        const compressedFile = await compressImageFile(download.data, type);
+        const { data } = await uploadIPFS(compressedFile);
+        const newUrl = config.ipfs.endpoint + data.Hash;
+        console.log('compressed:', newUrl);
+        return newUrl;
+    }
+
+    const generateAdWithCompression = async (ad) => {
+        if (ad.icon) {
+            ad.icon = await compressImageUrl(ad.icon, IMAGE_TYPE.ICON);
+        }
+
+        if (ad.poster) {
+            ad.poster = await compressImageUrl(ad.poster, IMAGE_TYPE.POSTER);
+        }
+        
+        return generateAdConfig(ad);
+    }
+
     useEffect(() => {
-        if (adInfoList.length && iconList.length && posterList.length) {
+        if (adInfoList.length) {
             notification.info({ message: 'Preparing ad data...' });
-            const ads = adInfoList.map(info => {
-                const icon = iconList.find(file => file.name.toLowerCase() === info.iconFileName.toLowerCase());
-                const poster = iconList.find(file => file.name.toLowerCase() === info.posterFileName.toLowerCase());
-
-                return {
-                    ...info,
-                    poster: poster?.url,
-                    icon: icon?.url
-                }
-            });
-
-            Promise.all(ads.map(ad => generateAdConfig(ad))).then(configs => {
+            Promise.all(adInfoList.map(ad => generateAdWithCompression(ad))).then(configs => {
                 notification.success({
                     message: 'Ready to create'
                 })
-                setAdPreviews(ads);
+                setAdPreviews(adInfoList);
                 setAdConfigList(configs);
             }).catch((e) => {
                 notification.error({
@@ -54,7 +66,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                 })
             });
         }
-    }, [adInfoList, iconList, posterList]);
+    }, [adInfoList]);
 
     const beforeUploadTSV = (file) => {
         console.log('reading file', file);
@@ -73,20 +85,20 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                 const props = row.split('\t');
                 return {
                     title: props[1],
-                    posterFileName: props[2],
-                    iconFileName: props[3],
-                    content: props[4],
-                    sponsorName: props[5],
+                    poster: `${props[3] ? config.ipfs.endpoint + props[3] : ''}`,
+                    icon: `${props[5] ? config.ipfs.endpoint + props[5] : ''}`,
+                    content: props[6],
+                    sponsorName: props[7],
                     instructions: [{
-                        text: props[6],
+                        text: props[8],
                         tag: 'Social Media',
                         score: 1,
-                        link: props[7]
+                        link: props[9]
                     }],
-                    rewardRate: parseInt(props[8], 10),
-                    payoutBase: parseInt(props[9], 10),
-                    payoutMin: parseInt(props[10], 10),
-                    payoutMax: parseInt(props[11], 10),
+                    rewardRate: parseInt(props[10], 10),
+                    payoutBase: parseInt(props[11], 10),
+                    payoutMin: parseInt(props[12], 10),
+                    payoutMax: parseInt(props[13], 10),
                     lifetime: NUM_BLOCKS_PER_DAY * 2
                 }
             });
@@ -95,29 +107,6 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
         }
         reader.readAsText(file);
         return false;
-    }
-
-    const handleBeforeUpload = (imageType: IMAGE_TYPE) => {
-        return async (file) => {
-            return await compressImageFile(file, imageType);
-        }
-    }
-
-    const handleUploadOnChange = (imageType: IMAGE_TYPE) => {
-        return (info) => {
-            let newFileList = [...info.fileList];
-
-            newFileList = newFileList.map(file => {
-                if (file.response) {
-                    const ipfsHash = file.response.Hash;
-                    const imageUrl = config.ipfs.endpoint + ipfsHash;
-                    file.url = imageUrl;
-                }
-                return file;
-            });
-
-            imageType === IMAGE_TYPE.POSTER ? setPosterList(newFileList) : setIconList(newFileList);
-        }
     }
 
     const batchCreateAd = async (preTx?: boolean, account?: string) => {
@@ -172,34 +161,6 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
         <div className={style.container}>
             <div className={style.form}>
                 <div className={style.field}>
-                    <div className={style.title}>upload icons</div>
-                    <div className={style.content}>
-                        <Upload
-                            action={config.ipfs.upload}
-                            multiple
-                            beforeUpload={handleBeforeUpload(IMAGE_TYPE.ICON)}
-                            onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
-                            fileList={iconList}>
-                            <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Upload>
-                    </div>
-                </div>
-
-                <div className={style.field}>
-                    <div className={style.title}>upload posters</div>
-                    <div className={style.content}>
-                        <Upload
-                            action={config.ipfs.upload}
-                            multiple
-                            beforeUpload={handleBeforeUpload(IMAGE_TYPE.POSTER)}
-                            onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
-                            fileList={posterList}>
-                            <Button icon={<UploadOutlined />}>Upload</Button>
-                        </Upload>
-                    </div>
-                </div>
-
-                <div className={style.field}>
                     <div className={style.title}>upload tsv (tab-separated-values)</div>
                     <div className={style.content}>
                         <Upload
@@ -232,7 +193,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
                         title: 'Ad id',
                         dataIndex: 'id',
                         key: 'id',
-                    }]} />;
+                    }]} />
                 </div>
             </>}
         </div>
