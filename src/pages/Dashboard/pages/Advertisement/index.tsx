@@ -20,7 +20,7 @@ import CreateTagModal from '../../components/CreateTagModal/CreateTagModal';
 const Advertisement: React.FC = () => {
 	const apiWs = useModel('apiWs');
 	const { dashboard } = useModel('currentUser');
-	const { AdList } = useModel('dashboard.advertisement');
+	const { AdList, getAdList } = useModel('dashboard.advertisement');
 	const [isAdvertisers, setIsAdvertisers] = useState<boolean>(false);
 	const [becomeModal, setBecomeModal] = useState<boolean>(false);
 	const [createModal, setCreateModal] = useState<boolean>(false);
@@ -30,6 +30,12 @@ const Advertisement: React.FC = () => {
 	const [adItem, setAdItem] = useState<any>({});
 
 	const intl = useIntl();
+
+	useEffect(() => {
+		if (apiWs) {
+			getAdList();
+		}
+	}, [apiWs])
 
 	const columns: ColumnsType<AdListItem> = [
 		{
