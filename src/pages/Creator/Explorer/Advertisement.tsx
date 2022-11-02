@@ -97,15 +97,18 @@ const Advertisement: React.FC<{
 					}}
 				>
 					<div className={style.advertisement}>
-						<div className={style.adMedia}>
-							<Image
-								src={ad?.media}
-								placeholder={true}
-								preview={false}
-								className={style.adMediaImg}
-								onLoad={adImageOnLoad}
-							/>
-						</div>
+						{!!ad?.media && <>
+							<div className={style.adMedia}>
+								<Image
+									src={ad?.media}
+									placeholder={true}
+									preview={false}
+									className={style.adMediaImg}
+									onLoad={adImageOnLoad}
+								/>
+							</div>
+						</>}
+
 						{ad?.instructions && ad?.instructions?.length > 0 && <>
 							<div className={style.instructions}>
 								<div className={style.instructionTitle}>

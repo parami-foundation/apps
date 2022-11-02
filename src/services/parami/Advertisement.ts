@@ -94,10 +94,37 @@ export const UserCreateAds = async (
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
-export const CreateAds = async (tags: any[], metadata: string, rewardRate: string, lifetime: number, payoutBase: string, payoutMin: string, payoutMax: string, account: any, delegateAccount: string) => {
+export const UserBatchCreateAds = async (
+  adConfigList: any[],
+  password: string,
+  keystore: string,
+  preTx?: boolean,
+  account?: string
+) => {
+  const currentBlockNum = await window.apiWs.query.system.number();
+  const exList = adConfigList.map(adConfig => {
+    return window.apiWs.tx.ad.create(adConfig.tags, adConfig.metadata, adConfig.rewardRate, adConfig.lifetime + Number(currentBlockNum), adConfig.payoutBase, adConfig.payoutMin, adConfig.payoutMax, adConfig.delegatedAccount);
+  });
+
+  const batch = await window.apiWs.tx.utility.batch(exList);
+  
+  if (preTx && account) {
+    return await checkFeeAndSubmitExtrinsic(batch, password, keystore, preTx, account);
+  }
+
+  const info: any[] = [];
+  for (let i = 0; i < exList.length; i++) {
+    const ex = exList[i];
+    const res = await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+    info.push(res);
+  }
+  return info;
+}
+
+export const CreateAds = async (adConfig, account) => {
   const currentBlockNum = await window.apiWs.query.system.number();
   const injector = await web3FromSource(account.meta.source);
-  const tx = window.apiWs.tx.ad.create(tags, metadata, rewardRate, lifetime + Number(currentBlockNum), payoutBase, payoutMin, payoutMax, delegateAccount);
+  const tx = window.apiWs.tx.ad.create(adConfig.tags, adConfig.metadata, adConfig.rewardRate, adConfig.lifetime + Number(currentBlockNum), adConfig.payoutBase, adConfig.payoutMin, adConfig.payoutMax, adConfig.delegatedAccount);
 
   return await subWeb3Callback(tx, injector, account);
 };

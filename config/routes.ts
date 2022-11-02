@@ -196,6 +196,14 @@ export default [
     component: './Claim/Claim',
   },
   {
+    path: '/ad',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Ad/Ad'
+  },
+  {
     path: '/did:kol',
     hideInMenu: true,
     exact: true,
@@ -257,6 +265,14 @@ export default [
     access: 'canUser',
     hideChildrenInMenu: true,
     component: './BidHNFT/BidHNFT'
+  },
+  {
+    path: '/batch/create/ad',
+    name: 'Batch Create Ad',
+    hideInMenu: true,
+    access: 'canUser',
+    hideChildrenInMenu: true,
+    component: './BatchCreateAd/BatchCreateAd'
   },
   {
     component: './404',

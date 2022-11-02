@@ -4,31 +4,26 @@ import { Button, Input, message, notification, Select, Tag, Upload, Typography, 
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
-import { DrylyBuyToken, DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
+import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
-import { didToHex, hexToDid, parseAmount, stringToBigInt } from '@/utils/common';
+import { hexToDid, parseAmount } from '@/utils/common';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '../Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '../Creator/Explorer/components/ParamiScore/ParamiScore';
-import { deleteComma } from '@/utils/format';
-import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
-import { Asset, GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
-import Token from '@/components/Token/Token';
-import { GetSlotOfNft, UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
-import { BuyToken } from '@/services/parami/Swap';
+import { UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
-import { uploadIPFS } from '@/services/parami/IPFS';
-import { VoidFn } from '@polkadot/api/types';
 import { IMAGE_TYPE } from '@/constants/advertisement';
-import { compressImageFile } from '@/utils/advertisement.util';
+import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
 import { QueryAssetById } from '@/services/parami/HTTP';
+import BidSection from './components/BidSection/BidSection';
+import { Asset } from '@/services/parami/typings';
+import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 
 export interface BidHNFTProps { }
 
-const NUM_BLOCKS_PER_DAY = 24 * 60 * 60 / 12;
 const { Title } = Typography;
 const { Panel } = Collapse;
 const { Option } = Select;
@@ -61,28 +56,16 @@ function BidHNFT({ }: BidHNFTProps) {
     const [payoutMinError, setPayoutMinError] = useState<string>('');
     const [payoutMaxError, setPayoutMaxError] = useState<string>('');
 
-    // bid ad
-    const [currentPrice, setCurrentPrice] = useState<string>('');
     const [price, setPrice] = useState<number>();
-    const [priceErrorMsg, setPriceErrorMsg] = useState<{ type: string; msg: string } | undefined>();
-    const [minPrice, setMinPrice] = useState<number>();
-
-    
-    const { balance } = useModel('balance');
-    const [asset, setAsset] = useState<Asset & { icon: string }>();
-    const [assetPrice, setAssetPrice] = useState<string>();
-    const [assetBalance, setAssetBalance] = useState<string>('');
-    const [showSwap, setShowSwap] = useState<boolean>(false);
+    const [asset, setAsset] = useState<Asset>();
     const [passphrase, setPassphrase] = useState<string>('');
     const [adConfig, setAdConfig] = useState<any>();
     const [bidInProgress, setBidInProgress] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
-    const [assetBalanceUnsub, setAssetBalanceUnsub] = useState<VoidFn>();
 
     const [createAdSecModal, setCreateAdSecModal] = useState<boolean>(false);
     const [bidSecModal, setBidSecModal] = useState<boolean>(false);
 
-    // const [secModal, setSecModal] = useState<{ show: boolean; func?: any }>({ show: false });
     const [adId, setAdId] = useState<string>();
 
     const params: {
@@ -98,21 +81,6 @@ function BidHNFT({ }: BidHNFTProps) {
         assetName: asset?.name,
     }
 
-    const getCurrentBudgetBalance = async (nftId: string) => {
-        const slot = await GetSlotOfNft(nftId);
-
-        if (!slot) {
-            return '0';
-        }
-
-        const budget = await GetBalanceOfBudgetPot(slot.budgetPot, slot.fractionId);
-        if (!budget) {
-            return '0';
-        }
-
-        return deleteComma(budget.balance);
-    }
-
     const queryAsset = async (assetId: string) => {
         const { data } = await QueryAssetById(assetId);
         if (!data?.token) {
@@ -123,31 +91,7 @@ function BidHNFT({ }: BidHNFTProps) {
             return;
         }
         setAsset(data.token);
-
-        const value = await DrylySellToken(assetId, parseAmount('1'));
-        setAssetPrice(value.toString());
-
-        const budgetBalance = await getCurrentBudgetBalance(assetId);
-        setCurrentPrice(budgetBalance);
-
-        const minPrice = Math.ceil(Math.max(Number(BigIntToFloatString(deleteComma(budgetBalance), 18)) * 1.2, 1));
-        setMinPrice(minPrice);
-        setPrice(minPrice);
-
-        subscribeAssetBalance(assetId);
     }
-
-    const subscribeAssetBalance = async (assetId: string) => {
-        const unsub = await apiWs!.query.assets.account(Number(assetId), wallet.account, (res) => {
-            const { balance } = res.toHuman() ?? { balance: '' };
-            setAssetBalance(deleteComma(balance));
-        });
-        setAssetBalanceUnsub(() => unsub);
-    }
-
-    useEffect(() => {
-        return assetBalanceUnsub;
-    }, [assetBalanceUnsub])
 
     useEffect(() => {
         if (apiWs && params.nftId) {
@@ -210,19 +154,6 @@ function BidHNFT({ }: BidHNFTProps) {
         }
     }, [payoutMin]);
 
-    useEffect(() => {
-        setPriceErrorMsg(undefined);
-        setShowSwap(false);
-        if (price !== undefined) {
-            if (minPrice && price < minPrice) {
-                setPriceErrorMsg({ type: 'price', msg: 'price too low' });
-            } else if (FloatStringToBigInt(`${price}`, 18) > stringToBigInt(assetBalance)) {
-                setPriceErrorMsg({ type: 'balance', msg: 'Insufficient Balance, please swap more token' });
-                setShowSwap(true);
-            }
-        }
-    }, [price, assetBalance, minPrice]);
-
     const bidAd = async (preTx?: boolean, account?: string) => {
         try {
             const info: any = await UserBidSlot(adId!, params.nftId, parseAmount((price as number).toString()), passphrase, wallet?.keystore, preTx, account);
@@ -247,7 +178,18 @@ function BidHNFT({ }: BidHNFTProps) {
 
     const handleSubmit = async () => {
         setBidInProgress(true);
-        const adConfig = await createAdConfig();
+        const adConfig = await generateAdConfig({
+            poster: posterUrl,
+            icon: iconUrl,
+            content,
+            instructions,
+            sponsorName,
+            rewardRate,
+            lifetime,
+            payoutBase,
+            payoutMin,
+            payoutMax
+        });
         setAdConfig(adConfig);
         setCreateAdSecModal(true);
     }
@@ -255,12 +197,9 @@ function BidHNFT({ }: BidHNFTProps) {
     const createAd = async (preTx?: boolean, account?: string) => {
         try {
             const info: any = await UserCreateAds(adConfig, passphrase, wallet?.keystore, preTx, account);
-            // set loading false
             if (preTx && account) {
-                console.log('preTx ', info);
                 return info;
             }
-            console.log('post tx', info);
 
             const adId = info.ad.Created[0][0];
             setAdId(adId);
@@ -272,64 +211,6 @@ function BidHNFT({ }: BidHNFTProps) {
                 duration: null,
             });
             setBidInProgress(false);
-            return;
-        }
-    }
-
-    const createAdConfig = async () => {
-        let adMetadata = {
-            media: posterUrl,
-            icon: iconUrl,
-            content,
-            instructions: instructions.map(ins => ({ ...ins, link: encodeURIComponent(ins.link ?? '') })),
-            sponsorName
-        };
-
-        const bufferred = await Buffer.from(JSON.stringify(adMetadata));
-        const { response, data } = await uploadIPFS(bufferred);
-        if (!response.ok) {
-            throw ('Create Metadata Error');
-        }
-
-        const metadataUrl = `ipfs://${data.Hash}`;
-        const delegatedDidHex = didToHex(config.advertisement.defaultDelegatedDid);
-        const allTags = Array.from(new Set([...instructions.map(ins => ins.tag).filter(Boolean)]));
-
-        return {
-            tags: allTags,
-            metadata: metadataUrl,
-            rewardRate: rewardRate.toString(),
-            lifetime,
-            payoutBase: parseAmount(payoutBase.toString()),
-            payoutMin: parseAmount(payoutMin.toString()),
-            payoutMax: parseAmount(payoutMax.toString()),
-            delegatedAccount: delegatedDidHex
-        }
-    }
-
-    const swapMoreToken = async (preTx?: boolean, account?: string) => {
-        // todo: set swap loading true
-        try {
-            // calculate token amount and ad3 amount
-            const tokenNumber = (FloatStringToBigInt(`${price}`, 18) - stringToBigInt(assetBalance)).toString();
-            const ad3Number = await DrylyBuyToken(params?.nftId, tokenNumber);
-
-            console.log('token number', tokenNumber);
-            console.log('ad3 number', ad3Number);
-
-            const info: any = await BuyToken(params?.nftId, tokenNumber, ad3Number, passphrase, wallet?.keystore, preTx, account);
-
-            // todo:set swap loading false
-            if (preTx && account) {
-                return info;
-            }
-        } catch (e: any) {
-            notification.error({
-                message: e.message || e,
-                duration: null,
-            });
-            // set swap loading false
-            // setLoading(false);
             return;
         }
     }
@@ -431,7 +312,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                 </div>
                                 {instructions.length > 0 &&
                                     <div className={style.field}>
-                                        {instructions.map(instruction => <p>
+                                        {instructions.map((instruction, index) => <p key={index}>
                                             <Tag closable onClose={(e) => {
                                                 e.preventDefault();
                                                 setInstructions(instructions.filter(ins => ins !== instruction))
@@ -559,74 +440,10 @@ function BidHNFT({ }: BidHNFTProps) {
                         </Card>
 
                         <Card title="Bid your price" className={styles.card} style={{ marginTop: '20px' }}>
-                            <div className={style.bidSectionContainer}>
-                                <div className={style.currentPrice}>
-                                    <div className={style.currentPriceTitle}>
-                                        <FormFieldTitle title={'Current Price'} />
-                                    </div>
-                                    <div className={style.currentPriceValue}>
-                                        <Token value={currentPrice ?? ''} symbol={asset?.symbol} />
-                                    </div>
-                                </div>
-
-                                <div className={style.priceField}>
-                                    <div className={style.priceFieldTitle}>
-                                        Offer a price
-                                    </div>
-                                    <small>
-                                        {`≥ ${minPrice}`}
-                                    </small>
-                                    <div className={style.value}>
-                                        <InputNumber
-                                            value={price}
-                                            className={`${style.withAfterInput} ${priceErrorMsg ? style.inputError : ''}`}
-                                            size='large'
-                                            type='number'
-                                            placeholder='Price'
-                                            onChange={(value) => {
-                                                setPrice(value);
-                                            }}
-                                        />
-                                        {priceErrorMsg?.type === 'price' && <FormErrorMsg msg={priceErrorMsg.msg} />}
-                                        {priceErrorMsg?.type === 'balance' && <>
-                                            <span className={style.balanceError}>Insufficient Balance, please <a target="_blank" href={`/swap/${params?.nftId}`}>swap more token</a></span>
-                                        </>}
-                                    </div>
-                                    <div className={style.tokenBalance}>
-                                        <span>balance: <Token value={assetBalance ?? ''} symbol={asset?.symbol} /></span>
-                                        {/* <span>available ad3: <AD3 value={balance?.free} /></span> */}
-                                    </div>
-                                </div>
-
-                                {showSwap && false && <>
-                                    <div className={style.field}>
-                                        <Button onClick={() => {
-                                            console.log('swap tokens');
-                                            // setSecModal({ show: true, func: swapMoreToken });
-                                        }}>Swap more {asset?.symbol}</Button>
-                                    </div>
-                                </>}
-
-                                <div
-                                    className={style.bidBtnContainer}
-                                >
-                                    <Button
-                                        block
-                                        size='large'
-                                        shape='round'
-                                        type='primary'
-                                        disabled={!!priceErrorMsg}
-                                        loading={false}
-                                        onClick={() => {
-                                            console.log('submit')
-                                            handleSubmit();
-                                        }}
-                                    >
-                                        bid
-                                    </Button>
-                                </div>
-                            </div>
-
+                            <BidSection asset={asset} onBid={(price) => {
+                                setPrice(price);
+                                handleSubmit();
+                            }}></BidSection>
                         </Card>
                     </Col>
                 </Row>

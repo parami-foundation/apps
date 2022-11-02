@@ -9,7 +9,7 @@ import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity } from '@/services/parami/RPC';
-import SelectAsset from '@/pages/Swap/components/SelectAsset/SelectAsset';
+import SelectAsset from '@/components/SelectAsset/SelectAsset';
 
 const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
