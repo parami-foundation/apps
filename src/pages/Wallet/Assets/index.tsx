@@ -1,9 +1,7 @@
-import { OwnerDidOfNft } from '@/services/subquery/subquery';
 import { Badge, Image } from 'antd';
 import React, { useEffect } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import style from './style.less';
-import { hexToDid } from '@/utils/common';
 import AD3 from '@/components/Token/AD3';
 import Token from '@/components/Token/Token';
 import Skeleton from '@/components/Skeleton';
@@ -20,8 +18,7 @@ const Assets: React.FC = () => {
   }, [getAssets, wallet]);
 
   const jumpKOLPage = async (assetID: string) => {
-    const res = await OwnerDidOfNft(assetID);
-    history.push(`/${hexToDid(res)}/${assetID}`);
+    history.push(`/ad/?nftId=${assetID}`);
   };
 
   return (

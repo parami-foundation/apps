@@ -159,7 +159,7 @@ const ImportNFTModal: React.FC<{
     if (mintItem && Signer && ChainId) {
       setImportStep(2);
       try {
-        const adLink = `${window.location.origin}/${hexToDid(wallet.did!)}/${nftId}`;
+        const adLink = `${window.location.origin}/ad/?nftId=${nftId}`;
 
         const paramiLinkContract = new ethers.Contract(ParamiLinkContractAddress[ChainId], ParamiLinkABI.abi, Signer);
         const setLinkResp = await paramiLinkContract.setHNFTLink(mintItem.contract, mintItem.tokenId, adLink);
