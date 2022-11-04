@@ -1,7 +1,7 @@
 import { NFTItem } from '@/models/nft';
-import { formatWithoutUint, hexToDid } from '@/utils/common';
+import { formatWithoutUint } from '@/utils/common';
 import React, { useState, useRef, useEffect } from 'react';
-import { useIntl, useModel } from 'umi';
+import { history, useIntl } from 'umi';
 import style from './style.less';
 import { Button, Progress, Tooltip } from 'antd';
 import Mint from '../Mint';
@@ -10,7 +10,6 @@ import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
 const NFTCard: React.FC<{
     item: NFTItem;
 }> = ({ item }) => {
-    const { wallet } = useModel('currentUser');
     const intl = useIntl();
     const [mintModal, setMintModal] = useState<boolean>(false);
     const ref = useRef<HTMLDivElement>(null);
@@ -38,7 +37,7 @@ const NFTCard: React.FC<{
         <div
             className={`${style.nftItem} ${item.minted ? '' : style.unmint}`}
             onClick={() => {
-                window.location.href = `${window.location.origin}/${hexToDid(wallet.did!)}/${item?.id}`;
+                history.push(`/ad/?nftId=${item?.id}`);
             }}
         >
             <div className={style.card}>

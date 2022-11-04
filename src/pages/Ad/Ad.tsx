@@ -43,22 +43,16 @@ function Ad({ }: AdProps) {
 
     useEffect(() => {
         const params = parseUrlParams() as { nftId: string };
-        console.log('got url params', params);
         if (params.nftId) {
             setNftId(params.nftId);
         } else {
-            console.log('No nft id!');
+            history.push('/wallet');
         }
     }, []);
 
     // Get Referrer
     const { query } = history.location;
     const { referrer } = query as { referrer: string };
-
-    // Get DID
-    // todo: nft id -> did
-    // const did = !!params?.kol ? 'did' + params?.kol : hexToDid(wallet.did!);
-    // const didHex = didToHex(did);
 
     const errorHandler = (e) => {
         notification.error({
@@ -70,8 +64,7 @@ function Ad({ }: AdProps) {
     const queryAdSlot = async (nftId: string) => {
         const slot = await GetSlotAdOf(nftId);
         if (!slot) {
-            // todo: change this...
-            history.replace(`${window.location.pathname}/dao`);
+            history.replace(`/dao/?nftId=${nftId}`);
             return;
         }
         setAdSlot(slot);

@@ -32,7 +32,7 @@ const Advertisement: React.FC<{
 
 	const intl = useIntl();
 
-	const link = !!wallet?.did ? `${window.location.origin}/${did}/${nftId}?referrer=${wallet?.did}` : `${window.location.origin}/${did}/${nftId}`;
+	const link = !!wallet?.did ? `${window.location.origin}/ad/?nftId=${nftId}&referrer=${wallet?.did}` : `${window.location.origin}/ad/?nftId=${nftId}`;
 
 	const sponsoredBy = hexToDid(adData?.creator).substring(8);
 

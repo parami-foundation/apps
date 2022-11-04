@@ -1,5 +1,4 @@
-﻿import { triggerFocus } from "antd/lib/input/Input";
-
+﻿
 export default [
   {
     path: '/',
@@ -204,27 +203,15 @@ export default [
     component: './Ad/Ad'
   },
   {
-    path: '/did:kol',
-    hideInMenu: true,
-    exact: true,
-    headerRender: false,
-    footerRender: false,
-    component: './Creator/Explorer',
-  },
-  {
-    path: '/did:kol/:nftID',
-    hideInMenu: true,
-    exact: true,
-    headerRender: false,
-    footerRender: false,
-    component: './Creator/Explorer',
-  },
-  {
-    path: '/did:kol/:nftID/dao',
+    path: '/dao',
     hideInMenu: true,
     exact: true,
     headerRender: false,
     component: './Creator/Explorer/DAO/DAO',
+  },
+  {
+    path: '/did:kol/:nftID',
+    redirect: '/ad/?nftId=:nftID',
   },
   {
     path: '/downloads',
