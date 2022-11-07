@@ -57,6 +57,12 @@ const ClaimModal: React.FC<{
         }
     }, [apiWs]);
 
+    useEffect(() => {
+        if (apiWs && wallet && adScore) {
+            setSecModal(true);
+        }
+    }, [apiWs, wallet, adScore])
+
     const claim = async (preTx?: boolean, account?: string) => {
         if (!wallet?.keystore) {
             notification.error({
@@ -103,7 +109,8 @@ const ClaimModal: React.FC<{
             title="Claim your token"
             content={
                 <div className={style.claimInfoContainer}>
-                    <Spin spinning={!adScore}>
+                    <Spin></Spin>
+                    {/* <Spin spinning={!adScore}>
                         {adScore && adScore.scores && adScore.scores.length > 0 && <>
                             <p>Claim now and have your score updated:</p>
                             {adScore.scores.map(score => {
@@ -116,19 +123,20 @@ const ClaimModal: React.FC<{
                                 Not happy with the reward? Follow the instructions before claiming.
                             </p>}
                         </>}
-                    </Spin>
+                    </Spin> */}
                 </div>
             }
-            footer={<>
-                <Button
-                    block
-                    type='primary'
-                    shape='round'
-                    size='large'
-                    disabled={!adScore}
-                    onClick={() => setSecModal(true)}
-                >Claim</Button>
-            </>}
+            footer={null}
+            // footer={<>
+            //     <Button
+            //         block
+            //         type='primary'
+            //         shape='round'
+            //         size='large'
+            //         disabled={!adScore}
+            //         onClick={() => setSecModal(true)}
+            //     >Claim</Button>
+            // </>}
             close={() => onClose()}
         />
 
@@ -137,6 +145,7 @@ const ClaimModal: React.FC<{
             setVisable={setSecModal}
             passphrase={passphrase}
             setPassphrase={setPassphrase}
+            directSubmit={true}
             func={claim}
         ></SecurityModal>
     </>;

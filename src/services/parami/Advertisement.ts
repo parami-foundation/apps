@@ -172,7 +172,7 @@ export const ClaimAdToken = async (adId: string, nftId: string, visitor: string,
   return SubmitExtrinsic(ex, password, keystore, preTx, account);
 };
 
-export const ClaimAdTokenWithoutSignature = async (adId: string, nftId: string, scores: (string | number)[][], referrer: string | null, password: string, keystore: string, preTx?: boolean, account?: string) => {
+export const ClaimAdTokenWithoutSignature = async (adId: string, nftId: string, scores: (string | number)[][] | null, referrer: string | null, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = await window.apiWs.tx.ad.claimWithoutAdvertiserSignature(adId, nftId, scores, referrer);
 
   return SubmitExtrinsic(ex, password, keystore, preTx, account);
