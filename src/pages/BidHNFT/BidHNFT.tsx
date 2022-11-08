@@ -160,12 +160,14 @@ function BidHNFT({ }: BidHNFTProps) {
             if (preTx && account) {
                 return info;
             }
-            console.log('bid success');
             setBidInProgress(false);
             notification.success({
-                message: 'Bid Success'
+                message: 'Bid Success',
+                duration: 0,
+                description: (<>
+                    <span>Your AD is active now. You could also share this <a href={`/ad/?nftId=${params.nftId}`} target='_blank'>ad link</a> to others.</span>
+                </>)
             });
-            // todo: jump to ad page?
         } catch (e: any) {
             notification.error({
                 message: e.message || e,
