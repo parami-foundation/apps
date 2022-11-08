@@ -12,14 +12,15 @@ function ExtensionDownload({ }: ExtensionDownloadProps) {
             bodyStyle={{
                 width: '100%'
             }}
-            style={{marginBottom: '2rem'}}
+            style={{ marginBottom: '2rem' }}
         >
             <Title level={4}>
                 Chrome Extension
             </Title>
 
             <div>
-                Try out our community built <a href='https://chrome.google.com/webstore/detail/hyperlink-nft-extension/gilmlbeecofjmogfkaocnjmbiblmifad' target='_blank'>chrome extension</a> for better experience with viewing hNFTs.
+                Play, Engage and Earn with thousands of hNFTs while browsing on Twitter!
+                Download the <a href='https://chrome.google.com/webstore/detail/hyperlink-nft-extension/gilmlbeecofjmogfkaocnjmbiblmifad' target='_blank'>Chrome Extension</a> developed by our community for best experience!
             </div>
         </Card>
     </>;
