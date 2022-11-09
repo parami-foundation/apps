@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useModel, useParams } from 'umi';
-import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
+import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image as AntImage, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
-import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
+import { UploadOutlined, LoadingOutlined, CloseOutlined } from '@ant-design/icons';
 import { hexToDid, parseAmount } from '@/utils/common';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
@@ -21,6 +21,7 @@ import { QueryAssetById } from '@/services/parami/HTTP';
 import BidSection from './components/BidSection/BidSection';
 import { Asset } from '@/services/parami/typings';
 import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
+import type { UploadFile } from 'antd/es/upload/interface';
 
 export interface BidHNFTProps { }
 
@@ -36,15 +37,23 @@ const defaultInstruction: UserInstruction = {
     link: 'https://twitter.com/intent/follow?screen_name=ParamiProtocol'
 }
 
+const getUrl = (uploadFiles: UploadFile[]) => {
+    if (uploadFiles && uploadFiles.length) {
+        return uploadFiles[0].url ?? '';
+    }
+    return '';
+}
+
 function BidHNFT({ }: BidHNFTProps) {
     const [sponsorName, setSponsorName] = useState<string>('');
     const [content, setContent] = useState<string>('View Ads. Get Paid.');
     const [userInfo, setUserInfo] = useState<{ nickname?: string; avatar?: string }>();
-    const [iconUrl, setIconUrl] = useState<string>();
-    const [posterUrl, setPosterUrl] = useState<string>();
+    const [iconUploadFiles, setIconUploadFiles] = useState<UploadFile[]>([]);
+    const [posterUploadFiles, setPosterUploadFiles] = useState<UploadFile[]>([]);
+
     const { wallet } = useModel('currentUser');
     const apiWs = useModel('apiWs');
-    const [instructions, setInstructions] = useState<UserInstruction[]>([defaultInstruction]);
+    const [instruction, setInstruction] = useState<UserInstruction | undefined>(defaultInstruction);
     const [createInstructionModal, setCreateInstructionModal] = useState<boolean>(false);
 
     // advanced settings
@@ -72,14 +81,33 @@ function BidHNFT({ }: BidHNFTProps) {
         nftId: string;
     } = useParams();
 
+    useEffect(() => {
+        const poster = getUrl(posterUploadFiles)
+        if (poster) {
+            const img = new Image();
+            img.src = poster;
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                if (img.height < 200) {
+                    notification.warn({
+                        message: 'Poster too small',
+                        description: 'Recommended poster size: height > 200'
+                    })
+                }
+            }
+        }
+    }, [posterUploadFiles])
+
     const adPreviewData = {
-        instructions,
-        icon: iconUrl,
+        instructions: instruction ? [instruction] : [],
+        icon: getUrl(iconUploadFiles),
         sponsorName,
-        poster: posterUrl,
+        poster: getUrl(posterUploadFiles),
         content,
         assetName: asset?.name,
     }
+
+    const formValid = !!adPreviewData.poster && payoutBase >= 1;
 
     const queryAsset = async (assetId: string) => {
         const { data } = await QueryAssetById(assetId);
@@ -113,7 +141,12 @@ function BidHNFT({ }: BidHNFTProps) {
 
             if (userInfo.avatar && userInfo.avatar.startsWith('ipfs://')) {
                 const hash = userInfo.avatar.substring(7);
-                setIconUrl(config.ipfs.endpoint + hash);
+                setIconUploadFiles([{
+                    uid: '-1',
+                    status: 'done',
+                    name: 'User Avatar',
+                    url: config.ipfs.endpoint + hash
+                }])
             }
         }
     }, [userInfo, wallet]);
@@ -126,15 +159,17 @@ function BidHNFT({ }: BidHNFTProps) {
 
     const handleUploadOnChange = (imageType: IMAGE_TYPE) => {
         return (info) => {
+            const { fileList } = info;
+
             if (info.file.status === 'done') {
                 const ipfsHash = info.file.response.Hash;
                 const imageUrl = config.ipfs.endpoint + ipfsHash;
-                imageType === IMAGE_TYPE.POSTER ? setPosterUrl(imageUrl) : setIconUrl(imageUrl);
-                return;
+                fileList[0].url = imageUrl;
             }
             if (info.file.status === 'error') {
                 message.error('Upload Image Error');
             }
+            imageType === IMAGE_TYPE.POSTER ? setPosterUploadFiles(fileList) : setIconUploadFiles(fileList);
         }
     }
 
@@ -181,10 +216,10 @@ function BidHNFT({ }: BidHNFTProps) {
     const handleSubmit = async () => {
         setBidInProgress(true);
         const adConfig = await generateAdConfig({
-            poster: posterUrl,
-            icon: iconUrl,
+            poster: getUrl(posterUploadFiles),
+            icon: getUrl(iconUploadFiles),
             content,
-            instructions,
+            instructions: instruction ? [instruction] : [],
             sponsorName,
             rewardRate,
             lifetime,
@@ -226,7 +261,7 @@ function BidHNFT({ }: BidHNFTProps) {
                             level={1}
                             className={style.sectionTitle}
                         >
-                            <Image
+                            <AntImage
                                 src='/images/icon/vip.svg'
                                 className={style.sectionIcon}
                                 preview={false}
@@ -245,20 +280,7 @@ function BidHNFT({ }: BidHNFTProps) {
                             <div className={style.formContainer}>
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title={'Sponsor Name'} required />
-                                    </div>
-                                    <div className={style.value}>
-                                        <Input
-                                            size='large'
-                                            value={sponsorName}
-                                            onChange={(e) => setSponsorName(e.target.value)}
-                                            placeholder='Advertisement Sponsor Name'
-                                        />
-                                    </div>
-                                </div>
-                                <div className={style.field}>
-                                    <div className={style.title}>
-                                        <FormFieldTitle title={'Content'} />
+                                        <FormFieldTitle title={'Content'} required />
                                     </div>
                                     <div className={style.value}>
                                         <Input
@@ -273,16 +295,17 @@ function BidHNFT({ }: BidHNFTProps) {
                                     <div className={style.title}>
                                         <FormFieldTitle title={'Ad Icon'} required />
                                     </div>
-                                    <div className={style.value}>
+                                    <div className={style.field}>
                                         <Upload
-                                            showUploadList={false}
+                                            multiple={false}
+                                            showUploadList={{ showPreviewIcon: false }}
+                                            fileList={iconUploadFiles}
                                             action={config.ipfs.upload}
+                                            listType="picture"
                                             onChange={handleUploadOnChange(IMAGE_TYPE.ICON)}
                                             beforeUpload={handleBeforeUpload(IMAGE_TYPE.ICON)}
                                         >
-                                            {iconUrl
-                                                ? <img src={iconUrl} style={{ width: '100%', maxWidth: '100px' }} />
-                                                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
+                                            {iconUploadFiles.length === 0 && <Button icon={<UploadOutlined />}>Click to Upload</Button>}
                                         </Upload>
                                     </div>
                                 </div>
@@ -292,41 +315,47 @@ function BidHNFT({ }: BidHNFTProps) {
                                     </div>
                                     <div className={style.value}>
                                         <Upload
-                                            showUploadList={false}
+                                            multiple={false}
+                                            showUploadList={{ showPreviewIcon: false }}
+                                            fileList={posterUploadFiles}
+                                            listType="picture"
                                             action={config.ipfs.upload}
                                             onChange={handleUploadOnChange(IMAGE_TYPE.POSTER)}
                                             beforeUpload={handleBeforeUpload(IMAGE_TYPE.POSTER)}
                                         >
-                                            {posterUrl
-                                                ? <img src={posterUrl} style={{ width: '100%', maxWidth: '400px' }} />
-                                                : <Button icon={<UploadOutlined />}>Click to Upload</Button>}
+                                            {posterUploadFiles.length === 0 && <Button icon={<UploadOutlined />}>Click to Upload</Button>}
                                         </Upload>
                                     </div>
                                 </div>
 
                                 <div className={style.field}>
                                     <div className={style.title}>
-                                        <FormFieldTitle title="instructions" required />
+                                        <FormFieldTitle title="instruction" required />
                                     </div>
-                                    <div className={style.value}>
-                                        <Button onClick={() => setCreateInstructionModal(true)}>Add New Instruction</Button>
-                                    </div>
+                                    {!instruction && <>
+                                        <div className={style.value}>
+                                            <Button onClick={() => setCreateInstructionModal(true)}>Add New Instruction</Button>
+                                        </div>
+                                    </>}
                                 </div>
-                                {instructions.length > 0 &&
+                                {instruction && <>
                                     <div className={style.field}>
-                                        {instructions.map((instruction, index) => <p key={index}>
-                                            <Tag closable onClose={(e) => {
-                                                e.preventDefault();
-                                                setInstructions(instructions.filter(ins => ins !== instruction))
+                                        <div className={style.instructionContainer}>
+                                            <div className={style.instruction} onClick={() => {
+                                                window.open(instruction.link);
                                             }}>
-                                                {instruction.text}
+                                                <span className={style.instructionText}>{instruction.text}</span>
                                                 {!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
                                                 {!!instruction.score && <ParamiScore score={instruction.score} />}
-                                                {!!instruction.link && <a href={instruction.link} target="_blank">(link)</a>}
-                                            </Tag>
-                                        </p>)}
+                                            </div>
+                                            <div className={style.removeInstruction} onClick={() => {
+                                                setInstruction(undefined);
+                                            }}>
+                                                <CloseOutlined />
+                                            </div>
+                                        </div>
                                     </div>
-                                }
+                                </>}
 
                                 <Collapse ghost>
                                     <Panel header="Advanced Settings" key="1">
@@ -392,6 +421,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                                     min={0}
                                                     onChange={(value) => setPayoutBase(value)}
                                                 />
+                                                {(!payoutBase || payoutBase < 1) && <FormErrorMsg msg={'Payout Base cannot be less than 1'} />}
                                             </div>
                                         </div>
                                         <div className={style.field}>
@@ -445,7 +475,7 @@ function BidHNFT({ }: BidHNFTProps) {
                             <BidSection asset={asset} onBid={(price) => {
                                 setPrice(price);
                                 handleSubmit();
-                            }}></BidSection>
+                            }} formValid={formValid}></BidSection>
                         </Card>
                     </Col>
                 </Row>
@@ -456,7 +486,7 @@ function BidHNFT({ }: BidHNFTProps) {
             <CreateUserInstruction
                 onCancel={() => setCreateInstructionModal(false)}
                 onCreateInstruction={newInstruction => {
-                    setInstructions([...instructions, newInstruction]);
+                    setInstruction(newInstruction);
                     setCreateInstructionModal(false);
                 }}
             ></CreateUserInstruction>
