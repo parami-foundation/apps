@@ -104,3 +104,18 @@ export async function QueryAssets(did: string, keyword?: string) {
         getResponse: true,
     })
 }
+
+export async function RateScore(adId: string, did: string, score: {tag: string; score: number}) {
+    return request(`${config.main.airdropServer}/advertisers/rates`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        data: {
+            ad: adId,
+            did,
+            scores: [score]
+        },
+        getResponse: true
+    });
+}

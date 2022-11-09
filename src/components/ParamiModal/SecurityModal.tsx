@@ -17,7 +17,8 @@ const SecurityModal: React.FC<{
   setPassphrase: React.Dispatch<React.SetStateAction<string>>;
   func?: any;
   changePassphrase?: boolean | false;
-}> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase }) => {
+  directSubmit?: boolean;
+}> = ({ visable, setVisable, passphrase, setPassphrase, func, changePassphrase, directSubmit = false }) => {
   const apiWs = useModel('apiWs');
   const { wallet } = useModel('currentUser');
   const { balance } = useModel('balance');
@@ -93,16 +94,22 @@ const SecurityModal: React.FC<{
   };
 
   useEffect(() => {
-    if (!!apiWs && !!wallet?.account && visable) {
+    if (!!apiWs && !!wallet?.account && visable && !directSubmit) {
       getGasfee();
     }
-  }, [apiWs, wallet?.account, visable]);
+  }, [apiWs, wallet?.account, visable, directSubmit]);
 
   useEffect(() => {
     if (!!wallet?.passphrase && visable && !changePassphrase) {
       setPassphrase(wallet?.passphrase);
     };
   }, [wallet?.passphrase, passphrase, visable, changePassphrase]);
+
+  useEffect(() => {
+    if (passphrase && visable && directSubmit) {
+      handleSubmit();
+    }
+  }, [passphrase, visable, directSubmit]);
 
   return (
     <Modal

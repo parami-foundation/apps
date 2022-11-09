@@ -8,6 +8,7 @@ import Record from './Record';
 import Tags from './Tags';
 import ExportMnemonicAlert from '@/components/ExportMnemonicAlert/ExportMnemonicAlert';
 import config from '@/config/config';
+import ExtensionDownload from './ExtensionDownload/ExtensionDownload';
 
 // Copied from the web-push documentation
 const urlBase64ToUint8Array = (base64String) => {
@@ -87,6 +88,7 @@ const Wallet: React.FC = () => {
           </Card>
         </div>
         <div className={style.right}>
+          <ExtensionDownload />
           <Tags />
           <Record />
         </div>

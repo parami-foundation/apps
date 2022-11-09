@@ -192,6 +192,14 @@ export default [
     exact: true,
     headerRender: false,
     footerRender: false,
+    component: './ClaimWithScore/ClaimWithScore',
+  },
+  {
+    path: '/adClaim/:adId/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
     component: './Claim/Claim',
   },
   {
