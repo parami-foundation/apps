@@ -1,6 +1,6 @@
 import { RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image, message, notification } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
@@ -10,10 +10,12 @@ import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity } from '@/services/parami/RPC';
 import SelectAsset from '@/components/SelectAsset/SelectAsset';
+import FormErrorMsg from '@/components/FormErrorMsg';
 
 const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setAddModal }) => {
+    const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const { balance: ad3Balance } = useModel('balance');
     const { getTokenList } = useModel('stake');
@@ -24,8 +26,23 @@ const Add: React.FC<{
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectModal, setSelectModal] = useState<boolean>(false);
     const [tokenAmount, setTokenAmount] = useState<any[]>([]);
+    const [stakingEnabled, setStakingEnabled] = useState<boolean>(false);
 
     const intl = useIntl();
+
+    const queryStakingEnabled = async (tokenId: string) => {
+        const swapMetaRes = await apiWs?.query.swap.metadata(tokenId);
+        if (!swapMetaRes?.isEmpty) {
+            const { enableStaking } = swapMetaRes?.toHuman() as { enableStaking: boolean };
+            setStakingEnabled(enableStaking);
+        }
+    }
+
+    useEffect(() => {
+        if (token.id && apiWs) {
+            queryStakingEnabled(token.id);
+        }
+    }, [token, apiWs]);
 
     const handleSubmit = async (preTx?: boolean, account?: string) => {
         if (!!wallet && !!wallet?.keystore) {
@@ -101,6 +118,9 @@ const Add: React.FC<{
                             />
                         </div>
                     </div>
+                    {(token.id && !stakingEnabled) && <>
+                        <FormErrorMsg msg={'This asset has not enabled staking yet'} />
+                    </>}
                 </div>
                 <div className={styles.field}>
                     <div
@@ -191,7 +211,7 @@ const Add: React.FC<{
                         disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) ||
                             FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) ||
                             tokenAmount.length === 0 ||
-                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > BigInt(token?.balance ?? '0'))}
+                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > BigInt(token?.balance ?? '0')) || !stakingEnabled}
                         onClick={() => {
                             setSubmitting(true);
                             setSecModal(true);

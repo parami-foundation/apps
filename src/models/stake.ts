@@ -24,8 +24,13 @@ export default () => {
                 if (!!LPInfo) {
                     LPInfo.tokenId = deleteComma(LPInfo.tokenId);
                     LPInfo['lpId'] = tokenId;
-                    const reward = await CalculateLPReward(tokenId);
+                    try {
+                        const reward = await CalculateLPReward(tokenId);
                     LPInfo['reward'] = reward;
+                    } catch (e) {
+                        console.log('Cal reward error', e);
+                    }
+                    
 
                     const did = await OwnerDidOfNft(LPInfo.tokenId);
                     if (!did) return;
