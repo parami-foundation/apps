@@ -8,8 +8,7 @@ import { notification } from 'antd';
 import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
 import { GetNFTMetaData } from '@/services/parami/NFT';
 import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
-import config from "@/config/config";
-import { GetAvatar } from "@/services/parami/HTTP";
+import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import Support from '../Supoort';
 import { parseUrlParams } from '@/utils/url.util';
 
@@ -48,19 +47,6 @@ const DAO: React.FC = () => {
             document.title = `DAO - ${asset?.name ?? hexToDid(nft?.owner)} - Para Metaverse Identity`;
         }
     }, [asset, nft]);
-
-    useEffect(() => {
-        if (user) {
-            if (user.avatar && user.avatar?.indexOf('ipfs://') > -1) {
-                const hash = user.avatar.substring(7);
-                GetAvatar(config.ipfs.endpoint + hash).then(({ response, data }) => {
-                    if (response?.status === 200) {
-                        setAvatar(window.URL.createObjectURL(data));
-                    }
-                })
-            }
-        }
-    }, [user]);
 
     useEffect(() => {
         const queryAssetInfo = async () => {
@@ -115,6 +101,16 @@ const DAO: React.FC = () => {
         setUser(userData);
     }
 
+    const queryTokenIcon =  async (nftId: string) => {
+        const { data: assetData } = await QueryAssetById(nftId);
+        if (assetData?.token) {
+            const { data, response } = await GetAvatar(assetData.token.icon) as any;
+            if (response?.status === 200) {
+                setAvatar(window.URL.createObjectURL(data));
+            }
+        }
+    }
+
     useEffect(() => {
         if (nft) {
             queryUser(nft.owner);
@@ -125,6 +121,7 @@ const DAO: React.FC = () => {
         if (apiWs && nftId) {
             try {
                 queryNftMetaData(nftId);
+                queryTokenIcon(nftId);
             } catch (e) {
                 errorHandler(e);
             }
