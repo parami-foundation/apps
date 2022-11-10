@@ -15,10 +15,11 @@ import SwapAsset from '@/components/SwapAsset/SwapAsset';
 
 export interface BidSectionProps {
     asset?: Asset;
+    formValid: boolean;
     onBid: (price: number) => void
 }
 
-function BidSection({ asset, onBid }: BidSectionProps) {
+function BidSection({ asset, onBid, formValid }: BidSectionProps) {
     const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const [currentPrice, setCurrentPrice] = useState<string>('');
@@ -133,7 +134,7 @@ function BidSection({ asset, onBid }: BidSectionProps) {
                     size='large'
                     shape='round'
                     type='primary'
-                    disabled={!!priceErrorMsg}
+                    disabled={!!priceErrorMsg || !formValid}
                     loading={false}
                     onClick={() => {
                         onBid(price!);

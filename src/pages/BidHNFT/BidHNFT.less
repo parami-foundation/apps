@@ -28,6 +28,45 @@
       width: 100%;
     }
   }
+
+  .instructionContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .instruction {
+    flex-grow: 1;
+    border-radius: 10px;
+    background: rgba(234, 234, 234, 0.5);
+    padding: 10px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(226, 226, 226, 0.5);
+    }
+
+    .instructionText {
+      text-align: left;
+      flex-grow: 1;
+    }
+  }
+
+  .removeInstruction {
+    cursor: pointer;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    :hover {
+      color: #ff5b00;
+    }
+  }
 }
 
 .headerContainer {
