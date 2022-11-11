@@ -10,7 +10,6 @@ import Token from '@/components/Token/Token';
 import { FloatStringToBigInt } from '@/utils/format';
 import { DrylyAddLiquidity } from '@/services/parami/RPC';
 import SelectAsset from '@/components/SelectAsset/SelectAsset';
-import FormErrorMsg from '@/components/FormErrorMsg';
 
 const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -118,8 +117,11 @@ const Add: React.FC<{
                             />
                         </div>
                     </div>
-                    {(token.id && !stakingEnabled) && <>
-                        <FormErrorMsg msg={'This asset has not enabled staking yet'} />
+
+                    {token.id && !stakingEnabled && <>
+                        <div className={styles.stakingInfo}>
+                            Staking is not enabled for this token. You could still add liquidity and start earning fees.
+                        </div>
                     </>}
                 </div>
                 <div className={styles.field}>
@@ -211,15 +213,13 @@ const Add: React.FC<{
                         disabled={FloatStringToBigInt(targetAd3Number, 18) <= BigInt(0) ||
                             FloatStringToBigInt(targetAd3Number, 18) > BigInt(ad3Balance?.free) ||
                             tokenAmount.length === 0 ||
-                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > BigInt(token?.balance ?? '0')) || !stakingEnabled}
+                            (tokenAmount.length > 0 && BigInt(tokenAmount[0]) > BigInt(token?.balance ?? '0'))}
                         onClick={() => {
                             setSubmitting(true);
                             setSecModal(true);
                         }}
                     >
-                        {intl.formatMessage({
-                            id: 'stake.add.title',
-                        })}
+                        {stakingEnabled ? 'Add Liquidity and Stake' : 'Add Liquidity'}
                     </Button>
                 </div>
             </div>

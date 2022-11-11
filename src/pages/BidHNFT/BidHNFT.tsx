@@ -84,8 +84,6 @@ function BidHNFT({ }: BidHNFTProps) {
         nftId: string;
     } = useParams();
 
-
-
     useEffect(() => {
         if (apiWs) {
             (async () => {

@@ -1,23 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '@/pages/wallet.less';
 import style from '../style.less';
-import { Button, Card, Image, Tooltip } from 'antd';
+import { Button, Card, Image, message, notification, Tooltip } from 'antd';
 import { DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import Rows from './Rows';
 import Token from '@/components/Token/Token';
 import { stringToBigInt } from '@/utils/common';
+import { useIntl, useModel } from 'umi';
+import { ClaimLPReward } from '@/services/parami/Swap';
+import SecurityModal from '@/components/ParamiModal/SecurityModal';
 const ICON_AD3 = '/images/logo-round-core.svg';
 
 const PairItem: React.FC<{
 	logo: string;
 	lp: any;
 }> = ({ logo, lp }) => {
+	const apiWs = useModel('apiWs');
+	const { getTokenList } = useModel('stake');
+	const { wallet } = useModel('currentUser');
 	const [Collapse, setCollapse] = useState<boolean>(false);
+	const [submitting, setSubmitting] = useState<boolean>(false);
+	const [passphrase, setPassphrase] = useState('');
+	const [secModal, setSecModal] = useState<boolean>(false);
+	const [stakingEnabled, setStakingEnabled] = useState<boolean>(false);
+
+	const intl = useIntl();
+
+	useEffect(() => {
+		if (lp && apiWs) {
+			(async () => {
+				const swapMetaRes = await apiWs?.query.swap.metadata(lp.id);
+				if (!swapMetaRes?.isEmpty) {
+					const { enableStaking } = swapMetaRes?.toHuman() as { enableStaking: boolean };
+					setStakingEnabled(enableStaking);
+				}
+			})()
+		}
+	}, [lp, apiWs])
 
 	let totalLiquidity: bigint = BigInt(0);
-	lp?.nfts.map((nft) => {
+	lp?.nfts.forEach((nft) => {
 		totalLiquidity = totalLiquidity + stringToBigInt(nft.amount);
 	});
+
+	const handleHarvestReward = async (preTx?: boolean, account?: string) => {
+		if (!!wallet && !!wallet?.keystore) {
+			setSubmitting(true);
+
+			try {
+				const info: any = await ClaimLPReward(lp.id, passphrase, wallet?.keystore, preTx, account);
+				setSubmitting(false);
+
+				if (preTx && account) {
+					return info
+				}
+				getTokenList();
+			} catch (e: any) {
+				message.error(e);
+			}
+		} else {
+			notification.error({
+				key: 'accessDenied',
+				message: intl.formatMessage({
+					id: 'error.accessDenied',
+				}),
+				duration: null,
+			})
+		}
+	};
 
 	return (
 		<>
@@ -66,6 +116,38 @@ const PairItem: React.FC<{
 								</div>
 							</div>
 						</div>
+
+						<div className={style.nftReward}>
+							<div className={style.nftItemBlock}>
+								<div className={style.title}>
+									{`Reward(${lp?.symbol ?? 'AD3'}) `}
+									{!stakingEnabled && <>
+										<Tooltip
+											title={'Staking reward is not enabled for this token. You could still earn fees by providing liquidity.'}
+										>
+											<InfoCircleOutlined className={style.tipButton} />
+										</Tooltip>
+									</>}
+								</div>
+								<div className={style.value}>
+									<Token value={lp?.reward} />
+								</div>
+							</div>
+							<Button
+								size='middle'
+								shape='round'
+								type='primary'
+								disabled={!lp?.reward}
+								onClick={() => {
+									setSubmitting(true);
+									setSecModal(true);
+								}}
+								loading={submitting}
+							>
+								Harvest
+							</Button>
+						</div>
+
 						<div className={style.expandButton}>
 							<Button
 								type="link"
@@ -88,6 +170,14 @@ const PairItem: React.FC<{
 					/>
 				</Card>
 			</div>
+
+			<SecurityModal
+				visable={secModal}
+				setVisable={setSecModal}
+				passphrase={passphrase}
+				setPassphrase={setPassphrase}
+				func={handleHarvestReward}
+			/>
 		</>
 	)
 }

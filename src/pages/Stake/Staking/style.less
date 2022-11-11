@@ -38,38 +38,38 @@
                 justify-content: flex-start;
                 align-items: center;
                 flex: 1;
-    
+
                 .tokenIcons {
                     display: flex;
                     flex-direction: row;
                     justify-content: center;
                     align-items: center;
                     flex: 1;
-        
+
                     :last-child {
                         margin-left: -5px;
                     }
-        
+
                     .icon {
                         width: 35px;
                         height: 35px;
                         border-radius: 100px;
                     }
                 }
-    
+
                 .tokenNameAndRate {
                     flex: 1;
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
                     justify-content: center;
-    
+
                     .tokenName {
                         font-size: 14px;
                         line-height: 17px;
                         font-weight: 900;
                     }
-                
+
                     .tokenRate {
                         margin-top: 6px;
                         outline: transparent solid 2px;
@@ -154,7 +154,7 @@
                 width: 100%;
                 padding-top: 10px;
                 padding-bottom: 10px;
-                
+
                 &:not(:last-child) {
                     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
                 }
@@ -163,29 +163,24 @@
                 .nftButtons {
                     display: flex;
                     flex-direction: row;
+                    justify-content: flex-end;
                     align-items: center;
-                    justify-content: space-between;
                     width: 100%;
-                }
-
-                .nftReward {
-                    flex: 2;
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: space-between;
-                    background-color: #EDF2F7;
-                    border-radius: 8px;
-                    padding: 10px 15px;
-                }
-
-                .stakeButton {
-                    flex: 1;
-                    margin-left: 15px;
                 }
             }
         }
     }
+}
+
+.nftReward {
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #EDF2F7;
+    border-radius: 8px;
+    padding: 10px 15px;
 }
 
 .tokenLiquidity,
@@ -262,14 +257,14 @@
         }
 
         .nftInfo,
-        .nftButtons{
+        .nftButtons {
             .nftItemBlock {
                 margin-bottom: 20px;
             }
 
             .nftReward {
                 margin-bottom: 20px;
-                
+
                 .nftItemBlock {
                     margin-bottom: unset;
                 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { Button, Typography, Image, Tooltip } from 'antd';
+import { Button, Typography, Image } from 'antd';
 import { useIntl } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
@@ -40,7 +40,6 @@ const Staking: React.FC = () => {
 							})}
 						</div>
 						<div className={style.addNewStake}>
-							<Tooltip title="Coming Soon">
 								<Button
 									block
 									type='primary'
@@ -53,8 +52,6 @@ const Staking: React.FC = () => {
 										id: 'stake.add',
 									})}
 								</Button>
-							</Tooltip>
-
 						</div>
 					</div>
 					<List />
