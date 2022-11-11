@@ -46,7 +46,6 @@ const Staking: React.FC = () => {
 									type='primary'
 									shape='round'
 									size='large'
-									disabled
 									className={style.stakeButton}
 									onClick={() => { setAddModal(true) }}
 								>

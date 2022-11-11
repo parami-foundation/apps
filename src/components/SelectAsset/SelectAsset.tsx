@@ -7,11 +7,13 @@ import Token from '@/components/Token/Token';
 import { QueryAssets } from '@/services/parami/HTTP';
 import { debounce } from 'lodash';
 import { SearchOutlined } from '@ant-design/icons';
+import { Asset } from '@/services/parami/typings';
 
 const SelectAsset: React.FC<{
-    onClose: () => void
-    onSelectAsset: (asset) => void
-}> = ({ onClose, onSelectAsset }) => {
+    onClose: () => void,
+    onSelectAsset: (asset) => void,
+    assetFilter?: (asset: Asset) => boolean
+}> = ({ onClose, onSelectAsset, assetFilter }) => {
     const { wallet } = useModel('currentUser');
     const [assets, setAssets] = useState<any[]>();
     const [keyword, setKeyword] = useState<string>();
@@ -19,7 +21,8 @@ const SelectAsset: React.FC<{
 
     const queryAssets = useCallback(debounce(async (keyword: string) => {
         const resp = await QueryAssets(wallet.account, keyword);
-        setAssets(resp.data.tokens ?? []);
+        const assets = resp.data.tokens ?? [];
+        setAssets(assetFilter ? assets.filter(assetFilter) : assets);
     }, 200), [wallet]);
 
     useEffect(() => {
