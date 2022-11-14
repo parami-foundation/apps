@@ -24,14 +24,16 @@ export default () => {
                 if (!!LPInfo) {
                     LPInfo.tokenId = deleteComma(LPInfo.tokenId);
                     LPInfo['lpId'] = tokenId;
-                    const reward = await CalculateLPReward(tokenId);
-                    LPInfo['reward'] = reward;
+                    try {
+                        const reward = await CalculateLPReward(tokenId);
+                        LPInfo['reward'] = reward;
+                    } catch (_e) {}
 
                     const did = await OwnerDidOfNft(LPInfo.tokenId);
                     if (!did) return;
 
                     let icon: string;
-                    const {data} = await QueryAssetById(LPInfo.tokenId);
+                    const { data } = await QueryAssetById(LPInfo.tokenId);
                     if (data?.token) {
                         icon = data.token.icon;
                     }
@@ -45,6 +47,7 @@ export default () => {
                                 symbol: tokenMeta.symbol,
                                 icon,
                                 nfts: [],
+                                reward: LPInfo.reward
                             });
                         }
                         allLPs.get(LPInfo.tokenId).nfts.push(LPInfo);

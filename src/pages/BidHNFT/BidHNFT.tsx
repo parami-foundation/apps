@@ -22,6 +22,8 @@ import BidSection from './components/BidSection/BidSection';
 import { Asset } from '@/services/parami/typings';
 import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 import type { UploadFile } from 'antd/es/upload/interface';
+import { formatBalance } from '@polkadot/util';
+import { deleteComma } from '@/utils/format';
 
 export interface BidHNFTProps { }
 
@@ -60,6 +62,7 @@ function BidHNFT({ }: BidHNFTProps) {
     const [rewardRate, setRewardRate] = useState<number>(10);
     const [lifetime, setLifetime] = useState<number>(1 * NUM_BLOCKS_PER_DAY);
     const [payoutBase, setPayoutBase] = useState<number>(3);
+    const [payoutBaseMin, setPayoutBaseMin] = useState<number>(1);
     const [payoutMin, setPayoutMin] = useState<number>(1);
     const [payoutMax, setPayoutMax] = useState<number>(10);
     const [payoutMinError, setPayoutMinError] = useState<string>('');
@@ -80,6 +83,22 @@ function BidHNFT({ }: BidHNFTProps) {
     const params: {
         nftId: string;
     } = useParams();
+
+    useEffect(() => {
+        if (apiWs) {
+            (async () => {
+                const res = await apiWs.consts.ad.minimumPayoutBase;
+                if (!res.isEmpty) {
+                    const minimumPayoutBase = res.toHuman() as string;
+                    const min = formatBalance(deleteComma(minimumPayoutBase), {
+                        withSi: false,
+                        withUnit: false
+                    });
+                    setPayoutBaseMin(parseFloat(min));
+                }
+            })();
+        }
+    }, [apiWs])
 
     useEffect(() => {
         const poster = getUrl(posterUploadFiles)
@@ -107,7 +126,7 @@ function BidHNFT({ }: BidHNFTProps) {
         assetName: asset?.name,
     }
 
-    const formValid = !!adPreviewData.poster && payoutBase >= 1;
+    const formValid = !!adPreviewData.poster && payoutBase >= payoutBaseMin;
 
     const queryAsset = async (assetId: string) => {
         const { data } = await QueryAssetById(assetId);
@@ -421,7 +440,7 @@ function BidHNFT({ }: BidHNFTProps) {
                                                     min={0}
                                                     onChange={(value) => setPayoutBase(value)}
                                                 />
-                                                {(!payoutBase || payoutBase < 1) && <FormErrorMsg msg={'Payout Base cannot be less than 1'} />}
+                                                {(!payoutBase || payoutBase < payoutBaseMin) && <FormErrorMsg msg={`Payout Base cannot be less than ${payoutBaseMin}`} />}
                                             </div>
                                         </div>
                                         <div className={style.field}>

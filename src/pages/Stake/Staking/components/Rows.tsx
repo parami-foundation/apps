@@ -114,45 +114,20 @@ const Rows: React.FC<{
 									</div>
 								</div>
 								<div className={style.nftButtons}>
-									<div className={style.nftReward}>
-										<div className={style.nftItemBlock}>
-											<div className={style.title}>
-												Reward({rewardTokenSymbol ?? 'AD3'})
-											</div>
-											<div className={style.value}>
-												<Token value={nft?.reward} />
-											</div>
-										</div>
-										<Button
-											size='middle'
-											shape='round'
-											type='primary'
-											onClick={() => {
-												setSubmitting(true);
-												setClaimSecModal(true);
-												setNFTItem(nft);
-											}}
-											loading={submitting}
-										>
-											Harvest
-										</Button>
-									</div>
-									<div className={style.nftItemBlock}>
-										<Button
-											danger
-											size='middle'
-											shape='round'
-											type='primary'
-											className={style.stakeButton}
-											loading={submitting}
-											onClick={() => {
-												setUnstakeSecModal(true);
-												setNFTItem(nft);
-											}}
-										>
-											Unstake
-										</Button>
-									</div>
+									<Button
+										danger
+										size='middle'
+										shape='round'
+										type='primary'
+										className={style.stakeButton}
+										loading={submitting}
+										onClick={() => {
+											setUnstakeSecModal(true);
+											setNFTItem(nft);
+										}}
+									>
+										Unstake
+									</Button>
 								</div>
 							</div>
 						))}

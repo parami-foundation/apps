@@ -1,7 +1,7 @@
 export default {
     'stake.title': 'Staking',
     'stake.subtitle': 'Stake your Parami tokens with AD3',
-    'stake.add': 'Stake My Tokens',
+    'stake.add': 'Add Liquidity and Stake',
     'stake.add.searchAsset': 'Search by asset name',
     'stake.add.name': 'Name',
     'stake.add.availableBalance': 'Available Balance',

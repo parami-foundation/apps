@@ -1,6 +1,6 @@
 import { RightOutlined } from '@ant-design/icons';
 import { Button, Input, Image, message, notification } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl, useModel } from 'umi';
 import styles from '../style.less';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
@@ -14,6 +14,7 @@ import SelectAsset from '@/components/SelectAsset/SelectAsset';
 const Add: React.FC<{
     setAddModal: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ setAddModal }) => {
+    const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const { balance: ad3Balance } = useModel('balance');
     const { getTokenList } = useModel('stake');
@@ -24,8 +25,23 @@ const Add: React.FC<{
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectModal, setSelectModal] = useState<boolean>(false);
     const [tokenAmount, setTokenAmount] = useState<any[]>([]);
+    const [stakingEnabled, setStakingEnabled] = useState<boolean>(false);
 
     const intl = useIntl();
+
+    const queryStakingEnabled = async (tokenId: string) => {
+        const swapMetaRes = await apiWs?.query.swap.metadata(tokenId);
+        if (!swapMetaRes?.isEmpty) {
+            const { enableStaking } = swapMetaRes?.toHuman() as { enableStaking: boolean };
+            setStakingEnabled(enableStaking);
+        }
+    }
+
+    useEffect(() => {
+        if (token.id && apiWs) {
+            queryStakingEnabled(token.id);
+        }
+    }, [token, apiWs]);
 
     const handleSubmit = async (preTx?: boolean, account?: string) => {
         if (!!wallet && !!wallet?.keystore) {
@@ -101,6 +117,12 @@ const Add: React.FC<{
                             />
                         </div>
                     </div>
+
+                    {token.id && !stakingEnabled && <>
+                        <div className={styles.stakingInfo}>
+                            Staking is not enabled for this token. You could still add liquidity and start earning fees.
+                        </div>
+                    </>}
                 </div>
                 <div className={styles.field}>
                     <div
@@ -197,9 +219,7 @@ const Add: React.FC<{
                             setSecModal(true);
                         }}
                     >
-                        {intl.formatMessage({
-                            id: 'stake.add.title',
-                        })}
+                        {stakingEnabled ? 'Add Liquidity and Stake' : 'Add Liquidity'}
                     </Button>
                 </div>
             </div>
