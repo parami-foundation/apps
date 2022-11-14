@@ -1,5 +1,5 @@
-import { Badge, Image } from 'antd';
-import React, { useEffect } from 'react';
+import { Badge, Button, Image } from 'antd';
+import React, { useEffect, useState } from 'react';
 import { useIntl, history, useModel } from 'umi';
 import style from './style.less';
 import AD3 from '@/components/Token/AD3';
@@ -10,6 +10,16 @@ const Assets: React.FC = () => {
   const { wallet } = useModel('currentUser');
   const { assetsArr, getAssets } = useModel('assets');
   const intl = useIntl();
+  const [assetListCount, setAssetListCount] = useState<number>(10);
+  const [assetList, setAssetList] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (assetsArr) {
+      if (assetListCount > assetList.length && assetList.length < assetsArr.length) {
+        setAssetList([...assetList, ...assetsArr.slice(assetList.length, assetListCount)])
+      }
+    }
+  }, [assetsArr, assetListCount, assetList])
 
   useEffect(() => {
     if (wallet) {
@@ -28,7 +38,7 @@ const Assets: React.FC = () => {
         height={70}
         children={
           <>
-            {!!assetsArr && assetsArr.map((item) => {
+            {assetList.length > 0 && assetList.map((item) => {
               return (
                 <Badge
                   count={item.isNftToken ? intl.formatMessage({
@@ -79,7 +89,18 @@ const Assets: React.FC = () => {
               );
             })
             }
-            {!!assetsArr && assetsArr.length === 0 && (
+            {
+              assetsArr && assetsArr.length > 0 && assetsArr.length > assetList.length && <>
+                <Button
+                  size='large'
+                  shape='round'
+                  type='primary'
+                  onClick={() => {
+                    setAssetListCount(assetListCount + 10);
+                  }}>Load more</Button>
+              </>
+            }
+            {!!assetsArr && assetList.length === 0 && (
               <div className={style.noAssets}>
                 <img
                   src={'/images/icon/query.svg'}
