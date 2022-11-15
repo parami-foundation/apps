@@ -8,11 +8,12 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { MintNFT } from '@/services/parami/NFT';
 import { useModel } from 'umi';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { parseAmount } from '@/utils/common';
 
-const MintNFTModal: React.FC<{
+const MintNFTForm: React.FC<{
 	item: any;
-	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ item, setMintModal }) => {
+	onMint: () => void;
+}> = ({ item, onMint }) => {
 	const { getNFTs } = useModel('nft');
 	const { wallet } = useModel('currentUser');
 	const [loading, setLoading] = useState<boolean>(false);
@@ -20,6 +21,9 @@ const MintNFTModal: React.FC<{
 	const [symbol, setSymbol] = useState<string>('');
 	const [secModal, setSecModal] = useState<boolean>(false);
 	const [passphrase, setPassphrase] = useState<string>('');
+	const [totalSupply, setTotalSupply] = useState<string>('10000000');
+	const [ad3Amount, setAd3Amount] = useState<string>('1000');
+	const [offeredAmount, setOfferedAmount] = useState<string>('1000000');
 
 	const intl = useIntl();
 
@@ -27,12 +31,12 @@ const MintNFTModal: React.FC<{
 		if (!!wallet && !!wallet.keystore) {
 			setLoading(true);
 			try {
-				const info: any = await MintNFT(item?.id, name, symbol, passphrase, wallet?.keystore, preTx, account);
-				setLoading(false);
-				setMintModal(false);
+				const info: any = await MintNFT(item?.id, name, symbol, parseAmount(totalSupply), parseAmount(ad3Amount), parseAmount(offeredAmount), passphrase, wallet?.keystore, preTx, account);
 				if (preTx && account) {
 					return info
 				}
+				setLoading(false);
+				onMint();
 				getNFTs && getNFTs();
 			} catch (e: any) {
 				notification.error({
@@ -65,7 +69,6 @@ const MintNFTModal: React.FC<{
 						autoFocus
 						className={style.input}
 						onChange={(a) => { setName(a.target.value) }}
-						disabled={loading}
 					/>
 				</div>
 			</div>
@@ -77,16 +80,40 @@ const MintNFTModal: React.FC<{
 				</div>
 				<div className={style.value}>
 					<Input
-						autoFocus
 						className={style.input}
 						onChange={(a) => { setSymbol(a.target.value) }}
-						disabled={loading}
-						prefix={'$'}
 						maxLength={4}
 					/>
 				</div>
 			</div>
 			<div className={style.field}>
+				<div className={style.title}>
+					Total Supply
+				</div>
+				<div className={style.value}>
+					{totalSupply}
+				</div>
+			</div>
+
+			<div className={style.field}>
+				<div className={style.title}>
+					AD3 Amount
+				</div>
+				<div className={style.value}>
+					{ad3Amount}
+				</div>
+			</div>
+
+			<div className={style.field}>
+				<div className={style.title}>
+					Offered Amount
+				</div>
+				<div className={style.value}>
+					{offeredAmount}
+				</div>
+			</div>
+			
+			{/* <div className={style.field}>
 				<div className={style.title}>
 					{intl.formatMessage({
 						id: 'creator.create.nftReserved',
@@ -158,7 +185,8 @@ const MintNFTModal: React.FC<{
 						id: 'creator.create.nft.total.unlock',
 					})}
 				</div>
-			</div>
+			</div> */}
+			
 			<div className={style.buttons}>
 				<Button
 					block
@@ -172,9 +200,7 @@ const MintNFTModal: React.FC<{
 						setSecModal(true);
 					}}
 				>
-					{intl.formatMessage({
-						id: 'common.continue',
-					})}
+					Mint
 				</Button>
 			</div>
 
@@ -189,29 +215,26 @@ const MintNFTModal: React.FC<{
 	)
 }
 
-const Mint: React.FC<{
-	mintModal: boolean
-	setMintModal: React.Dispatch<React.SetStateAction<boolean>>;
+const MintNFTModal: React.FC<{
 	item: any;
-}> = ({ mintModal, setMintModal, item }) => {
-	const intl = useIntl();
+	onClose: () => void;
+	onMint: () => void;
+}> = ({ item, onClose, onMint }) => {
 
 	return (
 		<BigModal
-			visable={mintModal}
-			title={intl.formatMessage({
-				id: 'wallet.nfts.mint',
-			})}
+			visable
+			title={'Mint'}
 			content={
-				<MintNFTModal
-					setMintModal={setMintModal}
+				<MintNFTForm
 					item={item}
+					onMint={onMint}
 				/>
 			}
 			footer={false}
-			close={() => { setMintModal(false) }}
+			close={() => { onClose() }}
 		/>
 	)
 };
 
-export default Mint;
+export default MintNFTModal;

@@ -2,6 +2,7 @@ import { useModel } from 'umi';
 import { useCallback, useState } from 'react';
 import { GetClaimInfo } from '@/services/parami/RPC';
 import { deleteComma } from '@/utils/format';
+import { NFTIdsOfOwnerDid } from '@/services/subquery/subquery';
 
 export interface NFTItem {
 	id: string;
@@ -30,22 +31,30 @@ export default () => {
 		await connect();
 
 		if (apiWs && retrieveAssets) {
-			const allEntries = await apiWs.query.nft.metadata.entries();
-			const tmpAssets = {};
-			for (let i = 0; i < allEntries.length; i++) {
-				const [key, value] = allEntries[i];
-				const shortKey = key.toHuman();
-				const meta: any = value.toHuman();
-				if (shortKey && meta?.owner === wallet?.did) {
-					tmpAssets[shortKey[0]] = value.toHuman();
-				}
-			}
 
-			Promise.all(Object.keys(tmpAssets).map(async key => {
-				const tempAsset = tmpAssets[key];
-				const nftId = deleteComma(tempAsset.classId);
-				const tokenAssetId = deleteComma(tempAsset.tokenAssetId);
-				const minted = tempAsset.minted;
+			const nftIds = await NFTIdsOfOwnerDid(wallet.did);
+			// const nftMetadatas = await Promise.all(nftIds.map(async nftId => {
+			// 	return await apiWs.query.nft.metadata(nftId);
+			// }))
+
+			// todo: query nft ids from graph ql
+			// const allEntries = await apiWs.query.nft.metadata.entries();
+			// const tmpAssets = {};
+			// for (let i = 0; i < allEntries.length; i++) {
+			// 	const [key, value] = allEntries[i];
+			// 	const shortKey = key.toHuman();
+			// 	const meta: any = value.toHuman();
+			// 	if (shortKey && meta?.owner === wallet?.did) {
+			// 		tmpAssets[shortKey[0]] = value.toHuman();
+			// 	}
+			// }
+
+			Promise.all(nftIds.map(async nftId => {
+				const nftMetadata = (await apiWs.query.nft.metadata(nftId)).toHuman() as any;
+				// const tempAsset = tmpAssets[key];
+				// const nftId = deleteComma(tempAsset.classId);
+				const tokenAssetId = deleteComma(nftMetadata.tokenAssetId);
+				const minted = nftMetadata.minted;
 
 				const externalData = await apiWs.query.nft.external(nftId);
 				const external: any = externalData.toJSON();

@@ -1,37 +1,38 @@
 import { NFTItem } from '@/models/nft';
 import { formatWithoutUint } from '@/utils/common';
 import React, { useState, useRef, useEffect } from 'react';
-import { history, useIntl } from 'umi';
+import { history } from 'umi';
 import style from './style.less';
 import { Button, Progress, Tooltip } from 'antd';
-import Mint from '../Mint';
-import { FloatStringToBigInt, BigIntToFloatString } from '@/utils/format';
+import { BigIntToFloatString } from '@/utils/format';
+import MintNFTModal from '../Mint';
+import IdoModal from '../IdoModal/IdoModal';
 
 const NFTCard: React.FC<{
     item: NFTItem;
 }> = ({ item }) => {
-    const intl = useIntl();
     const [mintModal, setMintModal] = useState<boolean>(false);
+    const [idoModal, setIdoModal] = useState<boolean>(false);
     const ref = useRef<HTMLDivElement>(null);
     const [coverHeight, setCoverHeight] = useState<number>();
 
-    const [totalAmount, totalUnlocked, currentlyCanClaim] = item.claimInfo ?? [];
-    const alreadyClaimed = (totalUnlocked && currentlyCanClaim) ? (BigInt(totalUnlocked) - BigInt(currentlyCanClaim)).toString() : '';
+    // const [totalAmount, totalUnlocked, currentlyCanClaim] = item.claimInfo ?? [];
+    // const alreadyClaimed = (totalUnlocked && currentlyCanClaim) ? (BigInt(totalUnlocked) - BigInt(currentlyCanClaim)).toString() : '';
 
     useEffect(() => {
         setCoverHeight(ref.current?.offsetWidth);
     }, [ref.current]);
 
-    const statusInfo = (label: string, value: string, color: string) => {
-        if (!value) {
-            return;
-        }
-        return (<div className={style.status}>
-            <div className={style.legend} style={{ background: `${color}` }}></div>
-            <div className={style.label}>{label}</div>
-            <div className={style.value}>{formatWithoutUint(value)}</div>
-        </div>);
-    }
+    // const statusInfo = (label: string, value: string, color: string) => {
+    //     if (!value) {
+    //         return;
+    //     }
+    //     return (<div className={style.status}>
+    //         <div className={style.legend} style={{ background: `${color}` }}></div>
+    //         <div className={style.label}>{label}</div>
+    //         <div className={style.value}>{formatWithoutUint(value)}</div>
+    //     </div>);
+    // }
 
     return (<>
         <div
@@ -63,7 +64,25 @@ const NFTCard: React.FC<{
                             <h3 className={style.text}>
                                 {item?.name}
                             </h3>
-                            <div className={style.status}>
+
+                            {!item.minted && <>
+                                <div className={style.action}>
+                                    <Button
+                                        block
+                                        type='primary'
+                                        shape='round'
+                                        size='middle'
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setMintModal(true);
+                                        }}
+                                    >
+                                        Mint
+                                    </Button>
+                                </div>
+                            </>}
+
+                            {/* <div className={style.status}>
                                 <div className={style.label}>
                                     {intl.formatMessage({
                                         id: 'wallet.nfts.status',
@@ -102,10 +121,18 @@ const NFTCard: React.FC<{
                                         />
                                     )}
                                 </div>
-                            </>}
+                            </>} */}
 
                             {item.minted && <>
-                                {item.claimInfo?.length > 0 && (<>
+                                <div className={style.status}>
+                                    <div className={style.label}>
+                                        Status
+                                    </div>
+                                    <div className={style.value}>
+                                        Fundraising
+                                    </div>
+                                </div>
+                                {/* {item.claimInfo?.length > 0 && (<>
                                     <div className={style.unlockProgress}>
                                         <Tooltip title="Tokens will be gradually unlocked over 6 months" color={'#ff5b00'}>
                                             <Progress
@@ -123,7 +150,7 @@ const NFTCard: React.FC<{
                                     {statusInfo('Total Value', totalAmount, '#fff')}
                                     {statusInfo('Total Claimed', alreadyClaimed, '#ff5b00')}
                                     {statusInfo('Ready for Claim', currentlyCanClaim, '#fc9860')}
-                                </>)}
+                                </>)} */}
 
                                 <div className={style.action}>
                                     <Button
@@ -133,10 +160,10 @@ const NFTCard: React.FC<{
                                         size='middle'
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            console.log('Claim Tokens');
+                                            setIdoModal(true);
                                         }}
                                     >
-                                        Claim Tokens
+                                        IDO
                                     </Button>
                                 </div>
                             </>}
@@ -146,11 +173,19 @@ const NFTCard: React.FC<{
             </div>
         </div>
 
-        <Mint
-            mintModal={mintModal}
-            setMintModal={setMintModal}
-            item={item}
-        />
+        {idoModal && <>
+            <IdoModal nftId={item.id} onClose={() => setIdoModal(false)} onIDO={() => {
+                setIdoModal(false);
+                // todo: refresh??
+            }}></IdoModal>
+        </>}
+
+        {mintModal && <>
+            <MintNFTModal item={item} onClose={() => setMintModal(false)} onMint={() => {
+                setMintModal(false);
+                // todo: jump to IPO page
+            }}></MintNFTModal>
+        </>}
     </>);
 };
 

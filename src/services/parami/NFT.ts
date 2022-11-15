@@ -128,8 +128,23 @@ export const SupportDAO = async (nftID: string, amount: string, password: string
   return await subCallback(ex, payUser);
 };
 
-export const MintNFT = async (nftID: string, name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.mint(nftID, name, symbol, "1000000000000000000000");
+export const IDO = async (nftId: string, tokenAmount: string, ad3Amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.ido(nftId, tokenAmount, ad3Amount);
+  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
+
+  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
+    throw new Error('Wrong password');
+  }
+
+  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
+
+  return await subCallback(ex, payUser);
+}
+
+
+export const MintNFT = async (nftId: string, name: string, symbol: string, totalSupply: string, ad3Amount: string, offeredAmount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  // const ex = window.apiWs.tx.nft.mint(nftID, name, symbol, "1000000000000000000000");
+  const ex = window.apiWs.tx.nft.mintAndIco(nftId, name, symbol, totalSupply, ad3Amount, offeredAmount);
 
   if (preTx && account) {
     const info = await ex.paymentInfo(account);

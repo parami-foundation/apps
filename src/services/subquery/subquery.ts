@@ -20,6 +20,15 @@ const formatTimestamp = (timestamp: number): string => {
   return date.toLocaleString();
 };
 
+const networkException = () => {
+  notification.error({
+    key: 'networkException',
+    message: 'Network exception',
+    description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
+    duration: null,
+  });
+}
+
 export const doGraghQuery = async (query: string) => {
   const obj: any = {};
   obj.operationName = null;
@@ -33,6 +42,34 @@ export const doGraghQuery = async (query: string) => {
     "method": "POST"
   });
 };
+
+export const NFTIdsOfOwnerDid = async (did: string) => {
+  try {
+    const query = `query {
+    nfts(
+      filter: { kolDid: { equalTo: "${did}" } }
+    ) {
+      nodes {
+        id
+      }
+    }
+  }`;
+    const res = await doGraghQuery(query);
+
+    // Network exception
+    if (!res) {
+      networkException();
+      return;
+    }
+
+    const data = await res.json();
+    return data.data.nfts.nodes.map(node => node.id)
+
+  } catch (e) {
+    console.error(e)
+    return;
+  }
+}
 
 export const OwnerDidOfNft = async (nftId: any) => {
   try {
@@ -49,12 +86,7 @@ export const OwnerDidOfNft = async (nftId: any) => {
 
     // Network exception
     if (!res) {
-      notification.error({
-        key: 'networkException',
-        message: 'Network exception',
-        description: 'An exception has occurred in your network. Cannot connect to the server. Please refresh and try again after changing the network environment.',
-        duration: null,
-      });
+      networkException();
       return;
     }
 
