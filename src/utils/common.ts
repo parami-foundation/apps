@@ -253,6 +253,10 @@ export const hexToDid = (hex: string | null) => {
   return `did:ad3:${address}`;
 };
 
+export const parseNumberToIntString = (number: string, deciamls: number) => {
+  return ((new BN(number)).div(BN_TEN.pow(new BN(deciamls)))).toString();
+}
+
 export const inputToBn = (input: string) => {
   const decimals = 18;
   const siPower = new BN(18);

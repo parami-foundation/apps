@@ -1,34 +1,72 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, Input, notification } from 'antd';
 import style from './IdoModal.less';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
-import { IDO } from '@/services/parami/NFT';
+import Token from '@/components/Token/Token';
+import AD3 from '@/components/Token/AD3';
+import { parseAmount } from '@/utils/common';
+import { AddLiquidity, CreateSwap } from '@/services/parami/Swap';
 
 export interface IdoModalProps {
     nftId: string;
     onClose: () => void;
     onIDO: () => void;
+    symbol: string;
+    swapMetadata?: any;
 }
 
-function IdoModal({ nftId, onClose, onIDO }: IdoModalProps) {
+function IdoModal({ nftId, onClose, onIDO, symbol, swapMetadata }: IdoModalProps) {
+    const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
+    const { balance } = useModel('balance');
     const [passphrase, setPassphrase] = useState<string>('');
-    const [secModal, setSecModal] = useState<boolean>(false);
+    const [createSwapSecModal, setCreateSwapSecModal] = useState<boolean>(false);
+    const [addLiquiditySecModal, setAddLiquiditySecModal] = useState<boolean>(false);
     const [tokenAmount, setTokenAmount] = useState<string>();
     const [ad3Amount, setAd3Amount] = useState<string>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [tokenBalance, setTokenBalance] = useState<string>('');
 
-    const handleIDO = async (preTx?: boolean, account?: string) => {
+    const queryTokenBalance = async (nftId: string, account: string) => {
+        const res = await apiWs?.query.assets.account(nftId, account) as any;
+        const { balance = '' } = res.toHuman() ?? {};
+        setTokenBalance(balance);
+    }
+
+    useEffect(() => {
+        if (nftId && wallet && apiWs) {
+            queryTokenBalance(nftId, wallet.account)
+        }
+    }, [nftId, wallet, apiWs])
+
+    const handleAddLiquidity = async (preTx?: boolean, account?: string) => {
         setLoading(true);
         try {
-            const info = await IDO(nftId, tokenAmount!, ad3Amount!,  passphrase, wallet?.keystore, preTx, account);
+            const info = await AddLiquidity(nftId, parseAmount(ad3Amount!), parseAmount(ad3Amount!), parseAmount(tokenAmount!), passphrase, wallet?.keystore, preTx, account)
             if (preTx && account) {
-                return info
+                return info;
             }
             setLoading(false);
             onIDO();
+        } catch (e: any) {
+            notification.error({
+                message: e.message,
+                duration: null,
+            });
+            setLoading(false);
+        }
+    }
+
+    const handleCreateSwap = async (preTx?: boolean, account?: string) => {
+        setLoading(true);
+        try {
+            const info = await CreateSwap(nftId, passphrase, wallet?.keystore, preTx, account);
+            if (preTx && account) {
+                return info;
+            }
+            setAddLiquiditySecModal(true)
         } catch (e: any) {
             notification.error({
                 message: e.message,
@@ -45,12 +83,14 @@ function IdoModal({ nftId, onClose, onIDO }: IdoModalProps) {
             content={<>
                 <div className={style.form}>
                     <div className={style.field}>
-                        <div className={style.title}>
-                            NFT Power Amount
+                        <div className={style.label}>
+                            <span>NFT Power Amount</span>
+                            <span>
+                                available: <Token value={tokenBalance} symbol={symbol}></Token>
+                            </span>
                         </div>
                         <div className={style.value}>
                             <Input
-                                autoFocus
                                 className={style.input}
                                 onChange={(a) => { setTokenAmount(a.target.value) }}
                             />
@@ -58,12 +98,14 @@ function IdoModal({ nftId, onClose, onIDO }: IdoModalProps) {
                     </div>
 
                     <div className={style.field}>
-                        <div className={style.title}>
-                            AD3 Amount
+                        <div className={style.label}>
+                            <span>AD3 Amount</span>
+                            <span>
+                                available: <AD3 value={balance?.free}></AD3>
+                            </span>
                         </div>
                         <div className={style.value}>
                             <Input
-                                autoFocus
                                 className={style.input}
                                 onChange={(a) => { setAd3Amount(a.target.value) }}
                             />
@@ -80,21 +122,29 @@ function IdoModal({ nftId, onClose, onIDO }: IdoModalProps) {
                     loading={loading}
                     disabled={!tokenAmount || !ad3Amount}
                     onClick={() => {
-                        setSecModal(true);
+                        swapMetadata ? setAddLiquiditySecModal(true) : setCreateSwapSecModal(true);
                     }}
                 >
-                    Mint
+                    Start IDO
                 </Button>
             </>}
             close={() => onClose()}
         ></BigModal>
 
         <SecurityModal
-            visable={secModal}
-            setVisable={setSecModal}
+            visable={addLiquiditySecModal}
+            setVisable={setAddLiquiditySecModal}
             passphrase={passphrase}
             setPassphrase={setPassphrase}
-            func={handleIDO}
+            func={handleAddLiquidity}
+        />
+
+        <SecurityModal
+            visable={createSwapSecModal}
+            setVisable={setCreateSwapSecModal}
+            passphrase={passphrase}
+            setPassphrase={setPassphrase}
+            func={handleCreateSwap}
         />
     </>;
 };

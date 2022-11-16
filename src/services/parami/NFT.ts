@@ -3,8 +3,7 @@ import { DecodeKeystoreWithPwd } from './Crypto';
 import { subCallback } from './Subscription';
 import { BigNumber } from "ethers";
 import { deleteComma } from '@/utils/format';
-
-const instanceKeyring = new Keyring({ type: 'sr25519' });
+import { checkFeeAndSubmitExtrinsic } from '@/utils/chain.util';
 
 export const GetPreferredNFT = async (did: string) => {
   const id = await window.apiWs.query.nft.preferred(did);
@@ -26,159 +25,39 @@ export const GetNFTMetaData = async (id: string) => {
   };
 };
 
-export const NftMint = async (name: string, symbol: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = await window.apiWs.tx.nft.mint(name, symbol, "1000000000000000000000");
-
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  let result = false;
-
-  await ex.signAndSend(payUser, ({ events = [], status }) => {
-    if (status.isInBlock || status.isFinalized) {
-      events
-        // find/filter for failed events
-        .filter(({ event }) =>
-          window.apiWs.events.system.ExtrinsicFailed.is(event)
-        )
-        // we know that data for system.ExtrinsicFailed is
-        // (DispatchError, DispatchInfo)
-        .forEach(({ event: { data: [error] } }: any) => {
-          if (error.isModule) {
-            // for module errors, we have the section indexed, lookup
-            const decoded = window.apiWs.registry.findMetaError(error.asModule);
-            const { docs, method, section } = decoded;
-
-            console.log(`${section}.${method}: ${docs.join(' ')}`);
-          } else {
-            // Other, CannotLookup, BadOrigin, no extra info
-            console.log(error.toString());
-          }
-        });
-    }
-    result = true;
-  });
-  return result;
-};
-
-export const KickNFT = async (password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.kick();
-
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
-};
-
 export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: BigNumber, ethAccount: string, signature: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.port(network, namespace, tokenID.toHexString(), ethAccount, signature);
-
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 };
 
 export const SupportDAO = async (nftID: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.nft.back(nftID, amount);
-
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 };
 
-export const IDO = async (nftId: string, tokenAmount: string, ad3Amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.ido(nftId, tokenAmount, ad3Amount);
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
+export const StartICO = async (nftId: string, ad3Amount: string, tokenAmount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.startIco(nftId, ad3Amount, tokenAmount);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
+export const EndICO = async (nftId: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.endIco(nftId);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
 
-export const MintNFT = async (nftId: string, name: string, symbol: string, totalSupply: string, ad3Amount: string, offeredAmount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  // const ex = window.apiWs.tx.nft.mint(nftID, name, symbol, "1000000000000000000000");
-  const ex = window.apiWs.tx.nft.mintAndIco(nftId, name, symbol, totalSupply, ad3Amount, offeredAmount);
+export const ParticipateIPO = async (nftId: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.participateIco(nftId, amount);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
 
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
+export const ClaimTokens = async (nftId: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.claim(nftId);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
 
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
-};
-
-export const ClaimNFT = async (nftID: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.claim(nftID);
-
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
+export const MintNFT = async (nftId: string, name: string, symbol: string, totalSupply: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.mintNftPower(nftId, name, symbol, totalSupply);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 };
 
 export const GetKolDeposit = async (did: string) => {
@@ -189,3 +68,21 @@ export const GetKolDeposit = async (did: string) => {
   const deposit = await window.apiWs.query.nft.deposit(id.toHuman());
   return deposit;
 };
+
+export const QueryIcoMetadata = async (nftId: string) => {
+  const icoMetaRes = await window.apiWs.query.nft.icoMetaOf(nftId);
+  if (icoMetaRes.isEmpty) {
+    return null;
+  }
+  const icoMeta = icoMetaRes.toHuman() as any;
+  return {
+    ...icoMeta,
+    expectedCurrency: deleteComma(icoMeta.expectedCurrency),
+    offeredTokens: deleteComma(icoMeta.offeredTokens)
+  } as {
+    done: boolean;
+    expectedCurrency: string;
+    offeredTokens: string;
+    pot: string;
+  }
+}

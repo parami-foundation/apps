@@ -1,3 +1,4 @@
+import { checkFeeAndSubmitExtrinsic } from '@/utils/chain.util';
 import { deleteComma } from '@/utils/format';
 import { Keyring } from '@polkadot/api';
 import { DecodeKeystoreWithPwd } from './Crypto';
@@ -155,3 +156,8 @@ export const ClaimLPReward = async (LPTokenId: string, password: string, keystor
 
 	return await subCallback(ex, payUser);
 };
+
+export const CreateSwap = async (tokenId: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ex = window.apiWs.tx.swap.create(tokenId);
+	return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}

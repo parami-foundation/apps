@@ -28,6 +28,7 @@ const PairItem: React.FC<{
 
 	useEffect(() => {
 		if (lp && apiWs) {
+			console.log(lp);
 			(async () => {
 				const swapMetaRes = await apiWs?.query.swap.metadata(lp.id);
 				if (!swapMetaRes?.isEmpty) {

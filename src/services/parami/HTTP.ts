@@ -119,3 +119,10 @@ export async function RateScore(adId: string, did: string, score: {tag: string; 
         getResponse: true
     });
 }
+
+export async function retrieveOpenseaAsset(address: string, tokenId: number) {
+    const options = { method: 'GET' };
+    return fetch(`https://ipfs.parami.io/api/os/asset/${address}/${tokenId}?chainId=1`, options)
+      .then(response => response.json())
+      .catch(err => console.error(err));
+}
