@@ -139,12 +139,11 @@ export const GetLPLiquidity = async (LPTokenId: string) => {
 	return LPInfo.toHuman();
 };
 
-export const ClaimLPReward = async (LPTokenIds: string[], password: string, keystore: string, preTx?: boolean, account?: string) => {
-	const exList = LPTokenIds.map(lpId => window.apiWs.tx.swap.acquireReward(lpId));
-	const batch = await window.apiWs.tx.utility.batch(exList);
+export const ClaimLPReward = async (LPTokenId: string[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ex = window.apiWs.tx.swap.acquireReward(LPTokenId);
 
 	if (preTx && account) {
-		const info = await batch.paymentInfo(account);
+		const info = await ex.paymentInfo(account);
 		return info;
 	}
 
@@ -154,5 +153,5 @@ export const ClaimLPReward = async (LPTokenIds: string[], password: string, keys
 	}
 	const payUser = instanceKeyring.createFromUri(decodedMnemonic);
 
-	return await subCallback(batch, payUser);
+	return await subCallback(ex, payUser);
 };

@@ -48,7 +48,7 @@ const PairItem: React.FC<{
 			setSubmitting(true);
 
 			try {
-				const info: any = await ClaimLPReward(lp.nfts.map(nft => nft.lpId), passphrase, wallet?.keystore, preTx, account);
+				const info: any = await ClaimLPReward(lp.nfts[0].lpId, passphrase, wallet?.keystore, preTx, account);
 				setSubmitting(false);
 
 				if (preTx && account) {
@@ -137,7 +137,7 @@ const PairItem: React.FC<{
 								size='middle'
 								shape='round'
 								type='primary'
-								disabled={!lp?.reward}
+								disabled={!lp?.reward || !lp?.nfts?.length}
 								onClick={() => {
 									setSubmitting(true);
 									setSecModal(true);
