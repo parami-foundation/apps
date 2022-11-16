@@ -139,7 +139,7 @@ export const GetLPLiquidity = async (LPTokenId: string) => {
 	return LPInfo.toHuman();
 };
 
-export const ClaimLPReward = async (LPTokenId: string[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+export const ClaimLPReward = async (LPTokenId: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
 	const ex = window.apiWs.tx.swap.acquireReward(LPTokenId);
 
 	if (preTx && account) {
