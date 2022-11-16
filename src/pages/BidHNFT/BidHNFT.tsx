@@ -131,9 +131,10 @@ function BidHNFT({ }: BidHNFTProps) {
     const queryAsset = async (assetId: string) => {
         const { data } = await QueryAssetById(assetId);
         if (!data?.token) {
+            console.log('Query asset by id error', assetId);
             notification.error({
-                message: 'Loading Asset Error',
-                description: `tokenAssetId: ${assetId}`
+                message: 'Network Error',
+                description: `Please retry later...`
             });
             return;
         }
