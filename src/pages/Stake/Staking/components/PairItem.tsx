@@ -48,7 +48,7 @@ const PairItem: React.FC<{
 			setSubmitting(true);
 
 			try {
-				const info: any = await ClaimLPReward(lp.id, passphrase, wallet?.keystore, preTx, account);
+				const info: any = await ClaimLPReward(lp.nfts.map(nft => nft.lpId), passphrase, wallet?.keystore, preTx, account);
 				setSubmitting(false);
 
 				if (preTx && account) {
