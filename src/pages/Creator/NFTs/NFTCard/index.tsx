@@ -63,7 +63,7 @@ const NFTCard: React.FC<{
                         <div
                             className={style.cover}
                             style={{
-                                backgroundImage: `url(${item?.imageUrl})`,
+                                backgroundImage: `url(${item?.imageUrl ?? '/images/logo-square-core.svg'})`,
                                 height: coverHeight,
                                 minHeight: '20vh',
                             }}
