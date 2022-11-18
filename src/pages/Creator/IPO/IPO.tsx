@@ -28,7 +28,7 @@ function IPO({ }: IPOProps) {
     const [depositeSecModal, setDepositeSecModal] = useState<boolean>(false);
     const [claimSecModal, setClaimSecModal] = useState<boolean>(false);
     const [ad3Amount, setAd3Amount] = useState<string>('');
-    const [ipo, setIPO] = useState<any>(); // todo: type this...
+    const [ipo, setIPO] = useState<any>();
     const [claimInfo, setClaimInfo] = useState<any>();
     const [purchaseAmount, setPurchaseAmount] = useState<string>('');
 
