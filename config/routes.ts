@@ -218,6 +218,12 @@ export default [
     component: './Creator/Explorer/DAO/DAO',
   },
   {
+    path: '/ipo',
+    hideInMenu: true,
+    exact: true,
+    component: './Creator/IPO/IPO'
+  },
+  {
     path: '/did:kol/:nftID',
     redirect: '/ad/?nftId=:nftID',
   },

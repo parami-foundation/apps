@@ -1,0 +1,112 @@
+.headerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .titleContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    .sectionTitle {
+      margin: 10px 0px;
+      display: flex;
+      align-items: center;
+      font-weight: 900;
+      color: rgb(36, 39, 42);
+      font-size: calc(22px + 8 * ((100vw - 300px) / 1300));
+      overflow-wrap: break-word;
+
+      .sectionIcon {
+        width: 30px;
+        height: 30px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .subtitle {
+    line-height: 150%;
+    margin: 25px 0px;
+    font-size: 16px;
+    color: rgb(114, 114, 122);
+    font-weight: 400;
+  }
+}
+
+.nftImage {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.ipoInfo {
+  padding-left: 30px;
+}
+
+.ipoDescription {
+
+  .ipoTitle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .ipoName {
+      font-size: 20px;
+    }
+
+    .ipoStatus {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 16px;
+      text-transform: uppercase;
+
+      &.active {
+        color: #008000;
+        background-color: rgb(222 255 236);
+      }
+
+      &.finished {
+        background-color: rgb(234, 236, 239);
+        color: rgb(112, 122, 138);
+      }
+    }
+  }
+}
+
+.ipoProgress {
+  .progressText {
+    font-size: 18px;
+    text-align: right;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 20px;
+
+  .label {
+    width: 100%;
+    color: rgb(36, 39, 42);
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .value {
+    width: 100%;
+  }
+}
+
+.buttons {
+  width: 100%;
+}

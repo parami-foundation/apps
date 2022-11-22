@@ -1,0 +1,40 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+    .label {
+      width: 100%;
+      color: rgb(36, 39, 42);
+      font-weight: 500;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .value {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      text-align: right;
+
+      :global(.ant-input) {
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        border-radius: 8px;
+      }
+    }
+  }
+}

@@ -3,26 +3,7 @@ import { web3FromSource } from "@polkadot/extension-dapp";
 import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
-import { SubmittableExtrinsic } from "@polkadot/api/types";
-
-const instanceKeyring = new Keyring({ type: 'sr25519' });
-
-const checkFeeAndSubmitExtrinsic = async (ex: SubmittableExtrinsic<"promise", any>, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  if (preTx && account) {
-    const info = await ex.paymentInfo(account);
-    return info;
-  }
-
-  const decodedMnemonic = DecodeKeystoreWithPwd(password, keystore);
-
-  if (decodedMnemonic === null || decodedMnemonic === undefined || !decodedMnemonic) {
-    throw new Error('Wrong password');
-  }
-
-  const payUser = instanceKeyring.createFromUri(decodedMnemonic);
-
-  return await subCallback(ex, payUser);
-}
+import { checkFeeAndSubmitExtrinsic } from "@/utils/chain.util";
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);

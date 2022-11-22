@@ -1,6 +1,6 @@
 import { QueryAssetById } from "@/services/parami/HTTP";
 import { OwnerDidOfNft } from "@/services/subquery/subquery";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useModel } from "umi";
 import { CalculateLPReward } from "@/services/parami/RPC";
 import { deleteComma } from "@/utils/format";
@@ -60,13 +60,6 @@ export default () => {
         setLPs(allLPs);
         setLPsArr([...allLPs?.values()]);
     }
-
-    useEffect(() => {
-        if (!!apiWs && !!wallet?.account) {
-            getTokenList();
-        }
-    }, [apiWs, wallet]);
-
 
     return {
         LPs,

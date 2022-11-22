@@ -98,7 +98,7 @@ const NFTs: React.FC = () => {
 									<div className={style.nftsList}>
 										{nftList.map(item => {
 											return <NFTCard
-												key={`${item.namespace}${item.id}`}
+												key={`${item.contractAddress}${item.tokenId}`}
 												item={item}
 											></NFTCard>
 										})}

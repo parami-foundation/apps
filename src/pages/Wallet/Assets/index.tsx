@@ -8,24 +8,15 @@ import Skeleton from '@/components/Skeleton';
 
 const Assets: React.FC = () => {
   const { wallet } = useModel('currentUser');
-  const { assetsArr, getAssets } = useModel('assets');
+  const { assetsArr, totalCount, loading, getAssets } = useModel('assetList');
   const intl = useIntl();
   const [assetListCount, setAssetListCount] = useState<number>(10);
-  const [assetList, setAssetList] = useState<any[]>([]);
 
   useEffect(() => {
-    if (assetsArr) {
-      if (assetListCount > assetList.length && assetList.length < assetsArr.length) {
-        setAssetList([...assetList, ...assetsArr.slice(assetList.length, assetListCount)])
-      }
+    if (wallet && getAssets) {
+      getAssets(wallet.account, assetListCount);
     }
-  }, [assetsArr, assetListCount, assetList])
-
-  useEffect(() => {
-    if (wallet) {
-      getAssets(wallet.account);
-    }
-  }, [getAssets, wallet]);
+  }, [wallet, assetListCount, getAssets]);
 
   const jumpKOLPage = async (assetID: string) => {
     history.push(`/ad/?nftId=${assetID}`);
@@ -38,7 +29,7 @@ const Assets: React.FC = () => {
         height={70}
         children={
           <>
-            {assetList.length > 0 && assetList.map((item) => {
+            {assetsArr && assetsArr.length > 0 && assetsArr.map((item) => {
               return (
                 <Badge
                   count={item.isNftToken ? intl.formatMessage({
@@ -90,17 +81,23 @@ const Assets: React.FC = () => {
             })
             }
             {
-              assetsArr && assetsArr.length > 0 && assetsArr.length > assetList.length && <>
-                <Button
-                  size='large'
-                  shape='round'
-                  type='primary'
-                  onClick={() => {
-                    setAssetListCount(assetListCount + 10);
-                  }}>Load more</Button>
+              assetsArr && assetsArr.length > 0 && totalCount && totalCount > assetsArr.length && <>
+                {!loading && <>
+                  <Button
+                    size='large'
+                    shape='round'
+                    type='primary'
+                    onClick={() => {
+                      setAssetListCount(assetListCount + 10);
+                    }}>Load more</Button>
+                </>}
+
+                {loading && <>
+                <Skeleton loading height={70} children={null}></Skeleton>
+                </>}
               </>
             }
-            {!!assetsArr && assetList.length === 0 && (
+            {!!assetsArr && assetsArr.length === 0 && (
               <div className={style.noAssets}>
                 <img
                   src={'/images/icon/query.svg'}
