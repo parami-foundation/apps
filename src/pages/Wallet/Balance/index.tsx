@@ -12,6 +12,7 @@ import styles from './style.less';
 import SmallModal from '@/components/ParamiModal/SmallModal';
 import AD3 from '@/components/Token/AD3';
 import Assets from '../Assets';
+import AdFeed from '../AdFeed/AdFeed';
 
 const Balance: React.FC = () => {
   const [tipModal, setTipModal] = useState<boolean>(false);
@@ -102,7 +103,7 @@ const Balance: React.FC = () => {
           </div>
         </div>
         <Divider />
-        <Assets />
+        <AdFeed />
       </div>
 
       <SmallModal

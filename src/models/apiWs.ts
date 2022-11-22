@@ -12,8 +12,9 @@ export default () => {
 		const api = await ApiPromise.create({
 			provider,
 			types: config.types,
-			rpc: config.rpc
-		});
+			rpc: config.rpc,
+			runtime: config.runtime
+		} as any);
 		window.apiWs = api;
 		setApiWs(api);
 	};
