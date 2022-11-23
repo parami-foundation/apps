@@ -347,3 +347,22 @@ export const getAssetsList = async (stashAccount: string) => {
   const data = await res.json();
   return data.data.members.nodes as any[];
 };
+
+export const getNumberOfHolders = async (assetId: string) => {
+  try {
+    const query = `
+        query {
+          members(filter: {assetId: {equalTo: "${assetId}"}}) {
+            totalCount
+          }
+        }
+      `;
+
+    const holderAccountsRes = await doGraghQuery(query);
+    const holderAccounts = (await holderAccountsRes.json());
+    return holderAccounts?.data?.members?.totalCount;
+  } catch (e) {
+    console.log('getNumberOfHolders error', e);
+    return;
+  }
+}
