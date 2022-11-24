@@ -3,7 +3,7 @@ import FormFieldTitle from '@/components/FormFieldTitle';
 import Token from '@/components/Token/Token';
 import { Asset } from '@/services/parami/typings';
 import { stringToBigInt } from '@/utils/common';
-import { Button, InputNumber, Modal } from 'antd';
+import { Button, InputNumber, Modal, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './BidSection.less';
 import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/format';
@@ -12,6 +12,8 @@ import { GetSlotOfNft } from '@/services/parami/Advertisement';
 import { GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { VoidFn } from '@polkadot/api/types';
 import SwapAsset from '@/components/SwapAsset/SwapAsset';
+import { getNumberOfHolders } from '@/services/subquery/subquery';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 export interface BidSectionProps {
     asset?: Asset;
@@ -53,7 +55,8 @@ function BidSection({ asset, onBid, formValid }: BidSectionProps) {
         const budgetBalance = await getCurrentBudgetBalance(asset!.id);
         setCurrentPrice(budgetBalance); // todo: refresh current price after bid
 
-        const minPrice = Math.ceil(Math.max(Number(BigIntToFloatString(deleteComma(budgetBalance), 18)) * 1.2, 1));
+        const numHolders = await getNumberOfHolders(asset!.id);
+        const minPrice = Math.ceil(Math.max(Number(BigIntToFloatString(deleteComma(budgetBalance), 18)) * 1.2, 1, numHolders));
         setMinPrice(minPrice);
         setPrice(minPrice);
 
@@ -98,7 +101,12 @@ function BidSection({ asset, onBid, formValid }: BidSectionProps) {
 
             <div className={style.priceField}>
                 <div className={style.priceFieldTitle}>
-                    Offer a price
+                    {`Offer a price `}
+                    <Tooltip
+                        title={'Bid requires a minimal price based on the current price and the number of DAO members'}
+                    >
+                        <ExclamationCircleOutlined />
+                    </Tooltip>
                 </div>
                 <small>
                     {`≥ ${minPrice}`}
