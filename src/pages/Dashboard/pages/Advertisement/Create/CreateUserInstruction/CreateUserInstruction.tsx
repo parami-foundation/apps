@@ -3,6 +3,7 @@ import { Input, Modal, Select } from 'antd';
 import React, { useState } from 'react';
 import styles from '@/pages/dashboard.less';
 import { useModel } from 'umi';
+import TwitterIntentModal from '@/pages/BidHNFT/components/TwitterIntentModal/TwitterIntentModal';
 
 const { Option } = Select;
 
@@ -23,6 +24,7 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
     const [tag, setTag] = useState<string>();
     const [score, setScore] = useState<number>();
     const [link, setLink] = useState<string>();
+    const [twitterIntentModal, setTwitterIntentModal] = useState<boolean>(false);
 
     const { tagOptions } = useModel('tagOptions');
 
@@ -103,12 +105,24 @@ function CreateUserInstruction({ onCreateInstruction, onCancel }: CreateUserInst
                 <div className={styles.value}>
                     <Input
                         size='large'
+                        value={link}
                         onChange={(e) => setLink(e.target.value)}
                         placeholder='link'
                     />
+                    <a onClick={() => setTwitterIntentModal(true)}>use twitter intent</a>
                 </div>
             </div>
         </Modal>
+
+        {twitterIntentModal && <>
+            <TwitterIntentModal
+                onCancel={() => setTwitterIntentModal(false)}
+                onCreateTwitterIntent={(url: string) => {
+                    setLink(url);
+                    setTwitterIntentModal(false)
+                }}
+            ></TwitterIntentModal>
+        </>}
     </>;
 };
 
