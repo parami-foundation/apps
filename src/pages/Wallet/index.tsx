@@ -5,10 +5,10 @@ import styles from '@/pages/wallet.less';
 import style from './style.less';
 import Balance from './Balance';
 import Record from './Record';
-import Tags from './Tags';
 import ExportMnemonicAlert from '@/components/ExportMnemonicAlert/ExportMnemonicAlert';
 import config from '@/config/config';
 import ExtensionDownload from './ExtensionDownload/ExtensionDownload';
+import TagList from './TagList/TagList';
 
 // Copied from the web-push documentation
 const urlBase64ToUint8Array = (base64String) => {
@@ -89,7 +89,7 @@ const Wallet: React.FC = () => {
         </div>
         <div className={style.right}>
           <ExtensionDownload />
-          <Tags />
+          <TagList />
           <Record />
         </div>
       </div>
