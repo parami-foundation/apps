@@ -124,4 +124,5 @@ export type Asset = {
   isFrozen: boolean;
 	icon: string;
 	id: string;
+	balance?: string;
 }

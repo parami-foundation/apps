@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { useModel, useParams } from 'umi';
-import { Button, Input, message, notification, Select, Tag, Upload, Typography, Image as AntImage, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
+import { useModel } from 'umi';
+import { Button, Input, message, notification, Select, Upload, Typography, Image as AntImage, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
 import FormFieldTitle from '@/components/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
 import { UploadOutlined, LoadingOutlined, CloseOutlined } from '@ant-design/icons';
-import { hexToDid, parseAmount } from '@/utils/common';
+import { hexToDid } from '@/utils/common';
 import FormErrorMsg from '@/components/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '../Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '../Creator/Explorer/components/ParamiScore/ParamiScore';
-import { UserBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
+import { UserBatchBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import { IMAGE_TYPE } from '@/constants/advertisement';
 import { compressImageFile, generateAdConfig } from '@/utils/advertisement.util';
-import { QueryAssetById } from '@/services/parami/HTTP';
 import BidSection from './components/BidSection/BidSection';
-import { Asset } from '@/services/parami/typings';
 import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 import type { UploadFile } from 'antd/es/upload/interface';
 import { formatBalance } from '@polkadot/util';
 import { deleteComma } from '@/utils/format';
+import { BatchBuyTokens } from '@/services/parami/Swap';
 
 export interface BidHNFTProps { }
 
@@ -67,22 +66,17 @@ function BidHNFT({ }: BidHNFTProps) {
     const [payoutMax, setPayoutMax] = useState<number>(10);
     const [payoutMinError, setPayoutMinError] = useState<string>('');
     const [payoutMaxError, setPayoutMaxError] = useState<string>('');
-
-    const [price, setPrice] = useState<number>();
-    const [asset, setAsset] = useState<Asset>();
     const [passphrase, setPassphrase] = useState<string>('');
     const [adConfig, setAdConfig] = useState<any>();
     const [bidInProgress, setBidInProgress] = useState<boolean>(false);
     const [step, setStep] = useState<number>(0);
 
     const [createAdSecModal, setCreateAdSecModal] = useState<boolean>(false);
+    const [swapSecModal, setSwapSecModal] = useState<boolean>(false);
     const [bidSecModal, setBidSecModal] = useState<boolean>(false);
 
     const [adId, setAdId] = useState<string>();
-
-    const params: {
-        nftId: string;
-    } = useParams();
+    const [bidTargets, setBidTargets] = useState<any[]>([]);
 
     useEffect(() => {
         if (apiWs) {
@@ -123,29 +117,10 @@ function BidHNFT({ }: BidHNFTProps) {
         sponsorName,
         poster: getUrl(posterUploadFiles),
         content,
-        assetName: asset?.name,
+        assetName: 'XXX',
     }
 
     const formValid = !!adPreviewData.poster && payoutBase >= payoutBaseMin;
-
-    const queryAsset = async (assetId: string) => {
-        const { data } = await QueryAssetById(assetId);
-        if (!data?.token) {
-            console.log('Query asset by id error', assetId);
-            notification.error({
-                message: 'Network Error',
-                description: `Please retry later...`
-            });
-            return;
-        }
-        setAsset(data.token);
-    }
-
-    useEffect(() => {
-        if (apiWs && params.nftId) {
-            queryAsset(params.nftId)
-        }
-    }, [apiWs, params]);
 
     useEffect(() => {
         if (apiWs && wallet.did) {
@@ -211,17 +186,15 @@ function BidHNFT({ }: BidHNFTProps) {
 
     const bidAd = async (preTx?: boolean, account?: string) => {
         try {
-            const info: any = await UserBidSlot(adId!, params.nftId, parseAmount((price as number).toString()), passphrase, wallet?.keystore, preTx, account);
+            const info: any = await UserBatchBidSlot(adId!, bidTargets.map(bid => ({ nftId: bid.id, amount: bid.price })), passphrase, wallet?.keystore, preTx, account);
+            
             if (preTx && account) {
                 return info;
             }
+            
             setBidInProgress(false);
             notification.success({
-                message: 'Bid Success',
-                duration: 0,
-                description: (<>
-                    <span>Your AD is active now. You could also share this <a href={`/ad/?nftId=${params.nftId}`} target='_blank'>ad link</a> to others.</span>
-                </>)
+                message: 'Bid Success'
             });
         } catch (e: any) {
             notification.error({
@@ -260,7 +233,44 @@ function BidHNFT({ }: BidHNFTProps) {
 
             const adId = info.ad.Created[0][0];
             setAdId(adId);
-            setStep(1);
+
+            if (bidTargets?.some(target => target.buyTokenAmount)) {
+                setStep(1);
+                setSwapSecModal(true);
+                return;
+            }
+
+            setStep(2);
+            setBidSecModal(true);
+        } catch (e: any) {
+            notification.error({
+                message: e.message || e,
+                duration: null,
+            });
+            setBidInProgress(false);
+            return;
+        }
+    }
+
+    const batchSwap = async (preTx?: boolean, account?: string) => {
+        try {
+            const info: any = await BatchBuyTokens(bidTargets.map(bid => {
+                return {
+                    tokenId: bid.id,
+                    tokenAmount: bid.buyTokenAmount,
+                    ad3Amount: bid.ad3Amount
+                }
+            }), passphrase, wallet?.keystore, preTx, account);
+
+            if (preTx && account) {
+                return info;
+            }
+
+            notification.success({
+                message: 'Swap HNFT Powers Success'
+            });
+
+            setStep(2);
             setBidSecModal(true);
         } catch (e: any) {
             notification.error({
@@ -290,7 +300,7 @@ function BidHNFT({ }: BidHNFTProps) {
                         </Title>
                     </div>
                     <div className={style.subtitle}>
-                        Place your advertisement on {asset?.name}
+                        Place your advertisement on HNFTs
                     </div>
                 </div>
 
@@ -487,13 +497,17 @@ function BidHNFT({ }: BidHNFTProps) {
                     <Col span={12}>
                         <Card title="Ad Preview" className={styles.card}>
                             <div className={style.previewContainer}>
-                                <AdvertisementPreview ad={adPreviewData} kolIcon={asset?.icon}></AdvertisementPreview>
+                                <AdvertisementPreview ad={adPreviewData} kolIcon={'/images/logo-round-core.svg'}></AdvertisementPreview>
                             </div>
                         </Card>
-
-                        <Card title="Bid your price" className={styles.card} style={{ marginTop: '20px' }}>
-                            <BidSection asset={asset} onBid={(price) => {
-                                setPrice(price);
+                    </Col>
+                </Row>
+                <Row style={{ width: '100%', marginTop: '20px' }} gutter={20}>
+                    <Col span={24}>
+                        <Card title="Bid your price" className={styles.card} >
+                            <BidSection onBid={(bidTargets) => {
+                                setStep(0);
+                                setBidTargets(bidTargets);
                                 handleSubmit();
                             }} formValid={formValid}></BidSection>
                         </Card>
@@ -512,21 +526,29 @@ function BidHNFT({ }: BidHNFTProps) {
             ></CreateUserInstruction>
         </>}
 
-        <SecurityModal
+        {createAdSecModal && <SecurityModal
             visable={createAdSecModal}
             setVisable={setCreateAdSecModal}
             passphrase={passphrase}
             setPassphrase={setPassphrase}
             func={createAd}
-        />
+        />}
 
-        <SecurityModal
+        {swapSecModal && <SecurityModal
+            visable={swapSecModal}
+            setVisable={setSwapSecModal}
+            passphrase={passphrase}
+            setPassphrase={setPassphrase}
+            func={batchSwap}
+        />}
+
+        {bidSecModal && <SecurityModal
             visable={bidSecModal}
             setVisable={setBidSecModal}
             passphrase={passphrase}
             setPassphrase={setPassphrase}
             func={bidAd}
-        />
+        />}
 
         {bidInProgress && <>
             <Modal
@@ -537,8 +559,9 @@ function BidHNFT({ }: BidHNFTProps) {
             >
                 <Steps direction="vertical" size="default" current={step} className={style.stepContainer}>
                     <Step title="Generate Advertisement" icon={step === 0 ? <LoadingOutlined /> : false} />
-                    <Step title="Bid Advertisement on HNFT" icon={step === 1 ? <LoadingOutlined /> : false} />
-                    <Step title="Completing" icon={step === 2 ? <LoadingOutlined /> : false} />
+                    <Step title="Prepare HNFT Powers" icon={step === 1 ? <LoadingOutlined /> : false} />
+                    <Step title="Bid Advertisement on HNFT" icon={step === 2 ? <LoadingOutlined /> : false} />
+                    <Step title="Completing" icon={step === 3 ? <LoadingOutlined /> : false} />
                 </Steps>
             </Modal>
         </>}
