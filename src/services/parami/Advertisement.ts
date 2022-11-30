@@ -116,6 +116,14 @@ export const UserBidSlot = async (adId: string, nftId: string, amount: string, p
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
+export const UserBatchBidSlot = async (adId: string, bids: {nftId: string, amount: string}[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const exList = bids.map(bid => {
+    return window.apiWs.tx.ad.bidWithFraction(adId, bid.nftId, bid.amount, null, null);
+  })
+  const ex = await window.apiWs.tx.utility.batch(exList);
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
+
 export const BidSlot = async (adId: string, nftID: string, amount: string, tokenAssetId: number | undefined, tokenAmount, account: any) => {
   const injector = await web3FromSource(account.meta.source);
   const tx = window.apiWs.tx.ad.bidWithFraction(adId, nftID, amount, tokenAssetId, tokenAmount);

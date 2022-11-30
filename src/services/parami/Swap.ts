@@ -27,6 +27,16 @@ export const BuyToken = async (tokenId: string, tokens: string, maxCurrency: str
 	return await subCallback(ex, payUser);
 };
 
+export const BatchBuyTokens = async (tokens: {tokenId: string, tokenAmount: string, ad3Amount: string}[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+	const ddl = await window.apiWs.query.system.number();
+	const exList = tokens.map(buyToken => {
+		return window.apiWs.tx.swap.buyTokens(buyToken.tokenId, buyToken.tokenAmount, buyToken.ad3Amount, ddl.toNumber() + 5);
+	})
+
+	const ex = await window.apiWs.tx.utility.batch(exList);
+	return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
+
 // Token to AD3(Token)
 export const SellToken = async (tokenId: string, tokens: string, minCurrency: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
 	const ddl = await window.apiWs.query.system.number();
