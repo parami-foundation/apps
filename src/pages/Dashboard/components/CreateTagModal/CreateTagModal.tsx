@@ -1,4 +1,4 @@
-import FormFieldTitle from '@/components/FormFieldTitle';
+import FormFieldTitle from '@/components/Form/FormFieldTitle';
 import { Input, Modal } from 'antd';
 import styles from '@/pages/dashboard.less';
 import React, { useEffect, useState } from 'react';

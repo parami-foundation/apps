@@ -11,8 +11,8 @@ import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/f
 import { BidSlot, GetSlotOfNft } from '@/services/parami/Advertisement';
 import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import { DownOutlined } from '@ant-design/icons';
-import FormErrorMsg from '@/components/FormErrorMsg';
-import FormFieldTitle from '@/components/FormFieldTitle';
+import FormErrorMsg from '@/components/Form/FormErrorMsg';
+import FormFieldTitle from '@/components/Form/FormFieldTitle';
 import { ChainBridgeToken } from '@/models/chainbridge';
 import SelectToken from '../../Bridge/SelectToken';
 

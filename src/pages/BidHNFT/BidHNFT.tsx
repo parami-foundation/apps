@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import { Button, Input, message, notification, Select, Upload, Typography, Image as AntImage, Collapse, Card, Modal, Steps, Col, Row, InputNumber } from 'antd';
-import FormFieldTitle from '@/components/FormFieldTitle';
+import FormFieldTitle from '@/components/Form/FormFieldTitle';
 import style from './BidHNFT.less';
 import styles from '@/pages/wallet.less';
 import { GetSimpleUserInfo } from '@/services/parami/RPC';
 import config from '@/config/config';
 import { UploadOutlined, LoadingOutlined, CloseOutlined } from '@ant-design/icons';
 import { hexToDid } from '@/utils/common';
-import FormErrorMsg from '@/components/FormErrorMsg';
+import FormErrorMsg from '@/components/Form/FormErrorMsg';
 import CreateUserInstruction, { UserInstruction } from '../Dashboard/pages/Advertisement/Create/CreateUserInstruction/CreateUserInstruction';
 import ParamiScoreTag from '../Creator/Explorer/components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from '../Creator/Explorer/components/ParamiScore/ParamiScore';
-import { UserBatchBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
+import { getMinPayoutBase, UserBatchBidSlot, UserCreateAds } from '@/services/parami/Advertisement';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import { IMAGE_TYPE } from '@/constants/advertisement';
@@ -80,17 +80,7 @@ function BidHNFT({ }: BidHNFTProps) {
 
     useEffect(() => {
         if (apiWs) {
-            (async () => {
-                const res = await apiWs.consts.ad.minimumPayoutBase;
-                if (!res.isEmpty) {
-                    const minimumPayoutBase = res.toHuman() as string;
-                    const min = formatBalance(deleteComma(minimumPayoutBase), {
-                        withSi: false,
-                        withUnit: false
-                    });
-                    setPayoutBaseMin(parseFloat(min));
-                }
-            })();
+            getMinPayoutBase().then(min => setPayoutBaseMin(min));
         }
     }, [apiWs])
 

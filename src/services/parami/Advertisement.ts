@@ -4,6 +4,7 @@ import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
 import { checkFeeAndSubmitExtrinsic } from "@/utils/chain.util";
+import { formatBalance } from '@polkadot/util';
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -88,7 +89,7 @@ export const UserBatchCreateAds = async (
   });
 
   const batch = await window.apiWs.tx.utility.batch(exList);
-  
+
   if (preTx && account) {
     return await checkFeeAndSubmitExtrinsic(batch, password, keystore, preTx, account);
   }
@@ -116,7 +117,7 @@ export const UserBidSlot = async (adId: string, nftId: string, amount: string, p
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
-export const UserBatchBidSlot = async (adId: string, bids: {nftId: string, amount: string}[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+export const UserBatchBidSlot = async (adId: string, bids: { nftId: string, amount: string }[], password: string, keystore: string, preTx?: boolean, account?: string) => {
   const exList = bids.map(bid => {
     return window.apiWs.tx.ad.bidWithFraction(adId, bid.nftId, bid.amount, null, null);
   })
@@ -154,6 +155,19 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
   }
   return false;
 };
+
+export const getMinPayoutBase = async () => {
+  const res = await window.apiWs.consts.ad.minimumPayoutBase;
+  if (!res.isEmpty) {
+    const minimumPayoutBase = res.toHuman() as string;
+    const min = formatBalance(deleteComma(minimumPayoutBase), {
+      withSi: false,
+      withUnit: false
+    });
+    return parseFloat(min);
+  }
+  return 0;
+}
 
 export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string | null, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, referrer, { Sr25519: signature.trim() }, signer.trim());
