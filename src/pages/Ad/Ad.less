@@ -13,6 +13,44 @@
   }
 }
 
+.daoInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+
+  .kolIcon {
+    width: 40px;
+    height: 40px;
+    visibility: hidden;
+    margin-right: 10px;
+  }
+
+  .daoInfoText {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-items: center;
+
+    .daoToken {
+      width: 100%;
+      font-size: 14px;
+      font-weight: 700;
+
+      &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    .daoTokenSubtitle {
+      width: 100%;
+      color: #929292;
+    }
+  }
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;

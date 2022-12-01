@@ -5,6 +5,68 @@ import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
 import { checkFeeAndSubmitExtrinsic } from "@/utils/chain.util";
 import { formatBalance } from '@polkadot/util';
+import config from "@/config/config";
+import { getNumberOfHolders } from "../subquery/subquery";
+import { QueryAssetById } from "./HTTP";
+
+export const QueryAdData = async (nftId: string, did?: string) => {
+  const ad = { nftId } as any;
+
+  const { data } = await QueryAssetById(nftId);
+  ad.kolIcon = data?.token?.icon ?? '/images/logo-square-core.svg';
+
+  ad.assetName = data?.token?.name;
+  ad.numHolders = await getNumberOfHolders(nftId);
+
+  const slotResp = await window.apiWs.query.ad.slotOf(nftId);
+
+  if (slotResp.isEmpty) {
+    return ad;
+  }
+
+  const { adId } = slotResp.toHuman() as { adId: string };
+  const adResp = await window.apiWs.query.ad.metadata(adId);
+
+  if (adResp.isEmpty) {
+    return ad;
+  };
+
+  const adMetadata = adResp.toHuman() as { metadata: string };
+
+  let adJson = {} as any;
+  if (adMetadata?.metadata?.startsWith('ipfs://')) {
+    const hash = adMetadata?.metadata?.substring(7);
+    const adJsonResp = await fetch(config.ipfs.endpoint + hash);
+    adJson = await adJsonResp.json();
+  }
+
+  const adClaimed = did && !(await window.apiWs.query.ad.payout(adId, did)).isEmpty;
+
+  let rewardAmount;
+  if (did) {
+    // FIX IT: The result of runtime api calReward is somehow 256 times of the correct value
+    let res = await window.apiWs.call.adRuntimeApi.calReward(adId, nftId, did, null) as any;
+    rewardAmount = BigIntToFloatString(BigInt(deleteComma(res.toHuman())) / BigInt(256), 18);
+  }
+
+  // todo: fail safe
+  const instruction = adJson.instructions && adJson.instructions[0];
+  const adData = {
+    ...ad,
+    nftId,
+    adId,
+    content: adJson.content,
+    sponsorName: adJson.sponsorName,
+    poster: adJson.media,
+    tag: instruction?.tag,
+    link: instruction?.link,
+    score: instruction?.score,
+    claimed: adClaimed,
+    rewardAmount: rewardAmount,
+  }
+
+  return adData;
+}
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);

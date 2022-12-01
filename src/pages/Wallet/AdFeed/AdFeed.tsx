@@ -1,13 +1,11 @@
-import config from '@/config/config';
-import { getAssetsList, getNumberOfHolders, OwnerDidOfNft } from '@/services/subquery/subquery';
-import { parseAmount } from '@/utils/common';
+import { getAssetsList, OwnerDidOfNft } from '@/services/subquery/subquery';
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import style from './AdFeed.less';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { List, Spin } from 'antd';
-import { QueryAssetById } from '@/services/parami/HTTP';
 import Advertisement from '../Advertisement/Advertisement';
+import { QueryAdData } from '@/services/parami/Advertisement';
 
 export interface AdFeedProps { }
 
@@ -24,63 +22,8 @@ function AdFeed({ }: AdFeedProps) {
         if (!did) {
             return null;
         }
-
-        const ad = { nftId: assetId } as any;
-
-        const assetInfo = await apiWs!.query.assets.metadata(assetId);
-        const asset = assetInfo.isEmpty ? {} : assetInfo.toHuman();
-
-        const { data } = await QueryAssetById(assetId);
-        ad.kolIcon = data?.token?.icon ?? '/images/logo-square-core.svg';
-
-        ad.assetName = asset.name;
-        ad.numHolders = await getNumberOfHolders(assetId);
-
-        const header = await apiWs!.rpc.chain.getHeader() as any;
-        const blockHash = await apiWs!.rpc.chain.getBlockHash(header.number - (24 * 60 * 60) / 12);
-
-        const value = await (apiWs!.rpc as any).swap.drylySellTokens(assetId, parseAmount('1'));
-        const tokenPrice = value.toHuman();
-
-        let preTokenPrice;
-        try {
-            const preValue = await (apiWs!.rpc as any).swap.drylySellTokens(assetId, parseAmount('1'), blockHash);
-            preTokenPrice = preValue.toHuman();
-        } catch (_) { }
-
-        ad.tokenPrice = tokenPrice;
-        ad.preTokenPrice = preTokenPrice;
-
-        const slotResp = await apiWs!.query.ad.slotOf(assetId);
-
-        if (slotResp.isEmpty) {
-            return ad;
-        }
-
-        const { adId } = slotResp.toHuman() as { adId: string };
-        const adResp = await apiWs!.query.ad.metadata(adId);
-
-        if (adResp.isEmpty) {
-            return ad;
-        };
-
-        const adMetadata = adResp.toHuman() as { metadata: string };
-
-        let adJson = {};
-        if (adMetadata?.metadata?.startsWith('ipfs://')) {
-            const hash = adMetadata?.metadata?.substring(7);
-            const adJsonResp = await fetch(config.ipfs.endpoint + hash);
-            adJson = await adJsonResp.json();
-        }
-
-        const adClaimed = !(await apiWs!.query.ad.payout(adId, wallet.did)).isEmpty;
-
-        return {
-            ...ad,
-            ...adJson,
-            adId,
-            adClaimed
-        }
+        
+        return await QueryAdData(assetId, wallet.did);
     }
 
     const loadAds = async (assetIds: string[]) => {
@@ -123,7 +66,7 @@ function AdFeed({ }: AdFeedProps) {
                         dataSource={(adList ?? []).filter(Boolean)}
                         renderItem={(item) => {
                             return <List.Item key={item.nftId}>
-                                <Advertisement ad={item} userDid={wallet.did} claimed={item.adClaimed}></Advertisement>
+                                <Advertisement ad={item} userDid={wallet.did}></Advertisement>
                             </List.Item>
                         }}
                     ></List>

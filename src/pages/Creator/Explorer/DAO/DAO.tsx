@@ -5,13 +5,14 @@ import { hexToDid, parseAmount } from '@/utils/common';
 import User from '../User';
 import Stat from '../Stat';
 import { notification } from 'antd';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
+import { GetAssetDetail, GetAssetInfo } from '@/services/parami/Assets';
 import { GetNFTMetaData } from '@/services/parami/NFT';
 import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
 import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import Support from '../Supoort';
 import { parseUrlParams } from '@/utils/url.util';
 import ClockIn from '../components/ClockIn/ClockIn';
+import { getNumberOfHolders } from '@/services/subquery/subquery';
 
 const DAO: React.FC = () => {
     const apiWs = useModel('apiWs');
@@ -141,7 +142,7 @@ const DAO: React.FC = () => {
     }
 
     const queryMember = async () => {
-        const members = await GetAssetsHolders(nft?.tokenAssetId);
+        const members = await getNumberOfHolders(nft?.tokenAssetId);
         setMember(members);
     }
 
