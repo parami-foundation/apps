@@ -32,7 +32,7 @@ const Advertisement: React.FC<{
 					</div>
 				</div>
 
-				{!!ad?.adId && <>
+				{!!ad.type && <>
 					<AdBubble ad={ad} userDid={userDid}></AdBubble>
 				</>}
 			</div>

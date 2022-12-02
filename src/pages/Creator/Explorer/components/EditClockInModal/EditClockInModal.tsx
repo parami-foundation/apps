@@ -16,23 +16,23 @@ const { Option } = Select;
 
 export interface EditClockInModalProps {
     clockIn: any,
+    enableClockIn: boolean,
     onSubmit: (clockIn) => void,
     onCancel: () => void
 }
 
-function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps) {
+function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditClockInModalProps) {
     const apiWs = useModel('apiWs');
     const { tagOptions } = useModel('tagOptions');
-    const [icon, setIcon] = useState<string>(clockIn.metadata?.icon);
-    const [poster, setPoster] = useState<string>(clockIn.metadata?.poster);
-    const [content, setContent] = useState<string>(clockIn.metadata?.content);
-    const [link, setLink] = useState<string>(clockIn.metadata?.link);
-    const [twitterIntentModal, setTwitterIntentModal] = useState<boolean>(false);
-    const [tags, setTags] = useState<string[]>(clockIn.tags);
-    const [payoutBase, setPayoutBase] = useState<number>(parseFloat(BigIntToFloatString(clockIn.payoutBase, 18)) ?? 1);
+    const [icon, setIcon] = useState<string>(clockIn.icon);
+    const [poster, setPoster] = useState<string>(clockIn.poster);
+    const [content, setContent] = useState<string>(clockIn.content);
+    const [tags, setTags] = useState<string[]>(clockIn.tags ?? []);
+    const [payoutBase, setPayoutBase] = useState<number>((clockIn.payoutBase && parseFloat(BigIntToFloatString(clockIn.payoutBase, 18))) ?? 1);
     const [payoutBaseMin, setPayoutBaseMin] = useState<number>(1);
-    const [payoutMin, setPayoutMin] = useState<number>(parseFloat(BigIntToFloatString(clockIn.payoutMin, 18)) ?? 1);
-    const [payoutMax, setPayoutMax] = useState<number>(parseFloat(BigIntToFloatString(clockIn.payoutMax, 18)) ?? 10);
+    const [payoutMin, setPayoutMin] = useState<number>((clockIn.payoutMin && parseFloat(BigIntToFloatString(clockIn.payoutMin, 18))) ?? 1);
+    const [payoutMax, setPayoutMax] = useState<number>((clockIn.payoutMax && parseFloat(BigIntToFloatString(clockIn.payoutMax, 18))) ?? 10);
+    const [tokenAmount, setTokenAmount] = useState<number>();
 
     const [payoutMinError, setPayoutMinError] = useState<string>('');
     const [payoutMaxError, setPayoutMaxError] = useState<string>('');
@@ -44,21 +44,18 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
     }, [apiWs]);
 
     const handleSubmit = () => {
-        // generate new clockIn
-        const newClockIn = {
-            ...clockIn,
-            metadata: {
-                icon,
-                poster,
-                link,
-                content
-            },
+        const newClockInData = {
+            nftId: clockIn.nftId,
+            icon,
+            poster,
+            content,
             payoutBase: parseAmount(`${payoutBase}`),
             payoutMin: parseAmount(`${payoutMin}`),
             payoutMax: parseAmount(`${payoutMax}`),
+            tokenAmount: parseAmount(`${tokenAmount}`),
             tags
         }
-        onSubmit(newClockIn);
+        onSubmit(newClockInData);
     }
 
     useEffect(() => {
@@ -99,15 +96,6 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                             value={content}
                             onChange={(a) => { setContent(a.target.value) }}
                         />
-                    </FormField>
-
-                    <FormField title='Link' required>
-                        <Input
-                            className={style.input}
-                            value={link}
-                            onChange={(a) => { setLink(a.target.value) }}
-                        />
-                        <a onClick={() => setTwitterIntentModal(true)}>use twitter intent</a>
                     </FormField>
 
                     <FormField title='Tags' required>
@@ -166,6 +154,18 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                         />
                         {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
                     </FormField>
+
+                    {enableClockIn && <>
+                        <FormField title='Reward Token Amount' required>
+                            <InputNumber
+                                placeholder="0.00"
+                                size='large'
+                                value={tokenAmount}
+                                min={0}
+                                onChange={(value) => setTokenAmount(value)}
+                            />
+                        </FormField>
+                    </>}
                 </div>
             </>}
             footer={<>
@@ -185,15 +185,15 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
             close={() => onCancel()}
         ></BigModal>
 
-        {twitterIntentModal && <>
+        {/* {twitterIntentModal && <>
             <TwitterIntentModal
                 onCancel={() => setTwitterIntentModal(false)}
                 onCreateTwitterIntent={(url: string) => {
-                    setLink(url);
+                    // setLink(url);
                     setTwitterIntentModal(false)
                 }}
             ></TwitterIntentModal>
-        </>}
+        </>} */}
     </>;
 
 };

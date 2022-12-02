@@ -73,7 +73,9 @@ function Ad({ }: AdProps) {
     }, [apiWs, nftId, wallet])
 
     useEffect(() => {
-        // todo: jump to dao page
+        if (adBubbleData && !adBubbleData.type) {
+            history.push(`/dao/?nftId=${adBubbleData.nftId}`);
+        }
     }, [adBubbleData])
 
     return (

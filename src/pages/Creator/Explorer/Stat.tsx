@@ -41,6 +41,7 @@ const Stat: React.FC<{
 			</Title>
 			<Card
 				className={styles.card}
+				style={{marginBottom: '30px'}}
 				bodyStyle={{
 					width: '100%',
 				}}
@@ -76,7 +77,7 @@ const Stat: React.FC<{
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
 							{StatField(intl.formatMessage({
 								id: 'creator.explorer.members',
-							}), () => member?.length)}
+							}), () => member)}
 						</Col>
 					</Row>
 				</div>

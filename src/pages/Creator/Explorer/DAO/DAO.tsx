@@ -16,12 +16,14 @@ import { getNumberOfHolders } from '@/services/subquery/subquery';
 
 const DAO: React.FC = () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [avatar, setAvatar] = useState<string>('');
     const [KOL, setKOL] = useState<boolean>(true);
     const [user, setUser] = useState<any>();
     const [asset, setAsset] = useState<any>();
     const [nftId, setNftId] = useState<string>();
     const [nft, setNft] = useState<any>();
+    const [showClockIn, setShowClockIn] = useState<boolean>(false);
     const [assetPrice, setAssetPrice] = useState<string>('');
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [member, setMember] = useState<any>();
@@ -43,6 +45,14 @@ const DAO: React.FC = () => {
             history.push('/wallet');
         }
     }, []);
+
+    useEffect(() => {
+        if (nft?.owner === wallet?.did) {
+            setShowClockIn(true);
+        }
+        // debug
+        setShowClockIn(true);
+    }, [nft, wallet])
 
     useEffect(() => {
         if (asset || nft) {
@@ -182,8 +192,8 @@ const DAO: React.FC = () => {
                     </>
                 )}
 
-                {nftId && <>
-                    <ClockIn nftId={nftId}></ClockIn>
+                {showClockIn && <>
+                    <ClockIn nftId={nftId!}></ClockIn>
                 </>}
 
                 {!KOL && nft && <>
