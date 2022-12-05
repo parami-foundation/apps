@@ -68,7 +68,7 @@ const Advertisement: React.FC<{
 						<img referrerPolicy='no-referrer' className={style.kolIcon} src={ad.kolIcon}></img>
 						<div className={style.daoInfoText}>
 							<div className={style.daoToken} onClick={() => {
-								history.push(`/swap/${ad.nftId}`)
+								history.push(`/dao/?nftId=${ad.nftId}`)
 							}}>
 								{ad?.assetName} NFT Power
 							</div>
