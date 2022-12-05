@@ -50,8 +50,6 @@ const DAO: React.FC = () => {
         if (nft?.owner === wallet?.did) {
             setShowClockIn(true);
         }
-        // debug
-        setShowClockIn(true);
     }, [nft, wallet])
 
     useEffect(() => {

@@ -191,7 +191,7 @@ function ClockIn({ nftId }: ClockInProps) {
                         <div>
                             Clock-in Reward not enabled
                         </div>
-                        <div style={{display: 'flex', justifyContent: 'center', marginTop: '10px'}}>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
                             <Button
                                 type="primary"
                                 shape="round"
@@ -208,63 +208,67 @@ function ClockIn({ nftId }: ClockInProps) {
                 {clockIn?.nftId && <>
                     <Row style={{ width: '100%' }}>
                         <Col span={12}>
-                            <FormField title='Remaining Budget'>
-                                <Token value={clockIn.remainingBudget} symbol={asset?.symbol}></Token>
+                            <div className={style.clockInStat}>
+                                <FormField title='Remaining Budget'>
+                                    <Token value={clockIn.remainingBudget} symbol={asset?.symbol}></Token>
 
-                                <Button
-                                    type="primary"
-                                    shape="round"
-                                    size="small"
-                                    style={{marginLeft: '10px'}}
-                                    onClick={() => {
-                                        setAddBudgetModal(true);
-                                    }}
-                                >
-                                    Add Budget
-                                </Button>
-                            </FormField>
+                                    <Button
+                                        type="primary"
+                                        shape="round"
+                                        size="small"
+                                        style={{ marginLeft: '10px' }}
+                                        onClick={() => {
+                                            setAddBudgetModal(true);
+                                        }}
+                                    >
+                                        Add Budget
+                                    </Button>
+                                </FormField>
 
-                            <FormField title='Tags'>
-                                Just some tags
-                            </FormField>
+                                <FormField title='Tags'>
+                                    {(clockIn.tags ?? []).join(',') ?? '-'}
+                                </FormField>
 
-                            <FormField title='Payout Base'>
-                                {BigIntToFloatString(clockIn.payoutBase, 18)}
-                            </FormField>
-                            <FormField title='Payout Min'>
-                                {BigIntToFloatString(clockIn.payoutMin, 18)}
-                            </FormField>
-                            <FormField title='Payout Max'>
-                                {BigIntToFloatString(clockIn.payoutMax, 18)}
-                            </FormField>
+                                <FormField title='Payout Base'>
+                                    {BigIntToFloatString(clockIn.payoutBase, 18)}
+                                </FormField>
+                                <FormField title='Payout Min'>
+                                    {BigIntToFloatString(clockIn.payoutMin, 18)}
+                                </FormField>
+                                <FormField title='Payout Max'>
+                                    {BigIntToFloatString(clockIn.payoutMax, 18)}
+                                </FormField>
 
-                            <div className={style.btnContainer}>
-                                <Button
-                                    type="primary"
-                                    shape="round"
-                                    size="middle"
-                                    onClick={() => {
-                                        setEditClockInModal(true);
-                                    }}>
-                                    Update
-                                </Button>
-                                <Button
-                                    type="primary"
-                                    shape="round"
-                                    size="middle"
-                                    onClick={() => {
-                                        Modal.confirm({
-                                            title: 'Do you wish to disable the Clock-in reward?',
-                                            icon: <ExclamationCircleOutlined />,
-                                            content: 'People will not be able to collect Clock-in rewards until you re-enable it',
-                                            onOk() {
-                                                setDisableClockInSecModal(true);
-                                            }
-                                        })
-                                    }}>
-                                    Disable
-                                </Button>
+                                <div className={style.btnContainer}>
+                                    <Button
+                                        type="primary"
+                                        shape="round"
+                                        size="large"
+                                        onClick={() => {
+                                            setEditClockInModal(true);
+                                        }}>
+                                        Update
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        shape="round"
+                                        size="large"
+                                        style={{marginLeft: '10px'}}
+                                        onClick={() => {
+                                            Modal.confirm({
+                                                title: 'Do you wish to disable the Clock-in reward?',
+                                                icon: <ExclamationCircleOutlined />,
+                                                content: 'People will not be able to collect Clock-in rewards until you re-enable it',
+                                                onOk() {
+                                                    setDisableClockInSecModal(true);
+                                                }
+                                            })
+                                        }}>
+                                        Disable
+                                    </Button>
+                                </div>
                             </div>
+
                         </Col>
                         <Col span={12}>
                             <div className={style.previewContainer}>

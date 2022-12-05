@@ -16,12 +16,11 @@ function ClockInClaim({ }: ClockInClaimProps) {
     const apiWs = useModel('apiWs');
     const intl = useIntl();
     const {
-        adId,
         nftId
-    } = useParams() as { adId: string, nftId: string };
+    } = useParams() as { nftId: string };
 
     const close = () => {
-        window.opener.postMessage(`${POST_MESSAGE_PREFIX.AD_CLAIMED}:${adId}`, '*');
+        window.opener.postMessage(`${POST_MESSAGE_PREFIX.AD_CLAIMED}:${nftId}`, '*');
         window.close();
     }
 
