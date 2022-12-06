@@ -70,8 +70,10 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
         setAsset(assetInfo);
 
         const value = await DrylySellToken(assetId, parseAmount('1'));
-        setAssetPrice(value.toString());
+        setAssetPrice(value.toString());        
+    }
 
+    const queryAssetBalance = async (assetId: string) => {
         const balance = await GetBalanceOfAsset(assetId, wallet.account);
         setAssetBalance(balance);
     }
@@ -79,6 +81,7 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     useEffect(() => {
         if (apiWs && assetId) {
             queryAsset(assetId);
+            queryAssetBalance(assetId);
             queryIcon(assetId);
             setAd3Number('');
             if (initTokenNumber) {
@@ -124,6 +127,7 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
                     }
                     break;
             }
+            queryAssetBalance(assetId);
             onSwapped && onSwapped();
         } else {
             notification.error({
