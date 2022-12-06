@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { history, useIntl, useModel } from 'umi';
-import style from './DAO.less';
+import styles from '@/pages/wallet.less';
 import { hexToDid, parseAmount } from '@/utils/common';
 import User from '../User';
 import Stat from '../Stat';
 import { notification } from 'antd';
-import { GetAssetDetail, GetAssetInfo, GetAssetsHolders } from '@/services/parami/Assets';
+import { GetAssetDetail, GetAssetInfo } from '@/services/parami/Assets';
 import { GetNFTMetaData } from '@/services/parami/NFT';
 import { DrylySellToken, GetSimpleUserInfo } from '@/services/parami/RPC';
 import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import Support from '../Supoort';
 import { parseUrlParams } from '@/utils/url.util';
+import ClockIn from '../components/ClockIn/ClockIn';
+import { getNumberOfHolders } from '@/services/subquery/subquery';
 
 const DAO: React.FC = () => {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const [avatar, setAvatar] = useState<string>('');
     const [KOL, setKOL] = useState<boolean>(true);
     const [user, setUser] = useState<any>();
     const [asset, setAsset] = useState<any>();
     const [nftId, setNftId] = useState<string>();
     const [nft, setNft] = useState<any>();
+    const [showClockIn, setShowClockIn] = useState<boolean>(false);
     const [assetPrice, setAssetPrice] = useState<string>('');
     const [totalSupply, setTotalSupply] = useState<bigint>(BigInt(0));
     const [member, setMember] = useState<any>();
@@ -41,6 +45,12 @@ const DAO: React.FC = () => {
             history.push('/wallet');
         }
     }, []);
+
+    useEffect(() => {
+        if (nft?.owner === wallet?.did) {
+            setShowClockIn(true);
+        }
+    }, [nft, wallet])
 
     useEffect(() => {
         if (asset || nft) {
@@ -101,7 +111,7 @@ const DAO: React.FC = () => {
         setUser(userData);
     }
 
-    const queryTokenIcon =  async (nftId: string) => {
+    const queryTokenIcon = async (nftId: string) => {
         const { data: assetData } = await QueryAssetById(nftId);
         if (assetData?.token) {
             const { data, response } = await GetAvatar(assetData.token.icon) as any;
@@ -140,7 +150,7 @@ const DAO: React.FC = () => {
     }
 
     const queryMember = async () => {
-        const members = await GetAssetsHolders(nft?.tokenAssetId);
+        const members = await getNumberOfHolders(nft?.tokenAssetId);
         setMember(members);
     }
 
@@ -157,29 +167,37 @@ const DAO: React.FC = () => {
     }, [nft, asset]);
 
     return <>
-        <div className={style.pageContainer}>
-            {nft && <>
-                <User
-                    avatar={avatar}
-                    did={hexToDid(nft.owner)}
-                    user={user}
-                    asset={asset}
-                    assetId={nft.tokenAssetId}
-                />
-            </>}
-            {KOL && (
-                <>
-                    <Stat
+        <div className={styles.mainTopContainer}>
+            <div className={styles.pageContainer}>
+                {nft && <>
+                    <User
+                        avatar={avatar}
+                        did={hexToDid(nft.owner)}
+                        user={user}
                         asset={asset}
-                        assetPrice={assetPrice}
-                        totalSupply={totalSupply}
-                        member={member}
+                        assetId={nft.tokenAssetId}
                     />
-                </>
-            )}
-            {!KOL && nft && <>
-                <Support nft={nft}></Support>
-            </>}
+                </>}
+
+                {KOL && (
+                    <>
+                        <Stat
+                            asset={asset}
+                            assetPrice={assetPrice}
+                            totalSupply={totalSupply}
+                            member={member}
+                        />
+                    </>
+                )}
+
+                {showClockIn && <>
+                    <ClockIn nftId={nftId!}></ClockIn>
+                </>}
+
+                {!KOL && nft && <>
+                    <Support nft={nft}></Support>
+                </>}
+            </div>
         </div>
     </>;
 };

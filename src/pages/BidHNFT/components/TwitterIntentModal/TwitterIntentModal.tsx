@@ -1,7 +1,7 @@
 import { Input, Modal, Select, Tooltip, Image } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from '@/pages/dashboard.less';
-import FormFieldTitle from '@/components/FormFieldTitle';
+import FormFieldTitle from '@/components/Form/FormFieldTitle';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
 const { Option, OptGroup } = Select;

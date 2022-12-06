@@ -195,6 +195,14 @@ export default [
     component: './ClaimWithScore/ClaimWithScore',
   },
   {
+    path: '/clockInClaim/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './ClockInClaim/ClockInClaim',
+  },
+  {
     path: '/adClaim/:adId/:nftId',
     hideInMenu: true,
     exact: true,

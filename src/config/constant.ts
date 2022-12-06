@@ -27,3 +27,8 @@ export enum TWITTER_OAUTH_USAGE {
 export enum POST_MESSAGE_PREFIX {
     AD_CLAIMED = 'AdClaimed'
 }
+
+export enum AD_DATA_TYPE {
+    AD = 'ad',
+    CLOCK_IN = 'clockIn'
+}

@@ -347,5 +347,55 @@ export const config = {
       },
     },
   },
+  runtime: {
+    AdRuntimeApi: [
+      {
+        methods: {
+          cal_reward: {
+            description: 'pre calculate reward of this did, adId, nftId pair',
+            params: [
+              {
+                name: 'ad_id',
+                type: 'H256',
+              },
+              {
+                name: 'nft_id',
+                type: 'u32',
+              },
+              {
+                name: 'visitor',
+                type: 'H160',
+              },
+              {
+                name: 'referrer',
+                type: 'Option<H160>',
+              }
+            ],
+            type: 'u128'
+          }
+        },
+        version: 1
+      }
+    ],
+    ClockInRuntimeApi: [{
+      methods: {
+          get_clock_in_info: {
+              description: "(enabled, claimable, token)",
+              params: [
+                  {
+                      "name": "nft_id",
+                      "type": "u32"
+                  },
+                  {
+                      "name": "did",
+                      "type": "H160"
+                  }
+              ],
+              type: "(u8, bool, bool, u128)"
+          }
+      },
+      version: 1
+  }]
+  }
 };
 export default config;

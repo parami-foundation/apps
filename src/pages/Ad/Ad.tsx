@@ -2,37 +2,27 @@ import React, { useEffect, useState } from 'react';
 import styles from '@/pages/wallet.less';
 import style from './Ad.less';
 import { history, useAccess, useIntl, useModel } from 'umi';
-import { hexToDid } from '@/utils/common';
-import { GetNFTMetaData } from '@/services/parami/NFT';
-import { Image, notification, Button, Divider } from 'antd';
+import { Image, Button, Divider } from 'antd';
 import config from '@/config/config';
-import { GetSlotAdOf } from '@/services/parami/Advertisement';
+import { QueryAdData } from '@/services/parami/Advertisement';
 import BigModal from '@/components/ParamiModal/BigModal';
-import { GetAssetInfo, GetBalanceOfBudgetPot } from '@/services/parami/Assets';
 import Footer from '@/components/Footer';
 import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
-import { deleteComma } from '@/utils/format';
-import Advertisement from '../Creator/Explorer/Advertisement';
 import { parseUrlParams } from '@/utils/url.util';
+import AdBubble from '@/components/Advertisement/AdBubble/AdBubble';
 
 export interface AdProps { }
 
 function Ad({ }: AdProps) {
     const apiWs = useModel('apiWs');
+    const { wallet } = useModel('currentUser');
     const { bodyHeight } = useModel('bodyChange');
     const [loading, setLoading] = useState<boolean>(true);
     const [avatar, setAvatar] = useState<string>('');
-    const [KOL, setKOL] = useState<boolean>(true);
     const [nftId, setNftId] = useState<string>();
-    const [nft, setNft] = useState<any>();
-    const [asset, setAsset] = useState<any>();
+    const [referrer, setReferrer] = useState<string>();
+    const [adBubbleData, setAdBubbleData] = useState<any>(); // todo: type this
     const [notAccess, setNotAccess] = useState<boolean>(false);
-    const [adSlot, setAdSlot] = useState<any>();
-    const [adData, setAdData] = useState<any>();
-    const [ad, setAd] = useState<Type.AdInfo>(null);
-    const [balance, setBalance] = useState<string>('');
-    const [ownerDid, setOwnerDid] = useState<string>();
-
 
     const intl = useIntl();
     const access = useAccess();
@@ -42,117 +32,23 @@ function Ad({ }: AdProps) {
     const windowWidth = document.body.clientWidth;
 
     useEffect(() => {
-        const params = parseUrlParams() as { nftId: string };
-        if (params.nftId) {
-            setNftId(params.nftId);
-        } else {
-            history.push('/wallet');
-        }
-    }, []);
+        if (apiWs) {
+            const params = parseUrlParams() as { nftId: string; referrer?: string };
 
-    // Get Referrer
-    const { query } = history.location;
-    const { referrer } = query as { referrer: string };
-
-    const errorHandler = (e) => {
-        notification.error({
-            message: e.message,
-            duration: null,
-        });
-    }
-
-    const queryAdSlot = async (nftId: string) => {
-        const slot = await GetSlotAdOf(nftId);
-        if (!slot) {
-            history.replace(`/dao/?nftId=${nftId}`);
-            return;
-        }
-        setAdSlot(slot);
-    }
-
-    const queryAdJson = async (data) => {
-        if (data?.metadata?.indexOf('ipfs://') < 0) return;
-
-        const hash = data?.metadata?.substring(7);
-
-        const res = await fetch(config.ipfs.endpoint + hash);
-        const adJson: Type.AdInfo = await res.json();
-
-        if (!adJson) return;
-
-        setAd(adJson);
-
-        if (!adJson.media) {
-            setLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        if (adSlot) {
-            try {
-                const adData = adSlot.ad;
-                if (!adData?.metadata) return;
-                setAdData(adData);
-                queryAdJson(adData);
-                GetBalanceOfBudgetPot(adSlot.budgetPot, adSlot.fractionId).then(res => {
-                    setBalance(deleteComma(res?.balance ?? ''));
-                }).catch(e => {
-                    console.error('GetBalanceOfBudgetPot error:', e);
-                });
-            } catch (e) {
-                errorHandler(e);
-            }
-        }
-    }, [adSlot])
-
-    useEffect(() => {
-        document.title = `${asset?.name} - Para Metaverse Identity`;
-    }, [asset]);
-
-    const queryNftMetaData = async (nftId) => {
-        const nftInfoData = await GetNFTMetaData(nftId);
-
-        // If don't have any nft
-        if (!nftInfoData) {
-            notification.error({
-                message: intl.formatMessage({
-                    id: 'error.nft.notFound',
-                }),
-                duration: null,
-            })
-            history.goBack();
-            return;
-        }
-
-        setOwnerDid(hexToDid(nftInfoData.owner));
-        setNft(nftInfoData);
-    }
-
-    useEffect(() => {
-        const queryAssetInfo = async () => {
-            const assetData = await GetAssetInfo(nft?.tokenAssetId as string);
-            // If don't mint any nft
-            if (assetData.isEmpty) {
-                setKOL(false);
-                return;
+            if (params.nftId) {
+                setNftId(params.nftId);
+            } else {
+                history.push('/wallet');
             }
 
-            const assetInfo = assetData.toHuman() as any;
-            setAsset(assetInfo);
+            setReferrer(params.referrer);
         }
+    }, [apiWs]);
 
-        if (nft) {
-            try {
-                queryAssetInfo();
-            } catch (e) {
-                errorHandler(e);
-            }
-        }
-    }, [nft]);
-
-    const queryAvatar = async (nftId: string) => {
+    const queryAsset = async (nftId: string) => {
         const { data: assetData } = await QueryAssetById(nftId);
         if (assetData?.token) {
+            document.title = `${assetData.token.name} - Para Metaverse Identity`;
             const { data, response } = await GetAvatar(assetData.token.icon) as any;
             if (response?.status === 200) {
                 setAvatar(window.URL.createObjectURL(data));
@@ -167,22 +63,27 @@ function Ad({ }: AdProps) {
         };
 
         if (apiWs && nftId) {
-            try {
-                queryAdSlot(nftId);
-                queryNftMetaData(nftId);
-                queryAvatar(nftId);
-            } catch (e) {
-                errorHandler(e);
-            }
-        };
-    }, [apiWs, nftId]);
+            QueryAdData(nftId, wallet.did).then(ad => {
+                setAdBubbleData(ad);
+                setLoading(false);
+            });
+
+            queryAsset(nftId);
+        }
+    }, [apiWs, nftId, wallet])
+
+    useEffect(() => {
+        if (adBubbleData && !adBubbleData.type) {
+            history.push(`/dao/?nftId=${adBubbleData.nftId}`);
+        }
+    }, [adBubbleData])
 
     return (
         <>
             <div
                 className={style.explorerContainer}
             >
-                {KOL && (
+                {(
                     <>
                         <Image
                             src={avatar || '/images/default-avatar.svg'}
@@ -191,11 +92,11 @@ function Ad({ }: AdProps) {
                             style={{
                                 top: loading ? (bodyHeight - 400) / 2 : avatarTop,
                                 left: loading ? (windowWidth - 200) / 2 : avatarLeft,
-                                width: loading ? 200 : 30,
-                                height: loading ? 200 : 30,
+                                width: loading ? 200 : 40,
+                                height: loading ? 200 : 40,
                                 animation: loading ? 1 : 0,
                                 position: loading ? 'fixed' : 'absolute',
-                                display: loading || (adData && Object.keys(adData).length) ? 'flex' : 'none',
+                                display: loading || (adBubbleData) ? 'flex' : 'none',
                             }}
                             preview={false}
                         />
@@ -219,30 +120,37 @@ function Ad({ }: AdProps) {
                         </div>
                     </>
                 )}
-                {(KOL && adData && Object.keys(adData).length > 0) && (
+                {adBubbleData && <>
                     <div
                         className={styles.pageContainer}
                         style={{
-                            paddingTop: 50,
+                            paddingTop: 100,
                             maxWidth: '100%'
                         }}
                     >
-                        <Advertisement
-                            ad={ad}
-                            nftId={nftId!}
-                            referrer={referrer}
-                            asset={asset}
-                            avatar={avatar}
-                            did={ownerDid!}
-                            adData={adData}
-                            balance={balance}
-                            notAccess={notAccess}
-                            adImageOnLoad={() => {
-                                setLoading(false)
-                            }}
-                        />
+                        <div>
+                            <div className={style.daoInfo}>
+                                <img referrerPolicy='no-referrer' id="avatar" className={style.kolIcon} src={adBubbleData.kolIcon}></img>
+                                <div className={style.daoInfoText}>
+                                    <div className={style.daoToken} onClick={() => {
+                                        history.push(`/dao/?nftId=${adBubbleData.nftId}`)
+                                    }}>
+                                        {adBubbleData?.assetName} NFT Power
+                                    </div>
+                                    <div className={style.daoTokenSubtitle}>
+                                        Sponsored by {adBubbleData.sponsorName}
+                                    </div>
+                                </div>
+                            </div>
+                            <AdBubble
+                                ad={adBubbleData}
+                                userDid={wallet.did}
+                                referrer={referrer}
+                            ></AdBubble>
+                        </div>
+
                     </div>
-                )}
+                </>}
 
                 <Footer />
             </div>

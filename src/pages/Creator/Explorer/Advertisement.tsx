@@ -12,6 +12,7 @@ import ParamiScoreTag from './components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from './components/ParamiScore/ParamiScore';
 import config from '@/config/config';
 
+// Deprecated
 const Advertisement: React.FC<{
 	ad: Type.AdInfo;
 	nftId: string;

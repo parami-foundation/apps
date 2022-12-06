@@ -1,4 +1,4 @@
-import FormErrorMsg from '@/components/FormErrorMsg';
+import FormErrorMsg from '@/components/Form/FormErrorMsg';
 import Token from '@/components/Token/Token';
 import { Asset } from '@/services/parami/typings';
 import { stringToBigInt } from '@/utils/common';

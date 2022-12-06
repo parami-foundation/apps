@@ -26,6 +26,26 @@ export const GetAllTags = async () => {
   }).filter(tag => tag.tag !== 'unknown');
 }
 
+export const GetTagsOfClockIn = async (nftId: string) => {
+  const entries: any = await window.apiWs.query.clockIn.tagsOf.entries(nftId);
+  if (!entries?.length) {
+    return [];
+  }
+
+  // todo: refactor this
+  const allTags = await GetAllTags();
+  return entries.map(entry => {
+    const [key, _] = entry;
+    const tagHash = key.toHuman()[1];
+    const tag = allTags.find(t => t.key === tagHash);
+    const tagName = tag?.tag;
+    return {
+      hash: tagHash,
+      name: tagName
+    }
+  }).filter(tag => !!tag.name);
+}
+
 export const GetTagsOfAd = async (adId: string) => {
   const entries: any = await window.apiWs.query.tag.tagsOf.entries(adId);
 

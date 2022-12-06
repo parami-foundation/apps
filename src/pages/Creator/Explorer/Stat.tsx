@@ -8,6 +8,14 @@ import AD3 from '@/components/Token/AD3';
 
 const { Title } = Typography;
 
+const StatField = (title: string, formatter) => {
+	return <Statistic
+		title={title}
+		formatter={formatter}
+		valueStyle={{ fontSize: '16px' }}
+	/>
+}
+
 const Stat: React.FC<{
 	asset: any;
 	assetPrice: string;
@@ -33,6 +41,7 @@ const Stat: React.FC<{
 			</Title>
 			<Card
 				className={styles.card}
+				style={{marginBottom: '30px'}}
 				bodyStyle={{
 					width: '100%',
 				}}
@@ -48,51 +57,28 @@ const Stat: React.FC<{
 						}}
 					>
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
-							<Statistic
-								title={'1 ' + asset?.symbol}
-								formatter={() => (<AD3 value={assetPrice} />)}
-							/>
+							{StatField('1 ' + asset?.symbol, () => (<AD3 value={assetPrice} />))}
 						</Col>
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
-							<Statistic
-								title={intl.formatMessage({
-									id: 'creator.explorer.totalIssues',
-								})}
-								formatter={() => (<Token value={totalSupply.toString()} symbol={asset?.symbol} />)}
-							/>
+							{StatField(intl.formatMessage({
+								id: 'creator.explorer.totalIssues',
+							}), () => (<Token value={totalSupply.toString()} symbol={asset?.symbol} />))}
 						</Col>
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
-							<Statistic
-								title={intl.formatMessage({
-									id: 'creator.explorer.totalValue',
-								})}
-								formatter={() => (<AD3 value={(BigInt(assetPrice) * BigInt(3000000)).toString()} />)}
-							/>
+							{StatField(intl.formatMessage({
+								id: 'creator.explorer.totalValue',
+							}), () => (<AD3 value={(BigInt(assetPrice) * BigInt(3000000)).toString()} />))}
 						</Col>
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
-							<Statistic
-								title={intl.formatMessage({
-									id: 'creator.explorer.reservedValue',
-								})}
-								formatter={() => (<AD3 value={(BigInt(assetPrice) * BigInt(1000000)).toString()} />)}
-							/>
+							{StatField(intl.formatMessage({
+								id: 'creator.explorer.reservedValue',
+							}), () => (<AD3 value={(BigInt(assetPrice) * BigInt(1000000)).toString()} />))}
 						</Col>
 						<Col xs={12} sm={12} md={8} lg={8} xl={4}>
-							<Statistic
-								title={intl.formatMessage({
-									id: 'creator.explorer.members',
-								})}
-								value={member?.length}
-							/>
+							{StatField(intl.formatMessage({
+								id: 'creator.explorer.members',
+							}), () => member)}
 						</Col>
-						{/* <Col xs={12} sm={12} md={8} lg={8} xl={4}>
-                            <Statistic
-                                title={intl.formatMessage({
-                                    id: 'creator.explorer.totalViewers',
-                                })}
-                                value={viewer}
-                            />
-                        </Col> */}
 					</Row>
 				</div>
 			</Card>

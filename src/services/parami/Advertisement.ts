@@ -4,6 +4,77 @@ import { DecodeKeystoreWithPwd } from "./Crypto";
 import { subCallback, subWeb3Callback } from "./Subscription";
 import { Keyring } from '@polkadot/api';
 import { checkFeeAndSubmitExtrinsic } from "@/utils/chain.util";
+import { formatBalance } from '@polkadot/util';
+import { getNumberOfHolders } from "../subquery/subquery";
+import { QueryAssetById } from "./HTTP";
+import { QueryClockInMetadata } from "./ClockIn.service";
+import { fetchMetadata } from "@/utils/ipfs.util";
+import { AD_DATA_TYPE } from "@/config/constant";
+
+export const QueryAdData = async (nftId: string, did?: string) => {
+  const ad = { nftId } as any;
+
+  const { data } = await QueryAssetById(nftId);
+  ad.kolIcon = data?.token?.icon ?? '/images/logo-square-core.svg';
+  ad.assetName = data?.token?.name;
+  ad.numHolders = await getNumberOfHolders(nftId);
+
+  const slotResp = await window.apiWs.query.ad.slotOf(nftId);
+
+  if (!slotResp.isEmpty) {
+    // query ad
+    ad.type = AD_DATA_TYPE.AD;
+    const { adId } = slotResp.toHuman() as { adId: string };
+    const adResp = await window.apiWs.query.ad.metadata(adId);
+    const adMetadata = adResp.toHuman() as { metadata: string };
+    const adJson = await fetchMetadata(adMetadata?.metadata);
+    const adClaimed = did && !(await window.apiWs.query.ad.payout(adId, did)).isEmpty;
+
+    let rewardAmount;
+    if (did) {
+      // FIX IT: The result of runtime api calReward is somehow 256 times of the correct value
+      let res = await window.apiWs.call.adRuntimeApi.calReward(adId, nftId, did, null) as any;
+      rewardAmount = BigIntToFloatString(BigInt(deleteComma(res.toHuman())) / BigInt(256), 18);
+    }
+
+    const instruction = adJson.instructions && adJson.instructions[0];
+
+    ad.adId = adId;
+    ad.content = adJson.content;
+    ad.sponsorName = adJson.sponsorName;
+    ad.icon = adJson.icon;
+    ad.poster = adJson.media ?? adJson.poster;
+    ad.tag = instruction?.tag;
+    ad.link = instruction?.link;
+    ad.score = instruction?.score;
+    ad.claimed = adClaimed;
+    ad.rewardAmount = rewardAmount;
+  } else {
+    const clockInRes = await window.apiWs.call.clockInRuntimeApi.getClockInInfo(nftId, did) as any;
+    const [_, enabled, claimable, amount] = clockInRes.toHuman();
+
+    if (!enabled) {
+      return ad;
+    }
+    
+    const clockInMetadata = await QueryClockInMetadata(nftId);
+    if (!clockInMetadata) {
+      return ad;
+    }
+    
+    ad.type = AD_DATA_TYPE.CLOCK_IN;
+    const clockInContent = await fetchMetadata(clockInMetadata.metadata);
+    
+    ad.content = clockInContent.content;
+    ad.icon = clockInContent.icon;
+    ad.poster = clockInContent.poster;
+
+    ad.claimed = !claimable;
+    ad.rewardAmount = BigIntToFloatString(deleteComma(amount), 18);
+  }
+
+  return ad;
+}
 
 export const GetAdsListOf = async (did: Uint8Array): Promise<any> => {
   const res = await window.apiWs.query.ad.adsOf(did);
@@ -88,7 +159,7 @@ export const UserBatchCreateAds = async (
   });
 
   const batch = await window.apiWs.tx.utility.batch(exList);
-  
+
   if (preTx && account) {
     return await checkFeeAndSubmitExtrinsic(batch, password, keystore, preTx, account);
   }
@@ -116,7 +187,7 @@ export const UserBidSlot = async (adId: string, nftId: string, amount: string, p
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
-export const UserBatchBidSlot = async (adId: string, bids: {nftId: string, amount: string}[], password: string, keystore: string, preTx?: boolean, account?: string) => {
+export const UserBatchBidSlot = async (adId: string, bids: { nftId: string, amount: string }[], password: string, keystore: string, preTx?: boolean, account?: string) => {
   const exList = bids.map(bid => {
     return window.apiWs.tx.ad.bidWithFraction(adId, bid.nftId, bid.amount, null, null);
   })
@@ -154,6 +225,19 @@ export const IsAdvertiser = async (account: string): Promise<boolean> => {
   }
   return false;
 };
+
+export const getMinPayoutBase = async () => {
+  const res = await window.apiWs.consts.ad.minimumPayoutBase;
+  if (!res.isEmpty) {
+    const minimumPayoutBase = res.toHuman() as string;
+    const min = formatBalance(deleteComma(minimumPayoutBase), {
+      withSi: false,
+      withUnit: false
+    });
+    return parseFloat(min);
+  }
+  return 0;
+}
 
 export const ClaimAdToken = async (adId: string, nftId: string, visitor: string, scores: (string | number)[][], referrer: string | null, signature: string, signer: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = await window.apiWs.tx.ad.claim(adId, nftId, visitor, scores, referrer, { Sr25519: signature.trim() }, signer.trim());
