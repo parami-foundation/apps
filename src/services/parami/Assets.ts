@@ -1,3 +1,5 @@
+import { deleteComma } from "@/utils/format";
+
 export const GetAssetInfo = async (assetId: string) => {
   const assetInfo = await window.apiWs.query.assets.metadata(Number(assetId));
   return assetInfo;
@@ -7,6 +9,14 @@ export const GetAssetDetail = async (assetId: string) => {
   const assetInfo = await window.apiWs.query.assets.asset(Number(assetId));
   return assetInfo;
 };
+
+export const GetBalanceOfAsset = async (assetId: string, account: string) => {
+  const balanceRes = await window.apiWs.query.assets.account(assetId, account);
+  if (balanceRes.isEmpty) {
+    return '';
+  }
+  return deleteComma((balanceRes.toHuman() as any).balance);
+}
 
 export const GetBalanceOfBudgetPot = async (potId: string, assetId: string) => {
   const balance = await window.apiWs.query.assets.account(Number(assetId), potId);

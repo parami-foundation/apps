@@ -3,7 +3,7 @@ import styles from '@/pages/wallet.less';
 import style from './SwapAsset.less';
 import { Typography, Image, InputNumber, Button, Space, notification } from 'antd';
 import { useIntl, useModel } from 'umi';
-import { GetAssetInfo } from '@/services/parami/Assets';
+import { GetAssetInfo, GetBalanceOfAsset } from '@/services/parami/Assets';
 import { QueryAssetById } from '@/services/parami/HTTP';
 import { DrylyBuyCurrency, DrylyBuyToken, DrylySellCurrency, DrylySellToken } from '@/services/parami/RPC';
 import { parseAmount } from '@/utils/common';
@@ -31,11 +31,11 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     const apiWs = useModel('apiWs');
     const { wallet } = useModel('currentUser');
     const { balance } = useModel('balance');
-    const { assets, getAssets } = useModel('assets');
 
     const [tokenIcon, setTokenIcon] = useState<string>('');
     const [asset, setAsset] = useState<Asset>();
     const [assetPrice, setAssetPrice] = useState<string>();
+    const [assetBalance, setAssetBalance] = useState<string>('');
     const [mode, setMode] = useState<string>('ad3ToToken');
     const [ad3Number, setAd3Number] = useState<string>('');
     const [tokenNumber, setTokenNumber] = useState<string>('');
@@ -43,12 +43,6 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     const [passphrase, setPassphrase] = useState<string>('');
     const [selectAssetModal, setSelectAssetModal] = useState<boolean>(false);
     const [balanceWarning, setBalanceWarning] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (wallet) {
-            getAssets(wallet.account)
-        }
-    }, [getAssets, wallet])
 
     const queryIcon = async (assetId: string) => {
         setTokenIcon('');
@@ -77,6 +71,9 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
 
         const value = await DrylySellToken(assetId, parseAmount('1'));
         setAssetPrice(value.toString());
+
+        const balance = await GetBalanceOfAsset(assetId, wallet.account);
+        setAssetBalance(balance);
     }
 
     useEffect(() => {
@@ -176,12 +173,12 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
     }, [balance, mode, handleAD3InputChange]);
 
     const setTokenMax = useCallback(() => {
-        if (assetId && assets) {
-            const tokenBalanceStr = BigIntToFloatString(assets.get(assetId)?.balance, 18);
+        if (assetId) {
+            const tokenBalanceStr = BigIntToFloatString(assetBalance, 18);
             setTokenNumber(tokenBalanceStr);
             handleTokenInputChange(tokenBalanceStr);
         }
-    }, [mode, assetId, assets, handleTokenInputChange]);
+    }, [mode, assetId, assetBalance, handleTokenInputChange]);
 
     useEffect(() => {
         if (mode === 'ad3ToToken') {
@@ -190,13 +187,13 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
                 return;
             }
         } else {
-            if (assetId && assets && tokenNumber) {
-                setBalanceWarning(FloatStringToBigInt(tokenNumber, 18) > BigInt(assets.get(assetId)?.balance));
+            if (assetId && tokenNumber) {
+                setBalanceWarning(FloatStringToBigInt(tokenNumber, 18) > BigInt(assetBalance));
                 return;
             }
         }
         setBalanceWarning(false);
-    }, [mode, balance, ad3Number, tokenNumber, assetId, assets]);
+    }, [mode, balance, ad3Number, tokenNumber, assetId, assetBalance]);
 
     return <>
         <div className={style.trade}>
@@ -310,7 +307,7 @@ function SwapAsset({ assetId, onSelectAsset, onSwapped, canSelectAsset = true, i
                             {intl.formatMessage({
                                 id: 'creator.explorer.trade.balance',
                                 defaultMessage: 'Balance'
-                            })}: <Token value={assets.get(assetId ?? '')?.balance ?? ''} symbol={asset?.symbol} />
+                            })}: <Token value={assetBalance} symbol={asset?.symbol} />
                             {mode === 'tokenToAd3' && balanceWarning && <span className={style.warningText}>(insufficient balance)</span>}
                         </span>
                         <Button
