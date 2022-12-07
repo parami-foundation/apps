@@ -1,3 +1,4 @@
+import { AD_DATA_TYPE } from '@/config/constant';
 import { Tooltip } from 'antd';
 import React from 'react';
 import AdBubble from '../AdBubble/AdBubble';
@@ -38,19 +39,25 @@ const AdvertisementPreview: React.FC<{
 					<div className='sponsorInfo'>
 						{ad?.icon && <img referrerPolicy='no-referrer' className='sponsorIcon' src={ad?.icon}></img>}
 						<span className='sponsorText'>
-							{!!abbreviation && <>
-								<Tooltip title={sponsorName}>
+							{ad.type === AD_DATA_TYPE.AD && <>
+								{!!abbreviation && <>
+									<Tooltip title={sponsorName}>
+										<span className='sponsorName'>
+											{abbreviation}
+										</span>
+									</Tooltip>
+								</>}
+								{!abbreviation && <>
 									<span className='sponsorName'>
-										{abbreviation}
+										{sponsorName}
 									</span>
-								</Tooltip>
+								</>}
+								<span>is sponsoring this {hNFT}. </span>
 							</>}
-							{!abbreviation && <>
-								<span className='sponsorName'>
-									{sponsorName}
-								</span>
+
+							{ad.type === AD_DATA_TYPE.CLOCK_IN && <>
+								<span>{ad?.assetName} NFT Power </span>
 							</>}
-							<span>is sponsoring this {hNFT}. </span>
 							<a className='bidLink' href={`/bid/${ad.nftId}`} target="_blank">Bid on this ad space</a>
 						</span>
 					</div>

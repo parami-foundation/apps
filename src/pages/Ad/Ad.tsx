@@ -26,9 +26,6 @@ function Ad({ }: AdProps) {
 
     const intl = useIntl();
     const access = useAccess();
-
-    const avatarTop = document.getElementById('avatar')?.offsetTop;
-    const avatarLeft = document.getElementById('avatar')?.offsetLeft;
     const windowWidth = document.body.clientWidth;
 
     useEffect(() => {
@@ -90,13 +87,14 @@ function Ad({ }: AdProps) {
                             fallback='/images/default-avatar.svg'
                             className={style.avatar}
                             style={{
-                                top: loading ? (bodyHeight - 400) / 2 : avatarTop,
-                                left: loading ? (windowWidth - 200) / 2 : avatarLeft,
-                                width: loading ? 200 : 40,
-                                height: loading ? 200 : 40,
+                                top: (bodyHeight - 400) / 2,
+                                left: (windowWidth - 200) / 2,
+                                width: 200,
+                                height: 200,
                                 animation: loading ? 1 : 0,
                                 position: loading ? 'fixed' : 'absolute',
-                                display: loading || (adBubbleData) ? 'flex' : 'none',
+                                display: 'flex',
+                                opacity: loading ? 1 : 0,
                             }}
                             preview={false}
                         />
@@ -137,9 +135,11 @@ function Ad({ }: AdProps) {
                                     }}>
                                         {adBubbleData?.assetName} NFT Power
                                     </div>
-                                    <div className={style.daoTokenSubtitle}>
-                                        Sponsored by {adBubbleData.sponsorName}
-                                    </div>
+                                    {adBubbleData.sponsorName && <>
+                                        <div className={style.daoTokenSubtitle}>
+                                            Sponsored by {adBubbleData.sponsorName}
+                                        </div>
+                                    </>}
                                 </div>
                             </div>
                             <AdBubble

@@ -23,6 +23,7 @@ import type { UploadFile } from 'antd/es/upload/interface';
 import { formatBalance } from '@polkadot/util';
 import { deleteComma } from '@/utils/format';
 import { BatchBuyTokens } from '@/services/parami/Swap';
+import { AD_DATA_TYPE } from '@/config/constant';
 
 export interface BidHNFTProps { }
 
@@ -102,6 +103,7 @@ function BidHNFT({ }: BidHNFTProps) {
     }, [posterUploadFiles])
 
     const adPreviewData = {
+        type: AD_DATA_TYPE.AD,
         instructions: instruction ? [instruction] : [],
         icon: getUrl(iconUploadFiles),
         sponsorName,

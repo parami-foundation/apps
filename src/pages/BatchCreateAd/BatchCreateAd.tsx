@@ -1,6 +1,7 @@
 import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import config from '@/config/config';
+import { AD_DATA_TYPE } from '@/config/constant';
 import { IMAGE_TYPE } from '@/constants/advertisement';
 import { NUM_BLOCKS_PER_DAY } from '@/constants/chain';
 import { UserBatchCreateAds } from '@/services/parami/Advertisement';
@@ -84,6 +85,7 @@ function BatchCreateAd({ }: BatchCreateAdProps) {
             const adInfo = rows.map(row => {
                 const props = row.split('\t');
                 return {
+                    type: AD_DATA_TYPE.AD,
                     title: props[1],
                     poster: `${props[3] ? config.ipfs.endpoint + props[3] : ''}`,
                     icon: `${props[5] ? config.ipfs.endpoint + props[5] : ''}`,
