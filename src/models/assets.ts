@@ -2,18 +2,14 @@ import { QueryAssetById } from "@/services/parami/HTTP";
 import { DrylySellToken } from "@/services/parami/RPC";
 import { OwnerDidOfNft, getAssetsList } from "@/services/subquery/subquery";
 import { isLPAsset } from "@/utils/assets.util";
-import { formatBalance } from "@polkadot/util";
-import { notification } from "antd";
 import { useCallback, useState } from "react";
-import { useModel, history } from "umi";
+import { useModel } from "umi";
 import { tokenIconMap } from "./chainbridge";
 
 let flag = false;
 
 export default () => {
   const apiWs = useModel('apiWs');
-  const [first] = useState((new Date()).getTime());
-  const [assets, setAssets] = useState<Map<string, any>>(new Map());
   const [assetsArr, setAssetsArr] = useState<any[] | null>(null);
 
   const [unsub, setUnsub] = useState<() => void>();
@@ -23,6 +19,7 @@ export default () => {
       return;
     }
     flag = true;
+    const assets = new Map();
 
     const entries = await getAssetsList(account);
     if (!!entries) {
@@ -53,26 +50,7 @@ export default () => {
                 ad3 = await DrylySellToken(entry?.assetId, balanceBigInt.toString());
               }
 
-              let changes = BigInt(0);
-              if (!assets.has(entry?.assetId)) {
-                changes = balanceBigInt;
-              } else {
-                changes = balanceBigInt - BigInt(assets.get(entry?.assetId).balance);
-              }
-
               const decimals = parseInt(metadata.decimals, 10) ?? 18;
-
-              // TODO: time events(first)
-              if (((new Date()).getTime() - first >= 30000) && changes) {
-                notification.success({
-                  key: 'assetsChange',
-                  message: `Changes in ${metadata?.name}, click for details`,
-                  description: formatBalance(changes, { withUnit: metadata?.symbol }, decimals),
-                  onClick: () => {
-                    history.push("/wallet");
-                  }
-                });
-              }
 
               if (!!balanceBigInt && balanceBigInt > 0 && !isLPAsset(metadata)) {
                 assets.set(entry?.assetId, {
@@ -88,8 +66,6 @@ export default () => {
               }
             }
 
-
-            setAssets(assets);
             setAssetsArr([...assets?.values()]);
           });
 
@@ -99,5 +75,5 @@ export default () => {
     }
   }, [unsub, apiWs])
 
-  return { assets, assetsArr, getAssets };
+  return { assetsArr, getAssets };
 }
