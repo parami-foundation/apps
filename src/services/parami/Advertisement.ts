@@ -17,6 +17,7 @@ export const QueryAdData = async (nftId: string, did?: string) => {
   const { data } = await QueryAssetById(nftId);
   ad.kolIcon = data?.token?.icon ?? '/images/logo-square-core.svg';
   ad.assetName = data?.token?.name;
+  ad.symbol = data?.token?.symbol;
   ad.numHolders = await getNumberOfHolders(nftId);
 
   const slotResp = await window.apiWs.query.ad.slotOf(nftId);

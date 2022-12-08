@@ -1,12 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import style from './Advertisement.less';
-import { history } from 'umi';
+import { history, useModel } from 'umi';
 import AdBubble from '@/components/Advertisement/AdBubble/AdBubble';
+import { GetBalanceOfAsset } from '@/services/parami/Assets';
+import Token from '@/components/Token/Token';
 
 const Advertisement: React.FC<{
 	ad: any;
 	userDid?: string;
 }> = ({ ad, userDid }) => {
+	const { wallet } = useModel('currentUser');
+	const [balance, setBalance] = useState<string>('');
+
+	useEffect(() => {
+		if (ad && wallet) {
+			GetBalanceOfAsset(ad.nftId, wallet.account).then(res => setBalance(res));
+		}
+	}, [ad, wallet])
+
 	return (
 		<>
 			<div className={style.advertisementContainer}>
@@ -24,10 +35,16 @@ const Advertisement: React.FC<{
 							</div>
 						</div>
 
-						<div className={style.bidSectionBtnContainer}>
-							<div className={`${style.actionBtn}`} onClick={async () => {
+						<div className={style.tokenBalance}>
+							<div className={style.balanceText}>
+								<Token value={balance} symbol={ad.symbol}></Token>
+							</div>
+
+							<div className={style.bidBtn} onClick={async () => {
 								history.push(`/bid/${ad.nftId}`);
-							}}>Place an Ad</div>
+							}}>
+								Place an Ad
+							</div>
 						</div>
 					</div>
 				</div>
