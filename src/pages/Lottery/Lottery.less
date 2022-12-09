@@ -1,0 +1,104 @@
+.lotteryContainer {
+  width: 100%;
+  min-height: calc(100vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  background: radial-gradient(66.32% 66.32% at 54.13% 113.95%, rgba(255, 182, 66, 0.2) 0, rgba(242, 89, 255, 0) 100%), linear-gradient(211.99deg, rgba(255, 93, 66, 0.2) -4.17%, rgba(45, 143, 234, 0) 68.7%), radial-gradient(100% 100% at 28.65% 0, #f7cfa4 0, rgba(250, 247, 254, 0) 100%);
+  padding: 40px;
+
+  :global(.ant-layout-footer) {
+    bottom: 0;
+    position: relative;
+  }
+
+  .title {
+    margin-bottom: 5px;
+    font-size: 30px;
+    font-weight: 600;
+    color: #0a0b0d;
+  }
+
+  .subTitle {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.55);
+    margin-bottom: 20px;
+  }
+
+  .lotterySection {
+    color: #0a0b0d;
+    background: hsla(0, 0%, 100%, .24);
+    backdrop-filter: blur(16px);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    padding: 20px;
+    width: 500px;
+    height: fit-content;
+  }
+
+  .inactive {
+    text-align: center;
+    margin: 20px;
+    color: rgba(0, 0, 0, 0.55);
+  }
+
+  .daoInfo {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 100%;
+      margin-right: 20px;
+    }
+
+    .daoToken {
+      flex-grow: 1;
+      font-size: 20px;
+      font-weight: 500;
+    }
+
+    .daoHolderNumber {
+      color: rgba(0, 0, 0, 0.55);
+      margin-right: 10px;
+    }
+  }
+
+  .winningInfo {
+    text-align: center;
+    font-size: 16px;
+    margin: 10px 0;
+
+    .userProbability {
+      font-size: 18px;
+      padding: 0 5px;
+      color: #cf4a00;
+      font-weight: 500;
+    }
+
+    .winningAward {
+      font-size: 18px;
+      font-weight: 500;
+      padding: 0 5px;
+    }
+
+    .hint {
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  }
+
+  .levels {
+    margin: 10px;
+
+    .userBalance {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 500;
+      color: black;
+    }
+  }
+}

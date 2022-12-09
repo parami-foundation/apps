@@ -126,7 +126,7 @@ function Ad({ }: AdProps) {
                             maxWidth: '100%'
                         }}
                     >
-                        <div style={{minWidth: '400px'}}>
+                        <div style={{minWidth: '400px', maxWidth: '500px'}}>
                             <div className={style.daoInfo}>
                                 <img referrerPolicy='no-referrer' id="avatar" className={style.kolIcon} src={adBubbleData.kolIcon}></img>
                                 <div className={style.daoInfoText}>

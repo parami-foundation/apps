@@ -1,78 +1,60 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Input, InputNumber, Select } from 'antd';
+import { Button, Col, Input, InputNumber, Row, Select, Slider } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './EditClockInModal.less'
-import { IMAGE_TYPE } from '@/constants/advertisement';
-import TwitterIntentModal from '@/pages/BidHNFT/components/TwitterIntentModal/TwitterIntentModal';
-import FormErrorMsg from '@/components/Form/FormErrorMsg';
-import { BigIntToFloatString } from '@/utils/format';
+import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
 import FormField from '@/components/Form/FormField/FormField';
-import ImageUpload from '@/components/Form/ImageUpload/ImageUpload';
-import { useModel } from 'umi';
-import { getMinPayoutBase } from '@/services/parami/Advertisement';
 import { parseAmount } from '@/utils/common';
-
-const { Option } = Select;
+import { ClockInData, ClockInVO } from '@/services/parami/ClockIn.service';
 
 export interface EditClockInModalProps {
-    clockIn: any,
-    enableClockIn: boolean,
-    onSubmit: (clockIn) => void,
+    clockIn: ClockInVO,
+    onSubmit: (clockIn: ClockInData) => void,
     onCancel: () => void
 }
 
-function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditClockInModalProps) {
-    const apiWs = useModel('apiWs');
-    const { tagOptions } = useModel('tagOptions');
-    const [icon, setIcon] = useState<string>(clockIn.icon);
-    const [poster, setPoster] = useState<string>(clockIn.poster);
-    const [content, setContent] = useState<string>(clockIn.content);
-    const [tags, setTags] = useState<string[]>(clockIn.tags ?? []);
-    const [payoutBase, setPayoutBase] = useState<number>((clockIn.payoutBase && parseFloat(BigIntToFloatString(clockIn.payoutBase, 18))) ?? 1);
-    const [payoutBaseMin, setPayoutBaseMin] = useState<number>(1);
-    const [payoutMin, setPayoutMin] = useState<number>((clockIn.payoutMin && parseFloat(BigIntToFloatString(clockIn.payoutMin, 18))) ?? 1);
-    const [payoutMax, setPayoutMax] = useState<number>((clockIn.payoutMax && parseFloat(BigIntToFloatString(clockIn.payoutMax, 18))) ?? 10);
+const totalSupply = 10000000; // todo: remove this
+const defaultLevels = [1000, 10000, 100000, 1000000];
+const defaultProbabilities = [1, 5, 10, 20, 50];
+
+function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps) {
+    const [levels, setLevels] = useState<number[]>([])
+    const [probabilities, setProbabilities] = useState<number[]>([])
+    const [numWinners, setNumWinners] = useState<number>();
+    const [rewardAmount, setRewardAmount] = useState<number>();
     const [tokenAmount, setTokenAmount] = useState<number>();
 
-    const [payoutMinError, setPayoutMinError] = useState<string>('');
-    const [payoutMaxError, setPayoutMaxError] = useState<string>('');
-
     useEffect(() => {
-        if (apiWs) {
-            getMinPayoutBase().then(min => setPayoutBaseMin(min));
+        // init data
+        if (clockIn) {
+            if (clockIn.levelEndpoints.length) {
+                setLevels(clockIn.levelEndpoints.map(endpoint => parseFloat(BigIntToFloatString(endpoint, 18))));
+            } else {
+                setLevels(defaultLevels);
+            }
+
+            if (clockIn.levelProbability.length) {
+                setProbabilities(clockIn.levelProbability);
+            } else {
+                setProbabilities(defaultProbabilities);
+            }
+
+            setNumWinners(clockIn.sharesPerBucket ?? 10);
+            setRewardAmount(clockIn.awardPerShare ? parseFloat(BigIntToFloatString(clockIn.awardPerShare, 18)) : 0);
         }
-    }, [apiWs]);
+    }, [clockIn])
 
     const handleSubmit = () => {
-        const newClockInData = {
+        const newLotteryData: ClockInData = {
             nftId: clockIn.nftId,
-            icon,
-            poster,
-            content,
-            payoutBase: parseAmount(`${payoutBase}`),
-            payoutMin: parseAmount(`${payoutMin}`),
-            payoutMax: parseAmount(`${payoutMax}`),
-            tokenAmount: parseAmount(`${tokenAmount}`),
-            tags
+            levelEndpoints: levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString()),
+            levelProbability: probabilities,
+            sharesPerBucket: numWinners!,
+            awardPerShare: parseAmount(`${rewardAmount}`),
+            totalRewardToken: parseAmount(`${tokenAmount}`)
         }
-        onSubmit(newClockInData);
+        onSubmit(newLotteryData);
     }
-
-    useEffect(() => {
-        setPayoutMaxError('');
-        setPayoutMinError('');
-        if (payoutMax < payoutMin) {
-            setPayoutMaxError('Payout Max cannot be less than Payout Min')
-        }
-    }, [payoutMax]);
-
-    useEffect(() => {
-        setPayoutMaxError('');
-        setPayoutMinError('');
-        if (payoutMin > payoutMax) {
-            setPayoutMinError('Payout Min cannot be more than Payout Max')
-        }
-    }, [payoutMin]);
 
     return <>
         <BigModal
@@ -80,83 +62,95 @@ function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditCl
             title={'Clock In'}
             content={<>
                 <div className={style.form}>
-                    <FormField title='Icon' required>
-                        <ImageUpload imageUrl={icon} onImageUrlChange={url => {
-                            setIcon(url)
-                        }} imageType={IMAGE_TYPE.ICON}></ImageUpload>
+                    <FormField title='levels' required>
+                        <Row>
+                            <Col span={16}>Range</Col>
+                            <Col span={8}>Probability</Col>
+                        </Row>
+                        {levels.map((level, index) => {
+                            return <>
+                                <Row className={style.levelConfigRow}>
+                                    <Col span={16}>
+                                        <div className={style.range}>
+                                            <span className={style.rangeNum}>{index > 0 ? levels[index - 1] : 0}</span>
+                                            <span>-</span>
+                                            <Input
+                                                className={style.rangeInput}
+                                                value={level}
+                                                type='number'
+                                                onChange={e => {
+                                                    const newLevelValues = levels.slice();
+                                                    newLevelValues[index] = parseInt(e.target.value, 10);
+                                                    setLevels(newLevelValues);
+                                                }}
+                                            ></Input>
+                                        </div>
+                                    </Col>
+                                    <Col span={8}>
+                                        <Input
+                                            type='number'
+                                            value={probabilities[index]}
+                                            onChange={e => {
+                                                const newProbValues = probabilities.slice();
+                                                newProbValues[index] = parseInt(e.target.value, 10);
+                                                setProbabilities(newProbValues);
+                                            }}
+                                        ></Input>
+                                    </Col>
+                                </Row>
+                            </>
+                        })}
+                        <Row className={style.levelConfigRow}>
+                            <Col span={16}>
+                                <div className={style.range}>
+                                    <span className={style.rangeNum}>
+                                        {levels[3]}
+                                    </span>
+                                    <span>-</span>
+                                    <Input
+                                        className={style.rangeInput}
+                                        value={totalSupply}
+                                        type='number'
+                                        disabled
+                                    ></Input>
+                                </div>
+                            </Col>
+                            <Col span={8}>
+                                <Input
+                                    type='number'
+                                    value={probabilities[4]}
+                                    onChange={e => {
+                                        const newProbValues = probabilities.slice();
+                                        newProbValues[4] = parseInt(e.target.value, 10);
+                                        setProbabilities(newProbValues);
+                                    }}
+                                ></Input>
+                            </Col>
+                        </Row>
                     </FormField>
 
-                    <FormField title='Poster' required>
-                        <ImageUpload imageUrl={poster} onImageUrlChange={url => setPoster(url)} imageType={IMAGE_TYPE.POSTER}></ImageUpload>
-                    </FormField>
-
-                    <FormField title='Content' required>
-                        <Input
-                            className={style.input}
-                            value={content}
-                            onChange={(a) => { setContent(a.target.value) }}
-                        />
-                    </FormField>
-
-                    <FormField title='Tags' required>
-                        <Select
-                            allowClear
-                            mode='multiple'
-                            style={{ width: '100%' }}
-                            placeholder="Please select tags"
-                            defaultValue={tags}
-                            onChange={values => {
-                                setTags(values)
-                            }}
-                        >
-                            {tagOptions.map(option => {
-                                return <Option key={option.key} value={option.tag}>{option.tag}</Option>
-                            })}
-                        </Select>
-                    </FormField>
-
-                    <FormField title='Payout Base' required>
+                    <FormField title='Number of winners' required>
                         <InputNumber
-                            className={style.withAfterInput}
-                            placeholder="0.00"
                             size='large'
-                            value={payoutBase}
-                            maxLength={18}
+                            step={1}
+                            value={numWinners}
                             min={0}
-                            onChange={(value) => setPayoutBase(value)}
+                            onChange={(value) => setNumWinners(value)}
                         />
-                        {(!payoutBase || payoutBase < payoutBaseMin) && <FormErrorMsg msg={`Payout Base cannot be less than ${payoutBaseMin}`} />}
                     </FormField>
 
-                    <FormField title='Payout Min' required>
+                    <FormField title='Winner award amount' required>
                         <InputNumber
-                            className={`${style.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
-                            placeholder="0.00"
                             size='large'
-                            maxLength={18}
+                            placeholder="0.00"
+                            value={rewardAmount}
                             min={0}
-                            max={payoutMax}
-                            value={payoutMin}
-                            onChange={(value) => setPayoutMin(value)}
+                            onChange={(value) => setRewardAmount(value)}
                         />
-                        {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
                     </FormField>
 
-                    <FormField title='Payout Max' required>
-                        <InputNumber
-                            className={`${style.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
-                            placeholder="0.00"
-                            size='large'
-                            maxLength={18}
-                            value={payoutMax}
-                            min={payoutMin}
-                            onChange={(value) => setPayoutMax(value)}
-                        />
-                        {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
-                    </FormField>
-
-                    {enableClockIn && <>
-                        <FormField title='Reward Token Amount' required>
+                    {!clockIn.nftId && <>
+                        <FormField title='Deposit Token Amount' required>
                             <InputNumber
                                 placeholder="0.00"
                                 size='large'
@@ -184,16 +178,6 @@ function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditCl
             </>}
             close={() => onCancel()}
         ></BigModal>
-
-        {/* {twitterIntentModal && <>
-            <TwitterIntentModal
-                onCancel={() => setTwitterIntentModal(false)}
-                onCreateTwitterIntent={(url: string) => {
-                    // setLink(url);
-                    setTwitterIntentModal(false)
-                }}
-            ></TwitterIntentModal>
-        </>} */}
     </>;
 
 };
