@@ -45,6 +45,7 @@ export const QueryAdData = async (nftId: string, did?: string) => {
     ad.sponsorName = adJson.sponsorName;
     ad.icon = adJson.icon;
     ad.poster = adJson.media ?? adJson.poster;
+    ad.instructionText = instruction?.text;
     ad.tag = instruction?.tag;
     ad.link = instruction?.link;
     ad.score = instruction?.score;
