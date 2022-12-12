@@ -13,7 +13,6 @@ export interface EditClockInModalProps {
     onCancel: () => void
 }
 
-const totalSupply = 10000000; // todo: remove this
 const defaultLevels = [1000, 10000, 100000, 1000000];
 const defaultProbabilities = [1, 5, 10, 20, 50];
 
@@ -64,32 +63,43 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                 <div className={style.form}>
                     <FormField title='levels' required>
                         <Row>
-                            <Col span={16}>Range</Col>
-                            <Col span={8}>Probability</Col>
+                            <Col span={12}>
+                                <div className={style.levelsTitle}>Level</div>
+                            </Col>
+                            <Col span={12}>
+                                <div className={style.levelsTitle}>
+                                    Probability (%)
+                                </div>
+                            </Col>
                         </Row>
-                        {levels.map((level, index) => {
+                        {probabilities.map((probability, index) => {
                             return <>
                                 <Row className={style.levelConfigRow}>
-                                    <Col span={16}>
-                                        <div className={style.range}>
-                                            <span className={style.rangeNum}>{index > 0 ? levels[index - 1] : 0}</span>
-                                            <span>-</span>
-                                            <Input
-                                                className={style.rangeInput}
-                                                value={level}
-                                                type='number'
-                                                onChange={e => {
-                                                    const newLevelValues = levels.slice();
-                                                    newLevelValues[index] = parseInt(e.target.value, 10);
-                                                    setLevels(newLevelValues);
-                                                }}
-                                            ></Input>
+                                    <Col span={12}>
+                                        <div className={style.levelInput}>
+                                            {index === 0 && <>
+                                                <Input
+                                                    value={'base level'}
+                                                    disabled
+                                                ></Input>
+                                            </>}
+                                            {index > 0 && <>
+                                                <Input
+                                                    value={levels[index - 1]}
+                                                    type='number'
+                                                    onChange={e => {
+                                                        const newLevelValues = levels.slice();
+                                                        newLevelValues[index - 1] = parseInt(e.target.value, 10);
+                                                        setLevels(newLevelValues);
+                                                    }}
+                                                ></Input>
+                                            </>}
                                         </div>
                                     </Col>
-                                    <Col span={8}>
+                                    <Col span={12}>
                                         <Input
                                             type='number'
-                                            value={probabilities[index]}
+                                            value={probability}
                                             onChange={e => {
                                                 const newProbValues = probabilities.slice();
                                                 newProbValues[index] = parseInt(e.target.value, 10);
@@ -100,33 +110,6 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                                 </Row>
                             </>
                         })}
-                        <Row className={style.levelConfigRow}>
-                            <Col span={16}>
-                                <div className={style.range}>
-                                    <span className={style.rangeNum}>
-                                        {levels[3]}
-                                    </span>
-                                    <span>-</span>
-                                    <Input
-                                        className={style.rangeInput}
-                                        value={totalSupply}
-                                        type='number'
-                                        disabled
-                                    ></Input>
-                                </div>
-                            </Col>
-                            <Col span={8}>
-                                <Input
-                                    type='number'
-                                    value={probabilities[4]}
-                                    onChange={e => {
-                                        const newProbValues = probabilities.slice();
-                                        newProbValues[4] = parseInt(e.target.value, 10);
-                                        setProbabilities(newProbValues);
-                                    }}
-                                ></Input>
-                            </Col>
-                        </Row>
                     </FormField>
 
                     <FormField title='Number of winners' required>
