@@ -4,53 +4,23 @@ import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { history, useIntl, useModel } from 'umi';
 import { ShareAltOutlined, MoneyCollectOutlined, WalletOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { hexToDid } from '@/utils/common';
 import copy from 'copy-to-clipboard';
-import { useEffect } from 'react';
 import ClaimModal from './components/ClaimModal/ClaimModal';
 import ParamiScoreTag from './components/ParamiScoreTag/ParamiScoreTag';
 import ParamiScore from './components/ParamiScore/ParamiScore';
 import config from '@/config/config';
 
-// Deprecated
 const Advertisement: React.FC<{
-	ad: Type.AdInfo;
-	nftId: string;
 	referrer?: string;
-	asset: any;
-	avatar: string;
-	did: string;
 	adData: any;
-	balance: string;
-	notAccess: boolean;
-	adImageOnLoad: () => void
-}> = ({ ad, nftId, referrer, asset, avatar, did, adData, balance, notAccess, adImageOnLoad = () => { } }) => {
+}> = ({ referrer, adData }) => {
 	const { wallet } = useModel('currentUser');
 	const [claimModal, setClaimModal] = useState<boolean>(false);
-	const [adClaimed, setAdClaimed] = useState<boolean>(false);
-
-	const apiWs = useModel('apiWs');
+	const [adClaimed, setAdClaimed] = useState<boolean>(adData.claimed);
 
 	const intl = useIntl();
 
-	const link = !!wallet?.did ? `${window.location.origin}/ad/?nftId=${nftId}&referrer=${wallet?.did}` : `${window.location.origin}/ad/?nftId=${nftId}`;
-
-	const sponsoredBy = hexToDid(adData?.creator).substring(8);
-
-	const checkAdClaimStatus = async (apiWs, adId, did) => {
-		const res = await apiWs.query.ad.payout(adId, did);
-		if (res.isEmpty) {
-			setAdClaimed(false);
-		} else {
-			setAdClaimed(true);
-		}
-	}
-
-	useEffect(() => {
-		if (apiWs && adData?.id && wallet?.did) {
-			checkAdClaimStatus(apiWs, adData?.id, wallet?.did);
-		}
-	}, [apiWs, adData, wallet])
+	const link = !!wallet?.did ? `${window.location.origin}/ad/?nftId=${adData.nftId}&referrer=${wallet?.did}` : `${window.location.origin}/ad/?nftId=${adData.nftId}`;
 
 	const gotoWalletButton = (btnText: string) => {
 		return <Button
@@ -75,16 +45,14 @@ const Advertisement: React.FC<{
 					<div className={style.topBar}>
 						<div className={style.sponsored}>
 							<Image
-								src={avatar || '/images/logo-round-core.svg'}
+								src={adData?.kolIcon || '/images/logo-round-core.svg'}
 								className={style.avatar}
 								preview={false}
 								id='avatar'
 								fallback='/images/logo-round-core.svg'
 							/>
 							<span>
-								{intl.formatMessage({
-									id: 'creator.explorer.advertisement.sponsoredBy',
-								}, { did: `${sponsoredBy}` })}
+								{`is sponsored by ${adData.sponsorName}`}
 							</span>
 						</div>
 					</div>
@@ -98,19 +66,18 @@ const Advertisement: React.FC<{
 					}}
 				>
 					<div className={style.advertisement}>
-						{!!ad?.media && <>
+						{!!adData?.poster && <>
 							<div className={style.adMedia}>
 								<Image
-									src={ad?.media}
+									src={adData.poster}
 									placeholder={true}
 									preview={false}
 									className={style.adMediaImg}
-									onLoad={adImageOnLoad}
 								/>
 							</div>
 						</>}
 
-						{ad?.instructions && ad?.instructions?.length > 0 && <>
+						{<>
 							<div className={style.instructions}>
 								<div className={style.instructionTitle}>
 									Follow the instructions to improve your DID reputation score
@@ -121,17 +88,13 @@ const Advertisement: React.FC<{
 										<ExclamationCircleOutlined style={{ marginLeft: '5px' }} />
 									</Tooltip>
 								</div>
-								{ad.instructions.map((instruction, index) => {
-									return (
-										<div className={`${style.instruction} ${instruction.link ? style.withLink : ''}`} key={index} onClick={() => {
-											!!instruction.link && window.open(`${config.main.weeklySite}?redirect=${instruction.link}&nftId=${nftId}&did=${wallet?.did}&ad=${adData?.id}&referrer=${referrer}&tag=${instruction.tag}&score=${instruction.score}`);
-										}}>
-											<span className={style.instructionText}>{instruction.text}</span>
-											{!!instruction.tag && <ParamiScoreTag tag={instruction.tag} />}
-											{!!instruction.score && <ParamiScore score={parseInt(instruction.score, 10)} />}
-										</div>
-									)
-								})}
+								<div className={`${style.instruction} ${style.withLink}`} onClick={() => {
+									window.open(`${config.main.weeklySite}?redirect=${adData?.link}&nftId=${adData?.nftId}&did=${wallet?.did}&ad=${adData?.adId}&referrer=${referrer}&tag=${adData?.tag}&score=${adData?.score}`);
+								}}>
+									<span className={style.instructionText}>{adData?.instructionText}</span>
+									{!!adData?.tag && <ParamiScoreTag tag={adData?.tag} />}
+									{!!adData?.score && <ParamiScore score={parseInt(adData?.score, 10)} />}
+								</div>
 							</div>
 						</>}
 					</div>
@@ -163,7 +126,7 @@ const Advertisement: React.FC<{
 									copy(link + ` ${intl.formatMessage({
 										id: 'creator.explorer.shareMessage',
 									}, {
-										token: `$${asset?.symbol}`
+										token: `$${adData?.symbol}`
 									})}`);
 									message.success(
 										intl.formatMessage({
@@ -175,7 +138,7 @@ const Advertisement: React.FC<{
 						>
 							{intl.formatMessage({
 								id: 'creator.explorer.advertisement.share',
-							}, { token: `$${asset?.symbol}` })}
+							}, { token: `$${adData?.symbol}` })}
 						</Button>
 
 						{gotoWalletButton('Check your reward and score')}
@@ -191,14 +154,14 @@ const Advertisement: React.FC<{
 							className={style.claimBtn}
 							onClick={() => setClaimModal(true)}
 						>
-							{`Claim your $${asset?.symbol}`}
+							{`Claim your $${adData?.symbol}`}
 						</Button>
 					</>}
 				</div>
 
 				{claimModal && <ClaimModal
-					adId={adData?.id}
-					nftId={nftId}
+					adId={adData?.adId}
+					nftId={adData?.nftId}
 					referrer={referrer}
 					onClose={() => setClaimModal(false)}
 					onClaim={() => {

@@ -9,7 +9,7 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import Footer from '@/components/Footer';
 import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import { parseUrlParams } from '@/utils/url.util';
-import AdBubble from '@/components/Advertisement/AdBubble/AdBubble';
+import Advertisement from '../Creator/Explorer/Advertisement';
 
 export interface AdProps { }
 
@@ -126,27 +126,11 @@ function Ad({ }: AdProps) {
                             maxWidth: '100%'
                         }}
                     >
-                        <div style={{minWidth: '400px', maxWidth: '500px'}}>
-                            <div className={style.daoInfo}>
-                                <img referrerPolicy='no-referrer' id="avatar" className={style.kolIcon} src={adBubbleData.kolIcon}></img>
-                                <div className={style.daoInfoText}>
-                                    <div className={style.daoToken} onClick={() => {
-                                        history.push(`/dao/?nftId=${adBubbleData.nftId}`)
-                                    }}>
-                                        {adBubbleData?.assetName} NFT Power
-                                    </div>
-                                    {adBubbleData.sponsorName && <>
-                                        <div className={style.daoTokenSubtitle}>
-                                            Sponsored by {adBubbleData.sponsorName}
-                                        </div>
-                                    </>}
-                                </div>
-                            </div>
-                            <AdBubble
-                                ad={adBubbleData}
-                                userDid={wallet.did}
+                        <div style={{ minWidth: '400px' }}>
+                            <Advertisement
+                                adData={adBubbleData}
                                 referrer={referrer}
-                            ></AdBubble>
+                            />
                         </div>
                     </div>
                 </>}
