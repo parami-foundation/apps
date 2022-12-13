@@ -40,7 +40,7 @@ function ClockIn({ nftId }: ClockInProps) {
     const [disableClockInSecModal, setDisableClockInSecModal] = useState<boolean>(false);
 
     const queryClockIn = async (nftId: string) => {
-        setClockIn(null);
+        setClockIn(undefined);
         const clockIn = await QueryLottery(nftId);
         setClockIn(clockIn);
     }
@@ -48,8 +48,8 @@ function ClockIn({ nftId }: ClockInProps) {
     useEffect(() => {
         if (clockIn?.nftId) {
             const levelsData: { level: string; probability: string }[] = [];
-            (clockIn?.levelProbability ?? []).forEach((probability, index) => {
-                const endpoint = !index ? 'base level' : BigIntToFloatString((clockIn?.levelEndpoints[index - 1] || '0'), 18).toString()
+            (clockIn.levelProbability ?? []).forEach((probability, index) => {
+                const endpoint = !index ? 'base level' : BigIntToFloatString((clockIn.levelUpperBounds[index - 1] || '0'), 18).toString()
                 levelsData.push({
                     level: endpoint,
                     probability: `${probability}%`
@@ -110,7 +110,7 @@ function ClockIn({ nftId }: ClockInProps) {
 
     const updateClockIn = async (preTx?: boolean, account?: string) => {
         try {
-            const info: any = await UpdateClockIn(newClockIn, passphrase, wallet?.keystore, preTx, account);
+            const info: any = await UpdateClockIn(newClockIn!, passphrase, wallet?.keystore, preTx, account);
 
             if (preTx && account) {
                 return info;
@@ -190,8 +190,9 @@ function ClockIn({ nftId }: ClockInProps) {
             Daily Lotto
         </Title>
         <Card className={style.card}>
-            <Spin spinning={!clockIn}>
-                {clockIn && !clockIn.nftId && <>
+            <Spin spinning={clockIn === undefined}>
+
+                {!clockIn && <>
                     <div>
                         <div>
                             Daily Lotto not enabled

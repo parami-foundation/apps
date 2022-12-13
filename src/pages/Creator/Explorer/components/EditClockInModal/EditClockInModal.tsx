@@ -1,5 +1,5 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Col, Input, InputNumber, Row, Select, Slider } from 'antd';
+import { Button, Col, Input, InputNumber, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './EditClockInModal.less'
 import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
@@ -25,28 +25,26 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
 
     useEffect(() => {
         // init data
-        if (clockIn) {
-            if (clockIn.levelEndpoints.length) {
-                setLevels(clockIn.levelEndpoints.map(endpoint => parseFloat(BigIntToFloatString(endpoint, 18))));
-            } else {
-                setLevels(defaultLevels);
-            }
-
-            if (clockIn.levelProbability.length) {
-                setProbabilities(clockIn.levelProbability);
-            } else {
-                setProbabilities(defaultProbabilities);
-            }
-
-            setNumWinners(clockIn.sharesPerBucket ?? 10);
-            setRewardAmount(clockIn.awardPerShare ? parseFloat(BigIntToFloatString(clockIn.awardPerShare, 18)) : 0);
+        if (clockIn?.levelUpperBounds?.length) {
+            setLevels(clockIn?.levelUpperBounds.map(endpoint => parseFloat(BigIntToFloatString(endpoint, 18))));
+        } else {
+            setLevels(defaultLevels);
         }
+
+        if (clockIn?.levelProbability?.length) {
+            setProbabilities(clockIn?.levelProbability);
+        } else {
+            setProbabilities(defaultProbabilities);
+        }
+
+        setNumWinners(clockIn?.sharesPerBucket ?? 10);
+        setRewardAmount(clockIn?.awardPerShare ? parseFloat(BigIntToFloatString(clockIn?.awardPerShare, 18)) : undefined);
     }, [clockIn])
 
     const handleSubmit = () => {
         const newLotteryData: ClockInData = {
-            nftId: clockIn.nftId,
-            levelEndpoints: levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString()),
+            nftId: clockIn?.nftId,
+            levelUpperBounds: levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString()),
             levelProbability: probabilities,
             sharesPerBucket: numWinners!,
             awardPerShare: parseAmount(`${rewardAmount}`),
@@ -58,7 +56,7 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
     return <>
         <BigModal
             visable
-            title={'Clock In'}
+            title={'Daily Lotto'}
             content={<>
                 <div className={style.form}>
                     <FormField title='levels' required>
@@ -132,7 +130,7 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                         />
                     </FormField>
 
-                    {!clockIn.nftId && <>
+                    {!clockIn?.nftId && <>
                         <FormField title='Deposit Token Amount' required>
                             <InputNumber
                                 placeholder="0.00"
