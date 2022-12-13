@@ -1,0 +1,36 @@
+.bubble {
+  position: relative;
+  margin: 0 5px;
+  margin-bottom: 5px;
+  text-align: left;
+
+  .bubbleArrow {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    transform: rotate(45deg);
+    left: 15px;
+    top: -5px;
+    z-index: 1;
+    background: #ffffff;
+    border-radius: 5px;
+
+    &.back {
+      border: 1px solid rgb(200, 200, 200);
+    }
+
+    &.front {
+      top: -4px;
+      z-index: 3;
+    }
+  }
+
+  .content {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    z-index: 2;
+    border: 1px solid rgb(207, 217, 222);
+    background: #ffffff;
+  }
+}

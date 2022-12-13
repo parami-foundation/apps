@@ -30,5 +30,6 @@ export enum POST_MESSAGE_PREFIX {
 
 export enum AD_DATA_TYPE {
     AD = 'ad',
-    CLOCK_IN = 'clockIn'
+    CLOCK_IN = 'clockIn',
+    LOTTERY = 'lottery'
 }

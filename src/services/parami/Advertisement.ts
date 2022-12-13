@@ -7,7 +7,7 @@ import { checkFeeAndSubmitExtrinsic } from "@/utils/chain.util";
 import { formatBalance } from '@polkadot/util';
 import { getNumberOfHolders } from "../subquery/subquery";
 import { QueryAssetById } from "./HTTP";
-import { QueryClockInMetadata } from "./ClockIn.service";
+import { QueryUserLotteryStatus } from "./ClockIn.service";
 import { fetchMetadata } from "@/utils/ipfs.util";
 import { AD_DATA_TYPE } from "@/config/constant";
 
@@ -52,27 +52,43 @@ export const QueryAdData = async (nftId: string, did?: string) => {
     ad.claimed = adClaimed;
     ad.rewardAmount = rewardAmount;
   } else {
-    const clockInRes = await window.apiWs.call.clockInRuntimeApi.getClockInInfo(nftId, did) as any;
-    const [_, enabled, claimable, amount] = clockInRes.toHuman();
 
-    if (!enabled) {
+    if (!did) {
       return ad;
     }
-    
-    const clockInMetadata = await QueryClockInMetadata(nftId);
-    if (!clockInMetadata) {
+
+
+    // const clockInRes = await window.apiWs.call.clockInRuntimeApi.getClockInInfo(nftId, did) as any;
+    // const [_, enabled, claimable, amount] = clockInRes.toHuman();
+
+    const lotteryStatus = await QueryUserLotteryStatus(nftId, did);
+
+    if (!lotteryStatus.enabled) {
       return ad;
     }
-    
-    ad.type = AD_DATA_TYPE.CLOCK_IN;
-    const clockInContent = await fetchMetadata(clockInMetadata.metadata);
-    
-    ad.content = clockInContent.content;
-    ad.icon = clockInContent.icon;
-    ad.poster = clockInContent.poster;
 
-    ad.claimed = !claimable;
-    ad.rewardAmount = BigIntToFloatString(deleteComma(amount), 18);
+    ad.type = AD_DATA_TYPE.LOTTERY;
+    ad.claimed = !lotteryStatus.claimable;
+    ad.rewardAmount = BigIntToFloatString(lotteryStatus.rewardAmount, 18);
+
+    // if (!enabled) {
+    //   return ad;
+    // }
+    
+    // const clockInMetadata = await QueryClockInMetadata(nftId);
+    // if (!clockInMetadata) {
+    //   return ad;
+    // }
+    
+    // ad.type = AD_DATA_TYPE.CLOCK_IN;
+    // const clockInContent = await fetchMetadata(clockInMetadata.metadata);
+    
+    // ad.content = clockInContent.content;
+    // ad.icon = clockInContent.icon;
+    // ad.poster = clockInContent.poster;
+
+    // ad.claimed = !claimable;
+    // ad.rewardAmount = BigIntToFloatString(deleteComma(amount), 18);
   }
 
   return ad;
