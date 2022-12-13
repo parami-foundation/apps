@@ -1,6 +1,7 @@
 import Footer from '@/components/Footer';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import Token from '@/components/Token/Token';
+import { POST_MESSAGE_PREFIX } from '@/config/constant';
 import { GetBalanceOfAsset } from '@/services/parami/Assets';
 import { ClockInData, QueryLotteryMetadata, QueryUserLotteryStatus, UserClockIn, UserLotteryStatus } from '@/services/parami/ClockIn.service';
 import { QueryAssetById } from '@/services/parami/HTTP';
@@ -88,6 +89,10 @@ function Lottery({ }: LotteryProps) {
 
             refreshUserStatus();
             setClaiming(false);
+
+            if (window.opener) {
+                window.opener.postMessage(`${POST_MESSAGE_PREFIX.AD_CLAIMED}:${nftId}`, '*');
+            }
         } catch (e: any) {
             notification.error({
                 message: e.message || e,
