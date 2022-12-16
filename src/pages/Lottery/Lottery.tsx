@@ -87,6 +87,18 @@ function Lottery({ }: LotteryProps) {
                 return info;
             }
 
+            if (info?.assets?.Transferred?.length) {
+                notification.success({
+                    message: 'Congratulations, You Won!',
+                    description: 'Come back and try again tomorrow!'
+                })
+            } else {
+                notification.open({
+                    message: 'Better luck next time!',
+                    description: 'Come back and try again tomorrow!'
+                })
+            }
+            
             refreshUserStatus();
             setClaiming(false);
 

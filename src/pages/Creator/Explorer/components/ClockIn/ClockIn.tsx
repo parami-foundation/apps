@@ -1,9 +1,7 @@
-import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import FormField from '@/components/Form/FormField/FormField';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import Token from '@/components/Token/Token';
-import { AD_DATA_TYPE } from '@/config/constant';
-import { AddTokenReward, ClockInData, ClockInVO, DisableClockIn, EnableClockIn, QueryClockIn, QueryLottery, UpdateClockIn } from '@/services/parami/ClockIn.service';
+import { AddTokenReward, ClockInData, ClockInVO, DisableClockIn, EnableClockIn, QueryLottery, UpdateClockIn } from '@/services/parami/ClockIn.service';
 import { QueryAssetById } from '@/services/parami/HTTP';
 import { Asset } from '@/services/parami/typings';
 import { BigIntToFloatString } from '@/utils/format';
@@ -291,6 +289,7 @@ function ClockIn({ nftId }: ClockInProps) {
         {editClockInModal && <>
             <EditClockInModal
                 clockIn={clockIn!}
+                nftId={nftId}
                 onCancel={() => setEditClockInModal(false)}
                 onSubmit={(clockIn) => {
                     handleSubmitClockIn(clockIn);

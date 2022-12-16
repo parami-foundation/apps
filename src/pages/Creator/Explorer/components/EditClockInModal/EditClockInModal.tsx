@@ -2,13 +2,15 @@ import BigModal from '@/components/ParamiModal/BigModal';
 import { Button, Col, Input, InputNumber, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './EditClockInModal.less'
-import { BigIntToFloatString, FloatStringToBigInt } from '@/utils/format';
+import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/format';
 import FormField from '@/components/Form/FormField/FormField';
 import { parseAmount } from '@/utils/common';
 import { ClockInData, ClockInVO } from '@/services/parami/ClockIn.service';
+import { GetAssetDetail } from '@/services/parami/Assets';
 
 export interface EditClockInModalProps {
     clockIn: ClockInVO,
+    nftId: string,
     onSubmit: (clockIn: ClockInData) => void,
     onCancel: () => void
 }
@@ -16,12 +18,22 @@ export interface EditClockInModalProps {
 const defaultLevels = [1000, 10000, 100000, 1000000];
 const defaultProbabilities = [1, 5, 10, 20, 50];
 
-function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps) {
+function EditClockInModal({ nftId, clockIn, onSubmit, onCancel }: EditClockInModalProps) {
     const [levels, setLevels] = useState<number[]>([])
     const [probabilities, setProbabilities] = useState<number[]>([])
     const [numWinners, setNumWinners] = useState<number>();
     const [rewardAmount, setRewardAmount] = useState<number>();
     const [tokenAmount, setTokenAmount] = useState<number>();
+    const [assetSupply, setAssetSupply] = useState<string>();
+
+    useEffect(() => {
+        if (nftId) {
+            GetAssetDetail(nftId).then(assetDetailRes => {
+                const { supply } = assetDetailRes.toHuman() as any;
+                setAssetSupply(deleteComma(supply));
+            })
+        }
+    }, [nftId])
 
     useEffect(() => {
         // init data
@@ -42,9 +54,10 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
     }, [clockIn])
 
     const handleSubmit = () => {
+        const upperBounds = levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString());
         const newLotteryData: ClockInData = {
             nftId: clockIn?.nftId,
-            levelUpperBounds: levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString()),
+            levelUpperBounds: [...upperBounds.slice(0, probabilities.length - 1), assetSupply!],
             levelProbability: probabilities,
             sharesPerBucket: numWinners!,
             awardPerShare: parseAmount(`${rewardAmount}`),
@@ -62,11 +75,13 @@ function EditClockInModal({ clockIn, onSubmit, onCancel }: EditClockInModalProps
                     <FormField title='levels' required>
                         <Row>
                             <Col span={12}>
-                                <div className={style.levelsTitle}>Level</div>
+                                <div className={style.levelsTitle}>
+                                    Number of NFT powers required
+                                </div>
                             </Col>
                             <Col span={12}>
                                 <div className={style.levelsTitle}>
-                                    Probability (%)
+                                    Chance of winning (%)
                                 </div>
                             </Col>
                         </Row>

@@ -110,8 +110,7 @@ export const QueryClockIn = async (nftId: string) => {
 }
 
 export const EnableClockIn = async (clockIn: ClockInData, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  // todo: get token supply
-  const ex = window.apiWs.tx.clockIn.enableClockIn(clockIn.nftId, clockIn.levelProbability, [...clockIn.levelUpperBounds, parseAmount('10000000')], clockIn.sharesPerBucket, clockIn.awardPerShare, clockIn.totalRewardToken);
+  const ex = window.apiWs.tx.clockIn.enableClockIn(clockIn.nftId, clockIn.levelProbability, clockIn.levelUpperBounds, clockIn.sharesPerBucket, clockIn.awardPerShare, clockIn.totalRewardToken);
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
@@ -121,8 +120,7 @@ export const DisableClockIn = async (nftId: string, password: string, keystore: 
 }
 
 export const UpdateClockIn = async (clockIn: ClockInData, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  // todo: get token supply
-  const ex = window.apiWs.tx.clockIn.updateClockIn(clockIn.nftId, clockIn.levelProbability, [...clockIn.levelUpperBounds, parseAmount('10000000')], clockIn.sharesPerBucket, clockIn.awardPerShare);
+  const ex = window.apiWs.tx.clockIn.updateClockIn(clockIn.nftId, clockIn.levelProbability, clockIn.levelUpperBounds, clockIn.sharesPerBucket, clockIn.awardPerShare);
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }
 
