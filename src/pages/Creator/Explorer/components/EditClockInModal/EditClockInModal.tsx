@@ -1,162 +1,152 @@
 import BigModal from '@/components/ParamiModal/BigModal';
-import { Button, Input, InputNumber, Select } from 'antd';
+import { Button, Col, Input, InputNumber, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
 import style from './EditClockInModal.less'
-import { IMAGE_TYPE } from '@/constants/advertisement';
-import TwitterIntentModal from '@/pages/BidHNFT/components/TwitterIntentModal/TwitterIntentModal';
-import FormErrorMsg from '@/components/Form/FormErrorMsg';
-import { BigIntToFloatString } from '@/utils/format';
+import { BigIntToFloatString, deleteComma, FloatStringToBigInt } from '@/utils/format';
 import FormField from '@/components/Form/FormField/FormField';
-import ImageUpload from '@/components/Form/ImageUpload/ImageUpload';
-import { useModel } from 'umi';
-import { getMinPayoutBase } from '@/services/parami/Advertisement';
 import { parseAmount } from '@/utils/common';
-
-const { Option } = Select;
+import { ClockInData, ClockInVO } from '@/services/parami/ClockIn.service';
+import { GetAssetDetail } from '@/services/parami/Assets';
 
 export interface EditClockInModalProps {
-    clockIn: any,
-    enableClockIn: boolean,
-    onSubmit: (clockIn) => void,
+    clockIn: ClockInVO,
+    nftId: string,
+    onSubmit: (clockIn: ClockInData) => void,
     onCancel: () => void
 }
 
-function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditClockInModalProps) {
-    const apiWs = useModel('apiWs');
-    const { tagOptions } = useModel('tagOptions');
-    const [icon, setIcon] = useState<string>(clockIn.icon);
-    const [poster, setPoster] = useState<string>(clockIn.poster);
-    const [content, setContent] = useState<string>(clockIn.content);
-    const [tags, setTags] = useState<string[]>(clockIn.tags ?? []);
-    const [payoutBase, setPayoutBase] = useState<number>((clockIn.payoutBase && parseFloat(BigIntToFloatString(clockIn.payoutBase, 18))) ?? 1);
-    const [payoutBaseMin, setPayoutBaseMin] = useState<number>(1);
-    const [payoutMin, setPayoutMin] = useState<number>((clockIn.payoutMin && parseFloat(BigIntToFloatString(clockIn.payoutMin, 18))) ?? 1);
-    const [payoutMax, setPayoutMax] = useState<number>((clockIn.payoutMax && parseFloat(BigIntToFloatString(clockIn.payoutMax, 18))) ?? 10);
-    const [tokenAmount, setTokenAmount] = useState<number>();
+const defaultLevels = [1000, 10000, 100000, 1000000];
+const defaultProbabilities = [1, 5, 10, 20, 50];
 
-    const [payoutMinError, setPayoutMinError] = useState<string>('');
-    const [payoutMaxError, setPayoutMaxError] = useState<string>('');
+function EditClockInModal({ nftId, clockIn, onSubmit, onCancel }: EditClockInModalProps) {
+    const [levels, setLevels] = useState<number[]>([])
+    const [probabilities, setProbabilities] = useState<number[]>([])
+    const [numWinners, setNumWinners] = useState<number>();
+    const [rewardAmount, setRewardAmount] = useState<number>();
+    const [tokenAmount, setTokenAmount] = useState<number>();
+    const [assetSupply, setAssetSupply] = useState<string>();
 
     useEffect(() => {
-        if (apiWs) {
-            getMinPayoutBase().then(min => setPayoutBaseMin(min));
+        if (nftId) {
+            GetAssetDetail(nftId).then(assetDetailRes => {
+                const { supply } = assetDetailRes.toHuman() as any;
+                setAssetSupply(deleteComma(supply));
+            })
         }
-    }, [apiWs]);
+    }, [nftId])
+
+    useEffect(() => {
+        // init data
+        if (clockIn?.levelUpperBounds?.length) {
+            setLevels(clockIn?.levelUpperBounds.map(endpoint => parseFloat(BigIntToFloatString(endpoint, 18))));
+        } else {
+            setLevels(defaultLevels);
+        }
+
+        if (clockIn?.levelProbability?.length) {
+            setProbabilities(clockIn?.levelProbability);
+        } else {
+            setProbabilities(defaultProbabilities);
+        }
+
+        setNumWinners(clockIn?.sharesPerBucket ?? 10);
+        setRewardAmount(clockIn?.awardPerShare ? parseFloat(BigIntToFloatString(clockIn?.awardPerShare, 18)) : undefined);
+    }, [clockIn])
 
     const handleSubmit = () => {
-        const newClockInData = {
-            nftId: clockIn.nftId,
-            icon,
-            poster,
-            content,
-            payoutBase: parseAmount(`${payoutBase}`),
-            payoutMin: parseAmount(`${payoutMin}`),
-            payoutMax: parseAmount(`${payoutMax}`),
-            tokenAmount: parseAmount(`${tokenAmount}`),
-            tags
+        const upperBounds = levels!.map(endpoint => FloatStringToBigInt(`${endpoint}`, 18).toString());
+        const newLotteryData: ClockInData = {
+            nftId: clockIn?.nftId,
+            levelUpperBounds: [...upperBounds.slice(0, probabilities.length - 1), assetSupply!],
+            levelProbability: probabilities,
+            sharesPerBucket: numWinners!,
+            awardPerShare: parseAmount(`${rewardAmount}`),
+            totalRewardToken: parseAmount(`${tokenAmount}`)
         }
-        onSubmit(newClockInData);
+        onSubmit(newLotteryData);
     }
-
-    useEffect(() => {
-        setPayoutMaxError('');
-        setPayoutMinError('');
-        if (payoutMax < payoutMin) {
-            setPayoutMaxError('Payout Max cannot be less than Payout Min')
-        }
-    }, [payoutMax]);
-
-    useEffect(() => {
-        setPayoutMaxError('');
-        setPayoutMinError('');
-        if (payoutMin > payoutMax) {
-            setPayoutMinError('Payout Min cannot be more than Payout Max')
-        }
-    }, [payoutMin]);
 
     return <>
         <BigModal
             visable
-            title={'Clock In'}
+            title={'Daily Lotto'}
             content={<>
                 <div className={style.form}>
-                    <FormField title='Icon' required>
-                        <ImageUpload imageUrl={icon} onImageUrlChange={url => {
-                            setIcon(url)
-                        }} imageType={IMAGE_TYPE.ICON}></ImageUpload>
+                    <FormField title='levels' required>
+                        <Row>
+                            <Col span={12}>
+                                <div className={style.levelsTitle}>
+                                    Number of NFT powers required
+                                </div>
+                            </Col>
+                            <Col span={12}>
+                                <div className={style.levelsTitle}>
+                                    Chance of winning (%)
+                                </div>
+                            </Col>
+                        </Row>
+                        {probabilities.map((probability, index) => {
+                            return <>
+                                <Row className={style.levelConfigRow}>
+                                    <Col span={12}>
+                                        <div className={style.levelInput}>
+                                            {index === 0 && <>
+                                                <Input
+                                                    value={'base level'}
+                                                    disabled
+                                                ></Input>
+                                            </>}
+                                            {index > 0 && <>
+                                                <Input
+                                                    value={levels[index - 1]}
+                                                    type='number'
+                                                    onChange={e => {
+                                                        const newLevelValues = levels.slice();
+                                                        newLevelValues[index - 1] = parseInt(e.target.value, 10);
+                                                        setLevels(newLevelValues);
+                                                    }}
+                                                ></Input>
+                                            </>}
+                                        </div>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Input
+                                            type='number'
+                                            value={probability}
+                                            onChange={e => {
+                                                const newProbValues = probabilities.slice();
+                                                newProbValues[index] = parseInt(e.target.value, 10);
+                                                setProbabilities(newProbValues);
+                                            }}
+                                        ></Input>
+                                    </Col>
+                                </Row>
+                            </>
+                        })}
                     </FormField>
 
-                    <FormField title='Poster' required>
-                        <ImageUpload imageUrl={poster} onImageUrlChange={url => setPoster(url)} imageType={IMAGE_TYPE.POSTER}></ImageUpload>
-                    </FormField>
-
-                    <FormField title='Content' required>
-                        <Input
-                            className={style.input}
-                            value={content}
-                            onChange={(a) => { setContent(a.target.value) }}
-                        />
-                    </FormField>
-
-                    <FormField title='Tags' required>
-                        <Select
-                            allowClear
-                            mode='multiple'
-                            style={{ width: '100%' }}
-                            placeholder="Please select tags"
-                            defaultValue={tags}
-                            onChange={values => {
-                                setTags(values)
-                            }}
-                        >
-                            {tagOptions.map(option => {
-                                return <Option key={option.key} value={option.tag}>{option.tag}</Option>
-                            })}
-                        </Select>
-                    </FormField>
-
-                    <FormField title='Payout Base' required>
+                    <FormField title='Number of winners' required>
                         <InputNumber
-                            className={style.withAfterInput}
-                            placeholder="0.00"
                             size='large'
-                            value={payoutBase}
-                            maxLength={18}
+                            step={1}
+                            value={numWinners}
                             min={0}
-                            onChange={(value) => setPayoutBase(value)}
+                            onChange={(value) => setNumWinners(value)}
                         />
-                        {(!payoutBase || payoutBase < payoutBaseMin) && <FormErrorMsg msg={`Payout Base cannot be less than ${payoutBaseMin}`} />}
                     </FormField>
 
-                    <FormField title='Payout Min' required>
+                    <FormField title='Winner award amount' required>
                         <InputNumber
-                            className={`${style.withAfterInput} ${payoutMinError ? style.inputError : ''}`}
-                            placeholder="0.00"
                             size='large'
-                            maxLength={18}
+                            placeholder="0.00"
+                            value={rewardAmount}
                             min={0}
-                            max={payoutMax}
-                            value={payoutMin}
-                            onChange={(value) => setPayoutMin(value)}
+                            onChange={(value) => setRewardAmount(value)}
                         />
-                        {payoutMinError && <FormErrorMsg msg={payoutMinError} />}
                     </FormField>
 
-                    <FormField title='Payout Max' required>
-                        <InputNumber
-                            className={`${style.withAfterInput} ${payoutMaxError ? style.inputError : ''}`}
-                            placeholder="0.00"
-                            size='large'
-                            maxLength={18}
-                            value={payoutMax}
-                            min={payoutMin}
-                            onChange={(value) => setPayoutMax(value)}
-                        />
-                        {payoutMaxError && <FormErrorMsg msg={payoutMaxError} />}
-                    </FormField>
-
-                    {enableClockIn && <>
-                        <FormField title='Reward Token Amount' required>
+                    {!clockIn?.nftId && <>
+                        <FormField title='Deposit Token Amount' required>
                             <InputNumber
                                 placeholder="0.00"
                                 size='large'
@@ -184,16 +174,6 @@ function EditClockInModal({ clockIn, enableClockIn, onSubmit, onCancel }: EditCl
             </>}
             close={() => onCancel()}
         ></BigModal>
-
-        {/* {twitterIntentModal && <>
-            <TwitterIntentModal
-                onCancel={() => setTwitterIntentModal(false)}
-                onCreateTwitterIntent={(url: string) => {
-                    // setLink(url);
-                    setTwitterIntentModal(false)
-                }}
-            ></TwitterIntentModal>
-        </>} */}
     </>;
 
 };

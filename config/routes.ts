@@ -219,6 +219,14 @@ export default [
     component: './Ad/Ad'
   },
   {
+    path: '/lottery',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Lottery/Lottery'
+  },
+  {
     path: '/dao',
     hideInMenu: true,
     exact: true,

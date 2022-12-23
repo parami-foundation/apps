@@ -1,15 +1,12 @@
-import AdvertisementPreview from '@/components/Advertisement/AdvertisementPreview/AdvertisementPreview';
 import FormField from '@/components/Form/FormField/FormField';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import Token from '@/components/Token/Token';
-import { AD_DATA_TYPE } from '@/config/constant';
-import { AddTokenReward, DisableClockIn, EnableClockIn, QueryClockIn, UpdateClockIn } from '@/services/parami/ClockIn.service';
+import { AddTokenReward, ClockInData, ClockInVO, DisableClockIn, EnableClockIn, QueryLottery, UpdateClockIn } from '@/services/parami/ClockIn.service';
 import { QueryAssetById } from '@/services/parami/HTTP';
 import { Asset } from '@/services/parami/typings';
 import { BigIntToFloatString } from '@/utils/format';
-import { uploadMetadata } from '@/utils/ipfs.util';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Modal, notification, Row, Spin, Typography } from 'antd';
+import { Button, Card, Col, Modal, notification, Row, Spin, Table, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel } from 'umi';
 import EditClockInModal from '../EditClockInModal/EditClockInModal';
@@ -28,8 +25,9 @@ function ClockIn({ nftId }: ClockInProps) {
     const [passphrase, setPassphrase] = useState<string>('');
 
     const [asset, setAsset] = useState<Asset>();
-    const [clockIn, setClockIn] = useState<any>();
-    const [newClockIn, setNewClockIn] = useState<any>();
+    const [clockIn, setClockIn] = useState<ClockInVO | null>();
+    const [levelsTableData, setLevelsTableData] = useState<{ level: string; probability: string }[]>([]);
+    const [newClockIn, setNewClockIn] = useState<ClockInData>();
     const [editClockInModal, setEditClockInModal] = useState<boolean>(false);
     const [addBudgetModal, setAddBudgetModal] = useState<boolean>(false);
     const [tokenAmount, setTokenAmount] = useState<string>();
@@ -40,10 +38,24 @@ function ClockIn({ nftId }: ClockInProps) {
     const [disableClockInSecModal, setDisableClockInSecModal] = useState<boolean>(false);
 
     const queryClockIn = async (nftId: string) => {
-        setClockIn(null);
-        const clockIn = await QueryClockIn(nftId);
+        setClockIn(undefined);
+        const clockIn = await QueryLottery(nftId);
         setClockIn(clockIn);
     }
+
+    useEffect(() => {
+        if (clockIn?.nftId) {
+            const levelsData: { level: string; probability: string }[] = [];
+            (clockIn.levelProbability ?? []).forEach((probability, index) => {
+                const endpoint = !index ? 'base level' : BigIntToFloatString((clockIn.levelUpperBounds[index - 1] || '0'), 18).toString()
+                levelsData.push({
+                    level: endpoint,
+                    probability: `${probability}%`
+                })
+            })
+            setLevelsTableData(levelsData);
+        }
+    }, [clockIn])
 
     useEffect(() => {
         if (apiWs && nftId) {
@@ -58,26 +70,13 @@ function ClockIn({ nftId }: ClockInProps) {
         }
     }, [apiWs, nftId]);
 
-    const handleSubmitClockIn = async (clockInData) => {
-        const metadata = {
-            icon: clockInData.icon,
-            poster: clockInData.poster,
-            content: clockInData.content,
+    const handleSubmitClockIn = async (clockInData: ClockInData) => {
+        const newClockIn = {
+            ...clockInData,
+            nftId
         }
 
-        const hash = await uploadMetadata(metadata);
-
-        const clockIn = {
-            nftId,
-            payoutBase: clockInData.payoutBase,
-            payoutMin: clockInData.payoutMin,
-            payoutMax: clockInData.payoutMax,
-            tokenAmount: clockInData.tokenAmount,
-            metadata: `ipfs://${hash}`,
-            tags: clockInData.tags
-        }
-
-        setNewClockIn(clockIn);
+        setNewClockIn(newClockIn);
 
         if (clockInData.nftId) {
             setUpdateClockInSecModal(true);
@@ -88,7 +87,7 @@ function ClockIn({ nftId }: ClockInProps) {
 
     const enableClockIn = async (preTx?: boolean, account?: string) => {
         try {
-            const info: any = await EnableClockIn(newClockIn, passphrase, wallet?.keystore, preTx, account);
+            const info: any = await EnableClockIn(newClockIn!, passphrase, wallet?.keystore, preTx, account);
 
             if (preTx && account) {
                 return info;
@@ -109,7 +108,7 @@ function ClockIn({ nftId }: ClockInProps) {
 
     const updateClockIn = async (preTx?: boolean, account?: string) => {
         try {
-            const info: any = await UpdateClockIn(newClockIn, passphrase, wallet?.keystore, preTx, account);
+            const info: any = await UpdateClockIn(newClockIn!, passphrase, wallet?.keystore, preTx, account);
 
             if (preTx && account) {
                 return info;
@@ -165,12 +164,16 @@ function ClockIn({ nftId }: ClockInProps) {
         }
     }
 
-    const clockInPreview = {
-        ...clockIn,
-        type: AD_DATA_TYPE.CLOCK_IN,
-        assetName: asset?.name,
-        kolIcon: asset?.icon
-    }
+    const columns = [
+        {
+            title: 'Levels',
+            dataIndex: 'level'
+        },
+        {
+            title: 'Chance of winning',
+            dataIndex: 'probability'
+        }
+    ]
 
     return <>
         <Title
@@ -182,14 +185,15 @@ function ClockIn({ nftId }: ClockInProps) {
             }}
             className={style.title}
         >
-            Clock-in Reward
+            Daily Lotto
         </Title>
         <Card className={style.card}>
-            <Spin spinning={!clockIn}>
-                {clockIn && !clockIn.nftId && <>
+            <Spin spinning={clockIn === undefined}>
+
+                {!clockIn && <>
                     <div>
                         <div>
-                            Clock-in Reward not enabled
+                            Daily Lotto not enabled
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
                             <Button
@@ -225,18 +229,12 @@ function ClockIn({ nftId }: ClockInProps) {
                                     </Button>
                                 </FormField>
 
-                                <FormField title='Tags'>
-                                    {(clockIn.tags ?? []).join(',') ?? '-'}
+                                <FormField title='Number of winners per day'>
+                                    {clockIn.sharesPerBucket}
                                 </FormField>
 
-                                <FormField title='Payout Base'>
-                                    {BigIntToFloatString(clockIn.payoutBase, 18)}
-                                </FormField>
-                                <FormField title='Payout Min'>
-                                    {BigIntToFloatString(clockIn.payoutMin, 18)}
-                                </FormField>
-                                <FormField title='Payout Max'>
-                                    {BigIntToFloatString(clockIn.payoutMax, 18)}
+                                <FormField title='Winner award'>
+                                    <Token value={clockIn.awardPerShare} symbol={asset?.symbol}></Token>
                                 </FormField>
 
                                 <div className={style.btnContainer}>
@@ -253,7 +251,7 @@ function ClockIn({ nftId }: ClockInProps) {
                                         type="primary"
                                         shape="round"
                                         size="large"
-                                        style={{marginLeft: '10px'}}
+                                        style={{ marginLeft: '10px' }}
                                         onClick={() => {
                                             Modal.confirm({
                                                 title: 'Do you wish to disable the Clock-in reward?',
@@ -268,12 +266,10 @@ function ClockIn({ nftId }: ClockInProps) {
                                     </Button>
                                 </div>
                             </div>
-
                         </Col>
+
                         <Col span={12}>
-                            <div className={style.previewContainer}>
-                                <AdvertisementPreview ad={clockInPreview}></AdvertisementPreview>
-                            </div>
+                            <Table columns={columns} dataSource={levelsTableData} pagination={false} />
                         </Col>
                     </Row>
                 </>}
@@ -292,8 +288,8 @@ function ClockIn({ nftId }: ClockInProps) {
 
         {editClockInModal && <>
             <EditClockInModal
-                clockIn={clockIn}
-                enableClockIn={!clockIn?.nftId}
+                clockIn={clockIn!}
+                nftId={nftId}
                 onCancel={() => setEditClockInModal(false)}
                 onSubmit={(clockIn) => {
                     handleSubmitClockIn(clockIn);

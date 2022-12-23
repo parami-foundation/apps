@@ -4,6 +4,8 @@ import { history, useModel } from 'umi';
 import AdBubble from '@/components/Advertisement/AdBubble/AdBubble';
 import { GetBalanceOfAsset } from '@/services/parami/Assets';
 import Token from '@/components/Token/Token';
+import { AD_DATA_TYPE } from '@/config/constant';
+import LotteryBubble from '@/components/Advertisement/LotteryBubble/LotteryBubble';
 
 const Advertisement: React.FC<{
 	ad: any;
@@ -49,8 +51,12 @@ const Advertisement: React.FC<{
 					</div>
 				</div>
 
-				{!!ad.type && <>
+				{ad.type === AD_DATA_TYPE.AD && <>
 					<AdBubble ad={ad} userDid={userDid}></AdBubble>
+				</>}
+
+				{ad.type === AD_DATA_TYPE.LOTTERY && <>
+					<LotteryBubble ad={ad}></LotteryBubble>
 				</>}
 			</div>
 		</>

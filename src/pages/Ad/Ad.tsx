@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import { GetAvatar, QueryAssetById } from "@/services/parami/HTTP";
 import { parseUrlParams } from '@/utils/url.util';
 import Advertisement from '../Creator/Explorer/Advertisement';
+import { AD_DATA_TYPE } from '@/config/constant';
 
 export interface AdProps { }
 
@@ -70,8 +71,12 @@ function Ad({ }: AdProps) {
     }, [apiWs, nftId, wallet])
 
     useEffect(() => {
-        if (adBubbleData && !adBubbleData.type) {
-            history.push(`/dao/?nftId=${adBubbleData.nftId}`);
+        if (adBubbleData) {
+            if (adBubbleData.type === AD_DATA_TYPE.LOTTERY) {
+                history.push(`/lottery/?nftId=${adBubbleData.nftId}`);
+            } else if (!adBubbleData.type) {
+                history.push(`/dao/?nftId=${adBubbleData.nftId}`);
+            }
         }
     }, [adBubbleData])
 
