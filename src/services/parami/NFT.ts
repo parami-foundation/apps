@@ -25,8 +25,8 @@ export const GetNFTMetaData = async (id: string) => {
   };
 };
 
-export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: BigNumber, ethAccount: string, signature: string, preTx?: boolean, account?: string) => {
-  const ex = window.apiWs.tx.nft.port(network, namespace, tokenID.toHexString(), ethAccount, signature);
+export const PortNFT = async (password: string, keystore: string, network: NFTNetwork, namespace: string, tokenID: string, ethAccount: string, signature: string, bidOnlyBySync: boolean, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.nft.port(network, namespace, `0x${parseInt(tokenID, 10).toString(16)}`, ethAccount, signature, bidOnlyBySync);
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 };
 

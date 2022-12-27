@@ -58,7 +58,7 @@ export default {
     'wallet.tags.title': 'My DID Reputation Score',
     'wallet.nfts.empty': 'You do not have any NFTs',
     'wallet.nfts.create': 'Create HNFT',
-    'wallet.nfts.import': 'Import HNFT',
+    'wallet.nfts.import': 'Import NFT',
     'wallet.nfts.connect': 'Connect Wallet',
     'wallet.nfts.mint': 'Mint NFT',
 };

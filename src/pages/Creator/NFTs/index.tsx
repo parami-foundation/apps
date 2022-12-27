@@ -4,10 +4,12 @@ import { useIntl, useModel } from 'umi';
 import styles from '@/pages/wallet.less';
 import style from './style.less';
 import { FaFileImport } from 'react-icons/fa';
-import Import from './Import';
 import Skeleton from '@/components/Skeleton';
 import NFTCard from './NFTCard';
 import EthAddress from '@/components/EthAddress/EthAddress';
+import SelectNFTModal from './SelectNFTModal/SelectNFTModal';
+import { OSNFT } from '@/models/openseaApi';
+import ImportNFTModal from './ImportNFTModal/ImportNFTModal';
 
 const umi_env = process.env.UMI_ENV;
 
@@ -17,6 +19,7 @@ const NFTs: React.FC = () => {
 	const { nftList, loading, getNFTs } = useModel('nft');
 	const [importModal, setImportModal] = useState<boolean>(false);
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+	const [selectedNft, setSelectedNft] = useState<OSNFT>();
 
 	const intl = useIntl();
 	const { Title } = Typography;
@@ -128,12 +131,26 @@ const NFTs: React.FC = () => {
 						/>
 					</div>
 
-					<Import
+					{/* <Import
 						importModal={importModal}
 						setImportModal={setImportModal}
-					/>
+					/> */}
 				</div>
 			</div>
+
+			{importModal && <>
+				<SelectNFTModal onCancel={() => setImportModal(false)} onSelect={(nft: OSNFT) => {
+					setSelectedNft(nft);
+					setImportModal(false);
+				}}></SelectNFTModal>
+			</>}
+
+			{selectedNft && <>
+				<ImportNFTModal nft={selectedNft} onCancel={() => setSelectedNft(undefined)} onImported={nftId => {
+					console.log('NFT imported', nftId);
+					setSelectedNft(undefined);
+				}} />
+			</>}
 		</>
 	)
 }

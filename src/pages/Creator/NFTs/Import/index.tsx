@@ -72,9 +72,10 @@ const ImportNFTModal: React.FC<{
           wallet?.keystore,
           'Ethereum',
           mintItem.contract,
-          mintItem.tokenId,
+          mintItem.tokenId.toString(),
           ethAccount,
           signedMsg,
+          false,
           preTx,
           account,
         );
