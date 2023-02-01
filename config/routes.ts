@@ -211,6 +211,14 @@ export default [
     component: './Claim/Claim',
   },
   {
+    path: '/enlist/:contractAddress/:tokenId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Enlist/Enlist'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,
