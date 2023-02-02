@@ -25,8 +25,15 @@ function Enlist({ }: EnlistProps) {
     const intl = useIntl();
 
     useEffect(() => {
+        if (wallet && window.opener) {
+            window.opener.postMessage(`did:${wallet.did}`, '*');
+            window.opener.postMessage(`account:${wallet.account}`, '*');
+        }
+    }, [wallet])
+
+    useEffect(() => {
         return () => eventsUnsub && eventsUnsub();
-      }, [eventsUnsub])
+    }, [eventsUnsub])
 
     useEffect(() => {
         if (!access.canWalletUser) {
@@ -41,7 +48,7 @@ function Enlist({ }: EnlistProps) {
         if (Signer && wallet?.did) {
             try {
                 const signedMsg = await Signer.signMessage(`Link: ${hexToDid(wallet?.did)}`);
-                
+
                 // import nft
                 setSignedMsg(signedMsg);
                 setSecModal(true);
@@ -110,17 +117,17 @@ function Enlist({ }: EnlistProps) {
 
     useEffect(() => {
         if (Events?.length) {
-          Events.forEach(record => {
-            const { event } = record;
-            if (`${event?.section}:${event?.method}` === 'nft:Created') {
-              if (event?.data[0].toString() === wallet?.did) {
-                // NFT Import Success
-                // todo: notify influence mining and close window
-              }
-            }
-          })
+            Events.forEach(record => {
+                const { event } = record;
+                if (`${event?.section}:${event?.method}` === 'nft:Created') {
+                    if (event?.data[0].toString() === wallet?.did) {
+                        // NFT Import Success
+                        // todo: notify influence mining and close window
+                    }
+                }
+            })
         }
-      }, [Events])
+    }, [Events])
 
     return <>
         <BigModal
