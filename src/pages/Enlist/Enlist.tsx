@@ -123,6 +123,9 @@ function Enlist({ }: EnlistProps) {
                     if (event?.data[0].toString() === wallet?.did) {
                         // NFT Import Success
                         // todo: notify influence mining and close window
+                        if (window.opener) {
+                            window.opener.postMessage('ParamiWallet::ImportSuccess'); // todo: enum
+                        }
                     }
                 }
             })

@@ -219,6 +219,14 @@ export default [
     component: './Enlist/Enlist'
   },
   {
+    path: '/quickBid/:nftId/:amount',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickBid/QuickBid'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,
