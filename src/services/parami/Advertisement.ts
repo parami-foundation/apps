@@ -179,8 +179,7 @@ export const CreateAds = async (adConfig, account) => {
 };
 
 export const UserBidSlotWithAd3 = async (adId: string, nftId: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
-  // todo: bid with ad3
-  const ex = window.apiWs.tx.ad.bidWithFraction(adId, nftId, amount, null, null);
+  const ex = window.apiWs.tx.ad.bidWithCurrency(adId, nftId, amount);
 
   return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
 }

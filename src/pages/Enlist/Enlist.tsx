@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { useAccess, useIntl, useModel, useParams, history } from 'umi';
 import style from './Enlist.less';
 import config from '@/config/config';
+import { POST_MESSAGE_PREFIX } from '@/config/constant';
 
 export interface EnlistProps { }
 
@@ -122,10 +123,10 @@ function Enlist({ }: EnlistProps) {
                 if (`${event?.section}:${event?.method}` === 'nft:Created') {
                     if (event?.data[0].toString() === wallet?.did) {
                         // NFT Import Success
-                        // todo: notify influence mining and close window
                         if (window.opener) {
-                            window.opener.postMessage('ParamiWallet::ImportSuccess'); // todo: enum
+                            window.opener.postMessage(POST_MESSAGE_PREFIX.NFT_IMPORTED);
                         }
+                        window.close();
                     }
                 }
             })

@@ -1,6 +1,8 @@
 import BigModal from '@/components/ParamiModal/BigModal';
 import SecurityModal from '@/components/ParamiModal/SecurityModal';
+import { POST_MESSAGE_PREFIX } from '@/config/constant';
 import { UserBidSlotWithAd3 } from '@/services/parami/Advertisement';
+import { parseAmount } from '@/utils/common';
 import { notification, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useModel, useParams } from 'umi';
@@ -17,19 +19,19 @@ function QuickBid({ }: QuickBidProps) {
 
     const handleBidAd = async (preTx?: boolean, account?: string) => {
         try {
-            // todo: adId?
-            const info: any = await UserBidSlotWithAd3('default_adid', nftId, amount, passphrase, wallet?.keystore, preTx, account);
+            // todo: default adId
+            const price = Number(amount) > 0 ? amount : parseAmount('1');
+            const info: any = await UserBidSlotWithAd3('0x0ec3c7ad65614705ca4b5c2cfdc375b06fb40b41e8490b9459087dfc2842671f', nftId, price, passphrase, wallet?.keystore, preTx, account);
 
             if (preTx && account) {
                 return info;
             }
 
-            // todo: notify influence mining page and close window
             notification.success({
                 message: 'bid success!'
             })
             if (window.opener) {
-                window.opener.postMessage('ParamiWallet::BidSuccess'); // todo: enum
+                window.opener.postMessage(POST_MESSAGE_PREFIX.AD_BID);
             }
             window.close();
         } catch (e: any) {

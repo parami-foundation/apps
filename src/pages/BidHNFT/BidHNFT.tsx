@@ -224,6 +224,7 @@ function BidHNFT({ }: BidHNFTProps) {
             }
 
             const adId = info.ad.Created[0][0];
+            console.log('ad created', adId);
             setAdId(adId);
 
             if (bidTargets?.some(target => target.buyTokenAmount)) {
