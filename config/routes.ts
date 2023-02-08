@@ -227,6 +227,14 @@ export default [
     component: './QuickBid/QuickBid'
   },
   {
+    path: '/quickMint/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickMint/QuickMint'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,

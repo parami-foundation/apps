@@ -215,7 +215,7 @@ const NFTCard: React.FC<{
         </>}
 
         {mintModal && <>
-            <MintNFTModal item={item} onClose={() => setMintModal(false)} onMint={() => {
+            <MintNFTModal nftId={item.id} onClose={() => setMintModal(false)} onMint={() => {
                 setMintModal(false);
             }}></MintNFTModal>
         </>}
