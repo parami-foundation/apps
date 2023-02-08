@@ -31,7 +31,7 @@ function QuickBid({ }: QuickBidProps) {
                 message: 'bid success!'
             })
             if (window.opener) {
-                window.opener.postMessage(POST_MESSAGE_PREFIX.AD_BID);
+                window.opener.postMessage(POST_MESSAGE_PREFIX.AD_BID, '*');
             }
             window.close();
         } catch (e: any) {

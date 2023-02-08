@@ -29,6 +29,7 @@ export enum POST_MESSAGE_PREFIX {
     NFT_IMPORTED = 'ParamiWallet::ImportSuccess',
     AD_BID = 'ParamiWallet::BidSuccess',
     NFT_MINT = 'ParamiWallet::NftMintSuccess',
+    ADD_LIQUIDITY = 'ParamiWallet::AddLiquidity',
 }
 
 export enum AD_DATA_TYPE {

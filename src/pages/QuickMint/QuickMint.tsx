@@ -13,7 +13,7 @@ function QuickMint() {
             }}
             onMint={() => {
                 if (window.opener) {
-                    window.opener.postMessage(POST_MESSAGE_PREFIX.NFT_MINT);
+                    window.opener.postMessage(POST_MESSAGE_PREFIX.NFT_MINT, '*');
                 }
                 window.close();
             }}

@@ -124,7 +124,7 @@ function Enlist({ }: EnlistProps) {
                     if (event?.data[0].toString() === wallet?.did) {
                         // NFT Import Success
                         if (window.opener) {
-                            window.opener.postMessage(POST_MESSAGE_PREFIX.NFT_IMPORTED);
+                            window.opener.postMessage(POST_MESSAGE_PREFIX.NFT_IMPORTED, '*');
                         }
                         window.close();
                     }

@@ -235,6 +235,14 @@ export default [
     component: './QuickMint/QuickMint'
   },
   {
+    path: '/quickAddLiquidity/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickAddLiquidity/QuickAddLiquidity'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,
