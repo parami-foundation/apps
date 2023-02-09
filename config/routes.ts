@@ -243,6 +243,14 @@ export default [
     component: './QuickAddLiquidity/QuickAddLiquidity'
   },
   {
+    path: '/quickCreateIMPool/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickCreateIMPool/QuickCreateIMPool'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,

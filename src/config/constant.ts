@@ -30,6 +30,7 @@ export enum POST_MESSAGE_PREFIX {
     AD_BID = 'ParamiWallet::BidSuccess',
     NFT_MINT = 'ParamiWallet::NftMintSuccess',
     ADD_LIQUIDITY = 'ParamiWallet::AddLiquidity',
+    IM_POOL_CREATED = 'ParamiWallet::IMPoolCreated'
 }
 
 export enum AD_DATA_TYPE {
