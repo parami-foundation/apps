@@ -178,6 +178,12 @@ export const CreateAds = async (adConfig, account) => {
   return await subWeb3Callback(tx, injector, account);
 };
 
+export const UserBidSlotWithAd3 = async (adId: string, nftId: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
+  const ex = window.apiWs.tx.ad.bidWithCurrency(adId, nftId, amount);
+
+  return await checkFeeAndSubmitExtrinsic(ex, password, keystore, preTx, account);
+}
+
 export const UserBidSlot = async (adId: string, nftId: string, amount: string, password: string, keystore: string, preTx?: boolean, account?: string) => {
   const ex = window.apiWs.tx.ad.bidWithFraction(adId, nftId, amount, null, null);
 

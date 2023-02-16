@@ -9,9 +9,9 @@ import SecurityModal from '@/components/ParamiModal/SecurityModal';
 import { parseAmount } from '@/utils/common';
 
 const MintNFTForm: React.FC<{
-	item: any;
+	nftId: string;
 	onMint: () => void;
-}> = ({ item, onMint }) => {
+}> = ({ nftId, onMint }) => {
 	const { getNFTs } = useModel('nft');
 	const { wallet } = useModel('currentUser');
 	const [loading, setLoading] = useState<boolean>(false);
@@ -27,9 +27,9 @@ const MintNFTForm: React.FC<{
 		if (!!wallet && !!wallet.keystore) {
 			setLoading(true);
 			try {
-				const info: any = await MintNFT(item?.id, name, symbol, parseAmount(totalSupply), passphrase, wallet?.keystore, preTx, account);
+				const info: any = await MintNFT(nftId, name, symbol, parseAmount(totalSupply), passphrase, wallet?.keystore, preTx, account);
 				if (preTx && account) {
-					return info
+					return info;
 				}
 				setLoading(false);
 				onMint();
@@ -124,18 +124,17 @@ const MintNFTForm: React.FC<{
 }
 
 const MintNFTModal: React.FC<{
-	item: any;
+	nftId: string;
 	onClose: () => void;
 	onMint: () => void;
-}> = ({ item, onClose, onMint }) => {
-
+}> = ({ nftId, onClose, onMint }) => {
 	return (
 		<BigModal
 			visable
 			title={'Mint'}
 			content={
 				<MintNFTForm
-					item={item}
+					nftId={nftId}
 					onMint={onMint}
 				/>
 			}

@@ -79,12 +79,12 @@ function IdoModal({ nftId, onClose, onIDO, symbol, swapMetadata }: IdoModalProps
     return <>
         <BigModal
             visable
-            title={'IDO'}
+            title={'Add Liquidity'}
             content={<>
                 <div className={style.form}>
                     <div className={style.field}>
                         <div className={style.label}>
-                            <span>NFT Power Amount</span>
+                            <span>SIT Amount</span>
                             <span>
                                 available: <Token value={tokenBalance} symbol={symbol}></Token>
                             </span>
@@ -125,7 +125,7 @@ function IdoModal({ nftId, onClose, onIDO, symbol, swapMetadata }: IdoModalProps
                         swapMetadata ? setAddLiquiditySecModal(true) : setCreateSwapSecModal(true);
                     }}
                 >
-                    Start IDO
+                    Add Liquidity
                 </Button>
             </>}
             close={() => onClose()}

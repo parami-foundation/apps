@@ -22,8 +22,8 @@ interface ProviderRpcError {
     data?: unknown;
 }
 
-type SupportedChainId = 1 | 3 | 4;
-const chainIdSupported = (chainId: number): chainId is SupportedChainId => chainId === 1 || chainId === 3 || chainId === 4;
+type SupportedChainId = 1 | 3 | 4 | 5;
+const chainIdSupported = (chainId: number): chainId is SupportedChainId => chainId === 1 || chainId === 3 || chainId === 4 || chainId === 5;
 
 export default () => {
     const [Account, setAccount] = useState<string>('');

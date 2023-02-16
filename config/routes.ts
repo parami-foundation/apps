@@ -211,6 +211,46 @@ export default [
     component: './Claim/Claim',
   },
   {
+    path: '/enlist/:contractAddress/:tokenId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './Enlist/Enlist'
+  },
+  {
+    path: '/quickBid/:nftId/:amount',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickBid/QuickBid'
+  },
+  {
+    path: '/quickMint/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickMint/QuickMint'
+  },
+  {
+    path: '/quickAddLiquidity/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickAddLiquidity/QuickAddLiquidity'
+  },
+  {
+    path: '/quickCreateIMPool/:nftId',
+    hideInMenu: true,
+    exact: true,
+    headerRender: false,
+    footerRender: false,
+    component: './QuickCreateIMPool/QuickCreateIMPool'
+  },
+  {
     path: '/ad',
     hideInMenu: true,
     exact: true,

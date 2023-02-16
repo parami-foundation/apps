@@ -43,7 +43,7 @@ export default () => {
 
             const bridge = new ethers.Contract(contractAddresses.bridge[ChainId], BRIDGE_ABI, Signer);
             setBridgeContract(bridge);
-        } else {
+        } else if (ChainId === 1) {
             const ad3 = new ethers.Contract(contractAddresses.ad3[ChainId], AD3Abi, Signer);
             const weth = new ethers.Contract(contractAddresses.weth[ChainId], WETHAbi, Signer);
             const stakeManager = new ethers.Contract(contractAddresses.stake[ChainId], StakeManagerAbi, Signer);
